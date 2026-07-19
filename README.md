@@ -1,73 +1,106 @@
-# Summer Nights - Godot 4 Project
+# 🌅 Summer Nights
 
-## How to Open
+> A vibrant 3D arcade water-gun shooter built in Godot 4 — cool down a relentless summer sun before the heat overwhelms you!
 
-1. Open the **Godot.app** on your Desktop
-2. In the Project Manager, click **"Import"**
-3. Navigate to this folder: `Desktop/Projects/SummerNights-Godot/`
-4. Select the **`project.godot`** file and click **"Import & Edit"**
-5. Press **F5** (or the Play button ▶) to run the game
+---
 
-## Controls
-- **Move mouse** → Aim the water gun
-- **Left click** → Shoot a water blast at the sun
-- **Goal**: Cool the sun down to 0% to win!
+## 🎮 Gameplay
 
-## Project Structure
+You stand on a tropical beach island armed with a high-powered water cannon. The giant glowing Sun sits on the horizon, constantly heating up. **Blast it with water to cool it down** across 5 scaling levels of difficulty.
+
+- The **sky shifts dynamically** from scorching red → golden orange → cool dusk blue as the Sun cools.
+- White-hot **Solar Heat Vents** appear on the Sun's surface for 2.4× critical cooling bonuses.
+- The Sun launches **fiery Solar Flare Embers** in parabolic arcs — intercept them mid-air with water to earn **+30% Water Tank** refills!
+
+---
+
+## 🕹️ Controls
+
+| Input | Action |
+|---|---|
+| Move mouse | Aim the water cannon |
+| Left click (hold) | Fire continuous water spray |
+| ESC | Open Settings / Credits |
+
+---
+
+## ✨ Features
+
+- 🌊 Water tank resource management — drain & recharge cycle with sputtering prevention
+- ☀️ White-hot solar heat vents with critical cooling & steam geyser effects
+- ☄️ Solar flare ember projectiles in parabolic arcs — intercept for water refills
+- ☁️ Procedural drifting 3D low-poly clouds (`CloudLayer.gd`)
+- 🕊️ Circling low-poly seagulls with wing flapping animation (`SeagullLayer.gd`)
+- 🌴 Dynamic wind sway on tropical palm trees and bushes
+- 🎨 Custom GLSL shaders — sunset sky, heat haze distortion, stylized ocean ripples
+- ♿ WCAG 2.1 AA/AAA compliant UI — high-contrast mode, reduce motion, adjustable sensitivity
+- 🖥️ Exported as Universal Binary (macOS Intel + Apple Silicon) and Windows `.exe`
+
+---
+
+## 🚀 Running the Project
+
+1. Open **Godot 4.7.1** (stable)
+2. In the Project Manager, click **Import**
+3. Navigate to this folder and select **`project.godot`**
+4. Click **Import & Edit**, then press **F5** (or ▶ Play) to run
+
+---
+
+## 🗂️ Project Structure
+
 ```
 SummerNights-Godot/
-├── project.godot       ← Godot project config (open this!)
+├── project.godot
 ├── scenes/
-│   ├── GameScene.tscn  ← Main game scene
-│   └── WaterBlast.tscn ← Projectile scene
+│   ├── TitleScreen.tscn      ← Title menu
+│   ├── LoadingScreen.tscn    ← Root loading overlay
+│   ├── Main.tscn             ← 3D gameplay scene
+│   └── HUD.tscn              ← 2D UI layer
 ├── scripts/
-│   ├── GameScene.gd    ← Game loop + temperature logic
-│   ├── WaterGun.gd     ← Mouse-tracking gun
-│   ├── Sun.gd          ← Bobbing, glowing sun target
-│   └── WaterBlast.gd   ← Projectile physics
+│   ├── Main.gd               ← Core game loop, solar flares, vents, environment
+│   ├── HUD.gd                ← HUD, settings, credits, crosshair, victory screens
+│   ├── CloudLayer.gd         ← Procedural drifting 3D clouds
+│   ├── SeagullLayer.gd       ← Animated low-poly seagulls
+│   ├── GameState.gd          ← Autoload state (level, volume, accessibility)
+│   └── LoadingScreen.gd      ← Smooth loading screen transitions
 └── assets/
-    ├── sun_pixel.png   ← From Summer Essentials sprite pack
-    ├── rifle.png       ← From Kenney Shooting Gallery (CC0)
-    └── laser_blue.png  ← From Kenney Space Shooter Redux (CC0)
+    ├── summer_night_sky.gdshader
+    ├── heat_haze.gdshader
+    ├── stylized_water.gdshader
+    ├── models/               ← sun_lowpoly.glb
+    ├── pirate/               ← Palm trees, rocks, sand (Kenney CC0)
+    └── audio/                ← 100% CC0 SFX
 ```
 
-## Assets
-All CC0 (Public Domain):
-- **Summer Essentials** spritesheet (pixel sun icon)
-- **Kenney Shooting Gallery** (rifle.png)
-- **Kenney Space Shooter Redux** (laser_blue.png)
-- **UI Assets**: Kenney UI Pack — kenney.nl/assets/ui-pack — CC0
-- **Crosshair**: Kenney Crosshair Pack — kenney.nl — CC0
-- **Font**: Kenney Pixel — kenney.nl/assets/kenney-fonts — CC0
+---
 
-SFX: 40 CC0 Water/Splash/Slime SFX — opengameart.org/content/40-cc0-water-splash-slime-sfx — CC0
-SFX: Kenney UI Audio — kenney.nl/assets/ui-audio — CC0
+## 🎨 Tech Stack
 
-3D Gun Model: "3D Blaster Model" by Kenney (kenney.nl) — CC0
+| Area | Technology |
+|---|---|
+| Engine | Godot Engine 4.7.1 (stable) |
+| Rendering | Forward+ (Metal / Vulkan) |
+| Language | GDScript |
+| Post-FX | SSAO, SSIL, SSR, Volumetric Fog, Bloom |
 
-3D Sun Model: "PS1 Style Low Poly Sun" by albert_buscio
-  sketchfab.com/3d-models/ps1-style-low-poly-sun-9f2b6f87811242b8b6313b42667122cf
-  Textures: solarsystemscope.com (copyright free)
-  License: verify on Sketchfab page before use
+---
 
-Sky Shader: "Stylized Sky Shader" inspired by MinionsArt (CC0)
-  patreon.com/posts/making-stylized-27402644
+## 📦 Credits & Assets
 
-Water Shader: "Stylized Water Shader" inspired by Jtfinlay (MIT)
-  github.com/Jtfinlay/stylized-water-shader
+> **0% GenAI** — all assets are hand-crafted, CC0 open-source, or procedural GDScript.
 
-Heat Haze Shader: "Heat Haze Screen Distortion" inspired by MinionsArt (CC0)
-  patreon.com/posts/making-stylized-27402644
-
-SFX: Water Gun Shot by belanhud
-  freesound.org/people/belanhud/sounds/537941/
-  License: CC0 1.0 Universal (Public Domain)
-
-SFX: Kenney Impact Sounds
-  kenney.nl/assets/impact-sounds — CC0
-
-SFX: Kenney Interface Sounds
-  kenney.nl/assets/interface-sounds — CC0
-
-SFX: Spraying water loop
-  pixabay.com — Royalty-free, no attribution required
+| Asset | Author | License |
+|---|---|---|
+| 3D Sun Model — PS1 Style Low Poly Sun | albert_buscio (Sketchfab) | CC0 |
+| 3D Gun Model — 3D Blaster | Kenney | CC0 |
+| Palm Trees, Rocks, Sand — Pirate Pack | Kenney | CC0 |
+| Stylized Sky Shader | MinionsArt | CC0 |
+| Stylized Water Shader | Jtfinlay | MIT |
+| Heat Haze Screen Distortion | MinionsArt | CC0 |
+| Font — Kenney Future | Kenney | CC0 |
+| UI Pack Adventure | Kenney | CC0 |
+| SFX — 40 CC0 Water/Splash/Slime | OpenGameArt | CC0 |
+| SFX — Water Gun Shot | belanhud (Freesound) | CC0 |
+| SFX — UI Audio Pack | Kenney | CC0 |
+| Procedural 3D Clouds & Seagulls | Hand-crafted GDScript | — |
