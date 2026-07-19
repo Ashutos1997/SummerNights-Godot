@@ -1,0 +1,84 @@
+[gd_scene format=3 uid="uid://c7x80a00a1b2"]
+
+[ext_resource type="Script" path="res://scripts/LoadingScreen.gd" id="1_loading_script"]
+[ext_resource type="FontFile" path="res://assets/ui/fonts/Fonts/Kenney Future.ttf" id="2_font"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_adventure/PNG/Default/progress_transparent.png" id="3_bg_tex"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_adventure/PNG/Default/progress_blue.png" id="4_fg_tex"]
+
+[node name="LoadingScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+script = ExtResource("1_loading_script")
+
+[node name="BG" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.02, 0.01, 0.05, 0.98)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+custom_minimum_size = Vector2(440, 0)
+layout_mode = 2
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.3, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 28
+text = "COOLING DOWN THE SUN..."
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="ProgressBar" type="TextureProgressBar" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(400, 28)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+value = 0.0
+nine_patch_stretch = true
+stretch_margin_left = 6
+stretch_margin_top = 6
+stretch_margin_right = 6
+stretch_margin_bottom = 6
+texture_under = ExtResource("3_bg_tex")
+texture_progress = ExtResource("4_fg_tex")
+tint_progress = Color(0.35, 0.85, 1, 1)
+
+[node name="Tip" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+text = "PREPARING WATER CANNON..."
+horizontal_alignment = 1

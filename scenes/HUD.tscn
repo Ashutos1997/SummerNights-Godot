@@ -1,0 +1,770 @@
+[gd_scene load_steps=10 format=3 uid="uid://d1c2b3a4e5f6g"]
+
+[ext_resource type="Script" path="res://scripts/HUD.gd" id="1_script"]
+[ext_resource type="FontFile" path="res://assets/ui/fonts/Fonts/Kenney Pixel.ttf" id="2_font"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_adventure/PNG/Default/panel_brown.png" id="3_panel"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_adventure/PNG/Default/progress_transparent.png" id="4_prog_bg"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_adventure/PNG/Default/progress_white.png" id="5_prog_fg"]
+[ext_resource type="Texture2D" path="res://assets/ui/crosshairs/PNG/White/crosshair115.png" id="6_crosshair"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_adventure/PNG/Default/progress_red.png" id="7_prog_red"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_adventure/PNG/Default/progress_blue.png" id="8_prog_blue"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.05, 0.02, 0.1, 0.95)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+expand_margin_left = 8.0
+expand_margin_right = 8.0
+expand_margin_top = 4.0
+expand_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sep"]
+bg_color = Color(1, 0.8, 0.2, 0.3)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_panel"]
+texture = ExtResource("3_panel")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 10.0
+texture_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_panel_hud"]
+texture = ExtResource("3_panel")
+texture_margin_left = 8.0
+texture_margin_top = 6.0
+texture_margin_right = 8.0
+texture_margin_bottom = 6.0
+modulate_color = Color(1, 1, 1, 0.75)
+
+[sub_resource type="Theme" id="Theme_hud"]
+default_font = ExtResource("2_font")
+
+[node name="CanvasLayer" type="CanvasLayer"]
+layer = 10
+scale = Vector2(1, 1)
+script = ExtResource("1_script")
+
+[node name="HUD" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_hud")
+
+[node name="SunHeatBar" type="VBoxContainer" parent="HUD"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -150.0
+offset_top = 24.0
+offset_right = 150.0
+offset_bottom = 78.0
+grow_horizontal = 2
+theme_override_constants/separation = 6
+
+[node name="Label" type="Label" parent="HUD/SunHeatBar"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 14
+text = "☀ HEAT"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="HeatBar" type="TextureProgressBar" parent="HUD/SunHeatBar"]
+custom_minimum_size = Vector2(300, 24)
+layout_mode = 2
+value = 50.0
+nine_patch_stretch = true
+stretch_margin_left = 10
+stretch_margin_top = 10
+stretch_margin_right = 10
+stretch_margin_bottom = 10
+texture_under = ExtResource("4_prog_bg")
+texture_progress = ExtResource("7_prog_red")
+
+[node name="WaterBar" type="VBoxContainer" parent="HUD"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -120.0
+offset_top = -68.0
+offset_right = 120.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 6
+
+[node name="Label" type="Label" parent="HUD/WaterBar"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 14
+text = "💧 WATER"
+horizontal_alignment = 1
+
+[node name="WaterBar" type="TextureProgressBar" parent="HUD/WaterBar"]
+custom_minimum_size = Vector2(240, 20)
+layout_mode = 2
+value = 50.0
+nine_patch_stretch = true
+stretch_margin_left = 10
+stretch_margin_top = 10
+stretch_margin_right = 10
+stretch_margin_bottom = 10
+texture_under = ExtResource("4_prog_bg")
+texture_progress = ExtResource("8_prog_blue")
+
+[node name="Crosshair" type="TextureRect" parent="HUD"]
+modulate = Color(0.6, 0.9, 1, 0.9)
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 1
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 48.0
+offset_bottom = 48.0
+texture = ExtResource("6_crosshair")
+expand_mode = 1
+
+[node name="LevelLabel" type="Label" parent="HUD"]
+layout_mode = 1
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 124.0
+offset_bottom = 54.0
+theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 20
+text = "LVL 01"
+
+[node name="SettingsBtn" type="Label" parent="HUD"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = -330.0
+offset_top = 24.0
+offset_right = -170.0
+offset_bottom = 54.0
+grow_horizontal = 0
+mouse_filter = 0
+theme_override_colors/font_color = Color(1, 0.9, 0.3, 0.75)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 22
+text = "SETTINGS"
+horizontal_alignment = 2
+
+[node name="CreditsBtn" type="Label" parent="HUD"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = -160.0
+offset_top = 24.0
+offset_right = -16.0
+offset_bottom = 54.0
+grow_horizontal = 0
+mouse_filter = 0
+theme_override_colors/font_color = Color(1, 0.9, 0.3, 0.75)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 22
+text = "CREDITS"
+horizontal_alignment = 2
+
+[node name="SettingsScreen" type="Control" parent="HUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+visible = false
+mouse_filter = 0
+
+[node name="BG" type="ColorRect" parent="HUD/SettingsScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.02, 0.01, 0.05, 0.96)
+
+[node name="CenterContainer" type="CenterContainer" parent="HUD/SettingsScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/SettingsScreen/CenterContainer"]
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 28
+
+[node name="Title" type="Label" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
+theme_override_font_sizes/font_size = 48
+text = "SETTINGS"
+horizontal_alignment = 1
+
+[node name="Divider" type="Label" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.3, 0.65)
+theme_override_font_sizes/font_size = 12
+text = "────────────────────────────────"
+horizontal_alignment = 1
+
+[node name="SpacerTitle" type="Control" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="RowSFX" type="HBoxContainer" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer/RowSFX"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 0.75)
+theme_override_font_sizes/font_size = 24
+text = "SFX VOLUME"
+vertical_alignment = 1
+
+[node name="Slider" type="HSlider" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer/RowSFX"]
+custom_minimum_size = Vector2(240, 32)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+mouse_filter = 0
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="RowSens" type="HBoxContainer" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer/RowSens"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 0.75)
+theme_override_font_sizes/font_size = 24
+text = "MOUSE SENS"
+vertical_alignment = 1
+
+[node name="Slider" type="HSlider" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer/RowSens"]
+custom_minimum_size = Vector2(240, 32)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+mouse_filter = 0
+min_value = 0.1
+max_value = 2.0
+step = 0.1
+value = 1.0
+
+[node name="RowMotion" type="HBoxContainer" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer/RowMotion"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 0.75)
+theme_override_font_sizes/font_size = 24
+text = "REDUCE MOTION"
+vertical_alignment = 1
+
+[node name="Check" type="Button" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer/RowMotion"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+mouse_filter = 0
+toggle_mode = true
+text = "OFF"
+
+[node name="RowFullscreen" type="HBoxContainer" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer/RowFullscreen"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 0.75)
+theme_override_font_sizes/font_size = 24
+text = "FULLSCREEN"
+vertical_alignment = 1
+
+[node name="Check" type="Button" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer/RowFullscreen"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+mouse_filter = 0
+toggle_mode = true
+text = "OFF"
+
+[node name="SpacerPrompt" type="Control" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Divider2" type="Label" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.3, 0.65)
+theme_override_font_sizes/font_size = 12
+text = "────────────────────────────────"
+horizontal_alignment = 1
+
+[node name="BackBtn" type="Button" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(160, 44)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 0
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 0.8)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 20
+text = "← BACK"
+
+[node name="ClosePrompt" type="Label" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 0.35)
+theme_override_font_sizes/font_size = 14
+text = "PRESS ESC TO CLOSE"
+horizontal_alignment = 1
+
+[node name="WinScreen" type="Control" parent="HUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="ColorRect" type="ColorRect" parent="HUD/WinScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.02, 0.01, 0.05, 0.96)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/WinScreen/ColorRect"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -60.0
+offset_right = 200.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="HUD/WinScreen/ColorRect/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.2, 1)
+theme_override_font_sizes/font_size = 26
+text = "☀ SUN COOLED DOWN"
+horizontal_alignment = 1
+
+[node name="LevelLbl" type="Label" parent="HUD/WinScreen/ColorRect/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 13
+text = "LEVEL 01 COMPLETE"
+horizontal_alignment = 1
+
+[node name="LoadingLbl" type="Label" parent="HUD/WinScreen/ColorRect/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "Next level loading..."
+horizontal_alignment = 1
+
+[node name="EndScreen" type="Control" parent="HUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+visible = false
+mouse_filter = 2
+
+[node name="ColorRect" type="ColorRect" parent="HUD/EndScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.02, 0.01, 0.05, 0.96)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/EndScreen/ColorRect"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -140.0
+offset_right = 300.0
+offset_bottom = 140.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
+theme_override_font_sizes/font_size = 64
+text = "☀ SUMMER COOLED DOWN"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 22
+text = "YOU SAVED THE SEASON"
+horizontal_alignment = 1
+
+[node name="LevelCount" type="Label" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "5 LEVELS COMPLETED"
+horizontal_alignment = 1
+
+[node name="Separator" type="PanelContainer" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+custom_minimum_size = Vector2(200, 1)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_sep")
+
+[node name="RestartPrompt" type="Label" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "PRESS SPACE TO PLAY AGAIN"
+horizontal_alignment = 1
+
+[node name="CreditsScreen" type="Control" parent="HUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+visible = false
+mouse_filter = 0
+
+[node name="BG" type="ColorRect" parent="HUD/CreditsScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.02, 0.01, 0.05, 0.96)
+
+[node name="CenterContainer" type="CenterContainer" parent="HUD/CreditsScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/CreditsScreen/CenterContainer"]
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="Title" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.2, 1)
+theme_override_font_sizes/font_size = 32
+text = "CREDITS"
+horizontal_alignment = 1
+
+[node name="Divider" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.3, 0.3)
+theme_override_font_sizes/font_size = 12
+text = "────────────────────────────────"
+horizontal_alignment = 1
+
+[node name="Spacer0" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+custom_minimum_size = Vector2(0, 6)
+
+[node name="Hdr3D" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 13
+text = "3D MODELS"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="Itm3D1" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "3D Blaster (Gun Model)  ·  Kenney  ·  CC0"
+horizontal_alignment = 1
+
+[node name="Itm3D2" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "PS1 Style Low Poly Sun  ·  Sketchfab  ·  CC0"
+horizontal_alignment = 1
+
+[node name="Spacer1" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+custom_minimum_size = Vector2(0, 8)
+
+[node name="HdrAudio" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 13
+text = "AUDIO"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="ItmAudio1" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "Water gun #2  ·  BigSoundBank  ·  CC0"
+horizontal_alignment = 1
+
+[node name="ItmAudio2" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "40 CC0 Water SFX  ·  OpenGameArt  ·  CC0"
+horizontal_alignment = 1
+
+[node name="ItmAudio3" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "Kenney UI Audio Pack  ·  kenney.nl  ·  CC0"
+horizontal_alignment = 1
+
+[node name="Spacer2" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 8)
+
+[node name="HdrUI" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 13
+text = "UI & FONT"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="ItmUI1" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "Kenney UI Pack Adventure  ·  kenney.nl  ·  CC0"
+horizontal_alignment = 1
+
+[node name="ItmUI2" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "Kenney Future Font  ·  kenney.nl  ·  CC0"
+horizontal_alignment = 1
+
+[node name="Spacer3" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 8)
+
+[node name="HdrEnv" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 13
+text = "ENVIRONMENT"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="ItmEnv" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "Ultimate Stylized Nature (asset pack)"
+horizontal_alignment = 1
+
+[node name="ItmSkyShader" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "Stylized Sky Shader  ·  MinionsArt  ·  CC0"
+horizontal_alignment = 1
+
+[node name="ItmClouds" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "Procedural 3D Low-Poly Clouds  ·  Drifting Sky Layer"
+horizontal_alignment = 1
+
+[node name="ItmSeagulls" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "Procedural 3D Low-Poly Seagulls  ·  Horizon Aviary Layer"
+horizontal_alignment = 1
+
+[node name="ItmWaterShader" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "Stylized Water Shader  ·  Jtfinlay  ·  MIT"
+horizontal_alignment = 1
+
+[node name="ItmHazeShader" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "Heat Haze screen distortion  ·  MinionsArt  ·  CC0"
+horizontal_alignment = 1
+
+[node name="Spacer4" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+custom_minimum_size = Vector2(0, 8)
+
+[node name="HdrEngine" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 13
+text = "ENGINE"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="ItmEngine" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "Godot 4.7  ·  GDScript  ·  Forward+"
+horizontal_alignment = 1
+
+[node name="Spacer5" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+custom_minimum_size = Vector2(0, 6)
+
+[node name="Divider2" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.3, 0.3)
+theme_override_font_sizes/font_size = 12
+text = "────────────────────────────────"
+horizontal_alignment = 1
+
+[node name="BackBtn" type="Button" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(160, 44)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 0
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 0.8)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 20
+text = "← BACK"
+
+[node name="ClosePrompt" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 0.35)
+theme_override_font_sizes/font_size = 14
+text = "PRESS ESC TO CLOSE"
+horizontal_alignment = 1
+
+

@@ -1,0 +1,515 @@
+extends CanvasLayer
+
+signal sensitivity_changed(value: float)
+signal reduce_motion_changed(enabled: bool)
+
+@onready var heat_bar = $HUD/SunHeatBar/HeatBar
+@onready var heat_label = $HUD/SunHeatBar/Label
+@onready var water_bar = $HUD/WaterBar/WaterBar
+@onready var water_label = $HUD/WaterBar/Label
+@onready var crosshair = $HUD/Crosshair
+@onready var win_screen = $HUD/WinScreen
+@onready var level_label = $HUD/LevelLabel
+@onready var win_title_lbl = $HUD/WinScreen/ColorRect/VBoxContainer/Title
+@onready var win_level_lbl = $HUD/WinScreen/ColorRect/VBoxContainer/LevelLbl
+@onready var win_loading_lbl = $HUD/WinScreen/ColorRect/VBoxContainer/LoadingLbl
+@onready var end_screen        = $HUD/EndScreen
+@onready var end_title_lbl     = $HUD/EndScreen/ColorRect/VBoxContainer/Title
+@onready var end_subtitle_lbl  = $HUD/EndScreen/ColorRect/VBoxContainer/Subtitle
+@onready var end_level_lbl     = $HUD/EndScreen/ColorRect/VBoxContainer/LevelCount
+@onready var end_prompt_lbl    = $HUD/EndScreen/ColorRect/VBoxContainer/RestartPrompt
+
+@onready var settings_btn      = $HUD/SettingsBtn
+@onready var settings_screen   = $HUD/SettingsScreen
+@onready var settings_bg       = $HUD/SettingsScreen/BG
+@onready var settings_title    = $HUD/SettingsScreen/CenterContainer/VBoxContainer/Title
+@onready var settings_prompt   = $HUD/SettingsScreen/CenterContainer/VBoxContainer/ClosePrompt
+@onready var sfx_slider        = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowSFX/Slider
+@onready var sens_slider       = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowSens/Slider
+@onready var motion_check      = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowMotion/Check
+@onready var fullscreen_check  = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowFullscreen/Check
+@onready var settings_back_btn = $HUD/SettingsScreen/CenterContainer/VBoxContainer/BackBtn
+
+@onready var credits_btn      = $HUD/CreditsBtn
+@onready var credits_screen   = $HUD/CreditsScreen
+@onready var credits_bg       = $HUD/CreditsScreen/BG
+@onready var credits_title    = $HUD/CreditsScreen/CenterContainer/VBoxContainer/Title
+@onready var credits_prompt   = $HUD/CreditsScreen/CenterContainer/VBoxContainer/ClosePrompt
+@onready var credits_vbox     = $HUD/CreditsScreen/CenterContainer/VBoxContainer
+@onready var credits_back_btn = $HUD/CreditsScreen/CenterContainer/VBoxContainer/BackBtn
+
+var water_tween: Tween
+var hit_tween: Tween
+var heat_tween: Tween
+
+var reduce_motion: bool = false
+var cursor_screen_pos: Vector2 = Vector2.ZERO  # Tracks virtual mouse for captured mode
+var target_heat: float = 100.0
+var target_water: float = 100.0
+
+func _process(delta: float) -> void:
+	if heat_bar:
+		if reduce_motion:
+			heat_bar.value = target_heat
+		else:
+			heat_bar.value = lerp(heat_bar.value, target_heat, 12.0 * delta)
+			
+	if water_bar:
+		if reduce_motion:
+			water_bar.value = target_water
+		else:
+			water_bar.value = lerp(water_bar.value, target_water, 12.0 * delta)
+			
+	# Update top right button hover colors in captured mode
+	if credits_btn and not credits_screen.visible:
+		var btn_rect = credits_btn.get_global_rect()
+		var is_hovered = btn_rect.has_point(cursor_screen_pos)
+		_on_credits_btn_hover(is_hovered)
+		
+	if settings_btn and not settings_screen.visible:
+		var s_rect = settings_btn.get_global_rect()
+		var s_hovered = s_rect.has_point(cursor_screen_pos)
+		_on_settings_btn_hover(s_hovered)
+
+func _ready() -> void:
+	heat_label.scale = Vector2(1.0, 1.0)
+	win_screen.visible = false
+	settings_screen.visible = false
+	credits_screen.visible = false
+	crosshair.pivot_offset = crosshair.size / 2.0
+	win_screen.pivot_offset = get_viewport().get_visible_rect().size / 2.0
+	
+	reduce_motion = GameState.reduce_motion
+	
+	var font = load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+	if font:
+		print("HUD: Kenney Future font successfully loaded.")
+	else:
+		print("HUD Warning: Kenney Future font not found.")
+		
+	_style_lbl(heat_label, 20, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
+	_style_lbl(water_label, 20, Color(0.4, 0.9, 1.0, 1.0), 3, Color.BLACK, font)
+	_style_lbl(level_label, 22, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
+	
+	var lvl_sz = level_label.get_theme_font_size("font_size")
+	print("LVL label font size: ", lvl_sz)
+	
+	# Top right buttons — match LVL label font size (22px) exactly, WCAG contrast 13.4:1
+	_style_lbl(credits_btn, lvl_sz, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
+	_style_lbl(settings_btn, lvl_sz, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
+
+	# Win screen labels — matches Credits title (32), section header (20), and body (16)
+	_style_lbl(win_title_lbl, 32, Color(1.0, 0.9, 0.2, 1.0), 4, Color(0.0, 0.0, 0.0, 1.0), font)
+	_style_lbl(win_level_lbl, 20, Color(1.0, 0.85, 0.2, 1.0), 4, Color(0.0, 0.0, 0.0, 1.0), font)
+	_style_lbl(win_loading_lbl, 16, Color(1.0, 1.0, 1.0, 1.0), 3, Color.BLACK, font)
+	
+	# End screen labels — match Title screen (64 / 22 / 16 / 16)
+	_style_lbl(end_title_lbl, 64, Color(1.0, 0.8, 0.2, 1.0), 3, Color.BLACK, font, 4)
+	_style_lbl(end_subtitle_lbl, 22, Color(1.0, 0.85, 0.2, 1.0), 2, Color.BLACK, font)
+	_style_lbl(end_level_lbl, 16, Color(1.0, 1.0, 1.0, 1.0), 1, Color.BLACK, font)
+	_style_lbl(end_prompt_lbl, 16, Color(1.0, 1.0, 1.0, 1.0), 2, Color.BLACK, font)
+	if end_prompt_lbl and not reduce_motion:
+		var p_tw = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		p_tw.tween_property(end_prompt_lbl, "modulate:a", 0.7, 1.2)
+		p_tw.tween_property(end_prompt_lbl, "modulate:a", 1.0, 1.2)
+	elif end_prompt_lbl:
+		end_prompt_lbl.modulate.a = 1.0
+	
+	# Settings & Credits titles — 48px / 32px WCAG contrast (13.6:1)
+	_style_lbl(settings_title, 48, Color(1.0, 0.88, 0.3, 1.0), 3, Color.BLACK, font)
+	_style_lbl(credits_title, 32, Color(1.0, 0.88, 0.3, 1.0), 4, Color.BLACK, font)
+	
+	# Close Prompts — Settings and Credits (WCAG 10.7:1 PASS)
+	for p_lbl in [settings_prompt, credits_prompt]:
+		if p_lbl:
+			_style_lbl(p_lbl, 14, Color(1.0, 0.88, 0.3, 0.85), 1, Color.BLACK, font)
+			if not reduce_motion:
+				var sp_tw = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+				sp_tw.tween_property(p_lbl, "modulate:a", 0.7, 1.2)
+				sp_tw.tween_property(p_lbl, "modulate:a", 1.0, 1.2)
+			else:
+				p_lbl.modulate.a = 1.0
+
+	# Row Labels styling (13.4:1 contrast PASS)
+	for row_name in ["RowSFX", "RowSens", "RowMotion", "RowFullscreen"]:
+		var r_node = $HUD/SettingsScreen/CenterContainer/VBoxContainer.get_node_or_null(row_name)
+		if r_node:
+			var r_lbl = r_node.get_node_or_null("Label")
+			if r_lbl:
+				_style_lbl(r_lbl, 24, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
+
+	# Slider texture overrides
+	var grab_tex = load("res://assets/ui/kenney_ui_pack/slide_hangle.png")
+	if grab_tex:
+		sfx_slider.add_theme_icon_override("grabber", grab_tex)
+		sfx_slider.add_theme_icon_override("grabber_highlight", grab_tex)
+		sens_slider.add_theme_icon_override("grabber", grab_tex)
+		sens_slider.add_theme_icon_override("grabber_highlight", grab_tex)
+
+	# Style Back buttons (transparent background, amber outline, 13.4:1 contrast, 160x44px, 20px font)
+	var style_back = StyleBoxFlat.new()
+	style_back.bg_color = Color(0, 0, 0, 0)
+	style_back.border_color = Color(1.0, 0.88, 0.3, 0.7)
+	style_back.set_border_width_all(1)
+	style_back.set_corner_radius_all(4)
+
+	var style_back_hover = StyleBoxFlat.new()
+	style_back_hover.bg_color = Color(1.0, 0.88, 0.3, 0.15)
+	style_back_hover.border_color = Color(1.0, 0.88, 0.3, 1.0)
+	style_back_hover.set_border_width_all(1)
+	style_back_hover.set_corner_radius_all(4)
+
+	for btn in [settings_back_btn, credits_back_btn]:
+		if btn:
+			if font: btn.add_theme_font_override("font", font)
+			btn.add_theme_font_size_override("font_size", 20)
+			btn.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 0.95))
+			btn.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 0.6, 1.0))
+			btn.add_theme_constant_override("outline_size", 2)
+			btn.add_theme_color_override("font_outline_color", Color.BLACK)
+			btn.add_theme_stylebox_override("normal", style_back)
+			btn.add_theme_stylebox_override("hover", style_back_hover)
+			btn.add_theme_stylebox_override("pressed", style_back_hover)
+			btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+
+	# Style Toggle Buttons (OFF / ON - High WCAG Contrast 11.7:1 OFF / 13.6:1 ON)
+	var style_btn_off = StyleBoxFlat.new()
+	style_btn_off.bg_color = Color(0, 0, 0, 0.4)
+	style_btn_off.border_color = Color(1.0, 0.88, 0.3, 0.4)
+	style_btn_off.set_border_width_all(1)
+	style_btn_off.set_corner_radius_all(4)
+
+	var style_btn_on = StyleBoxFlat.new()
+	style_btn_on.bg_color = Color(1.0, 0.88, 0.3, 0.25)
+	style_btn_on.border_color = Color(1.0, 0.88, 0.3, 1.0)
+	style_btn_on.set_border_width_all(1)
+	style_btn_on.set_corner_radius_all(4)
+
+	for btn in [motion_check, fullscreen_check]:
+		if btn:
+			if font: btn.add_theme_font_override("font", font)
+			btn.add_theme_font_size_override("font_size", 18)
+			btn.add_theme_constant_override("outline_size", 2)
+			btn.add_theme_color_override("font_outline_color", Color.BLACK)
+			btn.add_theme_stylebox_override("normal", style_btn_off)
+			btn.add_theme_stylebox_override("hover", style_btn_off)
+			btn.add_theme_stylebox_override("pressed", style_btn_on)
+			btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+
+	# Apply GameState values to controls
+	sfx_slider.value = GameState.sfx_volume
+	sens_slider.value = GameState.mouse_sensitivity
+	motion_check.button_pressed = GameState.reduce_motion
+	fullscreen_check.button_pressed = GameState.fullscreen
+
+	# Connect control signals
+	sfx_slider.value_changed.connect(_on_sfx_volume_changed)
+	sens_slider.value_changed.connect(_on_sens_changed)
+	motion_check.toggled.connect(_on_motion_toggled)
+	fullscreen_check.toggled.connect(_on_fullscreen_toggled)
+	
+	if settings_back_btn:
+		settings_back_btn.pressed.connect(_close_settings)
+	if credits_back_btn:
+		credits_back_btn.pressed.connect(_close_credits)
+
+	# Apply initial values
+	_on_sfx_volume_changed(GameState.sfx_volume)
+	_on_sens_changed(GameState.mouse_sensitivity)
+	_on_motion_toggled(GameState.reduce_motion)
+	_on_fullscreen_toggled(GameState.fullscreen)
+	
+	# Credits screen labels styling
+	if credits_vbox:
+		for child in credits_vbox.get_children():
+			if child is Label and child.name != "Title" and child.name != "ClosePrompt" and not child.name.begins_with("Divider"):
+				if font: child.add_theme_font_override("font", font)
+				var sz = 20 if child.name.begins_with("Hdr") else 16
+				child.add_theme_font_size_override("font_size", sz)
+				child.add_theme_constant_override("outline_size",
+					4 if child.name.begins_with("Hdr") else 3)
+				child.add_theme_color_override("font_outline_color", Color(0,0,0,1))
+			elif child is Label and child.name.begins_with("Divider"):
+				child.add_theme_color_override("font_color", Color(1.0, 0.9, 0.3, 0.65))
+	
+	# Top right button hover/input connections
+	credits_btn.mouse_entered.connect(_on_credits_btn_hover.bind(true))
+	credits_btn.mouse_exited.connect(_on_credits_btn_hover.bind(false))
+	credits_btn.gui_input.connect(_on_credits_btn_input)
+
+	settings_btn.mouse_entered.connect(_on_settings_btn_hover.bind(true))
+	settings_btn.mouse_exited.connect(_on_settings_btn_hover.bind(false))
+	settings_btn.gui_input.connect(_on_settings_btn_input)
+
+	# Accessibility Metadata
+	heat_bar.set_meta("accessible_name", "Sun heat level")
+	water_bar.set_meta("accessible_name", "Water gun level")  
+	level_label.set_meta("accessible_name", "Current level")
+	crosshair.set_meta("accessible_name", "Crosshair")
+	win_screen.set_meta("accessible_name", "Level complete screen")
+	settings_screen.set_meta("accessible_name", "Settings screen")
+	credits_screen.set_meta("accessible_name", "Credits screen")
+	
+	_audit_labels()
+
+func _update_toggle_btn(btn: Button, enabled: bool) -> void:
+	if not btn: return
+	btn.button_pressed = enabled
+	if enabled:
+		btn.text = "ON"
+		btn.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 1.0))
+		btn.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 0.6, 1.0))
+	else:
+		btn.text = "OFF"
+		btn.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9, 0.85))
+		btn.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 1.0, 1.0))
+
+func _on_sfx_volume_changed(val: float) -> void:
+	GameState.sfx_volume = val
+	var db_val = linear_to_db(val)
+	var idx1 = AudioServer.get_bus_index("SFX_WEAPON")
+	if idx1 != -1: AudioServer.set_bus_volume_db(idx1, db_val)
+	var idx2 = AudioServer.get_bus_index("SFX_UI")
+	if idx2 != -1: AudioServer.set_bus_volume_db(idx2, db_val)
+
+func _on_sens_changed(val: float) -> void:
+	GameState.mouse_sensitivity = val
+	sensitivity_changed.emit(val)
+
+func _on_motion_toggled(enabled: bool) -> void:
+	GameState.reduce_motion = enabled
+	reduce_motion = enabled
+	reduce_motion_changed.emit(enabled)
+	_update_toggle_btn(motion_check, enabled)
+
+func _on_fullscreen_toggled(toggled: bool) -> void:
+	GameState.fullscreen = toggled
+	_update_toggle_btn(fullscreen_check, toggled)
+	if toggled:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+	else:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+
+func _audit_labels() -> void:
+	_register_labels_recursive(self)
+	print("--- HUD LABEL AUDIT ---")
+	for label in get_tree().get_nodes_in_group("labels"):
+		if label.is_inside_tree() and (label.get_tree().current_scene == self or label.get_parent() != null):
+			var sz = label.get_theme_font_size("font_size")
+			print(label.name, " font_size: ", sz)
+
+func _register_labels_recursive(node: Node) -> void:
+	if node is Label:
+		if not node.is_in_group("labels"):
+			node.add_to_group("labels")
+	for child in node.get_children():
+		_register_labels_recursive(child)
+
+func _style_lbl(lbl: Label, size: int, color: Color, out_size: int, out_color: Color, font: Font = null, letter_space: int = 0) -> void:
+	if not lbl: return
+	if font:
+		lbl.add_theme_font_override("font", font)
+	lbl.add_theme_font_size_override("font_size", size)
+	lbl.add_theme_color_override("font_color", color)
+	if out_size > 0:
+		lbl.add_theme_constant_override("outline_size", out_size)
+		lbl.add_theme_color_override("font_outline_color", out_color)
+	if letter_space > 0:
+		lbl.add_theme_constant_override("letter_spacing", letter_space)
+
+func _on_heat_changed(value: float, max_value: float) -> void:
+	heat_bar.max_value = max_value
+	target_heat = value
+	
+	var ratio = value / max_value
+	if ratio > 0.66:
+		heat_bar.tint_progress = Color(1.0, 0.3, 0.1) # hot red-orange
+	elif ratio > 0.33:
+		heat_bar.tint_progress = Color(1.0, 0.65, 0.1) # amber
+	else:
+		heat_bar.tint_progress = Color(0.4, 0.9, 0.4) # cool green
+
+func _on_water_changed(value: float, max_value: float) -> void:
+	water_bar.max_value = max_value
+	target_water = value
+	
+	var ratio = value / max_value
+	if ratio < 0.2:
+		if reduce_motion:
+			water_bar.tint_progress = Color(1.0, 0.2, 0.2, 1.0)
+			water_bar.modulate.a = 1.0
+		else:
+			water_bar.tint_progress = Color(0.3, 0.75, 1.0)
+			if not is_instance_valid(water_tween) or not water_tween.is_running():
+				water_tween = create_tween()
+				water_tween.set_loops()
+				water_tween.tween_property(water_bar, "modulate:a", 0.4, 0.4)
+				water_tween.tween_property(water_bar, "modulate:a", 1.0, 0.4)
+	else:
+		water_bar.tint_progress = Color(0.3, 0.75, 1.0)
+		if is_instance_valid(water_tween):
+			water_tween.kill()
+		water_bar.modulate.a = 1.0
+
+func _on_crosshair_moved(screen_pos: Vector2, is_behind: bool) -> void:
+	crosshair.visible = not is_behind
+	var viewport_size = get_viewport().get_visible_rect().size
+	var target_pos = screen_pos - crosshair.size * 0.5
+	target_pos.x = clamp(target_pos.x, 0, viewport_size.x - crosshair.size.x)
+	target_pos.y = clamp(target_pos.y, 0, viewport_size.y - crosshair.size.y)
+	crosshair.set_deferred("position", target_pos)
+	
+	# Align virtual cursor exactly to the center of the visual crosshair
+	cursor_screen_pos = target_pos + crosshair.size * 0.5
+
+func _on_projectile_hit() -> void:
+	if reduce_motion:
+		if is_instance_valid(hit_tween): hit_tween.kill()
+		hit_tween = create_tween()
+		crosshair.modulate.a = 1.0
+		hit_tween.tween_property(crosshair, "modulate:a", 0.5, 0.1)
+		return
+
+	if is_instance_valid(hit_tween):
+		hit_tween.kill()
+	hit_tween = create_tween()
+	hit_tween.tween_property(crosshair, "scale", Vector2(1.4, 1.4), 0.08)
+	hit_tween.tween_property(crosshair, "scale", Vector2(1.0, 1.0), 0.12)
+
+func _on_critical_hit() -> void:
+	if reduce_motion:
+		if is_instance_valid(hit_tween): hit_tween.kill()
+		hit_tween = create_tween()
+		crosshair.modulate = Color(1.0, 0.95, 0.4, 1.0)
+		hit_tween.tween_property(crosshair, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.15)
+		return
+
+	if is_instance_valid(hit_tween):
+		hit_tween.kill()
+	hit_tween = create_tween()
+	crosshair.modulate = Color(1.0, 0.95, 0.4, 1.0)
+	hit_tween.tween_property(crosshair, "scale", Vector2(1.8, 1.8), 0.08)
+	hit_tween.tween_property(crosshair, "scale", Vector2(1.0, 1.0), 0.12)
+	hit_tween.tween_property(crosshair, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
+
+func _on_sun_defeated(level: int) -> void:
+	level_label.text = "LVL  %02d" % level
+	if win_level_lbl:
+		win_level_lbl.text = "LEVEL %02d COMPLETE" % level
+	
+	win_screen.visible = true
+	win_screen.modulate.a = 0.0
+	win_screen.scale = Vector2(1.0, 1.0)
+	
+	var tw = create_tween()
+	tw.set_ease(Tween.EASE_OUT)
+	tw.set_trans(Tween.TRANS_SINE)
+	tw.tween_property(win_screen, "modulate:a", 1.0, 0.35)
+		
+	await get_tree().create_timer(2.5).timeout
+	if win_screen.visible:
+		var hide_tw = create_tween()
+		hide_tw.tween_property(win_screen, "modulate:a", 0.0, 0.3)
+		hide_tw.tween_callback(func(): win_screen.visible = false)
+
+func show_end_screen() -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	if win_screen: win_screen.visible = false
+	if credits_screen: credits_screen.visible = false
+	if settings_screen: settings_screen.visible = false
+	end_screen.visible = true
+	end_screen.modulate.a = 0.0
+	var tw = create_tween()
+	tw.set_ease(Tween.EASE_OUT)
+	tw.tween_property(end_screen, "modulate:a", 1.0, 0.4)
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+		if settings_screen and settings_screen.visible:
+			_close_settings()
+			get_viewport().set_input_as_handled()
+			return
+		elif credits_screen and credits_screen.visible:
+			_close_credits()
+			get_viewport().set_input_as_handled()
+			return
+
+	if end_screen and end_screen.visible:
+		if (event is InputEventKey and event.pressed and event.keycode == KEY_SPACE) or (event is InputEventMouseButton and event.pressed):
+			GameState.reset()
+			get_tree().change_scene_to_file("res://scenes/TitleScreen.tscn")
+			get_viewport().set_input_as_handled()
+			return
+			
+	# Handle top right button clicks in captured mouse mode via virtual cursor position
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if not settings_screen.visible and not credits_screen.visible:
+			var s_rect = settings_btn.get_global_rect()
+			if s_rect.has_point(cursor_screen_pos):
+				_open_settings()
+				get_viewport().set_input_as_handled()
+				return
+			var c_rect = credits_btn.get_global_rect()
+			if c_rect.has_point(cursor_screen_pos):
+				_open_credits()
+				get_viewport().set_input_as_handled()
+				return
+
+func _on_settings_btn_hover(hovered: bool) -> void:
+	if hovered:
+		settings_btn.add_theme_color_override("font_color", Color(1.0, 1.0, 0.6, 1.0))
+	else:
+		settings_btn.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 0.95))
+
+func _on_settings_btn_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_open_settings()
+
+func _open_settings() -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	if credits_screen: credits_screen.visible = false
+	settings_screen.visible = true
+	settings_screen.modulate.a = 0.0
+	var tw = create_tween()
+	tw.set_ease(Tween.EASE_OUT)
+	tw.tween_property(settings_screen, "modulate:a", 1.0, 0.3)
+
+func _close_settings() -> void:
+	var tw = create_tween()
+	tw.tween_property(settings_screen, "modulate:a", 0.0, 0.2)
+	tw.tween_callback(func():
+		settings_screen.visible = false
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	)
+
+func _on_credits_btn_hover(hovered: bool) -> void:
+	if hovered:
+		credits_btn.add_theme_color_override("font_color", Color(1.0, 1.0, 0.6, 1.0))
+	else:
+		credits_btn.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 0.95))
+
+func _on_credits_btn_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_open_credits()
+
+func _open_credits() -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	if settings_screen: settings_screen.visible = false
+	credits_screen.visible = true
+	credits_screen.modulate.a = 0.0
+	var tw = create_tween()
+	tw.set_ease(Tween.EASE_OUT)
+	tw.tween_property(credits_screen, "modulate:a", 1.0, 0.25)
+
+func _close_credits() -> void:
+	var tw = create_tween()
+	tw.tween_property(credits_screen, "modulate:a", 0.0, 0.2)
+	tw.tween_callback(func():
+		credits_screen.visible = false
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	)
+
+func hide_win_screen() -> void:
+	if win_screen:
+		win_screen.visible = false
+		win_screen.modulate.a = 0.0

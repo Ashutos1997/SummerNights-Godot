@@ -1,0 +1,13 @@
+# Godot 4 internal cache and imported textures
+.godot/
+
+# Exported binary build output directories
+builds/
+*.pck
+*.zip
+*.dmg
+*.exe
+
+# OS metadata
+.DS_Store
+*.tmp
