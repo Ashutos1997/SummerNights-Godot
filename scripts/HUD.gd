@@ -32,7 +32,8 @@ signal reduce_motion_changed(enabled: bool)
 
 var kenney_font: Font
 var galmuri_font: Font
-var lang_option: OptionButton
+var lang_btn_en: Button
+var lang_btn_kr: Button
 
 @onready var credits_btn      = $HUD/CreditsBtn
 @onready var credits_screen   = $HUD/CreditsScreen
@@ -214,8 +215,6 @@ func _ready() -> void:
 	sens_slider.value = GameState.mouse_sensitivity
 	motion_check.button_pressed = GameState.reduce_motion
 	fullscreen_check.button_pressed = GameState.fullscreen
-	if lang_option:
-		lang_option.selected = 1 if GameState.language == "KR" else 0
 
 	# Connect control signals
 	sfx_slider.value_changed.connect(_on_sfx_volume_changed)
@@ -274,7 +273,7 @@ func _build_lang_row(font: Font) -> void:
 	var vbox = $HUD/SettingsScreen/CenterContainer/VBoxContainer
 	if not vbox: return
 
-	# Hide the divider and spacer that separate BackBtn — we slot in right above BackBtn
+	# Hide divider and spacer so language row flows flush with other rows
 	var divider2 = vbox.get_node_or_null("Divider2")
 	if divider2: divider2.visible = false
 	var spacer_prompt = vbox.get_node_or_null("SpacerPrompt")
@@ -292,39 +291,50 @@ func _build_lang_row(font: Font) -> void:
 	_style_lbl(lbl, 24, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
 	row.add_child(lbl)
 
-	var opt = OptionButton.new()
-	opt.name = "OptionButton"
-	opt.add_item("EN", 0)
-	opt.add_item("한국어", 1)
-	opt.selected = 1 if GameState.language == "KR" else 0
-	opt.size_flags_horizontal = Control.SIZE_SHRINK_END
-	opt.custom_minimum_size = Vector2(140, 40)
-	opt.alignment = HORIZONTAL_ALIGNMENT_CENTER
-	if font: opt.add_theme_font_override("font", font)
-	opt.add_theme_font_size_override("font_size", 18)
-	opt.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 0.95))
-	opt.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 0.6, 1.0))
-	opt.add_theme_constant_override("outline_size", 1)
-	opt.add_theme_color_override("font_outline_color", Color.BLACK)
-	opt.add_theme_constant_override("h_separation", 10)
-	var opt_style = StyleBoxFlat.new()
-	opt_style.bg_color = Color(0, 0, 0, 0.4)
-	opt_style.border_color = Color(1.0, 0.88, 0.3, 0.7)
-	opt_style.set_border_width_all(1)
-	opt_style.set_corner_radius_all(4)
-	opt_style.content_margin_left = 12.0
-	opt_style.content_margin_right = 12.0
-	opt_style.content_margin_top = 6.0
-	opt_style.content_margin_bottom = 6.0
-	opt.add_theme_stylebox_override("normal", opt_style)
-	opt.add_theme_stylebox_override("hover", opt_style)
-	opt.add_theme_stylebox_override("pressed", opt_style)
-	opt.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
-	opt.item_selected.connect(_on_language_changed)
-	row.add_child(opt)
-	lang_option = opt
+	# ENG | KOR inline toggle (matches ON/OFF button visual language)
+	var toggle_box = HBoxContainer.new()
+	toggle_box.add_theme_constant_override("separation", 0)
+	toggle_box.size_flags_horizontal = Control.SIZE_SHRINK_END
 
-	# Insert right before BackBtn (after existing rows, no divider)
+	# ENG button
+	var btn_en = Button.new()
+	btn_en.name = "LangEN"
+	btn_en.text = "ENG"
+	if kenney_font: btn_en.add_theme_font_override("font", kenney_font)
+	btn_en.add_theme_font_size_override("font_size", 18)
+	btn_en.add_theme_constant_override("outline_size", 1)
+	btn_en.add_theme_color_override("font_outline_color", Color.BLACK)
+	btn_en.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	btn_en.add_theme_stylebox_override("hover", StyleBoxEmpty.new())
+	btn_en.pressed.connect(func(): _on_language_toggle("EN"))
+	toggle_box.add_child(btn_en)
+	lang_btn_en = btn_en
+
+	# Separator
+	var sep = Label.new()
+	sep.text = " | "
+	if kenney_font: sep.add_theme_font_override("font", kenney_font)
+	sep.add_theme_font_size_override("font_size", 18)
+	sep.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 0.35))
+	toggle_box.add_child(sep)
+
+	# KOR button
+	var btn_kr = Button.new()
+	btn_kr.name = "LangKR"
+	btn_kr.text = "KOR"
+	if kenney_font: btn_kr.add_theme_font_override("font", kenney_font)
+	btn_kr.add_theme_font_size_override("font_size", 18)
+	btn_kr.add_theme_constant_override("outline_size", 1)
+	btn_kr.add_theme_color_override("font_outline_color", Color.BLACK)
+	btn_kr.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	btn_kr.add_theme_stylebox_override("hover", StyleBoxEmpty.new())
+	btn_kr.pressed.connect(func(): _on_language_toggle("KR"))
+	toggle_box.add_child(btn_kr)
+	lang_btn_kr = btn_kr
+
+	row.add_child(toggle_box)
+
+	# Insert right before BackBtn
 	var back_btn = vbox.get_node_or_null("BackBtn")
 	if back_btn:
 		vbox.add_child(row)
@@ -332,37 +342,44 @@ func _build_lang_row(font: Font) -> void:
 	else:
 		vbox.add_child(row)
 
-	# Style the popup dropdown to match the panel aesthetic
-	call_deferred("_style_lang_popup", opt, font)
+func _update_lang_toggle(is_kr: bool) -> void:
+	var style_active := StyleBoxFlat.new()
+	style_active.bg_color = Color(1.0, 0.88, 0.3, 0.22)
+	style_active.border_color = Color(1.0, 0.88, 0.3, 1.0)
+	style_active.set_border_width_all(1)
+	style_active.set_corner_radius_all(4)
+	style_active.content_margin_left = 12
+	style_active.content_margin_right = 12
+	style_active.content_margin_top = 4
+	style_active.content_margin_bottom = 4
 
-func _style_lang_popup(opt: OptionButton, font: Font) -> void:
-	var popup := opt.get_popup()
-	if not popup: return
-	if font: popup.add_theme_font_override("font", font)
-	popup.add_theme_font_size_override("font_size", 20)
-	popup.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 0.95))
-	popup.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 0.6, 1.0))
-	popup.add_theme_constant_override("item_start_padding", 16)
-	popup.add_theme_constant_override("item_end_padding", 16)
-	popup.add_theme_constant_override("v_separation", 10)
-	var panel_style := StyleBoxFlat.new()
-	panel_style.bg_color = Color(0.05, 0.04, 0.14, 0.97)
-	panel_style.border_color = Color(1.0, 0.88, 0.3, 0.7)
-	panel_style.set_border_width_all(1)
-	panel_style.set_corner_radius_all(4)
-	panel_style.content_margin_left = 4.0
-	panel_style.content_margin_right = 4.0
-	panel_style.content_margin_top = 4.0
-	panel_style.content_margin_bottom = 4.0
-	popup.add_theme_stylebox_override("panel", panel_style)
-	var hover_style := StyleBoxFlat.new()
-	hover_style.bg_color = Color(1.0, 0.88, 0.3, 0.15)
-	hover_style.set_corner_radius_all(3)
-	popup.add_theme_stylebox_override("hover", hover_style)
+	var style_idle := StyleBoxFlat.new()
+	style_idle.bg_color = Color(0, 0, 0, 0)
+	style_idle.set_border_width_all(0)
+	style_idle.content_margin_left = 12
+	style_idle.content_margin_right = 12
+	style_idle.content_margin_top = 4
+	style_idle.content_margin_bottom = 4
 
-func _on_language_changed(idx: int) -> void:
-	GameState.language = "KR" if idx == 1 else "EN"
-	_apply_language(GameState.language)
+	if lang_btn_en:
+		lang_btn_en.add_theme_stylebox_override("normal", style_active if not is_kr else style_idle)
+		lang_btn_en.add_theme_stylebox_override("pressed", style_active if not is_kr else style_idle)
+		lang_btn_en.add_theme_color_override("font_color",
+			Color(1.0, 0.88, 0.3, 1.0) if not is_kr else Color(0.85, 0.85, 0.85, 0.45))
+		lang_btn_en.add_theme_color_override("font_hover_color",
+			Color(1.0, 1.0, 0.6, 1.0) if not is_kr else Color(1.0, 1.0, 1.0, 0.7))
+
+	if lang_btn_kr:
+		lang_btn_kr.add_theme_stylebox_override("normal", style_active if is_kr else style_idle)
+		lang_btn_kr.add_theme_stylebox_override("pressed", style_active if is_kr else style_idle)
+		lang_btn_kr.add_theme_color_override("font_color",
+			Color(1.0, 0.88, 0.3, 1.0) if is_kr else Color(0.85, 0.85, 0.85, 0.45))
+		lang_btn_kr.add_theme_color_override("font_hover_color",
+			Color(1.0, 1.0, 0.6, 1.0) if is_kr else Color(1.0, 1.0, 1.0, 0.7))
+
+func _on_language_toggle(lang: String) -> void:
+	GameState.language = lang
+	_apply_language(lang)
 
 func _apply_language(lang: String) -> void:
 	var is_kr := lang == "KR"
@@ -457,10 +474,8 @@ func _apply_language(lang: String) -> void:
 	if end_subtitle_lbl: end_subtitle_lbl.text = "태양이 식었습니다." if is_kr else "The sun has been tamed."
 	if end_prompt_lbl: end_prompt_lbl.text = "클릭 또는 스페이스바로 재시작" if is_kr else "Click or press Space to restart"
 
-	# Update lang option font to match active language
-	if lang_option and font:
-		lang_option.add_theme_font_override("font", font)
-		_style_lang_popup(lang_option, font)
+	# Update lang toggle active state
+	_update_lang_toggle(is_kr)
 
 # ---------- Toggle button ---------------------------------------------------
 
