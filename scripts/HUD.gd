@@ -30,6 +30,10 @@ signal reduce_motion_changed(enabled: bool)
 @onready var fullscreen_check  = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowFullscreen/Check
 @onready var settings_back_btn = $HUD/SettingsScreen/CenterContainer/VBoxContainer/BackBtn
 
+var kenney_font: Font
+var galmuri_font: Font
+var lang_option: OptionButton
+
 @onready var credits_btn      = $HUD/CreditsBtn
 @onready var credits_screen   = $HUD/CreditsScreen
 @onready var credits_bg       = $HUD/CreditsScreen/BG
@@ -81,12 +85,18 @@ func _ready() -> void:
 	
 	reduce_motion = GameState.reduce_motion
 	
-	var font = load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
-	if font:
-		print("HUD: Kenney Future font successfully loaded.")
+	kenney_font = load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+	galmuri_font = load("res://assets/fonts/Galmuri11.ttf")
+	if kenney_font:
+		print("HUD: Kenney Future font loaded.")
 	else:
 		print("HUD Warning: Kenney Future font not found.")
-		
+	if galmuri_font:
+		print("HUD: Galmuri11 font loaded.")
+	else:
+		print("HUD Warning: Galmuri11 font not found.")
+	var font = kenney_font
+	
 	_style_lbl(heat_label, 20, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
 	_style_lbl(water_label, 20, Color(0.4, 0.9, 1.0, 1.0), 3, Color.BLACK, font)
 	_style_lbl(level_label, 22, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
@@ -137,6 +147,9 @@ func _ready() -> void:
 			var r_lbl = r_node.get_node_or_null("Label")
 			if r_lbl:
 				_style_lbl(r_lbl, 24, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
+
+	# Build language row programmatically (below RowFullscreen)
+	_build_lang_row(font)
 
 	# Slider texture overrides
 	var grab_tex = load("res://assets/ui/kenney_ui_pack/slide_hangle.png")
@@ -201,6 +214,8 @@ func _ready() -> void:
 	sens_slider.value = GameState.mouse_sensitivity
 	motion_check.button_pressed = GameState.reduce_motion
 	fullscreen_check.button_pressed = GameState.fullscreen
+	if lang_option:
+		lang_option.selected = 1 if GameState.language == "KR" else 0
 
 	# Connect control signals
 	sfx_slider.value_changed.connect(_on_sfx_volume_changed)
@@ -218,6 +233,7 @@ func _ready() -> void:
 	_on_sens_changed(GameState.mouse_sensitivity)
 	_on_motion_toggled(GameState.reduce_motion)
 	_on_fullscreen_toggled(GameState.fullscreen)
+	_apply_language(GameState.language)
 	
 	# Credits screen labels styling
 	if credits_vbox:
@@ -251,6 +267,140 @@ func _ready() -> void:
 	credits_screen.set_meta("accessible_name", "Credits screen")
 	
 	_audit_labels()
+
+# ---------- Language -------------------------------------------------------
+
+func _build_lang_row(font: Font) -> void:
+	var vbox = $HUD/SettingsScreen/CenterContainer/VBoxContainer
+	if not vbox: return
+
+	var row = HBoxContainer.new()
+	row.name = "RowLanguage"
+	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_theme_constant_override("separation", 16)
+
+	var lbl = Label.new()
+	lbl.name = "Label"
+	lbl.text = "Language"
+	lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_style_lbl(lbl, 24, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
+	row.add_child(lbl)
+
+	var opt = OptionButton.new()
+	opt.name = "OptionButton"
+	opt.add_item("EN", 0)
+	opt.add_item("한국어", 1)
+	opt.selected = 1 if GameState.language == "KR" else 0
+	opt.size_flags_horizontal = Control.SIZE_SHRINK_END
+	opt.custom_minimum_size = Vector2(140, 40)
+	if font: opt.add_theme_font_override("font", font)
+	opt.add_theme_font_size_override("font_size", 18)
+	opt.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 0.95))
+	opt.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 0.6, 1.0))
+	opt.add_theme_constant_override("outline_size", 2)
+	opt.add_theme_color_override("font_outline_color", Color.BLACK)
+	var opt_style = StyleBoxFlat.new()
+	opt_style.bg_color = Color(0, 0, 0, 0.4)
+	opt_style.border_color = Color(1.0, 0.88, 0.3, 0.7)
+	opt_style.set_border_width_all(1)
+	opt_style.set_corner_radius_all(4)
+	opt.add_theme_stylebox_override("normal", opt_style)
+	opt.add_theme_stylebox_override("hover", opt_style)
+	opt.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	opt.item_selected.connect(_on_language_changed)
+	row.add_child(opt)
+	lang_option = opt
+
+	# Insert after RowFullscreen (last child before BackBtn)
+	var back_btn = vbox.get_node_or_null("BackBtn")
+	if back_btn:
+		vbox.add_child(row)
+		vbox.move_child(row, back_btn.get_index())
+	else:
+		vbox.add_child(row)
+
+func _on_language_changed(idx: int) -> void:
+	GameState.language = "KR" if idx == 1 else "EN"
+	_apply_language(GameState.language)
+
+func _apply_language(lang: String) -> void:
+	var is_kr := lang == "KR"
+	var font: Font = galmuri_font if is_kr else kenney_font
+
+	# HUD bars
+	_style_lbl(heat_label, 20, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
+	_style_lbl(water_label, 20, Color(0.4, 0.9, 1.0, 1.0), 3, Color.BLACK, font)
+	_style_lbl(level_label, 22, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
+
+	if heat_label: heat_label.text = "열기" if is_kr else "HEAT"
+	if water_label: water_label.text = "물" if is_kr else "WATER"
+
+	var cur_lvl = GameState.level
+	if level_label:
+		level_label.text = "%02d 단계" % cur_lvl if is_kr else "LVL  %02d" % cur_lvl
+
+	# Settings screen
+	_style_lbl(settings_title, 48, Color(1.0, 0.88, 0.3, 1.0), 3, Color.BLACK, font)
+	if settings_title: settings_title.text = "설정" if is_kr else "SETTINGS"
+
+	# Credits screen
+	_style_lbl(credits_title, 32, Color(1.0, 0.88, 0.3, 1.0), 4, Color.BLACK, font)
+	if credits_title: credits_title.text = "크레딧" if is_kr else "CREDITS"
+
+	# Close prompts
+	for p_lbl in [settings_prompt, credits_prompt]:
+		_style_lbl(p_lbl, 14, Color(1.0, 0.88, 0.3, 0.85), 1, Color.BLACK, font)
+
+	# Settings row labels
+	var row_texts_en := ["SFX Volume", "Sensitivity", "Reduce Motion", "Fullscreen", "Language"]
+	var row_texts_kr := ["효과음 볼륨", "감도", "화면 움직임 감소", "전체 화면", "언어"]
+	var row_names := ["RowSFX", "RowSens", "RowMotion", "RowFullscreen", "RowLanguage"]
+	var vbox = $HUD/SettingsScreen/CenterContainer/VBoxContainer
+	for i in range(row_names.size()):
+		var r_node = vbox.get_node_or_null(row_names[i])
+		if r_node:
+			var r_lbl = r_node.get_node_or_null("Label")
+			if r_lbl:
+				_style_lbl(r_lbl, 24, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
+				r_lbl.text = row_texts_kr[i] if is_kr else row_texts_en[i]
+
+	# Toggle buttons ON/OFF text
+	for btn in [motion_check, fullscreen_check]:
+		if btn:
+			if font: btn.add_theme_font_override("font", font)
+			btn.add_theme_font_size_override("font_size", 18)
+
+	# Back buttons
+	for btn in [settings_back_btn, credits_back_btn]:
+		if btn:
+			if font: btn.add_theme_font_override("font", font)
+			btn.text = "뒤로" if is_kr else "BACK"
+
+	# Top-right HUD buttons
+	_style_lbl(settings_btn, 22, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
+	_style_lbl(credits_btn, 22, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
+
+	# Win screen
+	_style_lbl(win_title_lbl, 32, Color(1.0, 0.9, 0.2, 1.0), 4, Color(0.0, 0.0, 0.0, 1.0), font)
+	_style_lbl(win_level_lbl, 20, Color(1.0, 0.85, 0.2, 1.0), 4, Color(0.0, 0.0, 0.0, 1.0), font)
+	_style_lbl(win_loading_lbl, 16, Color(1.0, 1.0, 1.0, 1.0), 3, Color.BLACK, font)
+	if win_title_lbl: win_title_lbl.text = "냉각 완료!" if is_kr else "COOLED DOWN!"
+	if win_loading_lbl: win_loading_lbl.text = "다음 단계 로딩 중..." if is_kr else "Next level loading..."
+
+	# End screen
+	_style_lbl(end_title_lbl, 64, Color(1.0, 0.8, 0.2, 1.0), 3, Color.BLACK, font, 4)
+	_style_lbl(end_subtitle_lbl, 22, Color(1.0, 0.85, 0.2, 1.0), 2, Color.BLACK, font)
+	_style_lbl(end_level_lbl, 16, Color(1.0, 1.0, 1.0, 1.0), 1, Color.BLACK, font)
+	_style_lbl(end_prompt_lbl, 16, Color(1.0, 1.0, 1.0, 1.0), 2, Color.BLACK, font)
+	if end_title_lbl: end_title_lbl.text = "여름 끝!" if is_kr else "SUMMER'S OVER"
+	if end_subtitle_lbl: end_subtitle_lbl.text = "태양이 식었습니다." if is_kr else "The sun has been tamed."
+	if end_prompt_lbl: end_prompt_lbl.text = "클릭 또는 스페이스바로 재시작" if is_kr else "Click or press Space to restart"
+
+	# Lang option font
+	if lang_option and font:
+		lang_option.add_theme_font_override("font", font)
+
+# ---------- Toggle button ---------------------------------------------------
 
 func _update_toggle_btn(btn: Button, enabled: bool) -> void:
 	if not btn: return

@@ -1,3 +1,5 @@
+[한국어](README.ko.md)
+
 # Summer Nights
 
 A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhelms you.
