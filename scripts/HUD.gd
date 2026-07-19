@@ -372,7 +372,7 @@ func _apply_language(lang: String) -> void:
 	var is_kr := lang == "KR"
 	var font: Font = galmuri_font if is_kr else kenney_font
 
-	# Only swap the in-game HUD labels — don't touch Settings panel layout
+	# ── Gameplay HUD ──────────────────────────────────────────────────────────
 	if heat_label:
 		heat_label.text = "열기" if is_kr else "HEAT"
 		if font: heat_label.add_theme_font_override("font", font)
@@ -383,7 +383,72 @@ func _apply_language(lang: String) -> void:
 		level_label.text = "%02d 단계" % GameState.level if is_kr else "LVL  %02d" % GameState.level
 		if font: level_label.add_theme_font_override("font", font)
 
-	# Update toggle highlight
+	# ── Top-right labels ──────────────────────────────────────────────────────
+	if settings_btn:
+		settings_btn.text = "설정" if is_kr else "SETTINGS"
+		if font: settings_btn.add_theme_font_override("font", font)
+	if credits_btn:
+		credits_btn.text = "크레딧" if is_kr else "CREDITS"
+		if font: credits_btn.add_theme_font_override("font", font)
+
+	# ── Settings panel ────────────────────────────────────────────────────────
+	if settings_title:
+		settings_title.text = "설정" if is_kr else "SETTINGS"
+		if font: settings_title.add_theme_font_override("font", font)
+
+	var row_texts_en := ["SFX Volume", "Sensitivity", "Reduce Motion", "Fullscreen", "Language"]
+	var row_texts_kr := ["효과음 볼륨", "감도", "화면 움직임 감소", "전체 화면", "언어"]
+	var row_names    := ["RowSFX", "RowSens", "RowMotion", "RowFullscreen", "RowLanguage"]
+	var vbox = $HUD/SettingsScreen/CenterContainer/VBoxContainer
+	for i in range(row_names.size()):
+		var r = vbox.get_node_or_null(row_names[i])
+		if r:
+			var r_lbl = r.get_node_or_null("Label")
+			if r_lbl:
+				r_lbl.text = row_texts_kr[i] if is_kr else row_texts_en[i]
+				if font: r_lbl.add_theme_font_override("font", font)
+
+	for btn in [settings_back_btn]:
+		if btn:
+			btn.text = "뒤로" if is_kr else "BACK"
+			if font: btn.add_theme_font_override("font", font)
+
+	if settings_prompt:
+		if font: settings_prompt.add_theme_font_override("font", font)
+
+	# ── Credits panel ─────────────────────────────────────────────────────────
+	if credits_title:
+		credits_title.text = "크레딧" if is_kr else "CREDITS"
+		if font: credits_title.add_theme_font_override("font", font)
+
+	for btn in [credits_back_btn]:
+		if btn:
+			btn.text = "뒤로" if is_kr else "BACK"
+			if font: btn.add_theme_font_override("font", font)
+
+	if credits_prompt:
+		if font: credits_prompt.add_theme_font_override("font", font)
+
+	# ── Win screen ────────────────────────────────────────────────────────────
+	if win_title_lbl:
+		win_title_lbl.text = "냉각 완료!" if is_kr else "COOLED DOWN!"
+		if font: win_title_lbl.add_theme_font_override("font", font)
+	if win_loading_lbl:
+		win_loading_lbl.text = "다음 단계 로딩 중..." if is_kr else "Next level loading..."
+		if font: win_loading_lbl.add_theme_font_override("font", font)
+
+	# ── End screen ────────────────────────────────────────────────────────────
+	if end_title_lbl:
+		end_title_lbl.text = "여름 끝!" if is_kr else "SUMMER'S OVER"
+		if font: end_title_lbl.add_theme_font_override("font", font)
+	if end_subtitle_lbl:
+		end_subtitle_lbl.text = "태양이 식었습니다." if is_kr else "The sun has been tamed."
+		if font: end_subtitle_lbl.add_theme_font_override("font", font)
+	if end_prompt_lbl:
+		end_prompt_lbl.text = "클릭 또는 스페이스바로 재시작" if is_kr else "Click or press Space to restart"
+		if font: end_prompt_lbl.add_theme_font_override("font", font)
+
+	# ── Toggle highlight (color-only, no layout impact) ───────────────────────
 	_update_lang_toggle(is_kr)
 
 
