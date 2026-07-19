@@ -332,6 +332,19 @@ func _build_lang_row(font: Font) -> void:
 	toggle_box.add_child(btn_kr)
 	lang_btn_kr = btn_kr
 
+	# Fixed-size stylebox baked once so runtime toggles never cause layout reflow
+	var baked_style := StyleBoxFlat.new()
+	baked_style.bg_color = Color(0, 0, 0, 0)
+	baked_style.set_border_width_all(0)
+	baked_style.content_margin_left = 10
+	baked_style.content_margin_right = 10
+	baked_style.content_margin_top = 3
+	baked_style.content_margin_bottom = 3
+	for b in [btn_en, btn_kr]:
+		b.add_theme_stylebox_override("normal", baked_style)
+		b.add_theme_stylebox_override("hover", baked_style)
+		b.add_theme_stylebox_override("pressed", baked_style)
+
 	row.add_child(toggle_box)
 
 	# Insert right before BackBtn
@@ -343,39 +356,13 @@ func _build_lang_row(font: Font) -> void:
 		vbox.add_child(row)
 
 func _update_lang_toggle(is_kr: bool) -> void:
-	var style_active := StyleBoxFlat.new()
-	style_active.bg_color = Color(1.0, 0.88, 0.3, 0.22)
-	style_active.border_color = Color(1.0, 0.88, 0.3, 1.0)
-	style_active.set_border_width_all(1)
-	style_active.set_corner_radius_all(4)
-	style_active.content_margin_left = 12
-	style_active.content_margin_right = 12
-	style_active.content_margin_top = 4
-	style_active.content_margin_bottom = 4
-
-	var style_idle := StyleBoxFlat.new()
-	style_idle.bg_color = Color(0, 0, 0, 0)
-	style_idle.set_border_width_all(0)
-	style_idle.content_margin_left = 12
-	style_idle.content_margin_right = 12
-	style_idle.content_margin_top = 4
-	style_idle.content_margin_bottom = 4
-
+	# Color-only update — styleboxes are baked at build time, no layout reflow
 	if lang_btn_en:
-		lang_btn_en.add_theme_stylebox_override("normal", style_active if not is_kr else style_idle)
-		lang_btn_en.add_theme_stylebox_override("pressed", style_active if not is_kr else style_idle)
 		lang_btn_en.add_theme_color_override("font_color",
-			Color(1.0, 0.88, 0.3, 1.0) if not is_kr else Color(0.85, 0.85, 0.85, 0.45))
-		lang_btn_en.add_theme_color_override("font_hover_color",
-			Color(1.0, 1.0, 0.6, 1.0) if not is_kr else Color(1.0, 1.0, 1.0, 0.7))
-
+			Color(1.0, 0.88, 0.3, 1.0) if not is_kr else Color(0.75, 0.75, 0.75, 0.45))
 	if lang_btn_kr:
-		lang_btn_kr.add_theme_stylebox_override("normal", style_active if is_kr else style_idle)
-		lang_btn_kr.add_theme_stylebox_override("pressed", style_active if is_kr else style_idle)
 		lang_btn_kr.add_theme_color_override("font_color",
-			Color(1.0, 0.88, 0.3, 1.0) if is_kr else Color(0.85, 0.85, 0.85, 0.45))
-		lang_btn_kr.add_theme_color_override("font_hover_color",
-			Color(1.0, 1.0, 0.6, 1.0) if is_kr else Color(1.0, 1.0, 1.0, 0.7))
+			Color(1.0, 0.88, 0.3, 1.0) if is_kr else Color(0.75, 0.75, 0.75, 0.45))
 
 func _on_language_toggle(lang: String) -> void:
 	GameState.language = lang
