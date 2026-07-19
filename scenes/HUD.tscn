@@ -535,7 +535,7 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HUD/CreditsScreen/CenterContainer"]
-custom_minimum_size = Vector2(560, 0)
+custom_minimum_size = Vector2(900, 0)
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 4
@@ -561,7 +561,18 @@ layout_mode = 2
 mouse_filter = 2
 custom_minimum_size = Vector2(0, 6)
 
-[node name="Hdr3D" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+[node name="ColContainer" type="HBoxContainer" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 48
+
+[node name="ColLeft" type="VBoxContainer" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 3
+
+[node name="Hdr3D" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColLeft"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
@@ -570,28 +581,28 @@ text = "3D MODELS"
 horizontal_alignment = 1
 uppercase = true
 
-[node name="Itm3D1" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+[node name="Itm3D1" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColLeft"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
 text = "3D Blaster (Gun Model)  ·  Kenney  ·  CC0"
 horizontal_alignment = 1
 
-[node name="Itm3D2" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+[node name="Itm3D2" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColLeft"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
 text = "PS1 Style Low Poly Sun  ·  Sketchfab  ·  CC0"
 horizontal_alignment = 1
 
-[node name="Spacer1" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+[node name="Spacer1" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColLeft"]
 layout_mode = 2
 mouse_filter = 2
 custom_minimum_size = Vector2(0, 8)
 
-[node name="HdrAudio" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+[node name="HdrAudio" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColLeft"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
@@ -600,126 +611,36 @@ text = "AUDIO"
 horizontal_alignment = 1
 uppercase = true
 
-[node name="ItmAudio1" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+[node name="ItmAudio1" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColLeft"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
 text = "Water gun #2  ·  BigSoundBank  ·  CC0"
 horizontal_alignment = 1
 
-[node name="ItmAudio2" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+[node name="ItmAudio2" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColLeft"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
 text = "40 CC0 Water SFX  ·  OpenGameArt  ·  CC0"
 horizontal_alignment = 1
 
-[node name="ItmAudio3" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+[node name="ItmAudio3" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColLeft"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
 text = "Kenney UI Audio Pack  ·  kenney.nl  ·  CC0"
 horizontal_alignment = 1
 
-[node name="Spacer2" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
-layout_mode = 2
-custom_minimum_size = Vector2(0, 8)
-
-[node name="HdrUI" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
-theme_override_font_sizes/font_size = 13
-text = "UI & FONT"
-horizontal_alignment = 1
-uppercase = true
-
-[node name="ItmUI1" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 13
-text = "Kenney UI Pack Adventure  ·  kenney.nl  ·  CC0"
-horizontal_alignment = 1
-
-[node name="ItmUI2" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 13
-text = "Kenney Future Font  ·  kenney.nl  ·  CC0"
-horizontal_alignment = 1
-
-[node name="Spacer3" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
-layout_mode = 2
-custom_minimum_size = Vector2(0, 8)
-
-[node name="HdrEnv" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
-theme_override_font_sizes/font_size = 13
-text = "ENVIRONMENT"
-horizontal_alignment = 1
-uppercase = true
-
-[node name="ItmEnv" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 13
-text = "Ultimate Stylized Nature (asset pack)"
-horizontal_alignment = 1
-
-[node name="ItmSkyShader" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 13
-text = "Stylized Sky Shader  ·  MinionsArt  ·  CC0"
-horizontal_alignment = 1
-
-[node name="ItmClouds" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 13
-text = "Procedural 3D Low-Poly Clouds  ·  Drifting Sky Layer"
-horizontal_alignment = 1
-
-[node name="ItmSeagulls" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 13
-text = "Procedural 3D Low-Poly Seagulls  ·  Horizon Aviary Layer"
-horizontal_alignment = 1
-
-[node name="ItmWaterShader" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 13
-text = "Stylized Water Shader  ·  Jtfinlay  ·  MIT"
-horizontal_alignment = 1
-
-[node name="ItmHazeShader" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 13
-text = "Heat Haze screen distortion  ·  MinionsArt  ·  CC0"
-horizontal_alignment = 1
-
-[node name="Spacer4" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+[node name="Spacer2" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColLeft"]
 layout_mode = 2
 mouse_filter = 2
 custom_minimum_size = Vector2(0, 8)
 
-[node name="HdrEngine" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+[node name="HdrEngine" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColLeft"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
@@ -728,12 +649,113 @@ text = "ENGINE"
 horizontal_alignment = 1
 uppercase = true
 
-[node name="ItmEngine" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+[node name="ItmEngine" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColLeft"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
 text = "Godot 4.7  ·  GDScript  ·  Forward+"
+horizontal_alignment = 1
+
+[node name="ColRight" type="VBoxContainer" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 3
+
+[node name="HdrUI" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColRight"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 13
+text = "UI & FONT"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="ItmUI1" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColRight"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "Kenney UI Pack Adventure  ·  kenney.nl  ·  CC0"
+horizontal_alignment = 1
+
+[node name="ItmUI2" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColRight"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "Kenney Future Font  ·  kenney.nl  ·  CC0"
+horizontal_alignment = 1
+
+[node name="ItmUI3" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColRight"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "Galmuri11  ·  quiple  ·  SIL OFL"
+horizontal_alignment = 1
+
+[node name="Spacer3" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColRight"]
+layout_mode = 2
+mouse_filter = 2
+custom_minimum_size = Vector2(0, 8)
+
+[node name="HdrEnv" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColRight"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 13
+text = "ENVIRONMENT"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="ItmEnv" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColRight"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "Ultimate Stylized Nature (asset pack)"
+horizontal_alignment = 1
+
+[node name="ItmSkyShader" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColRight"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "Stylized Sky Shader  ·  MinionsArt  ·  CC0"
+horizontal_alignment = 1
+
+[node name="ItmClouds" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColRight"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "Procedural 3D Low-Poly Clouds  ·  Drifting Sky Layer"
+horizontal_alignment = 1
+
+[node name="ItmSeagulls" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColRight"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "Procedural 3D Low-Poly Seagulls  ·  Horizon Aviary Layer"
+horizontal_alignment = 1
+
+[node name="ItmWaterShader" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColRight"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "Stylized Water Shader  ·  Jtfinlay  ·  MIT"
+horizontal_alignment = 1
+
+[node name="ItmHazeShader" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColRight"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "Heat Haze screen distortion  ·  MinionsArt  ·  CC0"
 horizontal_alignment = 1
 
 [node name="Spacer5" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]

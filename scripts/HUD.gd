@@ -383,13 +383,25 @@ func _apply_language(lang: String) -> void:
 		level_label.text = "%02d 단계" % GameState.level if is_kr else "LVL  %02d" % GameState.level
 		if font: level_label.add_theme_font_override("font", font)
 
-	# ── Top-right labels ──────────────────────────────────────────────────────
+	# ── Top-right labels (fixed-anchor Labels — tighten boxes in KR so gap matches EN) ──
 	if settings_btn:
 		settings_btn.text = "설정" if is_kr else "SETTINGS"
 		if font: settings_btn.add_theme_font_override("font", font)
+		if is_kr:
+			settings_btn.offset_left = -240.0
+			settings_btn.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		else:
+			settings_btn.offset_left = -330.0
+			settings_btn.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	if credits_btn:
 		credits_btn.text = "크레딧" if is_kr else "CREDITS"
 		if font: credits_btn.add_theme_font_override("font", font)
+		if is_kr:
+			credits_btn.offset_left = -108.0
+			credits_btn.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		else:
+			credits_btn.offset_left = -160.0
+			credits_btn.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 
 	# ── Settings panel ────────────────────────────────────────────────────────
 	if settings_title:
