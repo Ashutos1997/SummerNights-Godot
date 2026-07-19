@@ -8,7 +8,7 @@
 
 ## 게임플레이 영상
 
-[![썸머 나이츠 - 게임플레이](https://img.youtube.com/vi/83qUFqmobwE/maxresdefault.jpg)](https://youtu.be/83qUFqmobwE)
+[![썸머 나이츠 - 게임플레이](https://img.youtube.com/vi/3Ir6tMphLtQ/maxresdefault.jpg)](https://youtu.be/3Ir6tMphLtQ)
 
 ---
 
