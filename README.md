@@ -4,7 +4,12 @@
 
 ---
 
-## Gameplay
+## Gameplay Video
+
+<!-- Paste your GitHub-hosted video link here -->
+
+---
+
 
 You stand on a tropical beach armed with a water cannon. The Sun sits on the horizon, constantly heating up. Blast it with water to cool it down across 5 levels of difficulty.
 
