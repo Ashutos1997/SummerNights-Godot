@@ -439,6 +439,26 @@ func _apply_language(lang: String) -> void:
 		credits_title.text = "크레딧" if is_kr else "CREDITS"
 		if font: credits_title.add_theme_font_override("font", font)
 
+	# Style the 2-column credits content dynamically to ensure they use Kenney Future / Galmuri11 instead of Kenney Pixel
+	var col_container = $HUD/CreditsScreen/CenterContainer/VBoxContainer.get_node_or_null("ColContainer")
+	if col_container:
+		for col in [col_container.get_node_or_null("ColLeft"), col_container.get_node_or_null("ColRight")]:
+			if col:
+				for child in col.get_children():
+					if child is Label:
+						if font: child.add_theme_font_override("font", font)
+						var is_header = child.name.begins_with("Hdr")
+						child.add_theme_font_size_override("font_size", 18 if is_header else 14)
+						# Give headers a bright gold/amber outline
+						if is_header:
+							child.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+							child.add_theme_constant_override("outline_size", 1)
+							child.add_theme_color_override("font_outline_color", Color.BLACK)
+						else:
+							child.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.85))
+							child.add_theme_constant_override("outline_size", 1)
+							child.add_theme_color_override("font_outline_color", Color.BLACK)
+
 	for btn in [credits_back_btn]:
 		if btn:
 			btn.text = "뒤로" if is_kr else "BACK"
