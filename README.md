@@ -106,6 +106,7 @@ SummerNights-Godot/
 | Stylized Water Shader | Jtfinlay | MIT |
 | Heat Haze Screen Distortion | MinionsArt | CC0 |
 | Font - Kenney Future | Kenney | CC0 |
+| Font - Galmuri11 (Korean Support) | quiple | SIL OFL |
 | UI Pack Adventure | Kenney | CC0 |
 | SFX - 40 CC0 Water/Splash/Slime | OpenGameArt | CC0 |
 | SFX - Water Gun Shot | belanhud (Freesound) | CC0 |
