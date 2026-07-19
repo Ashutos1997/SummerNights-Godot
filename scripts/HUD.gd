@@ -19,7 +19,7 @@ signal reduce_motion_changed(enabled: bool)
 @onready var end_level_lbl     = $HUD/EndScreen/ColorRect/VBoxContainer/LevelCount
 @onready var end_prompt_lbl    = $HUD/EndScreen/ColorRect/VBoxContainer/RestartPrompt
 
-@onready var settings_btn      = $HUD/SettingsBtn
+@onready var settings_btn      = $HUD/TopRightButtons/SettingsBtn
 @onready var settings_screen   = $HUD/SettingsScreen
 @onready var settings_bg       = $HUD/SettingsScreen/BG
 @onready var settings_title    = $HUD/SettingsScreen/CenterContainer/VBoxContainer/Title
@@ -35,7 +35,7 @@ var galmuri_font: Font
 var lang_btn_en: Button
 var lang_btn_kr: Button
 
-@onready var credits_btn      = $HUD/CreditsBtn
+@onready var credits_btn      = $HUD/TopRightButtons/CreditsBtn
 @onready var credits_screen   = $HUD/CreditsScreen
 @onready var credits_bg       = $HUD/CreditsScreen/BG
 @onready var credits_title    = $HUD/CreditsScreen/CenterContainer/VBoxContainer/Title
@@ -234,18 +234,6 @@ func _ready() -> void:
 	_on_fullscreen_toggled(GameState.fullscreen)
 	_apply_language(GameState.language)
 	
-	# Credits screen labels styling
-	if credits_vbox:
-		for child in credits_vbox.get_children():
-			if child is Label and child.name != "Title" and child.name != "ClosePrompt" and not child.name.begins_with("Divider"):
-				if font: child.add_theme_font_override("font", font)
-				var sz = 20 if child.name.begins_with("Hdr") else 16
-				child.add_theme_font_size_override("font_size", sz)
-				child.add_theme_constant_override("outline_size",
-					4 if child.name.begins_with("Hdr") else 3)
-				child.add_theme_color_override("font_outline_color", Color(0,0,0,1))
-			elif child is Label and child.name.begins_with("Divider"):
-				child.add_theme_color_override("font_color", Color(1.0, 0.9, 0.3, 0.65))
 	
 	# Top right button hover/input connections
 	credits_btn.mouse_entered.connect(_on_credits_btn_hover.bind(true))
@@ -372,42 +360,29 @@ func _apply_language(lang: String) -> void:
 	var is_kr := lang == "KR"
 	var font: Font = galmuri_font if is_kr else kenney_font
 
-	# ── Gameplay HUD ──────────────────────────────────────────────────────────
+	# ── Gameplay HUD (Galmuri11 is small, so we scale it up in KR to visually match EN) ──
 	if heat_label:
 		heat_label.text = "열기" if is_kr else "HEAT"
 		if font: heat_label.add_theme_font_override("font", font)
+		heat_label.add_theme_font_size_override("font_size", 24 if is_kr else 20)
 	if water_label:
 		water_label.text = "물" if is_kr else "WATER"
 		if font: water_label.add_theme_font_override("font", font)
+		water_label.add_theme_font_size_override("font_size", 24 if is_kr else 20)
 	if level_label:
 		level_label.text = "%02d 단계" % GameState.level if is_kr else "LVL  %02d" % GameState.level
-		if font:
-			level_label.add_theme_font_override("font", font)
-		# Set comparable font size to EN (which is 20px). Galmuri11 is slightly larger vertically, so 18px is perfect.
-		level_label.add_theme_font_size_override("font_size", 18 if is_kr else 20)
+		if font: level_label.add_theme_font_override("font", font)
+		level_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
 
-	# ── Top-right labels (settings_btn & credits_btn) ─────────────────────────
-	# To keep spacing identical between EN and KR, we position them relative to the right edge.
-	# SETTINGS (left side) and CREDITS (right side).
-	# Since settings_btn is horizontal_alignment=2 (RIGHT) and credits_btn is horizontal_alignment=2 (RIGHT):
-	# In EN: SETTINGS is offset_left = -330, offset_right = -170. CREDITS is offset_left = -160, offset_right = -16.
-	# In KR: "설정" is shorter than "SETTINGS". "크레딧" is shorter than "CREDITS".
-	# If we keep the same anchors and offsets, the spacing between them remains identical!
-	# Let's restore the exact EN layout coordinates in both modes, but just override text and font.
+	# ── Top-right labels (in HBoxContainer, sizes scaled to match visually) ──
 	if settings_btn:
 		settings_btn.text = "설정" if is_kr else "SETTINGS"
 		if font: settings_btn.add_theme_font_override("font", font)
-		settings_btn.add_theme_font_size_override("font_size", 20 if is_kr else 22)
-		settings_btn.offset_left = -330.0
-		settings_btn.offset_right = -170.0
-		settings_btn.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		settings_btn.add_theme_font_size_override("font_size", 26 if is_kr else 22)
 	if credits_btn:
 		credits_btn.text = "크레딧" if is_kr else "CREDITS"
 		if font: credits_btn.add_theme_font_override("font", font)
-		credits_btn.add_theme_font_size_override("font_size", 20 if is_kr else 22)
-		credits_btn.offset_left = -160.0
-		credits_btn.offset_right = -16.0
-		credits_btn.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		credits_btn.add_theme_font_size_override("font_size", 26 if is_kr else 22)
 
 	# ── Settings panel ────────────────────────────────────────────────────────
 	if settings_title:
@@ -438,9 +413,23 @@ func _apply_language(lang: String) -> void:
 	if credits_title:
 		credits_title.text = "크레딧" if is_kr else "CREDITS"
 		if font: credits_title.add_theme_font_override("font", font)
+		credits_title.add_theme_font_size_override("font_size", 36)
+		credits_title.add_theme_constant_override("outline_size", 4)
+		credits_title.add_theme_color_override("font_outline_color", Color.BLACK)
 
-	# Style the 2-column credits content dynamically to ensure they use Kenney Future / Galmuri11 instead of Kenney Pixel
-	var col_container = $HUD/CreditsScreen/CenterContainer/VBoxContainer.get_node_or_null("ColContainer")
+	# Style separators cleanly
+	var sep_style = StyleBoxLine.new()
+	sep_style.color = Color(1.0, 0.88, 0.3, 0.35)
+	sep_style.grow_begin = 0
+	sep_style.grow_end = 0
+	sep_style.thickness = 2
+	for sep_name in ["Divider", "Divider2"]:
+		var sep = credits_vbox.get_node_or_null(sep_name)
+		if sep:
+			sep.add_theme_stylebox_override("separator", sep_style)
+
+	# Style the 2-column credits content dynamically with clear text hierarchy and sizing
+	var col_container = credits_vbox.get_node_or_null("ColContainer")
 	if col_container:
 		for col in [col_container.get_node_or_null("ColLeft"), col_container.get_node_or_null("ColRight")]:
 			if col:
@@ -448,16 +437,14 @@ func _apply_language(lang: String) -> void:
 					if child is Label:
 						if font: child.add_theme_font_override("font", font)
 						var is_header = child.name.begins_with("Hdr")
-						child.add_theme_font_size_override("font_size", 18 if is_header else 14)
-						# Give headers a bright gold/amber outline
+						child.add_theme_font_size_override("font_size", 20 if is_header else 15)
+						# Outline and colors
+						child.add_theme_constant_override("outline_size", 3 if is_header else 2)
+						child.add_theme_color_override("font_outline_color", Color.BLACK)
 						if is_header:
 							child.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
-							child.add_theme_constant_override("outline_size", 1)
-							child.add_theme_color_override("font_outline_color", Color.BLACK)
 						else:
-							child.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.85))
-							child.add_theme_constant_override("outline_size", 1)
-							child.add_theme_color_override("font_outline_color", Color.BLACK)
+							child.add_theme_color_override("font_color", Color(0.92, 0.92, 0.92, 0.9))
 
 	for btn in [credits_back_btn]:
 		if btn:
