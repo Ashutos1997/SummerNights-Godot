@@ -274,6 +274,12 @@ func _build_lang_row(font: Font) -> void:
 	var vbox = $HUD/SettingsScreen/CenterContainer/VBoxContainer
 	if not vbox: return
 
+	# Hide the divider and spacer that separate BackBtn — we slot in right above BackBtn
+	var divider2 = vbox.get_node_or_null("Divider2")
+	if divider2: divider2.visible = false
+	var spacer_prompt = vbox.get_node_or_null("SpacerPrompt")
+	if spacer_prompt: spacer_prompt.visible = false
+
 	var row = HBoxContainer.new()
 	row.name = "RowLanguage"
 	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -293,31 +299,66 @@ func _build_lang_row(font: Font) -> void:
 	opt.selected = 1 if GameState.language == "KR" else 0
 	opt.size_flags_horizontal = Control.SIZE_SHRINK_END
 	opt.custom_minimum_size = Vector2(140, 40)
+	opt.alignment = HORIZONTAL_ALIGNMENT_CENTER
 	if font: opt.add_theme_font_override("font", font)
 	opt.add_theme_font_size_override("font_size", 18)
 	opt.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 0.95))
 	opt.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 0.6, 1.0))
-	opt.add_theme_constant_override("outline_size", 2)
+	opt.add_theme_constant_override("outline_size", 1)
 	opt.add_theme_color_override("font_outline_color", Color.BLACK)
+	opt.add_theme_constant_override("h_separation", 10)
 	var opt_style = StyleBoxFlat.new()
 	opt_style.bg_color = Color(0, 0, 0, 0.4)
 	opt_style.border_color = Color(1.0, 0.88, 0.3, 0.7)
 	opt_style.set_border_width_all(1)
 	opt_style.set_corner_radius_all(4)
+	opt_style.content_margin_left = 12.0
+	opt_style.content_margin_right = 12.0
+	opt_style.content_margin_top = 6.0
+	opt_style.content_margin_bottom = 6.0
 	opt.add_theme_stylebox_override("normal", opt_style)
 	opt.add_theme_stylebox_override("hover", opt_style)
+	opt.add_theme_stylebox_override("pressed", opt_style)
 	opt.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 	opt.item_selected.connect(_on_language_changed)
 	row.add_child(opt)
 	lang_option = opt
 
-	# Insert after RowFullscreen (last child before BackBtn)
+	# Insert right before BackBtn (after existing rows, no divider)
 	var back_btn = vbox.get_node_or_null("BackBtn")
 	if back_btn:
 		vbox.add_child(row)
 		vbox.move_child(row, back_btn.get_index())
 	else:
 		vbox.add_child(row)
+
+	# Style the popup dropdown to match the panel aesthetic
+	call_deferred("_style_lang_popup", opt, font)
+
+func _style_lang_popup(opt: OptionButton, font: Font) -> void:
+	var popup := opt.get_popup()
+	if not popup: return
+	if font: popup.add_theme_font_override("font", font)
+	popup.add_theme_font_size_override("font_size", 20)
+	popup.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 0.95))
+	popup.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 0.6, 1.0))
+	popup.add_theme_constant_override("item_start_padding", 16)
+	popup.add_theme_constant_override("item_end_padding", 16)
+	popup.add_theme_constant_override("v_separation", 10)
+	var panel_style := StyleBoxFlat.new()
+	panel_style.bg_color = Color(0.05, 0.04, 0.14, 0.97)
+	panel_style.border_color = Color(1.0, 0.88, 0.3, 0.7)
+	panel_style.set_border_width_all(1)
+	panel_style.set_corner_radius_all(4)
+	panel_style.content_margin_left = 4.0
+	panel_style.content_margin_right = 4.0
+	panel_style.content_margin_top = 4.0
+	panel_style.content_margin_bottom = 4.0
+	popup.add_theme_stylebox_override("panel", panel_style)
+	var hover_style := StyleBoxFlat.new()
+	hover_style.bg_color = Color(1.0, 0.88, 0.3, 0.15)
+	hover_style.set_corner_radius_all(3)
+	popup.add_theme_stylebox_override("hover", hover_style)
 
 func _on_language_changed(idx: int) -> void:
 	GameState.language = "KR" if idx == 1 else "EN"
@@ -376,9 +417,29 @@ func _apply_language(lang: String) -> void:
 			if font: btn.add_theme_font_override("font", font)
 			btn.text = "뒤로" if is_kr else "BACK"
 
-	# Top-right HUD buttons
+	# Top-right HUD buttons — fixed 160px/144px Label boxes anchored to top-right.
+	# In KR mode tighten the boxes around the shorter Korean text to maintain
+	# the same visual gap as EN. In EN restore original offsets + right-align.
 	_style_lbl(settings_btn, 22, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
 	_style_lbl(credits_btn, 22, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
+	if settings_btn:
+		if is_kr:
+			settings_btn.offset_left = -240.0
+			settings_btn.offset_right = -170.0
+			settings_btn.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		else:
+			settings_btn.offset_left = -330.0
+			settings_btn.offset_right = -170.0
+			settings_btn.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	if credits_btn:
+		if is_kr:
+			credits_btn.offset_left = -152.0
+			credits_btn.offset_right = -16.0
+			credits_btn.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		else:
+			credits_btn.offset_left = -160.0
+			credits_btn.offset_right = -16.0
+			credits_btn.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 
 	# Win screen
 	_style_lbl(win_title_lbl, 32, Color(1.0, 0.9, 0.2, 1.0), 4, Color(0.0, 0.0, 0.0, 1.0), font)
@@ -396,9 +457,10 @@ func _apply_language(lang: String) -> void:
 	if end_subtitle_lbl: end_subtitle_lbl.text = "태양이 식었습니다." if is_kr else "The sun has been tamed."
 	if end_prompt_lbl: end_prompt_lbl.text = "클릭 또는 스페이스바로 재시작" if is_kr else "Click or press Space to restart"
 
-	# Lang option font
+	# Update lang option font to match active language
 	if lang_option and font:
 		lang_option.add_theme_font_override("font", font)
+		_style_lang_popup(lang_option, font)
 
 # ---------- Toggle button ---------------------------------------------------
 
