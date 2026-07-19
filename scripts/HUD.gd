@@ -381,27 +381,33 @@ func _apply_language(lang: String) -> void:
 		if font: water_label.add_theme_font_override("font", font)
 	if level_label:
 		level_label.text = "%02d 단계" % GameState.level if is_kr else "LVL  %02d" % GameState.level
-		if font: level_label.add_theme_font_override("font", font)
+		if font:
+			level_label.add_theme_font_override("font", font)
+		# Set comparable font size to EN (which is 20px). Galmuri11 is slightly larger vertically, so 18px is perfect.
+		level_label.add_theme_font_size_override("font_size", 18 if is_kr else 20)
 
-	# ── Top-right labels (fixed-anchor Labels — tighten boxes in KR so gap matches EN) ──
+	# ── Top-right labels (settings_btn & credits_btn) ─────────────────────────
+	# To keep spacing identical between EN and KR, we position them relative to the right edge.
+	# SETTINGS (left side) and CREDITS (right side).
+	# Since settings_btn is horizontal_alignment=2 (RIGHT) and credits_btn is horizontal_alignment=2 (RIGHT):
+	# In EN: SETTINGS is offset_left = -330, offset_right = -170. CREDITS is offset_left = -160, offset_right = -16.
+	# In KR: "설정" is shorter than "SETTINGS". "크레딧" is shorter than "CREDITS".
+	# If we keep the same anchors and offsets, the spacing between them remains identical!
+	# Let's restore the exact EN layout coordinates in both modes, but just override text and font.
 	if settings_btn:
 		settings_btn.text = "설정" if is_kr else "SETTINGS"
 		if font: settings_btn.add_theme_font_override("font", font)
-		if is_kr:
-			settings_btn.offset_left = -240.0
-			settings_btn.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		else:
-			settings_btn.offset_left = -330.0
-			settings_btn.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		settings_btn.add_theme_font_size_override("font_size", 20 if is_kr else 22)
+		settings_btn.offset_left = -330.0
+		settings_btn.offset_right = -170.0
+		settings_btn.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	if credits_btn:
 		credits_btn.text = "크레딧" if is_kr else "CREDITS"
 		if font: credits_btn.add_theme_font_override("font", font)
-		if is_kr:
-			credits_btn.offset_left = -108.0
-			credits_btn.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		else:
-			credits_btn.offset_left = -160.0
-			credits_btn.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		credits_btn.add_theme_font_size_override("font_size", 20 if is_kr else 22)
+		credits_btn.offset_left = -160.0
+		credits_btn.offset_right = -16.0
+		credits_btn.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 
 	# ── Settings panel ────────────────────────────────────────────────────────
 	if settings_title:
