@@ -223,13 +223,9 @@ theme_override_font_sizes/font_size = 48
 text = "SETTINGS"
 horizontal_alignment = 1
 
-[node name="Divider" type="Label" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
+[node name="Divider" type="HSeparator" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 0.9, 0.3, 0.65)
-theme_override_font_sizes/font_size = 12
-text = "────────────────────────────────"
-horizontal_alignment = 1
 
 [node name="SpacerTitle" type="Control" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 8)
@@ -336,13 +332,9 @@ custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Divider2" type="Label" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
+[node name="Divider2" type="HSeparator" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 0.9, 0.3, 0.65)
-theme_override_font_sizes/font_size = 12
-text = "────────────────────────────────"
-horizontal_alignment = 1
 
 [node name="BackBtn" type="Button" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(160, 44)

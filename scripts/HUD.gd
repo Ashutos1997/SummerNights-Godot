@@ -125,9 +125,7 @@ func _ready() -> void:
 		p_tw.tween_property(end_prompt_lbl, "modulate:a", 1.0, 1.2)
 	elif end_prompt_lbl:
 		end_prompt_lbl.modulate.a = 1.0
-	
-	# Settings & Credits titles — 48px / 32px WCAG contrast (13.6:1)
-	_style_lbl(settings_title, 48, Color(1.0, 0.88, 0.3, 1.0), 3, Color.BLACK, font)
+	_style_lbl(settings_title, 36, Color(1.0, 0.88, 0.3, 1.0), 4, Color.BLACK, font)
 	_style_lbl(credits_title, 32, Color(1.0, 0.88, 0.3, 1.0), 4, Color.BLACK, font)
 	
 	# Close Prompts — Settings and Credits (WCAG 10.7:1 PASS)
@@ -140,14 +138,14 @@ func _ready() -> void:
 				sp_tw.tween_property(p_lbl, "modulate:a", 1.0, 1.2)
 			else:
 				p_lbl.modulate.a = 1.0
-
+ 
 	# Row Labels styling (13.4:1 contrast PASS)
 	for row_name in ["RowSFX", "RowSens", "RowMotion", "RowFullscreen"]:
 		var r_node = $HUD/SettingsScreen/CenterContainer/VBoxContainer.get_node_or_null(row_name)
 		if r_node:
 			var r_lbl = r_node.get_node_or_null("Label")
 			if r_lbl:
-				_style_lbl(r_lbl, 24, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
+				_style_lbl(r_lbl, 20, Color(1.0, 0.85, 0.2, 1.0), 2, Color.BLACK, font)
 
 	# Build language row programmatically (below RowFullscreen)
 	_build_lang_row(font)
@@ -385,21 +383,41 @@ func _apply_language(lang: String) -> void:
 		credits_btn.add_theme_font_size_override("font_size", 26 if is_kr else 22)
 
 	# ── Settings panel ────────────────────────────────────────────────────────
+	var settings_vbox = $HUD/SettingsScreen/CenterContainer/VBoxContainer
 	if settings_title:
 		settings_title.text = "설정" if is_kr else "SETTINGS"
 		if font: settings_title.add_theme_font_override("font", font)
+		settings_title.add_theme_font_size_override("font_size", 36)
+		settings_title.add_theme_constant_override("outline_size", 4)
+		settings_title.add_theme_color_override("font_outline_color", Color.BLACK)
+
+	# Style separators cleanly to match the Credits screen
+	var sep_style = StyleBoxLine.new()
+	sep_style.color = Color(1.0, 0.88, 0.3, 0.35)
+	sep_style.grow_begin = 0
+	sep_style.grow_end = 0
+	sep_style.thickness = 2
+	if settings_vbox:
+		for sep_name in ["Divider", "Divider2"]:
+			var sep = settings_vbox.get_node_or_null(sep_name)
+			if sep:
+				sep.add_theme_stylebox_override("separator", sep_style)
 
 	var row_texts_en := ["SFX Volume", "Sensitivity", "Reduce Motion", "Fullscreen", "Language"]
 	var row_texts_kr := ["효과음 볼륨", "감도", "화면 움직임 감소", "전체 화면", "언어"]
 	var row_names    := ["RowSFX", "RowSens", "RowMotion", "RowFullscreen", "RowLanguage"]
-	var vbox = $HUD/SettingsScreen/CenterContainer/VBoxContainer
-	for i in range(row_names.size()):
-		var r = vbox.get_node_or_null(row_names[i])
-		if r:
-			var r_lbl = r.get_node_or_null("Label")
-			if r_lbl:
-				r_lbl.text = row_texts_kr[i] if is_kr else row_texts_en[i]
-				if font: r_lbl.add_theme_font_override("font", font)
+	if settings_vbox:
+		for i in range(row_names.size()):
+			var r = settings_vbox.get_node_or_null(row_names[i])
+			if r:
+				var r_lbl = r.get_node_or_null("Label")
+				if r_lbl:
+					r_lbl.text = row_texts_kr[i] if is_kr else row_texts_en[i]
+					if font: r_lbl.add_theme_font_override("font", font)
+					r_lbl.add_theme_font_size_override("font_size", 20)
+					r_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+					r_lbl.add_theme_constant_override("outline_size", 2)
+					r_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 
 	for btn in [settings_back_btn]:
 		if btn:
@@ -418,7 +436,7 @@ func _apply_language(lang: String) -> void:
 		credits_title.add_theme_color_override("font_outline_color", Color.BLACK)
 
 	# Style separators cleanly
-	var sep_style = StyleBoxLine.new()
+	sep_style = StyleBoxLine.new()
 	sep_style.color = Color(1.0, 0.88, 0.3, 0.35)
 	sep_style.grow_begin = 0
 	sep_style.grow_end = 0
