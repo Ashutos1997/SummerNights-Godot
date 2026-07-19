@@ -385,97 +385,20 @@ func _apply_language(lang: String) -> void:
 	var is_kr := lang == "KR"
 	var font: Font = galmuri_font if is_kr else kenney_font
 
-	# HUD bars
-	_style_lbl(heat_label, 20, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
-	_style_lbl(water_label, 20, Color(0.4, 0.9, 1.0, 1.0), 3, Color.BLACK, font)
-	_style_lbl(level_label, 22, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
-
-	if heat_label: heat_label.text = "열기" if is_kr else "HEAT"
-	if water_label: water_label.text = "물" if is_kr else "WATER"
-
-	var cur_lvl = GameState.level
+	# Only swap the in-game HUD labels — don't touch Settings panel layout
+	if heat_label:
+		heat_label.text = "열기" if is_kr else "HEAT"
+		if font: heat_label.add_theme_font_override("font", font)
+	if water_label:
+		water_label.text = "물" if is_kr else "WATER"
+		if font: water_label.add_theme_font_override("font", font)
 	if level_label:
-		level_label.text = "%02d 단계" % cur_lvl if is_kr else "LVL  %02d" % cur_lvl
+		level_label.text = "%02d 단계" % GameState.level if is_kr else "LVL  %02d" % GameState.level
+		if font: level_label.add_theme_font_override("font", font)
 
-	# Settings screen
-	_style_lbl(settings_title, 48, Color(1.0, 0.88, 0.3, 1.0), 3, Color.BLACK, font)
-	if settings_title: settings_title.text = "설정" if is_kr else "SETTINGS"
-
-	# Credits screen
-	_style_lbl(credits_title, 32, Color(1.0, 0.88, 0.3, 1.0), 4, Color.BLACK, font)
-	if credits_title: credits_title.text = "크레딧" if is_kr else "CREDITS"
-
-	# Close prompts
-	for p_lbl in [settings_prompt, credits_prompt]:
-		_style_lbl(p_lbl, 14, Color(1.0, 0.88, 0.3, 0.85), 1, Color.BLACK, font)
-
-	# Settings row labels
-	var row_texts_en := ["SFX Volume", "Sensitivity", "Reduce Motion", "Fullscreen", "Language"]
-	var row_texts_kr := ["효과음 볼륨", "감도", "화면 움직임 감소", "전체 화면", "언어"]
-	var row_names := ["RowSFX", "RowSens", "RowMotion", "RowFullscreen", "RowLanguage"]
-	var vbox = $HUD/SettingsScreen/CenterContainer/VBoxContainer
-	for i in range(row_names.size()):
-		var r_node = vbox.get_node_or_null(row_names[i])
-		if r_node:
-			var r_lbl = r_node.get_node_or_null("Label")
-			if r_lbl:
-				_style_lbl(r_lbl, 24, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
-				r_lbl.text = row_texts_kr[i] if is_kr else row_texts_en[i]
-
-	# Toggle buttons ON/OFF text
-	for btn in [motion_check, fullscreen_check]:
-		if btn:
-			if font: btn.add_theme_font_override("font", font)
-			btn.add_theme_font_size_override("font_size", 18)
-
-	# Back buttons
-	for btn in [settings_back_btn, credits_back_btn]:
-		if btn:
-			if font: btn.add_theme_font_override("font", font)
-			btn.text = "뒤로" if is_kr else "BACK"
-
-	# Top-right HUD buttons — fixed 160px/144px Label boxes anchored to top-right.
-	# In KR mode tighten the boxes around the shorter Korean text to maintain
-	# the same visual gap as EN. In EN restore original offsets + right-align.
-	_style_lbl(settings_btn, 22, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
-	_style_lbl(credits_btn, 22, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
-	if settings_btn:
-		if is_kr:
-			settings_btn.offset_left = -240.0
-			settings_btn.offset_right = -170.0
-			settings_btn.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		else:
-			settings_btn.offset_left = -330.0
-			settings_btn.offset_right = -170.0
-			settings_btn.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	if credits_btn:
-		if is_kr:
-			credits_btn.offset_left = -152.0
-			credits_btn.offset_right = -16.0
-			credits_btn.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		else:
-			credits_btn.offset_left = -160.0
-			credits_btn.offset_right = -16.0
-			credits_btn.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-
-	# Win screen
-	_style_lbl(win_title_lbl, 32, Color(1.0, 0.9, 0.2, 1.0), 4, Color(0.0, 0.0, 0.0, 1.0), font)
-	_style_lbl(win_level_lbl, 20, Color(1.0, 0.85, 0.2, 1.0), 4, Color(0.0, 0.0, 0.0, 1.0), font)
-	_style_lbl(win_loading_lbl, 16, Color(1.0, 1.0, 1.0, 1.0), 3, Color.BLACK, font)
-	if win_title_lbl: win_title_lbl.text = "냉각 완료!" if is_kr else "COOLED DOWN!"
-	if win_loading_lbl: win_loading_lbl.text = "다음 단계 로딩 중..." if is_kr else "Next level loading..."
-
-	# End screen
-	_style_lbl(end_title_lbl, 64, Color(1.0, 0.8, 0.2, 1.0), 3, Color.BLACK, font, 4)
-	_style_lbl(end_subtitle_lbl, 22, Color(1.0, 0.85, 0.2, 1.0), 2, Color.BLACK, font)
-	_style_lbl(end_level_lbl, 16, Color(1.0, 1.0, 1.0, 1.0), 1, Color.BLACK, font)
-	_style_lbl(end_prompt_lbl, 16, Color(1.0, 1.0, 1.0, 1.0), 2, Color.BLACK, font)
-	if end_title_lbl: end_title_lbl.text = "여름 끝!" if is_kr else "SUMMER'S OVER"
-	if end_subtitle_lbl: end_subtitle_lbl.text = "태양이 식었습니다." if is_kr else "The sun has been tamed."
-	if end_prompt_lbl: end_prompt_lbl.text = "클릭 또는 스페이스바로 재시작" if is_kr else "Click or press Space to restart"
-
-	# Update lang toggle active state
+	# Update toggle highlight
 	_update_lang_toggle(is_kr)
+
 
 # ---------- Toggle button ---------------------------------------------------
 
