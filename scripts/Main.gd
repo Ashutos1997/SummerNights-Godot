@@ -1019,7 +1019,7 @@ func _process(delta: float) -> void:
 	sun.scale = Vector3(target_scale, target_scale, target_scale)
 	
 	# Heat Regeneration
-	if temperature < MAX_TEMP:
+	if temperature < MAX_TEMP and not is_sun_frozen:
 		temperature += heat_regen_base * delta # Sun gets hotter over time
 		_update_sky(false)
 
@@ -1312,7 +1312,8 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 	gun.position.y += 0.02
 	
 	# Game Feel: Hit Flashing (Sun flashes white/blue briefly)
-	sun_mat.emission = Color(1.5, 1.5, 2.0)
+	if not is_sun_frozen:
+		sun_mat.emission = Color(1.5, 1.5, 2.0)
 	# Force an immediate visual update override which will be reset next frame by _update_sky
 	
 	if temperature <= 0.0:
@@ -1338,29 +1339,30 @@ func _update_sky(instant: bool) -> void:
 		haze_mat.set_shader_parameter("heat_ratio", ratio)
 
 	# Sun visual phases (Middle states)
-	if temperature > 75.0:
-		# Scorching
-		sun_mat.emission = Color(1.0, 0.7, 0.2)
-		if sun_ray_mat:
-			sun_ray_mat.emission = Color(0.95, 0.35, 0.1)
-			sun_ray_mat.albedo_color = Color(0.95, 0.35, 0.1)
-		sun_bob_speed = 2.0
-		sun_bob_amp = 0.8
-	elif temperature > 40.0:
-		# Neutralizing
-		sun_mat.emission = Color(1.0, 0.85, 0.4)
-		if sun_ray_mat:
-			sun_ray_mat.emission = Color(0.85, 0.45, 0.2)
-			sun_ray_mat.albedo_color = Color(0.85, 0.45, 0.2)
-		sun_bob_speed = 1.2
-		sun_bob_amp = 0.5
-	else:
-		# Weakened
-		sun_mat.emission = Color(0.7, 0.7, 1.0)
-		if sun_ray_mat:
-			sun_ray_mat.emission = Color(0.35, 0.45, 0.75)
-			sun_ray_mat.albedo_color = Color(0.35, 0.45, 0.75)
-		sun_bob_speed = 0.5
+	if not is_sun_frozen:
+		if temperature > 75.0:
+			# Scorching
+			sun_mat.emission = Color(1.0, 0.7, 0.2)
+			if sun_ray_mat:
+				sun_ray_mat.emission = Color(0.95, 0.35, 0.1)
+				sun_ray_mat.albedo_color = Color(0.95, 0.35, 0.1)
+			sun_bob_speed = 2.0
+			sun_bob_amp = 0.8
+		elif temperature > 40.0:
+			# Neutralizing
+			sun_mat.emission = Color(1.0, 0.85, 0.4)
+			if sun_ray_mat:
+				sun_ray_mat.emission = Color(0.85, 0.45, 0.2)
+				sun_ray_mat.albedo_color = Color(0.85, 0.45, 0.2)
+			sun_bob_speed = 1.2
+			sun_bob_amp = 0.5
+		else:
+			# Weakened
+			sun_mat.emission = Color(0.7, 0.7, 1.0)
+			if sun_ray_mat:
+				sun_ray_mat.emission = Color(0.35, 0.45, 0.75)
+				sun_ray_mat.albedo_color = Color(0.35, 0.45, 0.75)
+			sun_bob_speed = 0.5
 	heat_changed.emit(temperature, MAX_TEMP)
 	
 
