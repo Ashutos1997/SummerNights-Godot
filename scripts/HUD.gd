@@ -5,6 +5,7 @@ signal reduce_motion_changed(enabled: bool)
 
 @onready var heat_bar = $HUD/SunHeatBar/HeatBar
 @onready var heat_label = $HUD/SunHeatBar/Label
+@onready var water_bar_container = $HUD/WaterBar
 @onready var water_bar = $HUD/WaterBar/WaterBar
 @onready var water_label = $HUD/WaterBar/Label
 @onready var ice_charge_container = $HUD/IceChargeContainer
@@ -895,8 +896,12 @@ func _on_menu_pressed() -> void:
 func update_ice_charges(charges: int, max_charges: int) -> void:
 	if max_charges <= 0:
 		ice_charge_container.visible = false
+		water_bar_container.offset_left = -120.0
+		water_bar_container.offset_right = 120.0
 	else:
 		ice_charge_container.visible = true
+		water_bar_container.offset_left = -260.0
+		water_bar_container.offset_right = -20.0
 		ice_bar.value = (float(charges) / float(max_charges)) * 100.0
 
 func show_ice_unlock() -> void:
