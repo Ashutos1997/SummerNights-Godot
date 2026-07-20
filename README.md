@@ -12,12 +12,13 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 
 ---
 
-
-You stand on a tropical beach armed with a water cannon. The Sun sits on the horizon, constantly heating up. Blast it with water to cool it down across 5 levels of difficulty.
-
-- The sky shifts dynamically from red to orange to blue as the Sun cools.
-- Solar Heat Vents appear on the Sun's surface for critical cooling bonuses.
-- The Sun launches Solar Flare Embers in parabolic arcs. Intercept them mid-air with water to earn +30% Water Tank refills.
+## 🎮 Gameplay
+- **Defeat the Sun:** Water the sun to drop its temperature down to 0 before the timer expires! The sun gradually recovers heat over time.
+- **5-Level Difficulty:** Each level gets harder with shorter timers, aggressive sun movement (sway and figure-8 paths), and increased heat regeneration.
+- **Level 5 Boss Phase:** The final level features a two-phase encounter where the sun regains heat and speeds up.
+- **Lose Condition:** If the timer reaches 0 before the sun is defeated, you lose the level and must retry.
+- **Strategic Heat Vents:** The sun has a white-hot critical vent on its surface. Hitting this spot directly cools the sun **2.4x faster**.
+- **Solar Flares (Fireballs):** The sun periodically launches fiery solar flares towards you. You must intercept them mid-air by tracking them with the water stream for 0.33s. Destroying a flare rewards an instant **+30% Water Tank refill**.
 
 ---
 

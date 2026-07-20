@@ -55,6 +55,42 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = SubResource("Theme_hud")
 
+[node name="TimerLabel" type="Label" parent="HUD"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -50.0
+offset_top = 4.0
+offset_right = 50.0
+offset_bottom = 26.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 1
+text = "00"
+
+[node name="Phase2Label" type="Label" parent="HUD"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -20.0
+offset_right = 150.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.1, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 48
+horizontal_alignment = 1
+text = "PHASE 2"
+
 [node name="SunHeatBar" type="VBoxContainer" parent="HUD"]
 layout_mode = 1
 anchors_preset = 5
@@ -489,6 +525,90 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 16
 text = "PRESS SPACE TO PLAY AGAIN"
 horizontal_alignment = 1
+
+[node name="LoseScreen" type="Control" parent="HUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+visible = false
+mouse_filter = 0
+
+[node name="ColorRect" type="ColorRect" parent="HUD/LoseScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.02, 0.01, 0.05, 0.96)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/LoseScreen/ColorRect"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -100.0
+offset_right = 200.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="HUD/LoseScreen/ColorRect/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.1, 1)
+theme_override_font_sizes/font_size = 64
+text = "☀ THE SUN WON"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="HUD/LoseScreen/ColorRect/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.1, 0.65)
+theme_override_font_sizes/font_size = 22
+text = "TOO HOT TO HANDLE"
+horizontal_alignment = 1
+
+[node name="LevelLbl" type="Label" parent="HUD/LoseScreen/ColorRect/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 0.5)
+theme_override_font_sizes/font_size = 16
+text = "LEVEL 01 FAILED"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="HUD/LoseScreen/ColorRect/VBoxContainer"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HUD/LoseScreen/ColorRect/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="RetryBtn" type="Button" parent="HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+mouse_filter = 0
+text = "RETRY"
+
+[node name="MenuBtn" type="Button" parent="HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+mouse_filter = 0
+text = "MAIN MENU"
 
 [node name="CreditsScreen" type="Control" parent="HUD"]
 layout_mode = 1

@@ -19,6 +19,15 @@ signal reduce_motion_changed(enabled: bool)
 @onready var end_level_lbl     = $HUD/EndScreen/ColorRect/VBoxContainer/LevelCount
 @onready var end_prompt_lbl    = $HUD/EndScreen/ColorRect/VBoxContainer/RestartPrompt
 
+@onready var timer_label       = $HUD/TimerLabel
+@onready var phase2_label      = $HUD/Phase2Label
+@onready var lose_screen       = $HUD/LoseScreen
+@onready var lose_title_lbl    = $HUD/LoseScreen/ColorRect/VBoxContainer/Title
+@onready var lose_subtitle_lbl = $HUD/LoseScreen/ColorRect/VBoxContainer/Subtitle
+@onready var lose_level_lbl    = $HUD/LoseScreen/ColorRect/VBoxContainer/LevelLbl
+@onready var retry_btn         = $HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer/RetryBtn
+@onready var menu_btn          = $HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer/MenuBtn
+
 @onready var settings_btn      = $HUD/TopRightButtons/SettingsBtn
 @onready var settings_screen   = $HUD/SettingsScreen
 @onready var settings_bg       = $HUD/SettingsScreen/BG
@@ -81,6 +90,9 @@ func _ready() -> void:
 	win_screen.visible = false
 	settings_screen.visible = false
 	credits_screen.visible = false
+	lose_screen.visible = false
+	phase2_label.visible = false
+	timer_label.text = ""
 	crosshair.pivot_offset = crosshair.size / 2.0
 	win_screen.pivot_offset = get_viewport().get_visible_rect().size / 2.0
 	
@@ -108,6 +120,14 @@ func _ready() -> void:
 	# Top right buttons — match LVL label font size (22px) exactly, WCAG contrast 13.4:1
 	_style_lbl(credits_btn, lvl_sz, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
 	_style_lbl(settings_btn, lvl_sz, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
+
+	# New elements
+	_style_lbl(timer_label, 22, Color(1.0, 0.8, 0.2, 1.0), 2, Color.BLACK, font)
+	_style_lbl(phase2_label, 48, Color(1.0, 0.4, 0.1, 1.0), 3, Color.BLACK, font)
+	
+	_style_lbl(lose_title_lbl, 64, Color(1.0, 0.4, 0.1, 1.0), 3, Color.BLACK, font)
+	_style_lbl(lose_subtitle_lbl, 22, Color(1.0, 0.4, 0.1, 0.65), 2, Color.BLACK, font)
+	_style_lbl(lose_level_lbl, 16, Color(1.0, 0.8, 0.2, 0.5), 2, Color.BLACK, font)
 
 	# Win screen labels — matches Credits title (32), section header (20), and body (16)
 	_style_lbl(win_title_lbl, 32, Color(1.0, 0.9, 0.2, 1.0), 4, Color(0.0, 0.0, 0.0, 1.0), font)
@@ -183,6 +203,24 @@ func _ready() -> void:
 			btn.add_theme_stylebox_override("hover", style_back_hover)
 			btn.add_theme_stylebox_override("pressed", style_back_hover)
 			btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+
+	# Lose Screen buttons
+	for btn in [retry_btn, menu_btn]:
+		if btn:
+			if font: btn.add_theme_font_override("font", font)
+			btn.add_theme_font_size_override("font_size", 18)
+			btn.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 1.0))
+			btn.add_theme_constant_override("outline_size", 2)
+			btn.add_theme_color_override("font_outline_color", Color.BLACK)
+			btn.add_theme_stylebox_override("normal", style_back)
+			btn.add_theme_stylebox_override("hover", style_back_hover)
+			btn.add_theme_stylebox_override("pressed", style_back_hover)
+			btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+			
+	if retry_btn:
+		retry_btn.pressed.connect(_on_retry_pressed)
+	if menu_btn:
+		menu_btn.pressed.connect(_on_menu_pressed)
 
 	# Style Toggle Buttons (OFF / ON - High WCAG Contrast 11.7:1 OFF / 13.6:1 ON)
 	var style_btn_off = StyleBoxFlat.new()
@@ -480,6 +518,26 @@ func _apply_language(lang: String) -> void:
 		win_loading_lbl.text = "다음 단계 로딩 중..." if is_kr else "Next level loading..."
 		if font: win_loading_lbl.add_theme_font_override("font", font)
 
+	# ── Lose screen & Phase 2 ─────────────────────────────────────────────────
+	if lose_title_lbl:
+		lose_title_lbl.text = "태양이 이겼습니다" if is_kr else "☀ THE SUN WON"
+		if font: lose_title_lbl.add_theme_font_override("font", font)
+	if lose_subtitle_lbl:
+		lose_subtitle_lbl.text = "너무 뜨겁습니다" if is_kr else "TOO HOT TO HANDLE"
+		if font: lose_subtitle_lbl.add_theme_font_override("font", font)
+	if lose_level_lbl:
+		lose_level_lbl.text = "%02d 단계 실패" % GameState.level if is_kr else "LEVEL %02d FAILED" % GameState.level
+		if font: lose_level_lbl.add_theme_font_override("font", font)
+	if retry_btn:
+		retry_btn.text = "다시 시도" if is_kr else "RETRY"
+		if font: retry_btn.add_theme_font_override("font", font)
+	if menu_btn:
+		menu_btn.text = "메인 메뉴" if is_kr else "MAIN MENU"
+		if font: menu_btn.add_theme_font_override("font", font)
+	if phase2_label:
+		phase2_label.text = "2단계" if is_kr else "PHASE 2"
+		if font: phase2_label.add_theme_font_override("font", font)
+
 	# ── End screen ────────────────────────────────────────────────────────────
 	if end_title_lbl:
 		end_title_lbl.text = "여름 끝!" if is_kr else "SUMMER'S OVER"
@@ -662,6 +720,7 @@ func show_end_screen() -> void:
 	if win_screen: win_screen.visible = false
 	if credits_screen: credits_screen.visible = false
 	if settings_screen: settings_screen.visible = false
+	if lose_screen: lose_screen.visible = false
 	end_screen.visible = true
 	end_screen.modulate.a = 0.0
 	var tw = create_tween()
@@ -758,3 +817,63 @@ func hide_win_screen() -> void:
 	if win_screen:
 		win_screen.visible = false
 		win_screen.modulate.a = 0.0
+
+var timer_pulse_active: bool = false
+
+func _on_timer_tick(seconds: float) -> void:
+	if not timer_label: return
+	var secs = max(0, int(seconds))
+	timer_label.text = "%02d" % secs
+	
+	if seconds <= 10.0:
+		timer_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.2, 1.0))
+		if not timer_pulse_active:
+			timer_pulse_active = true
+			var tw = create_tween().set_loops()
+			tw.tween_property(timer_label, "modulate:a", 0.3, 0.4)
+			tw.tween_property(timer_label, "modulate:a", 1.0, 0.4)
+
+func _on_timer_expired() -> void:
+	show_lose_screen()
+
+func show_lose_screen() -> void:
+	if not lose_screen: return
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	if lose_level_lbl:
+		lose_level_lbl.text = "%02d 단계 실패" % GameState.level if GameState.language == "KR" else "LEVEL %02d FAILED" % GameState.level
+	lose_screen.visible = true
+	lose_screen.modulate.a = 0.0
+	var tw = create_tween()
+	tw.tween_property(lose_screen, "modulate:a", 1.0, 0.4)
+	tw.set_ease(Tween.EASE_OUT)
+
+func _on_phase2_started() -> void:
+	var flash = ColorRect.new()
+	flash.color = Color(1.0, 0.5, 0.0, 0.4)
+	flash.anchor_right = 1.0
+	flash.anchor_bottom = 1.0
+	flash.z_index = 150
+	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(flash)
+	var tw = create_tween()
+	tw.tween_property(flash, "modulate:a", 0.0, 0.5)
+	tw.tween_callback(flash.queue_free)
+	
+	if phase2_label:
+		phase2_label.modulate.a = 0.0
+		phase2_label.visible = true
+		var p_tw = create_tween()
+		p_tw.tween_property(phase2_label, "modulate:a", 1.0, 0.5)
+		p_tw.tween_interval(1.5)
+		p_tw.tween_property(phase2_label, "modulate:a", 0.0, 0.5)
+		p_tw.tween_callback(func(): phase2_label.visible = false)
+
+func _on_retry_pressed() -> void:
+	GameState.defeat_triggered = false
+	get_tree().reload_current_scene()
+
+func _on_menu_pressed() -> void:
+	GameState.level = 1
+	GameState.defeat_triggered = false
+	get_tree().change_scene_to_file("res://scenes/TitleScreen.tscn")
+

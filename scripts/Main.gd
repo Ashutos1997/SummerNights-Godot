@@ -6,7 +6,7 @@ var temperature: float    = 100.0
 const MAX_TEMP: float     = 100.0
 var water_tank: float     = 100.0
 const MAX_WATER: float    = 100.0
-const WATER_DRAIN_RATE: float = 8.75 # Reduced by 65% from 25.0 to make water tank last 3x longer
+var WATER_DRAIN_RATE: float = 8.75 # Reduced by 65% from 25.0 to make water tank last 3x longer
 var is_shooting: bool     = false
 var is_firing: bool       = false
 var fire_stop_timer: float = 0.0
@@ -21,6 +21,10 @@ signal water_changed(value: float, max_value: float)
 signal sun_defeated(level: int)
 signal game_complete()
 signal projectile_hit()
+signal level_config_loaded(timer_duration: float)
+signal timer_tick(seconds_remaining: float)
+signal timer_expired()
+signal phase2_started()
 var hud: CanvasLayer
 var shoot_loop_sfx: AudioStreamPlayer
 var hit_sfx: AudioStreamPlayer
@@ -37,6 +41,18 @@ signal crosshair_moved(screen_pos: Vector2, is_behind: bool)
 var cooldown_timer: float = 0.0
 var is_measuring: bool = false
 var water_refill_count: int = 0
+
+# ─── New Level Config Variables ──────────────────────────────────────────────
+var heat_regen_base: float = 2.0
+var sun_sway_amplitude: float = 0.0
+var sun_sway_speed: float = 0.0
+var sun_figure8: bool = false
+var sun_move_time: float = 0.0
+var level_timer: float = 0.0
+var timer_running: bool = false
+var is_two_phase: bool = false
+var phase2_triggered: bool = false
+var phase2_heat: float = 0.0
 
 
 # ─── Sky colours at each temp threshold ──────────────────────────────────────
@@ -120,6 +136,19 @@ func _ready() -> void:
 	is_measuring = true
 	print("[MEASURE] Level started, timer running")
 
+	var cfg = GameState.LEVEL_CONFIG[GameState.level]
+	WATER_DRAIN_RATE = cfg.water_drain
+	heat_regen_base = cfg.heat_regen_base
+	sun_sway_amplitude = cfg.sun_sway_amplitude
+	sun_sway_speed = cfg.sun_sway_speed
+	sun_figure8 = cfg.sun_figure8
+	is_two_phase = cfg.two_phase
+	phase2_heat = cfg.phase2_heat
+	phase2_triggered = false
+	
+	level_timer = cfg.timer
+	timer_running = true
+
 	virtual_mouse_pos = get_viewport().get_visible_rect().size / 2.0
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	hud = load("res://scenes/HUD.tscn").instantiate()
@@ -130,6 +159,10 @@ func _ready() -> void:
 	game_complete.connect(hud.show_end_screen)
 	
 	projectile_hit.connect(hud._on_projectile_hit)
+	timer_tick.connect(hud._on_timer_tick)
+	timer_expired.connect(hud._on_timer_expired)
+	phase2_started.connect(hud._on_phase2_started)
+	emit_signal("level_config_loaded", cfg.timer)
 	crosshair_moved.connect(hud._on_crosshair_moved)
 	hud.sensitivity_changed.connect(func(val): mouse_sensitivity = val)
 	hud.reduce_motion_changed.connect(func(enabled): reduce_motion = enabled)
@@ -871,12 +904,29 @@ func _update_flares(delta: float) -> void:
 # Main loop
 # ─────────────────────────────────────────────────────────────────────────────
 func _process(delta: float) -> void:
+	if hud and "lose_screen" in hud and hud.lose_screen != null and hud.lose_screen.visible:
+		return
+
 	if game_over:
 		return
 	if hud and (hud.settings_screen.visible or hud.credits_screen.visible):
 		if gun_spray: gun_spray.emitting = false
 		is_shooting = false
+		timer_running = false
 		return
+		
+	timer_running = true
+
+	if timer_running and not game_over and not defeat_triggered:
+		level_timer -= delta
+		timer_tick.emit(level_timer)
+		if level_timer <= 0.0:
+			timer_running = false
+			game_over = true
+			is_shooting = false
+			if gun_spray: gun_spray.emitting = false
+			timer_expired.emit()
+
 		
 	# Relocate sunspot on timer
 	if sunspot_node:
@@ -908,7 +958,18 @@ func _process(delta: float) -> void:
 	# Sun bob and rotate
 	sun_time += delta
 	sun.position.y = sun_base_pos.y + sin(sun_time * sun_bob_speed) * sun_bob_amp
-	sun.position.x = sun_base_pos.x
+	
+	if sun_sway_amplitude > 0.0:
+		sun_move_time += delta
+		var x_offset = sin(sun_move_time * sun_sway_speed) * sun_sway_amplitude
+		var z_offset = 0.0
+		if sun_figure8:
+			z_offset = sin(sun_move_time * sun_sway_speed * 2.0) * (sun_sway_amplitude * 0.4)
+		sun.position.x = sun_base_pos.x + x_offset
+		sun.position.z = sun_base_pos.z + z_offset
+	else:
+		sun.position.x = sun_base_pos.x
+		sun.position.z = sun_base_pos.z
 
 	if sun_mesh:
 		sun_mesh.rotation.y += 0.5 * delta
@@ -924,7 +985,7 @@ func _process(delta: float) -> void:
 	
 	# Heat Regeneration
 	if temperature < MAX_TEMP:
-		temperature += 2.0 * delta # Sun gets hotter over time
+		temperature += heat_regen_base * delta # Sun gets hotter over time
 		_update_sky(false)
 
 	# Aim gun
@@ -1066,6 +1127,8 @@ func _process(delta: float) -> void:
 		water_mat.uv1_offset += Vector3(0.02 * delta, 0.02 * delta, 0) # Scrolling ripples
 
 func _input(event: InputEvent) -> void:
+	if hud and "lose_screen" in hud and hud.lose_screen != null and hud.lose_screen.visible:
+		return
 	if hud and (hud.settings_screen.visible or hud.credits_screen.visible):
 		is_shooting = false
 		return # Input guard: ignore gameplay mouse/keyboard input while settings or credits menu is open
@@ -1212,7 +1275,11 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 	# Force an immediate visual update override which will be reset next frame by _update_sky
 	
 	if temperature <= 0.0:
-		_win()
+		if is_two_phase and not phase2_triggered:
+			phase2_triggered = true
+			_trigger_phase2()
+		else:
+			_win()
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Temp system / Middle States
@@ -1342,3 +1409,25 @@ func _spawn_wet_mark(pos: Vector3, normal: Vector3) -> void:
 	var tween = create_tween()
 	tween.tween_property(decal, "modulate:a", 0.0, 2.5).set_delay(1.5)
 	tween.tween_callback(decal.queue_free)
+
+func _trigger_phase2() -> void:
+	timer_running = false # pause timer briefly
+	
+	# Visual flare — spike emission briefly
+	if is_instance_valid(sun_hit_tween):
+		sun_hit_tween.kill()
+	var tw = create_tween()
+	tw.tween_method(func(val): sun_mat.emission_energy_multiplier = val, 1.2, 4.0, 0.2)
+	tw.tween_method(func(val): sun_mat.emission_energy_multiplier = val, 4.0, 2.0, 0.3)
+	
+	await get_tree().create_timer(0.6).timeout
+	
+	temperature = phase2_heat
+	heat_changed.emit(temperature, MAX_TEMP)
+	
+	sun_sway_speed *= 1.3
+	sun_sway_amplitude *= 1.2
+	
+	timer_running = true
+	phase2_started.emit()
+
