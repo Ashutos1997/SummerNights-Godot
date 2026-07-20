@@ -22,7 +22,7 @@ const LEVEL_CONFIG = {
 		"phase2_heat": 0.0,
 	},
 	3: {
-		"timer": 35.0,
+		"timer": 40.0,
 		"sun_sway_amplitude": 5.0,
 		"sun_sway_speed": 1.0,
 		"sun_figure8": false,
@@ -32,7 +32,7 @@ const LEVEL_CONFIG = {
 		"phase2_heat": 0.0,
 	},
 	4: {
-		"timer": 30.0,
+		"timer": 40.0,
 		"sun_sway_amplitude": 5.0,
 		"sun_sway_speed": 1.2,
 		"sun_figure8": true,
@@ -42,7 +42,7 @@ const LEVEL_CONFIG = {
 		"phase2_heat": 0.0,
 	},
 	5: {
-		"timer": 55.0,
+		"timer": 75.0,
 		"sun_sway_amplitude": 6.0,
 		"sun_sway_speed": 1.5,
 		"sun_figure8": true,
