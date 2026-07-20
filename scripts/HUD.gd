@@ -205,16 +205,30 @@ func _ready() -> void:
 			btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 
 	# Lose Screen buttons
+	var style_lose_btn = StyleBoxFlat.new()
+	style_lose_btn.bg_color = Color(0, 0, 0, 0)
+	style_lose_btn.border_color = Color(1.0, 0.8, 0.2, 1.0)
+	style_lose_btn.set_border_width_all(1)
+	style_lose_btn.set_corner_radius_all(4)
+	style_lose_btn.content_margin_left = 16
+	style_lose_btn.content_margin_right = 16
+	style_lose_btn.content_margin_top = 8
+	style_lose_btn.content_margin_bottom = 8
+
+	var style_lose_btn_hover = style_lose_btn.duplicate()
+	style_lose_btn_hover.bg_color = Color(1.0, 0.8, 0.2, 0.2)
+
 	for btn in [retry_btn, menu_btn]:
 		if btn:
 			if font: btn.add_theme_font_override("font", font)
-			btn.add_theme_font_size_override("font_size", 18)
+			btn.add_theme_font_size_override("font_size", 16)
+			btn.add_theme_constant_override("letter_spacing", 1)
 			btn.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 1.0))
 			btn.add_theme_constant_override("outline_size", 2)
 			btn.add_theme_color_override("font_outline_color", Color.BLACK)
-			btn.add_theme_stylebox_override("normal", style_back)
-			btn.add_theme_stylebox_override("hover", style_back_hover)
-			btn.add_theme_stylebox_override("pressed", style_back_hover)
+			btn.add_theme_stylebox_override("normal", style_lose_btn)
+			btn.add_theme_stylebox_override("hover", style_lose_btn_hover)
+			btn.add_theme_stylebox_override("pressed", style_lose_btn_hover)
 			btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 			
 	if retry_btn:
