@@ -13,12 +13,19 @@ var is_starting: bool = false
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
-	var font = load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+	var is_kr = GameState.lang == "KR"
+	var font_path = "res://assets/ui/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
+	var font = load(font_path)
+	
+	if title_lbl: title_lbl.text = "여름밤" if is_kr else "SUMMER NIGHTS"
+	if subtitle_lbl: subtitle_lbl.text = "태양을 식혀라" if is_kr else "COOL DOWN THE SUN"
+	if prompt_lbl: prompt_lbl.text = "클릭 또는 스페이스바로 시작" if is_kr else "PRESS SPACE OR CLICK TO START"
+	
 	if font:
 		_style_label(title_lbl, 64, Color(1.0, 0.8, 0.2, 1.0), 3, Color.BLACK, font, 4)
-		_style_label(subtitle_lbl, 22, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
-		_style_label(prompt_lbl, 16, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
-		_style_label(credit_lbl, 12, Color(1.0, 1.0, 1.0, 0.85), 1, Color.BLACK, font)
+		_style_label(subtitle_lbl, 24 if is_kr else 22, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
+		_style_label(prompt_lbl, 20 if is_kr else 16, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
+		_style_label(credit_lbl, 16 if is_kr else 12, Color(1.0, 1.0, 1.0, 0.85), 1, Color.BLACK, font)
 
 	color_rect.modulate.a = 0.0
 	var tw = create_tween()

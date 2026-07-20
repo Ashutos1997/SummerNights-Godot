@@ -482,14 +482,7 @@ func _apply_language(lang: String) -> void:
 		level_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
 
 	# ── Top-right labels (in HBoxContainer, sizes scaled to match visually) ──
-	if settings_btn:
-		settings_btn.text = "설정" if is_kr else "SETTINGS"
-		if font: settings_btn.add_theme_font_override("font", font)
-		settings_btn.add_theme_font_size_override("font_size", 26 if is_kr else 22)
-	if credits_btn:
-		credits_btn.text = "크레딧" if is_kr else "CREDITS"
-		if font: credits_btn.add_theme_font_override("font", font)
-		credits_btn.add_theme_font_size_override("font_size", 26 if is_kr else 22)
+	# (These buttons were moved to the pause menu, styled in _ready and translated below)
 
 	# ── Settings panel ────────────────────────────────────────────────────────
 	var settings_vbox = $HUD/SettingsScreen/CenterContainer/VBoxContainer
