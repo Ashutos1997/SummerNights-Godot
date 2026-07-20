@@ -1412,6 +1412,12 @@ func _win() -> void:
 			timer_running = true
 			emit_signal("level_config_loaded", cfg.timer)
 			
+			GameState.ice_charges_remaining = cfg.ice_charges
+			if hud:
+				hud.update_ice_charges(GameState.ice_charges_remaining, cfg.ice_charges)
+				if GameState.level == 3:
+					hud.show_ice_unlock()
+			
 			print("[MEASURE] Level started, timer running")
 			if sun_mat:
 				sun_mat.albedo_color = Color(1.0, 1.0, 1.0)
