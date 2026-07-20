@@ -8,7 +8,7 @@
 
 ## 게임플레이 영상
 
-[▶ 유튜브에서 게임플레이 영상 시청하기](https://youtu.be/3Ir6tMphLtQ)
+[![Gameplay Video](https://img.youtube.com/vi/3Ir6tMphLtQ/maxresdefault.jpg)](https://youtu.be/3Ir6tMphLtQ)
 
 ---
 
