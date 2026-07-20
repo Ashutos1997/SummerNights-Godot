@@ -1356,6 +1356,21 @@ func _win() -> void:
 			cooldown_timer = 0.0
 			water_refill_count = 0
 			is_measuring = true
+			
+			var cfg = GameState.LEVEL_CONFIG[GameState.level]
+			WATER_DRAIN_RATE = cfg.water_drain
+			heat_regen_base = cfg.heat_regen_base
+			sun_sway_amplitude = cfg.sun_sway_amplitude
+			sun_sway_speed = cfg.sun_sway_speed
+			sun_figure8 = cfg.sun_figure8
+			is_two_phase = cfg.two_phase
+			phase2_heat = cfg.phase2_heat
+			phase2_triggered = false
+			
+			level_timer = cfg.timer
+			timer_running = true
+			emit_signal("level_config_loaded", cfg.timer)
+			
 			print("[MEASURE] Level started, timer running")
 			if sun_mat:
 				sun_mat.albedo_color = Color(1.0, 1.0, 1.0)
@@ -1430,4 +1445,3 @@ func _trigger_phase2() -> void:
 	
 	timer_running = true
 	phase2_started.emit()
-
