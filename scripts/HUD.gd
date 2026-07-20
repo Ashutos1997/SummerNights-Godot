@@ -134,9 +134,7 @@ func _ready() -> void:
 	var lvl_sz = level_label.get_theme_font_size("font_size")
 	print("LVL label font size: ", lvl_sz)
 	
-	# Top right buttons — match LVL label font size (22px) exactly, WCAG contrast 13.4:1
-	_style_lbl(credits_btn, lvl_sz, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
-	_style_lbl(settings_btn, lvl_sz, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
+	# Top right buttons (now in pause menu, styled separately below)
 
 	# New elements
 	_style_lbl(timer_label, 22, Color(1.0, 0.8, 0.2, 1.0), 2, Color.BLACK, font)
