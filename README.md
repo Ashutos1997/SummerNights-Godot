@@ -8,7 +8,7 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 
 ## Gameplay Video
 
-[![Gameplay Video](https://img.youtube.com/vi/n2f05ET2UY8/maxresdefault.jpg)](https://youtu.be/n2f05ET2UY8)
+[![Gameplay Video](https://img.youtube.com/vi/32NCRgUMuNk/maxresdefault.jpg)](https://youtu.be/32NCRgUMuNk)
 
 ---
 
