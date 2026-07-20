@@ -126,13 +126,14 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -120.0
+offset_left = -260.0
 offset_top = -68.0
-offset_right = 120.0
+offset_right = -20.0
 offset_bottom = -24.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_constants/separation = 6
+alignment = 1
 
 [node name="Label" type="Label" parent="HUD/WaterBar"]
 layout_mode = 2
@@ -152,6 +153,64 @@ stretch_margin_right = 10
 stretch_margin_bottom = 10
 texture_under = ExtResource("4_prog_bg")
 texture_progress = ExtResource("8_prog_blue")
+
+[node name="IceChargeContainer" type="VBoxContainer" parent="HUD"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -68.0
+offset_right = 260.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="Label" type="Label" parent="HUD/IceChargeContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.5, 0.85, 1, 0.8)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 14
+text = "❄ ICE BURST"
+horizontal_alignment = 1
+
+[node name="IceBar" type="TextureProgressBar" parent="HUD/IceChargeContainer"]
+custom_minimum_size = Vector2(240, 20)
+layout_mode = 2
+value = 100.0
+nine_patch_stretch = true
+stretch_margin_left = 10
+stretch_margin_top = 10
+stretch_margin_right = 10
+stretch_margin_bottom = 10
+texture_under = ExtResource("4_prog_bg")
+texture_progress = ExtResource("8_prog_blue")
+
+[node name="IceUnlockLabel" type="Label" parent="HUD"]
+visible = false
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -120.0
+offset_right = 200.0
+offset_bottom = -100.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.5, 0.85, 1, 1)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 16
+text = "❄ ICE BURST UNLOCKED: FREEZE THE SUN [RMB / R]"
+horizontal_alignment = 1
+
 
 [node name="Crosshair" type="TextureRect" parent="HUD"]
 modulate = Color(0.6, 0.9, 1, 0.9)

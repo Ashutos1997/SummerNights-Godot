@@ -91,6 +91,12 @@ var sunspot_local_pos: Vector3 = Vector3.ZERO
 var sunspot_tween: Tween
 var sizzle_sfx: AudioStreamPlayer
 
+var ice_blast_scene = preload("res://scenes/IceBlast.tscn")
+var ice_shoot_sfx: AudioStreamPlayer
+var ice_hit_sfx: AudioStreamPlayer
+var is_sun_frozen: bool = false
+var sun_freeze_timer: float = 0.0
+
 var active_flares: Array[Dictionary] = []
 var flare_spawn_timer: float = 8.0
 var flare_mat: StandardMaterial3D
@@ -109,6 +115,16 @@ var gun_spray:   GPUParticles3D
 var wet_spawn_timer: float = 0.0
 
 func _ready() -> void:
+	ice_shoot_sfx = AudioStreamPlayer.new()
+	ice_shoot_sfx.stream = preload("res://assets/ice/ice_shoot.wav")
+	ice_shoot_sfx.volume_db = -5.0
+	add_child(ice_shoot_sfx)
+	
+	ice_hit_sfx = AudioStreamPlayer.new()
+	ice_hit_sfx.stream = preload("res://assets/ice/ice_hit.wav")
+	ice_hit_sfx.volume_db = -2.0
+	add_child(ice_hit_sfx)
+
 	# Heat Haze screen distortion overlay (drawn under HUD text)
 	var haze_layer = CanvasLayer.new()
 	haze_layer.layer = 0 # HUD CanvasLayer is layer 1, so layer 0 is under HUD text
@@ -158,6 +174,11 @@ func _ready() -> void:
 	sun_defeated.connect(hud._on_sun_defeated)
 	game_complete.connect(hud.show_end_screen)
 	
+	GameState.ice_charges_remaining = cfg.ice_charges
+	hud.update_ice_charges(GameState.ice_charges_remaining, cfg.ice_charges)
+	if GameState.level == 3:
+		hud.show_ice_unlock()
+		
 	projectile_hit.connect(hud._on_projectile_hit)
 	timer_tick.connect(hud._on_timer_tick)
 	timer_expired.connect(hud._on_timer_expired)
@@ -917,7 +938,22 @@ func _process(delta: float) -> void:
 		
 	timer_running = true
 
-	if timer_running and not game_over and not defeat_triggered:
+	if timer_running and not defeat_triggered:
+		if is_sun_frozen:
+			sun_freeze_timer -= delta
+			if sun_freeze_timer <= 0.0:
+				is_sun_frozen = false
+				if sun_mat:
+					var tw = create_tween()
+					tw.tween_property(sun_mat, "albedo_color", Color(1.0, 1.0, 1.0), 0.5)
+					tw.parallel().tween_property(sun_mat, "emission", Color(1.0, 0.7, 0.2), 0.5)
+				if sun_ray_mat:
+					var tw2 = create_tween()
+					tw2.tween_property(sun_ray_mat, "emission", Color(1.0, 0.5, 0.1), 0.5)
+					
+		var spd_mult = 0.3 if is_sun_frozen else 1.0
+		sun_time += delta * spd_mult
+		
 		level_timer -= delta
 		timer_tick.emit(level_timer)
 		if level_timer <= 0.0:
@@ -956,7 +992,6 @@ func _process(delta: float) -> void:
 		cooldown_timer += delta
 
 	# Sun bob and rotate
-	sun_time += delta
 	sun.position.y = sun_base_pos.y + sin(sun_time * sun_bob_speed) * sun_bob_amp
 	
 	if sun_sway_amplitude > 0.0:
@@ -966,7 +1001,7 @@ func _process(delta: float) -> void:
 		if sun_figure8:
 			z_offset = sin(sun_move_time * sun_sway_speed * 2.0) * (sun_sway_amplitude * 0.4)
 		sun.position.x = sun_base_pos.x + x_offset
-		sun.position.z = sun_base_pos.z + z_offset
+		sun.position.z = sun_base_pos.z
 	else:
 		sun.position.x = sun_base_pos.x
 		sun.position.z = sun_base_pos.z
@@ -1147,6 +1182,12 @@ func _input(event: InputEvent) -> void:
 		var viewport_size = get_viewport().get_visible_rect().size
 		virtual_mouse_pos.x = clamp(virtual_mouse_pos.x, 0, viewport_size.x)
 		virtual_mouse_pos.y = clamp(virtual_mouse_pos.y, 0, viewport_size.y)
+		
+	if (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed) or \
+	   (event is InputEventKey and event.keycode == KEY_R and event.pressed):
+		if GameState.ice_charges_remaining > 0:
+			_shoot_ice()
+
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE and event.pressed:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -1444,3 +1485,41 @@ func _trigger_phase2() -> void:
 	
 	await get_tree().create_timer(0.6).timeout
 	timer_running = true
+
+func _shoot_ice() -> void:
+	GameState.ice_charges_remaining -= 1
+	var cfg = GameState.LEVEL_CONFIG[GameState.level]
+	hud.update_ice_charges(GameState.ice_charges_remaining, cfg.ice_charges)
+	
+	ice_shoot_sfx.play()
+	
+	var tw = create_tween()
+	tw.tween_property(gun, "position:y", gun_base_pos.y - 0.2, 0.05)
+	tw.tween_property(gun, "position:y", gun_base_pos.y, 0.1)
+	
+	var blast = ice_blast_scene.instantiate()
+	blasts.add_child(blast)
+	
+	var cam_space = get_world_3d().direct_space_state
+	var ray_start = camera.project_ray_origin(virtual_mouse_pos)
+	var ray_end = ray_start + camera.project_ray_normal(virtual_mouse_pos) * 1000.0
+	var query = PhysicsRayQueryParameters3D.create(ray_start, ray_end)
+	var result = cam_space.intersect_ray(query)
+	var target_pos = ray_end
+	if result:
+		target_pos = result.position
+		
+	blast.global_position = muzzle.global_position
+	blast.look_at(target_pos, Vector3.UP)
+
+func freeze_sun() -> void:
+	is_sun_frozen = true
+	sun_freeze_timer = 3.0
+	ice_hit_sfx.play()
+	if sun_mat:
+		var tw = create_tween()
+		tw.tween_property(sun_mat, "albedo_color", Color(0.8, 0.9, 1.0), 0.3)
+		tw.parallel().tween_property(sun_mat, "emission", Color(0.1, 0.5, 1.0), 0.3)
+	if sun_ray_mat:
+		var tw2 = create_tween()
+		tw2.tween_property(sun_ray_mat, "emission", Color(0.2, 0.6, 1.0), 0.3)

@@ -10,6 +10,7 @@ const LEVEL_CONFIG = {
 		"water_drain": 8.75,
 		"two_phase": false,
 		"phase2_heat": 0.0,
+		"ice_charges": 0,
 	},
 	2: {
 		"timer": 40.0,
@@ -20,6 +21,7 @@ const LEVEL_CONFIG = {
 		"water_drain": 8.75,
 		"two_phase": false,
 		"phase2_heat": 0.0,
+		"ice_charges": 0,
 	},
 	3: {
 		"timer": 40.0,
@@ -30,6 +32,7 @@ const LEVEL_CONFIG = {
 		"water_drain": 10.0,
 		"two_phase": false,
 		"phase2_heat": 0.0,
+		"ice_charges": 3,
 	},
 	4: {
 		"timer": 40.0,
@@ -40,6 +43,7 @@ const LEVEL_CONFIG = {
 		"water_drain": 11.0,
 		"two_phase": false,
 		"phase2_heat": 0.0,
+		"ice_charges": 3,
 	},
 	5: {
 		"timer": 90.0,
@@ -50,6 +54,7 @@ const LEVEL_CONFIG = {
 		"water_drain": 11.0,
 		"two_phase": true,
 		"phase2_heat": 60.0,
+		"ice_charges": 5,
 	},
 }
 
@@ -59,7 +64,8 @@ var mouse_sensitivity: float = 1.0
 var reduce_motion: bool = false
 var fullscreen: bool = false
 var language: String = "EN"  # "EN" or "KR"
+var ice_charges_remaining: int = 0
 
 func reset() -> void:
 	level = 1
-	# language intentionally not reset — persists across playthroughs
+	ice_charges_remaining = 0

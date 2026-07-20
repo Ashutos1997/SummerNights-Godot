@@ -1,0 +1,64 @@
+[gd_scene load_steps=8 format=3 uid="uid://cxkx1p3a60f9m"]
+
+[ext_resource type="Script" path="res://scripts/IceBlast.gd" id="1_ice"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ice"]
+radius = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ice"]
+transparency = 1
+albedo_color = Color(0.8, 0.9, 1, 0.9)
+emission_enabled = true
+emission = Color(0.1, 0.5, 1, 1)
+emission_energy_multiplier = 3.0
+roughness = 0.1
+
+[sub_resource type="PrismMesh" id="PrismMesh_ice"]
+material = SubResource("StandardMaterial3D_ice")
+size = Vector3(0.5, 1.5, 0.5)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ice"]
+direction = Vector3(0, 0, 1)
+spread = 15.0
+initial_velocity_min = 2.0
+initial_velocity_max = 5.0
+gravity = Vector3(0, -2, 0)
+scale_min = 0.1
+scale_max = 0.3
+color = Color(0.5, 0.8, 1, 0.8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_part"]
+transparency = 1
+vertex_color_use_as_albedo = true
+emission_enabled = true
+emission = Color(0.3, 0.7, 1, 1)
+emission_energy_multiplier = 2.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_ice"]
+material = SubResource("StandardMaterial3D_part")
+size = Vector3(0.2, 0.2, 0.2)
+
+[node name="IceBlast" type="Area3D"]
+script = ExtResource("1_ice")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_ice")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("PrismMesh_ice")
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+amount = 16
+lifetime = 0.5
+process_material = SubResource("ParticleProcessMaterial_ice")
+draw_pass_1 = SubResource("BoxMesh_ice")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
+autostart = true
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

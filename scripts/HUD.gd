@@ -7,6 +7,9 @@ signal reduce_motion_changed(enabled: bool)
 @onready var heat_label = $HUD/SunHeatBar/Label
 @onready var water_bar = $HUD/WaterBar/WaterBar
 @onready var water_label = $HUD/WaterBar/Label
+@onready var ice_charge_container = $HUD/IceChargeContainer
+@onready var ice_bar = $HUD/IceChargeContainer/IceBar
+@onready var ice_unlock_label = $HUD/IceUnlockLabel
 @onready var crosshair = $HUD/Crosshair
 @onready var win_screen = $HUD/WinScreen
 @onready var level_label = $HUD/LevelLabel
@@ -888,3 +891,19 @@ func _on_retry_pressed() -> void:
 func _on_menu_pressed() -> void:
 	GameState.level = 1
 	get_tree().change_scene_to_file("res://scenes/TitleScreen.tscn")
+
+func update_ice_charges(charges: int, max_charges: int) -> void:
+	if max_charges <= 0:
+		ice_charge_container.visible = false
+	else:
+		ice_charge_container.visible = true
+		ice_bar.value = (float(charges) / float(max_charges)) * 100.0
+
+func show_ice_unlock() -> void:
+	ice_unlock_label.visible = true
+	var tween = create_tween()
+	ice_unlock_label.modulate.a = 0.0
+	tween.tween_property(ice_unlock_label, "modulate:a", 1.0, 0.5)
+	tween.tween_interval(6.0)
+	tween.tween_property(ice_unlock_label, "modulate:a", 0.0, 0.5)
+	tween.tween_callback(func(): ice_unlock_label.visible = false)
