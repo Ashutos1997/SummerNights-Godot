@@ -33,6 +33,12 @@ var mouse_sensitivity: float = 1.0
 var reduce_motion: bool   = false
 signal crosshair_moved(screen_pos: Vector2, is_behind: bool)
 
+# ─── Diagnostics & Testing ──────────────────────────────────────────────────
+var cooldown_timer: float = 0.0
+var is_measuring: bool = false
+var water_refill_count: int = 0
+
+
 # ─── Sky colours at each temp threshold ──────────────────────────────────────
 const SKY := [
 	{"t": 100, "bg": Color(0.88, 0.14, 0.03)},
@@ -109,6 +115,11 @@ func _ready() -> void:
 	
 	level = GameState.level
 	defeat_triggered = false
+	cooldown_timer = 0.0
+	water_refill_count = 0
+	is_measuring = true
+	print("[MEASURE] Level started, timer running")
+
 	virtual_mouse_pos = get_viewport().get_visible_rect().size / 2.0
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	hud = load("res://scenes/HUD.tscn").instantiate()
@@ -891,9 +902,14 @@ func _process(delta: float) -> void:
 	# Increase difficulty based on level
 	var regen_rate = 5.0 + (level * 1.5)
 		
+	if is_measuring:
+		cooldown_timer += delta
+
 	# Sun bob and rotate
 	sun_time += delta
 	sun.position.y = sun_base_pos.y + sin(sun_time * sun_bob_speed) * sun_bob_amp
+	sun.position.x = sun_base_pos.x
+
 	if sun_mesh:
 		sun_mesh.rotation.y += 0.5 * delta
 	if sun_rays_node:
@@ -1015,7 +1031,9 @@ func _process(delta: float) -> void:
 				
 				# Reward: Instantly refill +30% Water Tank!
 				water_tank = min(MAX_WATER, water_tank + MAX_WATER * 0.30)
+				water_refill_count += 1
 				water_changed.emit(water_tank, MAX_WATER)
+
 				
 				if hud and hud.has_method("_on_projectile_hit"):
 					hud._on_projectile_hit()
@@ -1244,6 +1262,11 @@ func _win() -> void:
 	game_over = true
 	is_shooting = false # Reset shooting state to prevent auto-firing on next level
 	gun_spray.emitting = false # Fix water getting stuck on when winning
+
+	if is_measuring:
+		is_measuring = false
+		print("[MEASURE] Sun cooled in: ", snapped(cooldown_timer, 0.01), " seconds")
+		print("[MEASURE] Water refills used: ", water_refill_count)
 	
 	sun_defeated_sfx.play()
 	var tween = create_tween()
@@ -1263,6 +1286,10 @@ func _win() -> void:
 			water_tank = MAX_WATER
 			game_over = false
 			defeat_triggered = false
+			cooldown_timer = 0.0
+			water_refill_count = 0
+			is_measuring = true
+			print("[MEASURE] Level started, timer running")
 			if sun_mat:
 				sun_mat.albedo_color = Color(1.0, 1.0, 1.0)
 				sun_mat.emission = Color(1.0, 0.7, 0.2)
@@ -1275,6 +1302,7 @@ func _win() -> void:
 			
 		await get_tree().create_timer(1.8).timeout
 		reload.call()
+
 
 func _create_sfx(path: String, vol: float, poly: int, bus_name: String = "SFX_WEAPON") -> AudioStreamPlayer:
 	var player = AudioStreamPlayer.new()
