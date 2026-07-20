@@ -42,7 +42,7 @@ const LEVEL_CONFIG = {
 		"phase2_heat": 0.0,
 	},
 	5: {
-		"timer": 75.0,
+		"timer": 90.0,
 		"sun_sway_amplitude": 6.0,
 		"sun_sway_speed": 1.5,
 		"sun_figure8": true,
