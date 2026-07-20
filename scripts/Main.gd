@@ -96,6 +96,10 @@ var ice_shoot_sfx: AudioStreamPlayer
 var ice_hit_sfx: AudioStreamPlayer
 var is_sun_frozen: bool = false
 var sun_freeze_timer: float = 0.0
+var freeze_noise_tex: NoiseTexture2D
+var orig_albedo_tex: Texture2D
+var orig_emission_tex: Texture2D
+var orig_triplanar: bool
 
 var active_flares: Array[Dictionary] = []
 var flare_spawn_timer: float = 8.0
@@ -206,7 +210,14 @@ func _ready() -> void:
 	flare_mat.emission = Color(1.0, 0.45, 0.05)
 	flare_mat.emission_energy_multiplier = 4.0
 
+	var noise = FastNoiseLite.new()
+	noise.noise_type = FastNoiseLite.TYPE_CELLULAR
+	noise.frequency = 0.04
+	freeze_noise_tex = NoiseTexture2D.new()
+	freeze_noise_tex.noise = noise
+	freeze_noise_tex.seamless = true
 	
+
 	print("--- DIAGNOSTICS START ---")
 	print("Audio driver: ", AudioServer.get_driver_name())
 	print("Audio mix rate: ", AudioServer.get_mix_rate())
@@ -944,6 +955,10 @@ func _process(delta: float) -> void:
 			if sun_freeze_timer <= 0.0:
 				is_sun_frozen = false
 				if sun_mat:
+					sun_mat.albedo_texture = orig_albedo_tex
+					sun_mat.emission_texture = orig_emission_tex
+					sun_mat.emission_operator = BaseMaterial3D.EMISSION_OP_ADD
+					sun_mat.uv1_triplanar = orig_triplanar
 					var tw = create_tween()
 					tw.tween_property(sun_mat, "albedo_color", Color(1.0, 1.0, 1.0), 0.5)
 					tw.parallel().tween_property(sun_mat, "emission", Color(1.0, 0.7, 0.2), 0.5)
@@ -1245,6 +1260,9 @@ func _setup_sun_mesh_and_material(node: Node) -> MeshInstance3D:
 		sun_mat.emission_enabled = true
 		sun_mat.emission = Color(1.0, 0.7, 0.2)
 		sun_mat.emission_energy_multiplier = 1.8
+		orig_albedo_tex = sun_mat.albedo_texture
+		orig_emission_tex = sun_mat.emission_texture
+		orig_triplanar = sun_mat.uv1_triplanar
 		node.set_surface_override_material(0, sun_mat)
 	for child in node.get_children():
 		var found = _setup_sun_mesh_and_material(child)
@@ -1525,9 +1543,13 @@ func freeze_sun() -> void:
 	sun_freeze_timer = 3.0
 	ice_hit_sfx.play()
 	if sun_mat:
+		sun_mat.albedo_texture = freeze_noise_tex
+		sun_mat.emission_texture = freeze_noise_tex
+		sun_mat.emission_operator = BaseMaterial3D.EMISSION_OP_MULTIPLY
+		sun_mat.uv1_triplanar = true
 		var tw = create_tween()
-		tw.tween_property(sun_mat, "albedo_color", Color(0.8, 0.9, 1.0), 0.3)
-		tw.parallel().tween_property(sun_mat, "emission", Color(0.1, 0.5, 1.0), 0.3)
+		tw.tween_property(sun_mat, "albedo_color", Color(0.2, 0.5, 1.0), 0.3)
+		tw.parallel().tween_property(sun_mat, "emission", Color(0.1, 0.4, 1.0), 0.3)
 	if sun_ray_mat:
 		var tw2 = create_tween()
-		tw2.tween_property(sun_ray_mat, "emission", Color(0.2, 0.6, 1.0), 0.3)
+		tw2.tween_property(sun_ray_mat, "emission", Color(0.1, 0.3, 0.8), 0.3)
