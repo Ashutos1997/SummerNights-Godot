@@ -950,7 +950,7 @@ func _process(delta: float) -> void:
 					var tw2 = create_tween()
 					tw2.tween_property(sun_ray_mat, "emission", Color(1.0, 0.5, 0.1), 0.5)
 					
-		var spd_mult = 0.3 if is_sun_frozen else 1.0
+		var spd_mult = 0.0 if is_sun_frozen else 1.0
 		sun_time += delta * spd_mult
 		
 		level_timer -= delta
@@ -994,21 +994,24 @@ func _process(delta: float) -> void:
 	sun.position.y = sun_base_pos.y + sin(sun_time * sun_bob_speed) * sun_bob_amp
 	
 	if sun_sway_amplitude > 0.0:
-		sun_move_time += delta
+		var spd_mult = 0.0 if is_sun_frozen else 1.0
+		sun_move_time += delta * spd_mult
 		var x_offset = sin(sun_move_time * sun_sway_speed) * sun_sway_amplitude
 		var z_offset = 0.0
 		if sun_figure8:
 			z_offset = sin(sun_move_time * sun_sway_speed * 2.0) * (sun_sway_amplitude * 0.4)
 		sun.position.x = sun_base_pos.x + x_offset
-		sun.position.z = sun_base_pos.z
+		sun.position.z = sun_base_pos.z + z_offset
 	else:
 		sun.position.x = sun_base_pos.x
 		sun.position.z = sun_base_pos.z
 
 	if sun_mesh:
-		sun_mesh.rotation.y += 0.5 * delta
+		var spd_mult = 0.0 if is_sun_frozen else 1.0
+		sun_mesh.rotation.y += 0.5 * delta * spd_mult
 	if sun_rays_node:
-		sun_rays_node.rotation.z += 0.3 * delta
+		var spd_mult = 0.0 if is_sun_frozen else 1.0
+		sun_rays_node.rotation.z += 0.3 * delta * spd_mult
 	
 	_sync_light_to_sun()
 	# Breathing pulse & Temperature scaling
