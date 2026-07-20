@@ -19,6 +19,7 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 - **Lose Condition:** If the timer reaches 0 before the sun is defeated, you lose the level and must retry.
 - **Strategic Heat Vents:** The sun has a white-hot critical vent on its surface. Hitting this spot directly cools the sun **2.4x faster**.
 - **Solar Flares (Fireballs):** The sun periodically launches fiery solar flares towards you. You must intercept them mid-air by tracking them with the water stream for 0.33s. Destroying a flare rewards an instant **+30% Water Tank refill**.
+- **Ice Burst:** Starting in Level 3, unlock the powerful Ice Burst mechanic! Build up 3 charges over time and right-click (or press R) to fire a freezing shard at the sun, completely stopping all sun movement and heat regeneration for 3 seconds.
 
 ---
 
@@ -28,6 +29,7 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 |---|---|
 | Move mouse | Aim the water cannon |
 | Left click (hold) | Fire water spray |
+| Right click / R | Fire Ice Burst (when charged) |
 | ESC | Open Settings / Credits |
 
 ---
