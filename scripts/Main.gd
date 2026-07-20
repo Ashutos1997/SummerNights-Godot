@@ -116,12 +116,12 @@ var wet_spawn_timer: float = 0.0
 
 func _ready() -> void:
 	ice_shoot_sfx = AudioStreamPlayer.new()
-	ice_shoot_sfx.stream = preload("res://assets/ice/ice_shoot.wav")
+	ice_shoot_sfx.stream = preload("res://assets/audio/sfx/ice_shoot.ogg")
 	ice_shoot_sfx.volume_db = -5.0
 	add_child(ice_shoot_sfx)
 	
 	ice_hit_sfx = AudioStreamPlayer.new()
-	ice_hit_sfx.stream = preload("res://assets/ice/ice_hit.wav")
+	ice_hit_sfx.stream = preload("res://assets/audio/sfx/ice_hit.ogg")
 	ice_hit_sfx.volume_db = -2.0
 	add_child(ice_hit_sfx)
 
