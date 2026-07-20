@@ -1428,6 +1428,13 @@ func _spawn_wet_mark(pos: Vector3, normal: Vector3) -> void:
 func _trigger_phase2() -> void:
 	timer_running = false # pause timer briefly
 	
+	temperature = phase2_heat
+	heat_changed.emit(temperature, MAX_TEMP)
+	phase2_started.emit()
+	
+	sun_sway_speed *= 1.3
+	sun_sway_amplitude *= 1.2
+	
 	# Visual flare — spike emission briefly
 	if is_instance_valid(sun_hit_tween):
 		sun_hit_tween.kill()
@@ -1436,12 +1443,4 @@ func _trigger_phase2() -> void:
 	tw.tween_method(func(val): sun_mat.emission_energy_multiplier = val, 4.0, 2.0, 0.3)
 	
 	await get_tree().create_timer(0.6).timeout
-	
-	temperature = phase2_heat
-	heat_changed.emit(temperature, MAX_TEMP)
-	
-	sun_sway_speed *= 1.3
-	sun_sway_amplitude *= 1.2
-	
 	timer_running = true
-	phase2_started.emit()

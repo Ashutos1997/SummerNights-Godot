@@ -741,8 +741,8 @@ func _input(event: InputEvent) -> void:
 	if end_screen and end_screen.visible:
 		if (event is InputEventKey and event.pressed and event.keycode == KEY_SPACE) or (event is InputEventMouseButton and event.pressed):
 			GameState.reset()
-			get_tree().change_scene_to_file("res://scenes/TitleScreen.tscn")
 			get_viewport().set_input_as_handled()
+			get_tree().change_scene_to_file("res://scenes/TitleScreen.tscn")
 			return
 			
 	# Handle top right button clicks in captured mouse mode via virtual cursor position
