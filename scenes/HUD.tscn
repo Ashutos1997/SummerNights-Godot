@@ -90,15 +90,6 @@ theme_override_constants/separation = 6
 alignment = 0
 size_flags_horizontal = 4
 
-[node name="TimerLabel" type="Label" parent="HUD/SunHeatBar"]
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
-theme_override_constants/outline_size = 2
-theme_override_font_sizes/font_size = 22
-horizontal_alignment = 1
-text = "00"
-
 [node name="Label" type="Label" parent="HUD/SunHeatBar"]
 layout_mode = 2
 size_flags_horizontal = 4
@@ -263,6 +254,22 @@ theme_override_constants/outline_size = 2
 theme_override_font_sizes/font_size = 22
 text = "CREDITS"
 horizontal_alignment = 2
+
+[node name="TimerLabel" type="Label" parent="HUD"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -100.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 54.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 2
+text = "00"
 
 [node name="esc_hint_label" type="Label" parent="HUD"]
 visible = false

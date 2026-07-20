@@ -24,7 +24,7 @@ signal reduce_motion_changed(enabled: bool)
 @onready var end_level_lbl     = $HUD/EndScreen/ColorRect/VBoxContainer/LevelCount
 @onready var end_prompt_lbl    = $HUD/EndScreen/ColorRect/VBoxContainer/RestartPrompt
 
-@onready var timer_label       = $HUD/SunHeatBar/TimerLabel
+@onready var timer_label       = $HUD/TimerLabel
 @onready var phase2_label      = $HUD/Phase2Label
 @onready var lose_screen       = $HUD/LoseScreen
 @onready var lose_title_lbl    = $HUD/LoseScreen/ColorRect/VBoxContainer/Title
@@ -125,9 +125,9 @@ func _ready() -> void:
 		print("HUD Warning: Galmuri11 font not found.")
 	var font = kenney_font
 	
-	_style_lbl(heat_label, 20, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
-	_style_lbl(water_label, 20, Color(0.4, 0.9, 1.0, 1.0), 3, Color.BLACK, font)
-	_style_lbl(ice_label, 20, Color(0.5, 0.85, 1.0, 1.0), 3, Color.BLACK, font)
+	_style_lbl(heat_label, 22, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
+	_style_lbl(water_label, 22, Color(0.4, 0.9, 1.0, 1.0), 3, Color.BLACK, font)
+	_style_lbl(ice_label, 22, Color(0.5, 0.85, 1.0, 1.0), 3, Color.BLACK, font)
 	_style_lbl(ice_unlock_label, 24, Color(0.5, 0.85, 1.0, 1.0), 3, Color.BLACK, font)
 	_style_lbl(level_label, 22, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
 	
@@ -463,15 +463,15 @@ func _apply_language(lang: String) -> void:
 	if heat_label:
 		heat_label.text = "열기" if is_kr else "HEAT"
 		if font: heat_label.add_theme_font_override("font", font)
-		heat_label.add_theme_font_size_override("font_size", 24 if is_kr else 20)
+		heat_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
 	if water_label:
 		water_label.text = "물" if is_kr else "WATER"
 		if font: water_label.add_theme_font_override("font", font)
-		water_label.add_theme_font_size_override("font_size", 24 if is_kr else 20)
+		water_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
 	if ice_label:
 		ice_label.text = "얼음 폭발" if is_kr else "ICE BURST"
 		if font: ice_label.add_theme_font_override("font", font)
-		ice_label.add_theme_font_size_override("font_size", 24 if is_kr else 20)
+		ice_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
 	if ice_unlock_label:
 		ice_unlock_label.text = "얼음 폭발 해제: 태양을 얼리세요 [우클릭 / R]" if is_kr else "ICE BURST UNLOCKED: FREEZE THE SUN [RMB / R]"
 		if font: ice_unlock_label.add_theme_font_override("font", font)
@@ -480,6 +480,9 @@ func _apply_language(lang: String) -> void:
 		level_label.text = "%02d 단계" % GameState.level if is_kr else "LVL  %02d" % GameState.level
 		if font: level_label.add_theme_font_override("font", font)
 		level_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
+	if timer_label:
+		if font: timer_label.add_theme_font_override("font", font)
+		timer_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
 
 	# ── Top-right labels (in HBoxContainer, sizes scaled to match visually) ──
 	# (These buttons were moved to the pause menu, styled in _ready and translated below)
