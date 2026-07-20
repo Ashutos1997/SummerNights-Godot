@@ -869,11 +869,8 @@ func _on_phase2_started() -> void:
 		p_tw.tween_callback(func(): phase2_label.visible = false)
 
 func _on_retry_pressed() -> void:
-	GameState.defeat_triggered = false
 	get_tree().reload_current_scene()
 
 func _on_menu_pressed() -> void:
 	GameState.level = 1
-	GameState.defeat_triggered = false
 	get_tree().change_scene_to_file("res://scenes/TitleScreen.tscn")
-
