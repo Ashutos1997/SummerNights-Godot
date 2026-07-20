@@ -33,7 +33,14 @@ signal reduce_motion_changed(enabled: bool)
 @onready var retry_btn         = $HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer/RetryBtn
 @onready var menu_btn          = $HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer/MenuBtn
 
-@onready var settings_btn      = $HUD/TopRightButtons/SettingsBtn
+@onready var pause_screen       = $HUD/pause_screen
+@onready var pause_title        = $HUD/pause_screen/ColorRect/VBoxContainer/Title
+@onready var pause_resume_btn   = $HUD/pause_screen/ColorRect/VBoxContainer/ResumeBtn
+@onready var settings_btn       = $HUD/pause_screen/ColorRect/VBoxContainer/SettingsBtn
+@onready var credits_btn        = $HUD/pause_screen/ColorRect/VBoxContainer/CreditsBtn
+@onready var pause_menu_btn     = $HUD/pause_screen/ColorRect/VBoxContainer/MainMenuBtn
+@onready var esc_hint_label     = $HUD/esc_hint_label
+
 @onready var settings_screen   = $HUD/SettingsScreen
 @onready var settings_bg       = $HUD/SettingsScreen/BG
 @onready var settings_title    = $HUD/SettingsScreen/CenterContainer/VBoxContainer/Title
@@ -49,13 +56,16 @@ var galmuri_font: Font
 var lang_btn_en: Button
 var lang_btn_kr: Button
 
-@onready var credits_btn      = $HUD/TopRightButtons/CreditsBtn
 @onready var credits_screen   = $HUD/CreditsScreen
 @onready var credits_bg       = $HUD/CreditsScreen/BG
 @onready var credits_title    = $HUD/CreditsScreen/CenterContainer/VBoxContainer/Title
 @onready var credits_prompt   = $HUD/CreditsScreen/CenterContainer/VBoxContainer/ClosePrompt
 @onready var credits_vbox     = $HUD/CreditsScreen/CenterContainer/VBoxContainer
 @onready var credits_back_btn = $HUD/CreditsScreen/CenterContainer/VBoxContainer/BackBtn
+
+signal game_paused
+signal game_resumed
+var opened_from_pause: bool = false
 
 var water_tween: Tween
 var hit_tween: Tween
@@ -177,6 +187,27 @@ func _ready() -> void:
 	# Build language row programmatically (below RowFullscreen)
 	_build_lang_row(font)
 
+	if pause_resume_btn:
+		pause_resume_btn.pressed.connect(_on_pause_resume_pressed)
+	if settings_btn:
+		settings_btn.pressed.connect(_on_settings_pressed)
+	if credits_btn:
+		credits_btn.pressed.connect(_on_credits_pressed)
+	if pause_menu_btn:
+		pause_menu_btn.pressed.connect(_on_menu_pressed)
+
+	if font:
+		if pause_title: pause_title.add_theme_font_override("font", font)
+		if esc_hint_label: esc_hint_label.add_theme_font_override("font", font)
+
+	if esc_hint_label:
+		esc_hint_label.visible = true
+		esc_hint_label.modulate.a = 0.6
+		var tw = create_tween()
+		tw.tween_interval(2.0)
+		tw.tween_property(esc_hint_label, "modulate:a", 0.0, 1.0)
+		tw.tween_callback(func(): esc_hint_label.visible = false)
+
 	# Slider texture overrides
 	var grab_tex = load("res://assets/ui/kenney_ui_pack/slide_hangle.png")
 	if grab_tex:
@@ -229,6 +260,19 @@ func _ready() -> void:
 		if btn:
 			if font: btn.add_theme_font_override("font", font)
 			btn.add_theme_font_size_override("font_size", 16)
+			btn.add_theme_constant_override("letter_spacing", 1)
+			btn.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 1.0))
+			btn.add_theme_constant_override("outline_size", 2)
+			btn.add_theme_color_override("font_outline_color", Color.BLACK)
+			btn.add_theme_stylebox_override("normal", style_lose_btn)
+			btn.add_theme_stylebox_override("hover", style_lose_btn_hover)
+			btn.add_theme_stylebox_override("pressed", style_lose_btn_hover)
+			btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+
+	for btn in [pause_resume_btn, settings_btn, credits_btn, pause_menu_btn]:
+		if btn:
+			if font: btn.add_theme_font_override("font", font)
+			btn.add_theme_font_size_override("font_size", 18)
 			btn.add_theme_constant_override("letter_spacing", 1)
 			btn.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 1.0))
 			btn.add_theme_constant_override("outline_size", 2)
@@ -766,6 +810,13 @@ func _input(event: InputEvent) -> void:
 			_close_credits()
 			get_viewport().set_input_as_handled()
 			return
+		
+		if pause_screen.visible:
+			_resume_game()
+		else:
+			_pause_game()
+		get_viewport().set_input_as_handled()
+		return
 
 	if end_screen and end_screen.visible:
 		if (event is InputEventKey and event.pressed and event.keycode == KEY_SPACE) or (event is InputEventMouseButton and event.pressed):
@@ -773,20 +824,33 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			get_tree().change_scene_to_file("res://scenes/TitleScreen.tscn")
 			return
-			
-	# Handle top right button clicks in captured mouse mode via virtual cursor position
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		if not settings_screen.visible and not credits_screen.visible:
-			var s_rect = settings_btn.get_global_rect()
-			if s_rect.has_point(cursor_screen_pos):
-				_open_settings()
-				get_viewport().set_input_as_handled()
-				return
-			var c_rect = credits_btn.get_global_rect()
-			if c_rect.has_point(cursor_screen_pos):
-				_open_credits()
-				get_viewport().set_input_as_handled()
-				return
+
+func _pause_game() -> void:
+	pause_screen.visible = true
+	pause_screen.modulate.a = 0.0
+	var tw = create_tween()
+	tw.tween_property(pause_screen, "modulate:a", 1.0, 0.25)
+	emit_signal("game_paused")
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+func _resume_game() -> void:
+	var tw = create_tween()
+	tw.tween_property(pause_screen, "modulate:a", 0.0, 0.2)
+	await tw.finished
+	pause_screen.visible = false
+	emit_signal("game_resumed")
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+func _on_pause_resume_pressed() -> void:
+	_resume_game()
+
+func _on_settings_pressed() -> void:
+	opened_from_pause = pause_screen.visible
+	_open_settings()
+
+func _on_credits_pressed() -> void:
+	opened_from_pause = pause_screen.visible
+	_open_credits()
 
 func _on_settings_btn_hover(hovered: bool) -> void:
 	if hovered:
@@ -812,7 +876,10 @@ func _close_settings() -> void:
 	tw.tween_property(settings_screen, "modulate:a", 0.0, 0.2)
 	tw.tween_callback(func():
 		settings_screen.visible = false
-		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		if opened_from_pause:
+			pause_screen.visible = true
+		else:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	)
 
 func _on_credits_btn_hover(hovered: bool) -> void:
@@ -839,7 +906,10 @@ func _close_credits() -> void:
 	tw.tween_property(credits_screen, "modulate:a", 0.0, 0.2)
 	tw.tween_callback(func():
 		credits_screen.visible = false
-		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		if opened_from_pause:
+			pause_screen.visible = true
+		else:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	)
 
 func hide_win_screen() -> void:
@@ -907,12 +977,8 @@ func _on_menu_pressed() -> void:
 func update_ice_charges(charges: int, max_charges: int) -> void:
 	if max_charges <= 0:
 		ice_charge_container.visible = false
-		water_bar_container.offset_left = -120.0
-		water_bar_container.offset_right = 120.0
 	else:
 		ice_charge_container.visible = true
-		water_bar_container.offset_left = -260.0
-		water_bar_container.offset_right = -20.0
 		ice_bar.value = (float(charges) / float(max_charges)) * 100.0
 
 func show_ice_unlock() -> void:

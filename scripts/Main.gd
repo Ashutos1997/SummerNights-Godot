@@ -173,6 +173,8 @@ func _ready() -> void:
 	water_changed.connect(hud._on_water_changed)
 	sun_defeated.connect(hud._on_sun_defeated)
 	game_complete.connect(hud.show_end_screen)
+	hud.game_paused.connect(_on_game_paused)
+	hud.game_resumed.connect(_on_game_resumed)
 	
 	GameState.ice_charges_remaining = cfg.ice_charges
 	hud.update_ice_charges(GameState.ice_charges_remaining, cfg.ice_charges)
@@ -929,7 +931,7 @@ func _process(delta: float) -> void:
 
 	if game_over:
 		return
-	if hud and (hud.settings_screen.visible or hud.credits_screen.visible):
+	if hud and (hud.settings_screen.visible or hud.credits_screen.visible or hud.pause_screen.visible):
 		if gun_spray: gun_spray.emitting = false
 		is_shooting = false
 		timer_running = false
@@ -1166,18 +1168,13 @@ func _process(delta: float) -> void:
 func _input(event: InputEvent) -> void:
 	if hud and "lose_screen" in hud and hud.lose_screen != null and hud.lose_screen.visible:
 		return
-	if hud and (hud.settings_screen.visible or hud.credits_screen.visible):
+	if hud and (hud.settings_screen.visible or hud.credits_screen.visible or hud.pause_screen.visible):
 		is_shooting = false
-		return # Input guard: ignore gameplay mouse/keyboard input while settings or credits menu is open
+		return # Input guard: ignore gameplay mouse/keyboard input while menus are open
 
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_P:
 			_capture_screenshot()
-		elif event.keycode == KEY_ESCAPE:
-			if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-				Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-			else:
-				Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	if game_over: return
 	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 		virtual_mouse_pos += event.relative * mouse_sensitivity
@@ -1533,3 +1530,11 @@ func freeze_sun() -> void:
 	if sun_ray_mat:
 		var tw2 = create_tween()
 		tw2.tween_property(sun_ray_mat, "emission", Color(0.2, 0.6, 1.0), 0.3)
+
+func _on_game_paused() -> void:
+	timer_running = false
+	shoot_loop_sfx.stream_paused = true
+
+func _on_game_resumed() -> void:
+	timer_running = true
+	shoot_loop_sfx.stream_paused = false

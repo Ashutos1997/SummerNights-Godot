@@ -121,16 +121,13 @@ texture_progress = ExtResource("7_prog_red")
 
 [node name="WaterBar" type="VBoxContainer" parent="HUD"]
 layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
+anchors_preset = 2
 anchor_top = 1.0
-anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -260.0
+offset_left = 24.0
 offset_top = -68.0
-offset_right = -20.0
+offset_right = 264.0
 offset_bottom = -24.0
-grow_horizontal = 2
 grow_vertical = 0
 theme_override_constants/separation = 6
 alignment = 1
@@ -156,16 +153,16 @@ texture_progress = ExtResource("8_prog_blue")
 
 [node name="IceChargeContainer" type="VBoxContainer" parent="HUD"]
 layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
+anchors_preset = 3
+anchor_left = 1.0
 anchor_top = 1.0
-anchor_right = 0.5
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 20.0
+offset_left = -264.0
 offset_top = -68.0
-offset_right = 260.0
+offset_right = -24.0
 offset_bottom = -24.0
-grow_horizontal = 2
+grow_horizontal = 0
 grow_vertical = 0
 theme_override_constants/separation = 6
 alignment = 1
@@ -236,6 +233,7 @@ theme_override_font_sizes/font_size = 20
 text = "LVL 01"
 
 [node name="TopRightButtons" type="HBoxContainer" parent="HUD"]
+visible = false
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
@@ -265,6 +263,83 @@ theme_override_constants/outline_size = 2
 theme_override_font_sizes/font_size = 22
 text = "CREDITS"
 horizontal_alignment = 2
+
+[node name="esc_hint_label" type="Label" parent="HUD"]
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -200.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 54.0
+grow_horizontal = 0
+horizontal_alignment = 2
+text = "ESC · PAUSE"
+
+[node name="pause_screen" type="Control" parent="HUD"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="HUD/pause_screen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.8)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/pause_screen/ColorRect"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -120.0
+offset_right = 100.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="Title" type="Label" parent="HUD/pause_screen/ColorRect/VBoxContainer"]
+layout_mode = 2
+horizontal_alignment = 1
+text = "PAUSED"
+
+[node name="ResumeBtn" type="Button" parent="HUD/pause_screen/ColorRect/VBoxContainer"]
+custom_minimum_size = Vector2(200, 44)
+layout_mode = 2
+mouse_filter = 0
+text = "RESUME"
+
+[node name="SettingsBtn" type="Button" parent="HUD/pause_screen/ColorRect/VBoxContainer"]
+custom_minimum_size = Vector2(200, 44)
+layout_mode = 2
+mouse_filter = 0
+text = "SETTINGS"
+
+[node name="CreditsBtn" type="Button" parent="HUD/pause_screen/ColorRect/VBoxContainer"]
+custom_minimum_size = Vector2(200, 44)
+layout_mode = 2
+mouse_filter = 0
+text = "CREDITS"
+
+[node name="MainMenuBtn" type="Button" parent="HUD/pause_screen/ColorRect/VBoxContainer"]
+custom_minimum_size = Vector2(200, 44)
+layout_mode = 2
+mouse_filter = 0
+text = "MAIN MENU"
 
 [node name="SettingsScreen" type="Control" parent="HUD"]
 layout_mode = 1
