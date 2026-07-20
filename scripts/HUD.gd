@@ -9,6 +9,7 @@ signal reduce_motion_changed(enabled: bool)
 @onready var water_bar = $HUD/WaterBar/WaterBar
 @onready var water_label = $HUD/WaterBar/Label
 @onready var ice_charge_container = $HUD/IceChargeContainer
+@onready var ice_label = $HUD/IceChargeContainer/Label
 @onready var ice_bar = $HUD/IceChargeContainer/IceBar
 @onready var ice_unlock_label = $HUD/IceUnlockLabel
 @onready var crosshair = $HUD/Crosshair
@@ -116,6 +117,8 @@ func _ready() -> void:
 	
 	_style_lbl(heat_label, 20, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
 	_style_lbl(water_label, 20, Color(0.4, 0.9, 1.0, 1.0), 3, Color.BLACK, font)
+	_style_lbl(ice_label, 20, Color(0.5, 0.85, 1.0, 1.0), 3, Color.BLACK, font)
+	_style_lbl(ice_unlock_label, 24, Color(0.5, 0.85, 1.0, 1.0), 3, Color.BLACK, font)
 	_style_lbl(level_label, 22, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
 	
 	var lvl_sz = level_label.get_theme_font_size("font_size")
@@ -423,6 +426,14 @@ func _apply_language(lang: String) -> void:
 		water_label.text = "물" if is_kr else "WATER"
 		if font: water_label.add_theme_font_override("font", font)
 		water_label.add_theme_font_size_override("font_size", 24 if is_kr else 20)
+	if ice_label:
+		ice_label.text = "얼음 폭발" if is_kr else "ICE BURST"
+		if font: ice_label.add_theme_font_override("font", font)
+		ice_label.add_theme_font_size_override("font_size", 24 if is_kr else 20)
+	if ice_unlock_label:
+		ice_unlock_label.text = "얼음 폭발 해제: 태양을 얼리세요 [우클릭 / R]" if is_kr else "ICE BURST UNLOCKED: FREEZE THE SUN [RMB / R]"
+		if font: ice_unlock_label.add_theme_font_override("font", font)
+		ice_unlock_label.add_theme_font_size_override("font_size", 28 if is_kr else 24)
 	if level_label:
 		level_label.text = "%02d 단계" % GameState.level if is_kr else "LVL  %02d" % GameState.level
 		if font: level_label.add_theme_font_override("font", font)
