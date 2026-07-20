@@ -19,7 +19,7 @@ signal reduce_motion_changed(enabled: bool)
 @onready var end_level_lbl     = $HUD/EndScreen/ColorRect/VBoxContainer/LevelCount
 @onready var end_prompt_lbl    = $HUD/EndScreen/ColorRect/VBoxContainer/RestartPrompt
 
-@onready var timer_label       = $HUD/TimerLabel
+@onready var timer_label       = $HUD/SunHeatBar/TimerLabel
 @onready var phase2_label      = $HUD/Phase2Label
 @onready var lose_screen       = $HUD/LoseScreen
 @onready var lose_title_lbl    = $HUD/LoseScreen/ColorRect/VBoxContainer/Title
