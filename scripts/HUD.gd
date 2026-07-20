@@ -195,7 +195,7 @@ func _ready() -> void:
 		pause_menu_btn.pressed.connect(_on_menu_pressed)
 
 	if font:
-		if pause_title: pause_title.add_theme_font_override("font", font)
+		if pause_title: _style_lbl(pause_title, 32, Color(1.0, 0.85, 0.2, 1.0), 3, Color.BLACK, font)
 		if esc_hint_label: esc_hint_label.add_theme_font_override("font", font)
 
 	if esc_hint_label:
@@ -608,6 +608,26 @@ func _apply_language(lang: String) -> void:
 	if phase2_label:
 		phase2_label.text = "2단계" if is_kr else "PHASE 2"
 		if font: phase2_label.add_theme_font_override("font", font)
+
+	# ── Pause screen ──────────────────────────────────────────────────────────
+	if pause_title:
+		pause_title.text = "일시정지" if is_kr else "PAUSED"
+		if font: pause_title.add_theme_font_override("font", font)
+	if pause_resume_btn:
+		pause_resume_btn.text = "계속" if is_kr else "RESUME"
+		if font: pause_resume_btn.add_theme_font_override("font", font)
+	if settings_btn:
+		settings_btn.text = "설정" if is_kr else "SETTINGS"
+		if font: settings_btn.add_theme_font_override("font", font)
+	if credits_btn:
+		credits_btn.text = "크레딧" if is_kr else "CREDITS"
+		if font: credits_btn.add_theme_font_override("font", font)
+	if pause_menu_btn:
+		pause_menu_btn.text = "메인 메뉴" if is_kr else "MAIN MENU"
+		if font: pause_menu_btn.add_theme_font_override("font", font)
+	if esc_hint_label:
+		esc_hint_label.text = "ESC · 일시정지" if is_kr else "ESC · PAUSE"
+		if font: esc_hint_label.add_theme_font_override("font", font)
 
 	# ── End screen ────────────────────────────────────────────────────────────
 	if end_title_lbl:
