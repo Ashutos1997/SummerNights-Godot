@@ -274,15 +274,18 @@ text = "00"
 [node name="esc_hint_label" type="Label" parent="HUD"]
 visible = false
 layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -200.0
-offset_top = 24.0
-offset_right = -24.0
-offset_bottom = 54.0
-grow_horizontal = 0
-horizontal_alignment = 2
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = 40.0
+offset_right = 100.0
+offset_bottom = 70.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_alignment = 1
 text = "ESC · PAUSE"
 
 [node name="pause_screen" type="Control" parent="HUD"]
