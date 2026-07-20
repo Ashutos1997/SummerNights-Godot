@@ -13,7 +13,7 @@ var is_starting: bool = false
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
-	var is_kr = GameState.lang == "KR"
+	var is_kr = GameState.language == "KR"
 	var font_path = "res://assets/ui/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
 	var font = load(font_path)
 	
