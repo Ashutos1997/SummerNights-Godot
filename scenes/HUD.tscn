@@ -189,20 +189,16 @@ theme_override_constants/separation = 4
 [node name="IceUnlockLabel" type="Label" parent="HUD"]
 visible = false
 layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
+anchors_preset = 2
 anchor_top = 1.0
-anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -200.0
-offset_top = -120.0
-offset_right = 200.0
-offset_bottom = -100.0
-grow_horizontal = 2
+offset_left = 24.0
+offset_top = -80.0
+offset_right = 424.0
+offset_bottom = -56.0
 grow_vertical = 0
 theme_override_font_sizes/font_size = 14
 text = "❄ ICE BURST UNLOCKED: FREEZE THE SUN [RMB / R]"
-horizontal_alignment = 1
 
 
 [node name="Crosshair" type="TextureRect" parent="HUD"]
@@ -283,18 +279,14 @@ text = "00"
 [node name="esc_hint_label" type="Label" parent="HUD"]
 visible = false
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -100.0
-offset_top = 40.0
-offset_right = 100.0
-offset_bottom = 70.0
-grow_horizontal = 2
-grow_vertical = 2
-horizontal_alignment = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -110.0
+offset_right = 224.0
+offset_bottom = -80.0
+grow_vertical = 0
 text = "ESC · PAUSE"
 
 [node name="pause_screen" type="Control" parent="HUD"]

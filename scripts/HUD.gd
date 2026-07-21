@@ -209,7 +209,8 @@ func _ready() -> void:
 
 	if font:
 		if pause_title: _style_lbl(pause_title, 32, Color(1.0, 0.85, 0.2, 1.0), 3, Color.BLACK, font)
-		if esc_hint_label: esc_hint_label.add_theme_font_override("font", font)
+
+	_apply_language(GameState.language)
 
 	if esc_hint_label:
 		esc_hint_label.visible = true
@@ -344,7 +345,6 @@ func _ready() -> void:
 	_on_sens_changed(GameState.mouse_sensitivity)
 	_on_motion_toggled(GameState.reduce_motion)
 	_on_fullscreen_toggled(GameState.fullscreen)
-	_apply_language(GameState.language)
 	
 	
 	# Top right button hover/input connections
@@ -486,8 +486,8 @@ func _apply_language(lang: String) -> void:
 		if font: ice_label.add_theme_font_override("font", font)
 		ice_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
 	if ice_unlock_label:
-		ice_unlock_label.text = "얼음 폭발 해제: 태양을 얼리세요 [우클릭 / R]" if is_kr else "ICE BURST UNLOCKED: FREEZE THE SUN [RMB / R]"
-		if font: ice_unlock_label.add_theme_font_override("font", font)
+		ice_unlock_label.text = "아이스 버스트 해금: 태양을 얼려라  [RMB / R]" if is_kr else "ICE BURST UNLOCKED: FREEZE THE SUN [RMB / R]"
+		ice_unlock_label.add_theme_font_override("font", kenney_font)
 		ice_unlock_label.add_theme_font_size_override("font_size", 28 if is_kr else 24)
 	if level_label:
 		level_label.text = "%02d 단계" % GameState.level if is_kr else "LVL  %02d" % GameState.level
@@ -636,7 +636,7 @@ func _apply_language(lang: String) -> void:
 		if font: pause_menu_btn.add_theme_font_override("font", font)
 	if esc_hint_label:
 		esc_hint_label.text = "ESC · 일시정지" if is_kr else "ESC · PAUSE"
-		if font: esc_hint_label.add_theme_font_override("font", font)
+		esc_hint_label.add_theme_font_override("font", kenney_font)
 
 	# ── End screen ────────────────────────────────────────────────────────────
 	if end_title_lbl:
