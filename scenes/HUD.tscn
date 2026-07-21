@@ -198,6 +198,7 @@ offset_right = 424.0
 offset_bottom = -24.0
 grow_vertical = 0
 theme_override_font_sizes/font_size = 14
+vertical_alignment = 2
 text = "❄ ICE BURST UNLOCKED: FREEZE THE SUN [RMB / R]"
 
 
@@ -287,6 +288,7 @@ offset_top = -54.0
 offset_right = 224.0
 offset_bottom = -24.0
 grow_vertical = 0
+vertical_alignment = 2
 text = "ESC · PAUSE"
 
 [node name="pause_screen" type="Control" parent="HUD"]
