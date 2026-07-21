@@ -5,12 +5,14 @@ signal reduce_motion_changed(enabled: bool)
 
 @onready var heat_bar = $HUD/SunHeatBar/HeatBar
 @onready var heat_label = $HUD/SunHeatBar/Label
-@onready var water_bar_container = $HUD/WaterBar
-@onready var water_bar = $HUD/WaterBar/WaterBar
-@onready var water_label = $HUD/WaterBar/Label
-@onready var ice_charge_container = $HUD/IceChargeContainer
-@onready var ice_label = $HUD/IceChargeContainer/Label
-@onready var ice_bar = $HUD/IceChargeContainer/IceBar
+@onready var water_bar_container = $HUD/resource_container/water_row
+@onready var water_bar = $HUD/resource_container/water_row/WaterBar
+@onready var water_label = $HUD/resource_container/water_row/Label
+
+@onready var ice_row = $HUD/resource_container/ice_row
+@onready var ice_label = $HUD/resource_container/ice_row/Label
+@onready var ice_bar = $HUD/resource_container/ice_row/IceBarContainer/IceBar
+@onready var charge_dots = $HUD/resource_container/ice_row/IceBarContainer/ChargeDots
 @onready var ice_unlock_label = $HUD/IceUnlockLabel
 @onready var crosshair = $HUD/Crosshair
 @onready var win_screen = $HUD/WinScreen
@@ -143,6 +145,17 @@ func _ready() -> void:
 	_style_lbl(lose_title_lbl, 64, Color(1.0, 0.4, 0.1, 1.0), 3, Color.BLACK, font)
 	_style_lbl(lose_subtitle_lbl, 22, Color(1.0, 0.4, 0.1, 0.65), 2, Color.BLACK, font)
 	_style_lbl(lose_level_lbl, 16, Color(1.0, 0.8, 0.2, 0.5), 2, Color.BLACK, font)
+
+	var cfg = GameState.LEVEL_CONFIG[GameState.level]
+	if cfg.ice_charges > 0:
+		ice_row.visible = true
+		if GameState.level == 3:
+			ice_row.modulate.a = 0.0
+			var tw = create_tween()
+			tw.tween_interval(1.0)
+			tw.tween_property(ice_row, "modulate:a", 1.0, 0.4)
+	else:
+		ice_row.visible = false
 
 	# Win screen labels — matches Credits title (32), section header (20), and body (16)
 	_style_lbl(win_title_lbl, 32, Color(1.0, 0.9, 0.2, 1.0), 4, Color(0.0, 0.0, 0.0, 1.0), font)
@@ -990,9 +1003,9 @@ func _on_menu_pressed() -> void:
 
 func update_ice_charges(charges: int, max_charges: int) -> void:
 	if max_charges <= 0:
-		ice_charge_container.visible = false
+		ice_row.visible = false
 	else:
-		ice_charge_container.visible = true
+		ice_row.visible = true
 		ice_bar.value = (float(charges) / float(max_charges)) * 100.0
 
 func show_ice_unlock() -> void:

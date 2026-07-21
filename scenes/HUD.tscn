@@ -110,29 +110,38 @@ stretch_margin_bottom = 10
 texture_under = ExtResource("4_prog_bg")
 texture_progress = ExtResource("7_prog_red")
 
-[node name="WaterBar" type="VBoxContainer" parent="HUD"]
+[node name="resource_container" type="VBoxContainer" parent="HUD"]
 layout_mode = 1
-anchors_preset = 2
+anchors_preset = 3
+anchor_left = 1.0
 anchor_top = 1.0
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 24.0
-offset_top = -68.0
-offset_right = 264.0
+offset_left = -332.0
+offset_top = -100.0
+offset_right = -24.0
 offset_bottom = -24.0
+grow_horizontal = 0
 grow_vertical = 0
-theme_override_constants/separation = 6
-alignment = 1
+theme_override_constants/separation = 8
+alignment = 2
 
-[node name="Label" type="Label" parent="HUD/WaterBar"]
+[node name="water_row" type="HBoxContainer" parent="HUD/resource_container"]
 layout_mode = 2
-size_flags_horizontal = 4
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="HUD/resource_container/water_row"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "💧 WATER"
-horizontal_alignment = 1
+horizontal_alignment = 2
 
-[node name="WaterBar" type="TextureProgressBar" parent="HUD/WaterBar"]
-custom_minimum_size = Vector2(240, 20)
+[node name="WaterBar" type="TextureProgressBar" parent="HUD/resource_container/water_row"]
+custom_minimum_size = Vector2(200, 20)
 layout_mode = 2
+size_flags_horizontal = 3
 value = 50.0
 nine_patch_stretch = true
 stretch_margin_left = 10
@@ -142,32 +151,27 @@ stretch_margin_bottom = 10
 texture_under = ExtResource("4_prog_bg")
 texture_progress = ExtResource("8_prog_blue")
 
-[node name="IceChargeContainer" type="VBoxContainer" parent="HUD"]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -264.0
-offset_top = -68.0
-offset_right = -24.0
-offset_bottom = -24.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_constants/separation = 6
-alignment = 1
-
-[node name="Label" type="Label" parent="HUD/IceChargeContainer"]
+[node name="ice_row" type="HBoxContainer" parent="HUD/resource_container"]
+visible = false
 layout_mode = 2
-size_flags_horizontal = 4
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="HUD/resource_container/ice_row"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "❄ ICE BURST"
-horizontal_alignment = 1
+horizontal_alignment = 2
 
-[node name="IceBar" type="TextureProgressBar" parent="HUD/IceChargeContainer"]
-custom_minimum_size = Vector2(240, 20)
+[node name="IceBarContainer" type="HBoxContainer" parent="HUD/resource_container/ice_row"]
 layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="IceBar" type="TextureProgressBar" parent="HUD/resource_container/ice_row/IceBarContainer"]
+custom_minimum_size = Vector2(200, 20)
+layout_mode = 2
+size_flags_horizontal = 3
 value = 100.0
 nine_patch_stretch = true
 stretch_margin_left = 10
@@ -176,6 +180,11 @@ stretch_margin_right = 10
 stretch_margin_bottom = 10
 texture_under = ExtResource("4_prog_bg")
 texture_progress = ExtResource("8_prog_blue")
+
+[node name="ChargeDots" type="HBoxContainer" parent="HUD/resource_container/ice_row/IceBarContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 4
 
 [node name="IceUnlockLabel" type="Label" parent="HUD"]
 visible = false
