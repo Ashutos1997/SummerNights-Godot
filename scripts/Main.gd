@@ -1083,10 +1083,11 @@ func _process(delta: float) -> void:
 		gun_spray.emitting = true
 		
 		# Subtle accessibility-friendly recoil kick (push gun and camera back slightly)
-		gun.position.z += 0.06 * delta
-		gun.position.y += 0.02 * delta
-		camera.position.z += 0.015 * delta
-		camera.rotation.x += 0.004 * delta
+		if not reduce_motion:
+			gun.position.z += 0.06 * delta
+			gun.position.y += 0.02 * delta
+			camera.position.z += 0.015 * delta
+			camera.rotation.x += 0.004 * delta
 		
 		# Spawn wet marks on environment when water spray hits it
 		if result and wet_spawn_timer <= 0.0:
@@ -1193,6 +1194,8 @@ func _input(event: InputEvent) -> void:
 		else:
 			is_shooting = event.pressed
 func shake(duration: float, strength: float) -> void:
+	if reduce_motion:
+		return
 	is_shaking = true
 	var origin = camera.position
 	var elapsed = 0.0
