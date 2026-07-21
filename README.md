@@ -116,5 +116,5 @@ SummerNights-Godot/
 | SFX - UI Audio Pack | Kenney | CC0 |
 | SFX - Ice Shoot | urupin (Freesound) | CC0 |
 | SFX - Ice Hit | antonsoederberg (Freesound) | CC0 |
-| VFX - Ice Blast Spell Effects | OpenGameArt | CC0 |
+| VFX - Ice Blast Projectile & Particles | Procedural Godot Primitives | - |
 | Procedural Clouds and Seagulls | Hand-crafted GDScript | - |
