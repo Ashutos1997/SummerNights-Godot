@@ -114,4 +114,7 @@ SummerNights-Godot/
 | SFX - 40 CC0 Water/Splash/Slime | OpenGameArt | CC0 |
 | SFX - Water Gun Shot | belanhud (Freesound) | CC0 |
 | SFX - UI Audio Pack | Kenney | CC0 |
+| SFX - Ice Shoot | urupin (Freesound) | CC0 |
+| SFX - Ice Hit | antonsoederberg (Freesound) | CC0 |
+| VFX - Ice Blast Spell Effects | OpenGameArt | CC0 |
 | Procedural Clouds and Seagulls | Hand-crafted GDScript | - |

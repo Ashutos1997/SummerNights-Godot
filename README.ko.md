@@ -115,4 +115,7 @@ SummerNights-Godot/
 | SFX - 40가지 CC0 물/물결 효과음 | OpenGameArt | CC0 |
 | SFX - 물총 발사음 | belanhud (Freesound) | CC0 |
 | SFX - UI 오디오 팩 | Kenney | CC0 |
+| SFX - 얼음 발사음 | urupin (Freesound) | CC0 |
+| SFX - 얼음 피격음 | antonsoederberg (Freesound) | CC0 |
+| VFX - 얼음 폭발 시각 효과 | OpenGameArt | CC0 |
 | 절차적 구름 및 갈매기 | 수작업 GDScript | - |
