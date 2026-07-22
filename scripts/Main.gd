@@ -629,15 +629,18 @@ func _build_scene() -> void:
 	
 	# Connector where hose meets the gun
 	var connector = MeshInstance3D.new()
+	connector.name = "HoseConnector"
 	var cyl = CylinderMesh.new()
-	cyl.top_radius = 0.07
-	cyl.bottom_radius = 0.07
-	cyl.height = 0.1
+	cyl.top_radius = 0.05
+	cyl.bottom_radius = 0.05
+	cyl.height = 0.15
 	connector.mesh = cyl
 	connector.material_override = hose_material
 	# Parent to gun so it automatically moves with recoil
-	connector.position = Vector3(0.0, -0.45, -0.05)
-	connector.rotation_degrees = Vector3(90, 0, 0)
+	# Shifted to +Z and down to match the handle
+	connector.position = Vector3(0.0, -0.42, 0.15)
+	# Angled slightly to match handle slope
+	connector.rotation_degrees = Vector3(70, 0, 0)
 	gun.add_child(connector)
 	
 	# Water spray particles (attached to gun)
@@ -1331,26 +1334,23 @@ func _draw_circle_on_image(img: Image, cx: int, cy: int, radius: int, color: Col
 func _build_hose_mesh() -> void:
 	# Control points in camera-local space
 	
-	# P0 — gun underside attachment point
-	var p0 = Vector3(
-		gun.position.x + 0.0,   # centered on gun X
-		gun.position.y - 0.45,  # below gun model
-		gun.position.z - 0.05   # matching connector Z
-	)
+	# P0 — exactly at the connector, applying gun's rotation and position!
+	var connector = gun.get_node("HoseConnector")
+	var p0 = gun.transform * connector.position
 	
 	# P1 — sag/droop control point
-	# This is what animates with firing and idle sway
+	# Droop straight down so we get a nice U/J curve, not a straight line
 	var p1 = Vector3(
-		p0.x - 0.2 + hose_sway_offset,  # swing left
-		p0.y - 1.0 + hose_sag_offset,   # droop down significantly
-		p0.z + 0.2                      # curve forward
+		p0.x + hose_sway_offset,
+		p0.y - 1.2 + hose_sag_offset,
+		p0.z + 0.1
 	)
 	
 	# P2 — exit point, bottom of view, swings left
 	var p2 = Vector3(
-		p0.x - 0.6,   # far left — going behind player
-		p0.y - 2.0,   # well below screen
-		p0.z + 0.3
+		p0.x - 1.0,   # swing left to player's body
+		p0.y - 2.5,   # well below screen
+		p0.z + 1.0    # swing back towards camera
 	)
 	
 	# Generate bezier curve points
