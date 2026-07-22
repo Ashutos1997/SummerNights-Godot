@@ -1282,12 +1282,14 @@ func _build_hands() -> Node3D:
 	# Scaled down to a reasonable size to fit the gun
 	hands.scale = Vector3(2.5, 2.5, 2.5)
 	
+	# Dark tactical fingerless glove for the palm to create massive contrast against the fingers
 	var skin_palm_mat = StandardMaterial3D.new()
-	skin_palm_mat.albedo_color = Color(0.75, 0.55, 0.35) # Darker palm
+	skin_palm_mat.albedo_color = Color(0.15, 0.15, 0.15) # Dark grey/black glove
 	skin_palm_mat.roughness = 0.9
 	
+	# Bright skin tone for the fingers to pop against the dark glove and gun
 	var skin_finger_mat = StandardMaterial3D.new()
-	skin_finger_mat.albedo_color = Color(0.90, 0.70, 0.50) # Lighter fingers
+	skin_finger_mat.albedo_color = Color(0.95, 0.75, 0.60) # Bright peach skin
 	skin_finger_mat.roughness = 0.9
 	
 	# --- RIGHT HAND (Trigger grip) ---
