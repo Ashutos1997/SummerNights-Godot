@@ -637,10 +637,10 @@ func _build_scene() -> void:
 	connector.mesh = cyl
 	connector.material_override = hose_material
 	# Parent to gun so it automatically moves with recoil
-	# Positioned at the small black circle on the right side of the orange handle (circled by user)
-	connector.position = Vector3(0.09, -0.42, 0.22)
-	# Angled to stick straight out to the right
-	connector.rotation_degrees = Vector3(0, 0, -90)
+	# Positioned at the backside of the gun (back of the orange handle)
+	connector.position = Vector3(0.0, -0.35, 0.25)
+	# Angled to stick straight back towards the camera
+	connector.rotation_degrees = Vector3(90, 0, 0)
 	gun.add_child(connector)
 	
 	# Water spray particles (attached to gun)
@@ -1339,18 +1339,18 @@ func _build_hose_mesh() -> void:
 	var p0 = gun.transform * connector.position
 	
 	# P1 — sag/droop control point
-	# Droop deep down to form a U-shape, pushing out right
+	# Droop deep down and back towards player
 	var p1 = Vector3(
-		p0.x + 0.4 + hose_sway_offset, # push out to the right
-		p0.y - 1.5 + hose_sag_offset,  # deep droop
-		p0.z + 0.2                     # slight curve back
+		p0.x + hose_sway_offset, 
+		p0.y - 1.2 + hose_sag_offset,  
+		p0.z + 0.5                     
 	)
 	
 	# P2 — exit point, bottom right of view
 	var p2 = Vector3(
-		p0.x + 2.5,   # swing far right off-screen
-		p0.y - 1.0,   # higher than p1 to create the U-shape loop
-		p0.z + 1.2    # swing back towards camera behind player
+		p0.x + 0.5,   
+		p0.y - 2.5,   
+		p0.z + 1.5    
 	)
 	
 	# Generate bezier curve points
