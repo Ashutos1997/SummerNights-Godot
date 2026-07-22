@@ -637,8 +637,8 @@ func _build_scene() -> void:
 	connector.mesh = cyl
 	connector.material_override = hose_material
 	# Parent to gun so it automatically moves with recoil
-	# Positioned clearly OUTSIDE the right side of the handle (to prevent any clipping)
-	connector.position = Vector3(0.25, -0.35, 0.20)
+	# Positioned at the small black circle on the right side of the orange handle (circled by user)
+	connector.position = Vector3(0.12, -0.42, 0.22)
 	# Angled to stick straight out to the right
 	connector.rotation_degrees = Vector3(0, 0, -90)
 	gun.add_child(connector)
@@ -1339,18 +1339,18 @@ func _build_hose_mesh() -> void:
 	var p0 = gun.transform * connector.position
 	
 	# P1 — sag/droop control point
-	# Swing MASSIVELY to the right so it's completely unmissable
+	# Pull heavily DOWN to create a real curve (not a straight line)
 	var p1 = Vector3(
-		p0.x + 1.5 + hose_sway_offset, 
-		p0.y - 0.5 + hose_sag_offset,  
+		p0.x + 0.2 + hose_sway_offset, 
+		p0.y - 1.5 + hose_sag_offset,  
 		p0.z                     
 	)
 	
 	# P2 — exit point, bottom right of view
 	var p2 = Vector3(
-		p0.x + 3.0,   
+		p0.x + 1.5,   
 		p0.y - 1.0,   
-		p0.z - 0.2    
+		p0.z + 0.5    
 	)
 	
 	# Generate bezier curve points
