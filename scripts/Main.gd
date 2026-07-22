@@ -1146,8 +1146,8 @@ func _process(delta: float) -> void:
 		# Force update the connector position here so hot-reloading works instantly without a game restart!
 		var connector = gun.get_node_or_null("HoseConnector")
 		if is_instance_valid(connector):
-			connector.position = Vector3(0.0, -0.32, 0.22) # Attached to the backside of the handle
-			connector.rotation_degrees = Vector3(90, 0, 0) # Pointing straight backward
+			connector.position = Vector3(0.0, -0.15, 0.45) # Attached perfectly to the back face of the grey gun body!
+			connector.rotation_degrees = Vector3(90, 0, 0) # Pointing straight backward towards camera
 		_build_hose_mesh()
 		
 	# Update crosshair position to exactly match mouse pointer
