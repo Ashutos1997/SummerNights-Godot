@@ -1215,11 +1215,6 @@ func _input(event: InputEvent) -> void:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		else:
 			is_shooting = event.pressed
-func _on_game_resumed() -> void:
-	if not is_instance_valid(hud):
-		return
-	if is_shooting:
-		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Sun Face Procedural Drawing
