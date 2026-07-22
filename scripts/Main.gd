@@ -81,6 +81,8 @@ var sun_rays_node: Node3D
 var sun_face:    Sprite3D
 var face_textures: Dictionary = {}
 var gun:         Node3D
+var right_hand:  Node3D
+var left_hand:   Node3D
 var muzzle:      Marker3D
 var virtual_mouse_pos: Vector2
 var blasts:      Node3D
@@ -601,6 +603,9 @@ func _build_scene() -> void:
 	muzzle.position = Vector3(0, 0, -1.0)
 	gun.add_child(muzzle)
 	
+	# Add procedural hands to the gun
+	gun.add_child(_build_hands())
+	
 	# Water spray particles (attached to gun)
 	gun_spray = GPUParticles3D.new()
 	var g_mat = ParticleProcessMaterial.new()
@@ -1072,7 +1077,14 @@ func _process(delta: float) -> void:
 	# Smoothly return gun to base position if not actively recoiling
 	# Recoil kicks Z forward (closer to camera) and Y up
 	gun.position = gun.position.lerp(gun_base_pos, 10.0 * delta)
-	
+	# Trigger finger animation
+	if is_instance_valid(right_hand):
+		var trigger_finger = right_hand.get_node_or_null("TriggerFinger")
+		if trigger_finger:
+			var target_rot = Vector3(90, 0, 90) # Resting
+			if is_shooting and can_shoot:
+				target_rot = Vector3(135, 0, 90) # Pulled
+			trigger_finger.rotation_degrees = trigger_finger.rotation_degrees.lerp(target_rot, 20.0 * delta)
 	# Camera recoil spring back (smoothly returns to target coordinate 0,0,5 and rotation 0)
 	camera.position = camera.position.lerp(Vector3(0, 0, 5), 8.0 * delta)
 	camera.rotation.x = lerp(camera.rotation.x, 0.0, 8.0 * delta)
@@ -1258,8 +1270,94 @@ func _draw_circle_on_image(img: Image, cx: int, cy: int, radius: int, color: Col
 	for x in range(cx - radius, cx + radius + 1):
 		for y in range(cy - radius, cy + radius + 1):
 			if (x - cx) * (x - cx) + (y - cy) * (y - cy) <= radius * radius:
-				if x >= 0 and x < FACE_SIZE and y >= 0 and y < FACE_SIZE:
-					img.set_pixel(x, y, color)
+				img.set_pixel(x, y, color)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Procedural 3D Hands
+# ─────────────────────────────────────────────────────────────────────────────
+func _build_hands() -> Node3D:
+	var hands = Node3D.new()
+	hands.name = "ProceduralHands"
+	
+	var skin_mat = StandardMaterial3D.new()
+	skin_mat.albedo_color = Color(0.85, 0.65, 0.45) # Warm skin tone
+	skin_mat.roughness = 0.9
+	
+	# --- RIGHT HAND (Trigger grip) ---
+	right_hand = Node3D.new()
+	right_hand.name = "RightHand"
+	# Positioned relative to gun base. Adjust these to wrap around the blaster's handle.
+	right_hand.position = Vector3(0.04, -0.4, 0.1) 
+	hands.add_child(right_hand)
+	
+	var r_palm_mesh = BoxMesh.new()
+	r_palm_mesh.size = Vector3(0.06, 0.12, 0.08)
+	var r_palm = MeshInstance3D.new()
+	r_palm.mesh = r_palm_mesh
+	r_palm.material_override = skin_mat
+	right_hand.add_child(r_palm)
+	
+	var finger_mesh = CapsuleMesh.new()
+	finger_mesh.radius = 0.018
+	finger_mesh.height = 0.07
+	
+	# Right Thumb
+	var r_thumb = MeshInstance3D.new()
+	r_thumb.mesh = finger_mesh
+	r_thumb.material_override = skin_mat
+	r_thumb.position = Vector3(-0.04, 0.03, -0.02)
+	r_thumb.rotation_degrees = Vector3(0, -45, 45)
+	right_hand.add_child(r_thumb)
+	
+	# Right Fingers (wrapped around grip)
+	for i in range(3):
+		var finger = MeshInstance3D.new()
+		finger.mesh = finger_mesh
+		finger.material_override = skin_mat
+		finger.position = Vector3(-0.04, -0.01 - (i * 0.03), -0.04)
+		finger.rotation_degrees = Vector3(90, 0, 90)
+		right_hand.add_child(finger)
+		
+	# Trigger Finger (slightly extended/raised)
+	var trigger_finger = MeshInstance3D.new()
+	trigger_finger.name = "TriggerFinger"
+	trigger_finger.mesh = finger_mesh
+	trigger_finger.material_override = skin_mat
+	trigger_finger.position = Vector3(-0.04, 0.04, -0.05)
+	trigger_finger.rotation_degrees = Vector3(90, 0, 90)
+	right_hand.add_child(trigger_finger)
+	
+	# --- LEFT HAND (Supporting the barrel/pump) ---
+	left_hand = Node3D.new()
+	left_hand.name = "LeftHand"
+	# Position further down the barrel to support it
+	left_hand.position = Vector3(-0.12, -0.28, -0.45)
+	left_hand.rotation_degrees = Vector3(0, 0, -45) # Angled inward
+	hands.add_child(left_hand)
+	
+	var l_palm = MeshInstance3D.new()
+	l_palm.mesh = r_palm_mesh
+	l_palm.material_override = skin_mat
+	left_hand.add_child(l_palm)
+	
+	# Left Fingers gripping
+	for i in range(4):
+		var finger = MeshInstance3D.new()
+		finger.mesh = finger_mesh
+		finger.material_override = skin_mat
+		finger.position = Vector3(0.04, 0.04 - (i * 0.025), -0.04)
+		finger.rotation_degrees = Vector3(90, 0, 90)
+		left_hand.add_child(finger)
+		
+	# Left Thumb
+	var l_thumb = MeshInstance3D.new()
+	l_thumb.mesh = finger_mesh
+	l_thumb.material_override = skin_mat
+	l_thumb.position = Vector3(-0.04, 0.04, -0.03)
+	l_thumb.rotation_degrees = Vector3(0, 45, -45)
+	left_hand.add_child(l_thumb)
+	
+	return hands
 
 func _draw_line_on_image(img: Image, x1: int, y1: int, x2: int, y2: int, thickness: int, color: Color) -> void:
 	var dx = abs(x2 - x1)
