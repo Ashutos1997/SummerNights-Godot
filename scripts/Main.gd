@@ -447,7 +447,7 @@ func _build_scene() -> void:
 	var face_sprite = Sprite3D.new()
 	face_sprite.name = "SunFace"
 	face_sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	face_sprite.pixel_size = 0.02
+	face_sprite.pixel_size = 0.06
 	face_sprite.position = Vector3(0, 0, 3.4)
 	face_sprite.no_depth_test = true
 	face_sprite.alpha_cut = SpriteBase3D.ALPHA_CUT_DISABLED
