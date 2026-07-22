@@ -449,11 +449,11 @@ func _build_scene() -> void:
 	shadow_sprite.name = "SunFaceShadow"
 	shadow_sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	shadow_sprite.pixel_size = 0.06
-	shadow_sprite.position = Vector3(0.08, -0.08, 3.39) # Offset down-right
+	shadow_sprite.position = Vector3(0.6, -0.6, 3.38) # Massive offset (approx 10 pixels down-right)
 	shadow_sprite.no_depth_test = true
 	shadow_sprite.alpha_cut = SpriteBase3D.ALPHA_CUT_DISABLED
 	shadow_sprite.render_priority = -1 # Render behind face
-	shadow_sprite.modulate = Color(0, 0, 0, 0.9) # Dark drop shadow
+	shadow_sprite.modulate = Color(0, 0, 0, 1.0) # Pure opaque black shadow
 	sun.add_child(shadow_sprite)
 	sun_face_shadow = shadow_sprite
 	
@@ -1344,16 +1344,16 @@ func _update_sun_face(ratio: float) -> void:
 	
 	if ratio >= 0.75: 
 		expression = "angry"
-		target_color = Color(3.0, 0.2, 0.0) # Intense fiery red/orange glow
+		target_color = Color(15.0, 1.5, 0.0) # Insanely intense fiery yellow/orange glow
 	elif ratio >= 0.50: 
 		expression = "annoyed"
-		target_color = Color(2.0, 0.8, 0.1) # Bright warm golden glow
+		target_color = Color(10.0, 5.0, 0.5) # Bright warm golden glow
 	elif ratio >= 0.25: 
 		expression = "neutral"
-		target_color = Color(1.2, 1.0, 0.8) # Soft warm white glow
+		target_color = Color(8.0, 6.0, 4.0) # Intense warm white glow
 	else: 
 		expression = "happy"
-		target_color = Color(0.5, 2.0, 3.0) # Vibrant cyan/blue watery glow
+		target_color = Color(1.0, 8.0, 15.0) # Piercing cyan/blue watery glow
 	
 	if sun_face.texture != face_textures.get(expression):
 		sun_face.texture = face_textures.get(expression)
