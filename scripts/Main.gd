@@ -1328,7 +1328,7 @@ func _draw_circle_on_image(img: Image, cx: int, cy: int, radius: int, color: Col
 # ─────────────────────────────────────────────────────────────────────────────
 # Procedural Water Hose Setup
 # ─────────────────────────────────────────────────────────────────────────────
-func _build_hose_mesh() -> ArrayMesh:
+func _build_hose_mesh() -> void:
 	# Control points in camera-local space
 	
 	# P0 — gun underside attachment point
