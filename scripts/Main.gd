@@ -79,7 +79,6 @@ var sun_mat:     StandardMaterial3D
 var sun_ray_mat: StandardMaterial3D
 var sun_rays_node: Node3D
 var sun_face:    Sprite3D
-var sun_face_shadow: Sprite3D
 var face_textures: Dictionary = {}
 var gun:         Node3D
 var muzzle:      Marker3D
@@ -445,18 +444,6 @@ func _build_scene() -> void:
 	sun_light.omni_range = 30.0
 	sun.add_child(sun_light)
 	
-	var shadow_sprite = Sprite3D.new()
-	shadow_sprite.name = "SunFaceShadow"
-	shadow_sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	shadow_sprite.pixel_size = 0.08
-	shadow_sprite.position = Vector3(0.2, -0.2, 3.38) # Tight offset for a stroke effect
-	shadow_sprite.no_depth_test = true
-	shadow_sprite.alpha_cut = SpriteBase3D.ALPHA_CUT_DISABLED
-	shadow_sprite.render_priority = -1 # Render behind face
-	shadow_sprite.modulate = Color(1.5, 0.5, 0.0, 1.0) # Glowing orange stroke similar to sun rays
-	sun.add_child(shadow_sprite)
-	sun_face_shadow = shadow_sprite
-	
 	var face_sprite = Sprite3D.new()
 	face_sprite.name = "SunFace"
 	face_sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
@@ -464,7 +451,6 @@ func _build_scene() -> void:
 	face_sprite.position = Vector3(0, 0, 3.4)
 	face_sprite.no_depth_test = true
 	face_sprite.alpha_cut = SpriteBase3D.ALPHA_CUT_DISABLED
-	face_sprite.render_priority = 0
 	sun.add_child(face_sprite)
 	sun_face = face_sprite
 	
@@ -1246,7 +1232,27 @@ func _draw_face(expression: String) -> ImageTexture:
 		"annoyed": _draw_annoyed(img, cx, cy)
 		"neutral": _draw_neutral(img, cx, cy)
 		"happy": _draw_happy(img, cx, cy)
+		
+	# Add the dark orange outer stroke procedurally
+	_add_outline_to_image(img, 4, Color(0.6, 0.2, 0.0, 1.0))
+	
 	return ImageTexture.create_from_image(img)
+
+func _add_outline_to_image(img: Image, thickness: int, color: Color) -> void:
+	var outline_dict = {}
+	for x in range(FACE_SIZE):
+		for y in range(FACE_SIZE):
+			if img.get_pixel(x, y).a > 0.5:
+				for dx in range(-thickness, thickness + 1):
+					for dy in range(-thickness, thickness + 1):
+						if dx*dx + dy*dy <= thickness*thickness:
+							var nx = x + dx
+							var ny = y + dy
+							if nx >= 0 and nx < FACE_SIZE and ny >= 0 and ny < FACE_SIZE:
+								if img.get_pixel(nx, ny).a < 0.5:
+									outline_dict[Vector2(nx, ny)] = true
+	for p in outline_dict:
+		img.set_pixel(int(p.x), int(p.y), color)
 
 func _draw_circle_on_image(img: Image, cx: int, cy: int, radius: int, color: Color) -> void:
 	for x in range(cx - radius, cx + radius + 1):
@@ -1355,8 +1361,6 @@ func _update_sun_face(ratio: float) -> void:
 	
 	if sun_face.texture != face_textures.get(expression):
 		sun_face.texture = face_textures.get(expression)
-		if is_instance_valid(sun_face_shadow):
-			sun_face_shadow.texture = face_textures.get(expression)
 	
 	if is_sun_frozen:
 		sun_face.modulate = Color(0.2, 0.5, 2.5) # Deep icy blue flash
@@ -1364,8 +1368,6 @@ func _update_sun_face(ratio: float) -> void:
 		sun_face.modulate = target_color
 	
 	sun_face.visible = sun.visible
-	if is_instance_valid(sun_face_shadow):
-		sun_face_shadow.visible = sun.visible
 
 func shake(duration: float, strength: float) -> void:
 	if reduce_motion:
