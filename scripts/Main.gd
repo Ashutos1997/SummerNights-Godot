@@ -448,8 +448,8 @@ func _build_scene() -> void:
 	var shadow_sprite = Sprite3D.new()
 	shadow_sprite.name = "SunFaceShadow"
 	shadow_sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	shadow_sprite.pixel_size = 0.06
-	shadow_sprite.position = Vector3(0.6, -0.6, 3.38) # Massive offset (approx 10 pixels down-right)
+	shadow_sprite.pixel_size = 0.08
+	shadow_sprite.position = Vector3(0.3, -0.3, 3.38) # Tighter offset for a cleaner outline
 	shadow_sprite.no_depth_test = true
 	shadow_sprite.alpha_cut = SpriteBase3D.ALPHA_CUT_DISABLED
 	shadow_sprite.render_priority = -1 # Render behind face
@@ -460,7 +460,7 @@ func _build_scene() -> void:
 	var face_sprite = Sprite3D.new()
 	face_sprite.name = "SunFace"
 	face_sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	face_sprite.pixel_size = 0.06
+	face_sprite.pixel_size = 0.08
 	face_sprite.position = Vector3(0, 0, 3.4)
 	face_sprite.no_depth_test = true
 	face_sprite.alpha_cut = SpriteBase3D.ALPHA_CUT_DISABLED
@@ -1344,16 +1344,16 @@ func _update_sun_face(ratio: float) -> void:
 	
 	if ratio >= 0.75: 
 		expression = "angry"
-		target_color = Color(15.0, 1.5, 0.0) # Insanely intense fiery yellow/orange glow
+		target_color = Color(15.0, 0.0, 8.0) # Hot Neon Pink/Magenta (contrasts yellow sun)
 	elif ratio >= 0.50: 
 		expression = "annoyed"
-		target_color = Color(10.0, 5.0, 0.5) # Bright warm golden glow
+		target_color = Color(10.0, 0.0, 15.0) # Neon Purple
 	elif ratio >= 0.25: 
 		expression = "neutral"
-		target_color = Color(8.0, 6.0, 4.0) # Intense warm white glow
+		target_color = Color(0.0, 15.0, 5.0) # Bright Emerald Green
 	else: 
 		expression = "happy"
-		target_color = Color(1.0, 8.0, 15.0) # Piercing cyan/blue watery glow
+		target_color = Color(0.0, 10.0, 15.0) # Bright Cyan
 	
 	if sun_face.texture != face_textures.get(expression):
 		sun_face.texture = face_textures.get(expression)
