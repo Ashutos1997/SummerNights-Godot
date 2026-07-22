@@ -1289,8 +1289,8 @@ func _build_hands() -> Node3D:
 	# --- RIGHT HAND (Trigger grip) ---
 	right_hand = Node3D.new()
 	right_hand.name = "RightHand"
-	# Hugging the back right of the blaster
-	right_hand.position = Vector3(0.12, -0.05, 0.1) 
+	# Hugging the back right of the blaster grip
+	right_hand.position = Vector3(0.08, -0.15, 0.05) 
 	hands.add_child(right_hand)
 	
 	var r_palm_mesh = BoxMesh.new()
@@ -1333,8 +1333,8 @@ func _build_hands() -> Node3D:
 	# --- LEFT HAND (Supporting the barrel/pump) ---
 	left_hand = Node3D.new()
 	left_hand.name = "LeftHand"
-	# Hugging the left side of the barrel
-	left_hand.position = Vector3(-0.15, 0.0, -0.2)
+	# Tucked under and hugging the left side of the barrel
+	left_hand.position = Vector3(-0.08, -0.22, -0.4)
 	left_hand.rotation_degrees = Vector3(0, 0, -45) # Angled inward
 	hands.add_child(left_hand)
 	
@@ -1352,12 +1352,12 @@ func _build_hands() -> Node3D:
 		finger.rotation_degrees = Vector3(90, 0, 90)
 		left_hand.add_child(finger)
 		
-	# Left Thumb
+	# Left Thumb (wrapping over the top of the barrel)
 	var l_thumb = MeshInstance3D.new()
 	l_thumb.mesh = finger_mesh
 	l_thumb.material_override = skin_mat
-	l_thumb.position = Vector3(-0.06, 0.06, -0.04)
-	l_thumb.rotation_degrees = Vector3(0, 45, -45)
+	l_thumb.position = Vector3(0.04, 0.08, 0.0)
+	l_thumb.rotation_degrees = Vector3(0, 0, 45)
 	left_hand.add_child(l_thumb)
 	
 	return hands
