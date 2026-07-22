@@ -78,6 +78,8 @@ var sun_mesh:    MeshInstance3D
 var sun_mat:     StandardMaterial3D
 var sun_ray_mat: StandardMaterial3D
 var sun_rays_node: Node3D
+var sun_face:    Sprite3D
+var face_textures: Dictionary = {}
 var gun:         Node3D
 var muzzle:      Marker3D
 var virtual_mouse_pos: Vector2
@@ -441,6 +443,24 @@ func _build_scene() -> void:
 	sun_light.light_energy = 2.0
 	sun_light.omni_range = 30.0
 	sun.add_child(sun_light)
+	
+	var face_sprite = Sprite3D.new()
+	face_sprite.name = "SunFace"
+	face_sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	face_sprite.pixel_size = 0.008
+	face_sprite.position = Vector3(0, 0, 2.2)
+	face_sprite.no_depth_test = true
+	face_sprite.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
+	sun.add_child(face_sprite)
+	sun_face = face_sprite
+	
+	face_textures = {
+		"angry":   _draw_face("angry"),
+		"annoyed": _draw_face("annoyed"),
+		"neutral": _draw_face("neutral"),
+		"happy":   _draw_face("happy"),
+	}
+	sun_face.texture = face_textures["angry"]
 	
 	# ── Sunspot / White-Hot Critical Heat Vent Target ──────────────────
 	# Balanced 1.6m White-Hot Core + Fiery Orange Outer Rim
@@ -1022,6 +1042,8 @@ func _process(delta: float) -> void:
 	var target_scale = (0.4 + 0.6 * ratio) * pulse
 	sun.scale = Vector3(target_scale, target_scale, target_scale)
 	
+	_update_sun_face(ratio)
+	
 	# Heat Regeneration
 	if temperature < MAX_TEMP and not is_sun_frozen:
 		temperature += heat_regen_base * delta # Sun gets hotter over time
@@ -1193,6 +1215,119 @@ func _input(event: InputEvent) -> void:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		else:
 			is_shooting = event.pressed
+func _on_game_resumed() -> void:
+	if not is_instance_valid(hud):
+		return
+	if is_shooting:
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Sun Face Procedural Drawing
+# ─────────────────────────────────────────────────────────────────────────────
+const FACE_SIZE = 128
+const FACE_COLOR = Color(0.15, 0.05, 0.0, 0.9)
+
+func _draw_face(expression: String) -> ImageTexture:
+	var img = Image.create(FACE_SIZE, FACE_SIZE, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	var cx = FACE_SIZE / 2
+	var cy = FACE_SIZE / 2
+	match expression:
+		"angry": _draw_angry(img, cx, cy)
+		"annoyed": _draw_annoyed(img, cx, cy)
+		"neutral": _draw_neutral(img, cx, cy)
+		"happy": _draw_happy(img, cx, cy)
+	return ImageTexture.create_from_image(img)
+
+func _draw_circle_on_image(img: Image, cx: int, cy: int, radius: int, color: Color) -> void:
+	for x in range(cx - radius, cx + radius + 1):
+		for y in range(cy - radius, cy + radius + 1):
+			if (x - cx) * (x - cx) + (y - cy) * (y - cy) <= radius * radius:
+				if x >= 0 and x < FACE_SIZE and y >= 0 and y < FACE_SIZE:
+					img.set_pixel(x, y, color)
+
+func _draw_line_on_image(img: Image, x1: int, y1: int, x2: int, y2: int, thickness: int, color: Color) -> void:
+	var dx = abs(x2 - x1)
+	var dy = abs(y2 - y1)
+	var steps = max(dx, dy)
+	if steps == 0: return
+	var sx = float(x2 - x1) / steps
+	var sy = float(y2 - y1) / steps
+	for i in range(steps + 1):
+		var px = int(x1 + sx * i)
+		var py = int(y1 + sy * i)
+		for tx in range(-thickness/2, thickness/2 + 1):
+			for ty in range(-thickness/2, thickness/2 + 1):
+				var fx = px + tx
+				var fy = py + ty
+				if fx >= 0 and fx < FACE_SIZE and fy >= 0 and fy < FACE_SIZE:
+					img.set_pixel(fx, fy, color)
+
+func _draw_arc_on_image(img: Image, cx: int, cy: int, radius: int, start_angle: float, end_angle: float, thickness: int, color: Color) -> void:
+	var steps = 40
+	var prev_x = -1
+	var prev_y = -1
+	for i in range(steps + 1):
+		var angle = start_angle + (end_angle - start_angle) * i / steps
+		var px = int(cx + cos(angle) * radius)
+		var py = int(cy + sin(angle) * radius)
+		if prev_x >= 0:
+			_draw_line_on_image(img, prev_x, prev_y, px, py, thickness, color)
+		prev_x = px
+		prev_y = py
+
+func _draw_angry(img: Image, cx: int, cy: int):
+	_draw_circle_on_image(img, cx-22, cy-8, 6, FACE_COLOR)
+	_draw_circle_on_image(img, cx+22, cy-8, 6, FACE_COLOR)
+	_draw_line_on_image(img, cx-34, cy-22, cx-12, cy-14, 3, FACE_COLOR)
+	_draw_line_on_image(img, cx+34, cy-22, cx+12, cy-14, 3, FACE_COLOR)
+	_draw_arc_on_image(img, cx, cy+28, 18, deg_to_rad(200), deg_to_rad(340), 3, FACE_COLOR)
+
+func _draw_annoyed(img: Image, cx: int, cy: int):
+	_draw_circle_on_image(img, cx-22, cy-8, 7, FACE_COLOR)
+	_draw_circle_on_image(img, cx+22, cy-8, 7, FACE_COLOR)
+	_draw_line_on_image(img, cx-34, cy-20, cx-12, cy-16, 3, FACE_COLOR)
+	_draw_line_on_image(img, cx+34, cy-20, cx+12, cy-16, 3, FACE_COLOR)
+	_draw_arc_on_image(img, cx, cy+24, 14, deg_to_rad(210), deg_to_rad(330), 3, FACE_COLOR)
+
+func _draw_neutral(img: Image, cx: int, cy: int):
+	_draw_circle_on_image(img, cx-22, cy-8, 7, FACE_COLOR)
+	_draw_circle_on_image(img, cx+22, cy-8, 7, FACE_COLOR)
+	_draw_line_on_image(img, cx-34, cy-18, cx-10, cy-18, 3, FACE_COLOR)
+	_draw_line_on_image(img, cx+10, cy-18, cx+34, cy-18, 3, FACE_COLOR)
+	_draw_line_on_image(img, cx-16, cy+22, cx+16, cy+22, 3, FACE_COLOR)
+
+func _draw_happy(img: Image, cx: int, cy: int):
+	_draw_circle_on_image(img, cx-22, cy-8, 8, FACE_COLOR)
+	_draw_circle_on_image(img, cx+22, cy-8, 8, FACE_COLOR)
+	_draw_circle_on_image(img, cx-19, cy-11, 2, Color(1,1,1,0.9))
+	_draw_circle_on_image(img, cx+25, cy-11, 2, Color(1,1,1,0.9))
+	_draw_line_on_image(img, cx-34, cy-24, cx-10, cy-22, 3, FACE_COLOR)
+	_draw_line_on_image(img, cx+10, cy-24, cx+34, cy-22, 3, FACE_COLOR)
+	_draw_arc_on_image(img, cx, cy+10, 22, deg_to_rad(20), deg_to_rad(160), 3, FACE_COLOR)
+	_draw_circle_on_image(img, cx-32, cy+8, 5, Color(1.0, 0.5, 0.4, 0.5))
+	_draw_circle_on_image(img, cx+32, cy+8, 5, Color(1.0, 0.5, 0.4, 0.5))
+
+func _update_sun_face(ratio: float) -> void:
+	if not is_instance_valid(sun_face): return
+	var expression: String
+	if ratio >= 0.75: expression = "angry"
+	elif ratio >= 0.50: expression = "annoyed"
+	elif ratio >= 0.25: expression = "neutral"
+	else: expression = "happy"
+	
+	if sun_face.texture != face_textures.get(expression):
+		sun_face.texture = face_textures.get(expression)
+	
+	sun_face.pixel_size = 0.008 / sun.scale.x
+	
+	if is_sun_frozen:
+		sun_face.modulate = Color(0.7, 0.9, 1.0, 1.0)
+	else:
+		sun_face.modulate = Color(1.0, 1.0, 1.0, 1.0)
+	
+	sun_face.visible = sun.visible
+
 func shake(duration: float, strength: float) -> void:
 	if reduce_motion:
 		return

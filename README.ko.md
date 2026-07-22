@@ -119,3 +119,4 @@ SummerNights-Godot/
 | SFX - 얼음 피격음 | antonsoederberg (Freesound) | CC0 |
 | VFX - 얼음 폭발 발사체 및 입자 효과 | 절차적 고도(Godot) 기본 도형 | - |
 | 절차적 구름 및 갈매기 | 수작업 GDScript | - |
+| 태양 표정 (Sun Face) | 절차적 Godot Image draw API | - |

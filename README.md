@@ -118,3 +118,4 @@ SummerNights-Godot/
 | SFX - Ice Hit | antonsoederberg (Freesound) | CC0 |
 | VFX - Ice Blast Projectile & Particles | Procedural Godot Primitives | - |
 | Procedural Clouds and Seagulls | Hand-crafted GDScript | - |
+| Sun Face Expressions | Procedural Godot Image draw API | - |
