@@ -79,6 +79,7 @@ var sun_mat:     StandardMaterial3D
 var sun_ray_mat: StandardMaterial3D
 var sun_rays_node: Node3D
 var sun_face:    Sprite3D
+var sun_face_shadow: Sprite3D
 var face_textures: Dictionary = {}
 var gun:         Node3D
 var muzzle:      Marker3D
@@ -444,6 +445,18 @@ func _build_scene() -> void:
 	sun_light.omni_range = 30.0
 	sun.add_child(sun_light)
 	
+	var shadow_sprite = Sprite3D.new()
+	shadow_sprite.name = "SunFaceShadow"
+	shadow_sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	shadow_sprite.pixel_size = 0.06
+	shadow_sprite.position = Vector3(0.08, -0.08, 3.39) # Offset down-right
+	shadow_sprite.no_depth_test = true
+	shadow_sprite.alpha_cut = SpriteBase3D.ALPHA_CUT_DISABLED
+	shadow_sprite.render_priority = -1 # Render behind face
+	shadow_sprite.modulate = Color(0, 0, 0, 0.9) # Dark drop shadow
+	sun.add_child(shadow_sprite)
+	sun_face_shadow = shadow_sprite
+	
 	var face_sprite = Sprite3D.new()
 	face_sprite.name = "SunFace"
 	face_sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
@@ -451,6 +464,7 @@ func _build_scene() -> void:
 	face_sprite.position = Vector3(0, 0, 3.4)
 	face_sprite.no_depth_test = true
 	face_sprite.alpha_cut = SpriteBase3D.ALPHA_CUT_DISABLED
+	face_sprite.render_priority = 0
 	sun.add_child(face_sprite)
 	sun_face = face_sprite
 	
@@ -1343,6 +1357,8 @@ func _update_sun_face(ratio: float) -> void:
 	
 	if sun_face.texture != face_textures.get(expression):
 		sun_face.texture = face_textures.get(expression)
+		if is_instance_valid(sun_face_shadow):
+			sun_face_shadow.texture = face_textures.get(expression)
 	
 	if is_sun_frozen:
 		sun_face.modulate = Color(0.2, 0.5, 2.5) # Deep icy blue flash
@@ -1350,6 +1366,8 @@ func _update_sun_face(ratio: float) -> void:
 		sun_face.modulate = target_color
 	
 	sun_face.visible = sun.visible
+	if is_instance_valid(sun_face_shadow):
+		sun_face_shadow.visible = sun.visible
 
 func shake(duration: float, strength: float) -> void:
 	if reduce_motion:
