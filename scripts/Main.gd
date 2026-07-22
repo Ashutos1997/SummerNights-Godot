@@ -1258,50 +1258,70 @@ func _draw_line_on_image(img: Image, x1: int, y1: int, x2: int, y2: int, thickne
 				if fx >= 0 and fx < FACE_SIZE and fy >= 0 and fy < FACE_SIZE:
 					img.set_pixel(fx, fy, color)
 
-func _draw_arc_on_image(img: Image, cx: int, cy: int, radius: int, start_angle: float, end_angle: float, thickness: int, color: Color) -> void:
-	var steps = 40
-	var prev_x = -1
-	var prev_y = -1
-	for i in range(steps + 1):
-		var angle = start_angle + (end_angle - start_angle) * i / steps
-		var px = int(cx + cos(angle) * radius)
-		var py = int(cy + sin(angle) * radius)
-		if prev_x >= 0:
-			_draw_line_on_image(img, prev_x, prev_y, px, py, thickness, color)
-		prev_x = px
-		prev_y = py
+func _draw_pill_on_image(img: Image, cx: int, cy: int, w: int, h: int, color: Color) -> void:
+	var r = w / 2
+	_draw_circle_on_image(img, cx, cy - h/2 + r, r, color)
+	_draw_circle_on_image(img, cx, cy + h/2 - r, r, color)
+	for x in range(cx - r, cx + r + 1):
+		for y in range(cy - h/2 + r, cy + h/2 - r + 1):
+			if x >= 0 and x < FACE_SIZE and y >= 0 and y < FACE_SIZE:
+				img.set_pixel(x, y, color)
+
+func _draw_half_circle_bottom(img: Image, cx: int, cy: int, radius: int, color: Color) -> void:
+	for x in range(cx - radius, cx + radius + 1):
+		for y in range(cy, cy + radius + 1):
+			if (x - cx) * (x - cx) + (y - cy) * (y - cy) <= radius * radius:
+				if x >= 0 and x < FACE_SIZE and y >= 0 and y < FACE_SIZE:
+					img.set_pixel(x, y, color)
+
+func _draw_half_circle_top(img: Image, cx: int, cy: int, radius: int, color: Color) -> void:
+	for x in range(cx - radius, cx + radius + 1):
+		for y in range(cy - radius, cy + 1):
+			if (x - cx) * (x - cx) + (y - cy) * (y - cy) <= radius * radius:
+				if x >= 0 and x < FACE_SIZE and y >= 0 and y < FACE_SIZE:
+					img.set_pixel(x, y, color)
+
+func _draw_half_pill_top(img: Image, cx: int, cy: int, w: int, h: int, color: Color) -> void:
+	var r = w / 2
+	_draw_circle_on_image(img, cx, cy - h/2 + r, r, color)
+	for x in range(cx - r, cx + r + 1):
+		for y in range(cy - h/2 + r, cy + h/2 + 1):
+			if x >= 0 and x < FACE_SIZE and y >= 0 and y < FACE_SIZE:
+				img.set_pixel(x, y, color)
 
 func _draw_angry(img: Image, cx: int, cy: int):
-	_draw_circle_on_image(img, cx-22, cy-8, 6, FACE_COLOR)
-	_draw_circle_on_image(img, cx+22, cy-8, 6, FACE_COLOR)
-	_draw_line_on_image(img, cx-34, cy-22, cx-12, cy-14, 3, FACE_COLOR)
-	_draw_line_on_image(img, cx+34, cy-22, cx+12, cy-14, 3, FACE_COLOR)
-	_draw_arc_on_image(img, cx, cy+28, 18, deg_to_rad(200), deg_to_rad(340), 3, FACE_COLOR)
+	# Intense pill eyes
+	_draw_pill_on_image(img, cx - 24, cy - 4, 12, 24, FACE_COLOR)
+	_draw_pill_on_image(img, cx + 24, cy - 4, 12, 24, FACE_COLOR)
+	# Aggressive thick eyebrows intersecting eyes
+	_draw_line_on_image(img, cx - 40, cy - 24, cx - 12, cy - 12, 10, FACE_COLOR)
+	_draw_line_on_image(img, cx + 40, cy - 24, cx + 12, cy - 12, 10, FACE_COLOR)
+	# Frown (top half of a circle)
+	_draw_half_circle_top(img, cx, cy + 28, 16, FACE_COLOR)
 
 func _draw_annoyed(img: Image, cx: int, cy: int):
-	_draw_circle_on_image(img, cx-22, cy-8, 7, FACE_COLOR)
-	_draw_circle_on_image(img, cx+22, cy-8, 7, FACE_COLOR)
-	_draw_line_on_image(img, cx-34, cy-20, cx-12, cy-16, 3, FACE_COLOR)
-	_draw_line_on_image(img, cx+34, cy-20, cx+12, cy-16, 3, FACE_COLOR)
-	_draw_arc_on_image(img, cx, cy+24, 14, deg_to_rad(210), deg_to_rad(330), 3, FACE_COLOR)
+	# Half-closed flat-bottom eyes
+	_draw_half_pill_top(img, cx - 24, cy - 8, 12, 28, FACE_COLOR)
+	_draw_half_pill_top(img, cx + 24, cy - 8, 12, 28, FACE_COLOR)
+	# Small flat mouth
+	_draw_pill_on_image(img, cx, cy + 24, 16, 8, FACE_COLOR)
 
 func _draw_neutral(img: Image, cx: int, cy: int):
-	_draw_circle_on_image(img, cx-22, cy-8, 7, FACE_COLOR)
-	_draw_circle_on_image(img, cx+22, cy-8, 7, FACE_COLOR)
-	_draw_line_on_image(img, cx-34, cy-18, cx-10, cy-18, 3, FACE_COLOR)
-	_draw_line_on_image(img, cx+10, cy-18, cx+34, cy-18, 3, FACE_COLOR)
-	_draw_line_on_image(img, cx-16, cy+22, cx+16, cy+22, 3, FACE_COLOR)
+	# Standard soft pill eyes
+	_draw_pill_on_image(img, cx - 24, cy - 8, 12, 28, FACE_COLOR)
+	_draw_pill_on_image(img, cx + 24, cy - 8, 12, 28, FACE_COLOR)
+	# Small dot mouth
+	_draw_pill_on_image(img, cx, cy + 24, 12, 8, FACE_COLOR)
 
 func _draw_happy(img: Image, cx: int, cy: int):
-	_draw_circle_on_image(img, cx-22, cy-8, 8, FACE_COLOR)
-	_draw_circle_on_image(img, cx+22, cy-8, 8, FACE_COLOR)
-	_draw_circle_on_image(img, cx-19, cy-11, 2, Color(1,1,1,0.9))
-	_draw_circle_on_image(img, cx+25, cy-11, 2, Color(1,1,1,0.9))
-	_draw_line_on_image(img, cx-34, cy-24, cx-10, cy-22, 3, FACE_COLOR)
-	_draw_line_on_image(img, cx+10, cy-24, cx+34, cy-22, 3, FACE_COLOR)
-	_draw_arc_on_image(img, cx, cy+10, 22, deg_to_rad(20), deg_to_rad(160), 3, FACE_COLOR)
-	_draw_circle_on_image(img, cx-32, cy+8, 5, Color(1.0, 0.5, 0.4, 0.5))
-	_draw_circle_on_image(img, cx+32, cy+8, 5, Color(1.0, 0.5, 0.4, 0.5))
+	# Large soft pill eyes
+	_draw_pill_on_image(img, cx - 24, cy - 8, 14, 30, FACE_COLOR)
+	_draw_pill_on_image(img, cx + 24, cy - 8, 14, 30, FACE_COLOR)
+	# Big D-shaped smile
+	_draw_half_circle_bottom(img, cx, cy + 12, 18, FACE_COLOR)
+	# Soft blush
+	_draw_circle_on_image(img, cx - 36, cy + 8, 8, Color(1.0, 0.4, 0.4, 0.8))
+	_draw_circle_on_image(img, cx + 36, cy + 8, 8, Color(1.0, 0.4, 0.4, 0.8))
 
 func _update_sun_face(ratio: float) -> void:
 	if not is_instance_valid(sun_face): return
