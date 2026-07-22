@@ -91,6 +91,7 @@ var hose_sway_offset: float = 0.0
 var hose_time: float = 0.0
 var hose_pulse_intensity: float = 0.0
 var hose_radius: float = 0.018
+var hose_array_mesh: ArrayMesh
 var virtual_mouse_pos: Vector2
 var blasts:      Node3D
 var particles:   GPUParticles3D
@@ -619,9 +620,11 @@ func _build_scene() -> void:
 	hose_material.subsurf_scatter_enabled = true
 	hose_material.subsurf_scatter_strength = 0.1
 	
+	hose_array_mesh = ArrayMesh.new()
 	hose_mesh_instance = MeshInstance3D.new()
 	hose_mesh_instance.name = "WaterHose"
 	hose_mesh_instance.material_override = hose_material
+	hose_mesh_instance.mesh = hose_array_mesh
 	add_child(hose_mesh_instance) # Parent to Main node
 	
 	# Connector where hose meets the gun
@@ -1136,8 +1139,8 @@ func _process(delta: float) -> void:
 	hose_sag_offset -= (1.0 - water_ratio) * 0.04
 	
 	# Rebuild hose mesh every frame
-	if is_instance_valid(hose_mesh_instance):
-		hose_mesh_instance.mesh = _build_hose_mesh()
+	if is_instance_valid(hose_mesh_instance) and is_instance_valid(gun):
+		_build_hose_mesh()
 		
 	# Update crosshair position to exactly match mouse pointer
 	var space = get_world_3d().direct_space_state
@@ -1361,9 +1364,9 @@ func _build_hose_mesh() -> ArrayMesh:
 		curve_points.append(point)
 	
 	# Build tube mesh along curve
-	return _build_tube_mesh(curve_points)
+	_build_tube_mesh(curve_points)
 
-func _build_tube_mesh(points: PackedVector3Array) -> ArrayMesh:
+func _build_tube_mesh(points: PackedVector3Array) -> void:
 	var sides = 8  # octagonal cross section
 	var verts = PackedVector3Array()
 	var normals = PackedVector3Array()
@@ -1420,10 +1423,10 @@ func _build_tube_mesh(points: PackedVector3Array) -> ArrayMesh:
 	arrays[Mesh.ARRAY_TEX_UV] = uvs
 	arrays[Mesh.ARRAY_INDEX] = indices
 	
-	var mesh = ArrayMesh.new()
-	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
-	mesh.surface_set_material(0, hose_material)
-	return mesh
+	if is_instance_valid(hose_array_mesh):
+		hose_array_mesh.clear_surfaces()
+		hose_array_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+		hose_array_mesh.surface_set_material(0, hose_material)
 
 
 func _draw_line_on_image(img: Image, x1: int, y1: int, x2: int, y2: int, thickness: int, color: Color) -> void:
