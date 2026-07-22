@@ -119,3 +119,4 @@ SummerNights-Godot/
 | VFX - Ice Blast Projectile & Particles | Procedural Godot Primitives | - |
 | Procedural Clouds and Seagulls | Hand-crafted GDScript | - |
 | Sun Face Expressions | Procedural Godot Image draw API | - |
+| Procedural Water Hose | Godot 4 ArrayMesh & Bezier Curve | - |

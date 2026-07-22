@@ -82,6 +82,15 @@ var sun_face:    Sprite3D
 var face_textures: Dictionary = {}
 var gun:         Node3D
 var muzzle:      Marker3D
+
+# Procedural Hose
+var hose_mesh_instance: MeshInstance3D
+var hose_material: StandardMaterial3D
+var hose_sag_offset: float = 0.0
+var hose_sway_offset: float = 0.0
+var hose_time: float = 0.0
+var hose_pulse_intensity: float = 0.0
+var hose_radius: float = 0.018
 var virtual_mouse_pos: Vector2
 var blasts:      Node3D
 var particles:   GPUParticles3D
@@ -601,7 +610,32 @@ func _build_scene() -> void:
 	muzzle.position = Vector3(0, 0, -1.0)
 	gun.add_child(muzzle)
 	
-
+	# ── Procedural Water Hose Setup ──────────────────────────────────────────
+	hose_material = StandardMaterial3D.new()
+	hose_material.albedo_color = Color(0.62, 0.42, 0.22) # Sun-bleached warm rubber
+	hose_material.roughness = 0.88
+	hose_material.metallic = 0.0
+	hose_material.metallic_specular = 0.2
+	hose_material.subsurf_scatter_enabled = true
+	hose_material.subsurf_scatter_strength = 0.1
+	
+	hose_mesh_instance = MeshInstance3D.new()
+	hose_mesh_instance.name = "WaterHose"
+	hose_mesh_instance.material_override = hose_material
+	add_child(hose_mesh_instance) # Parent to Main node
+	
+	# Connector where hose meets the gun
+	var connector = MeshInstance3D.new()
+	var cyl = CylinderMesh.new()
+	cyl.top_radius = 0.022
+	cyl.bottom_radius = 0.022
+	cyl.height = 0.03
+	connector.mesh = cyl
+	connector.material_override = hose_material
+	# Parent to gun so it automatically moves with recoil
+	connector.position = Vector3(0.0, -0.07, 0.05)
+	connector.rotation_degrees = Vector3(90, 0, 0)
+	gun.add_child(connector)
 	
 	# Water spray particles (attached to gun)
 	gun_spray = GPUParticles3D.new()
@@ -1078,6 +1112,32 @@ func _process(delta: float) -> void:
 	# Camera recoil spring back (smoothly returns to target coordinate 0,0,5 and rotation 0)
 	camera.position = camera.position.lerp(Vector3(0, 0, 5), 8.0 * delta)
 	camera.rotation.x = lerp(camera.rotation.x, 0.0, 8.0 * delta)
+	
+	# ── Procedural Hose Animation ─────────────────────────────────────────────
+	hose_time += delta
+	# BASE IDLE SWAY
+	# Gentle slow swing — hose hangs naturally
+	hose_sway_offset = sin(hose_time * 0.6) * 0.008
+	hose_sag_offset = sin(hose_time * 0.4) * 0.005
+	
+	# FIRING PULSE
+	if is_shooting and can_shoot:
+		# Faster oscillation when water flows
+		hose_sway_offset += sin(hose_time * 8.0) * 0.012
+		hose_sag_offset += sin(hose_time * 10.0) * 0.008
+		# Radius pulse — pressure in hose
+		hose_pulse_intensity = lerp(hose_pulse_intensity, 1.0, delta * 12.0)
+	else:
+		hose_pulse_intensity = lerp(hose_pulse_intensity, 0.0, delta * 6.0)
+	
+	# LOW WATER DROOP
+	# Less water pressure = more sag
+	var water_ratio = water_tank / MAX_WATER
+	hose_sag_offset -= (1.0 - water_ratio) * 0.04
+	
+	# Rebuild hose mesh every frame
+	if is_instance_valid(hose_mesh_instance):
+		hose_mesh_instance.mesh = _build_hose_mesh()
 		
 	# Update crosshair position to exactly match mouse pointer
 	var space = get_world_3d().direct_space_state
@@ -1261,6 +1321,110 @@ func _draw_circle_on_image(img: Image, cx: int, cy: int, radius: int, color: Col
 		for y in range(cy - radius, cy + radius + 1):
 			if (x - cx) * (x - cx) + (y - cy) * (y - cy) <= radius * radius:
 				img.set_pixel(x, y, color)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Procedural Water Hose Setup
+# ─────────────────────────────────────────────────────────────────────────────
+func _build_hose_mesh() -> ArrayMesh:
+	# Control points in camera-local space
+	
+	# P0 — gun underside attachment point
+	var p0 = Vector3(
+		gun.position.x + 0.0,   # centered on gun X
+		gun.position.y - 0.08,  # below gun
+		gun.position.z + 0.05   # slightly forward
+	)
+	
+	# P1 — sag/droop control point
+	# This is what animates with firing and idle sway
+	var p1 = Vector3(
+		p0.x - 0.04 + hose_sway_offset,  # slight left swing
+		p0.y - 0.18 + hose_sag_offset,   # droop down
+		p0.z + 0.08                       # curve forward slightly
+	)
+	
+	# P2 — exit point, bottom of view, swings left
+	var p2 = Vector3(
+		p0.x - 0.12,  # more left — going behind player
+		p0.y - 0.35,  # exits below screen
+		p0.z + 0.05
+	)
+	
+	# Generate bezier curve points
+	var curve_points = PackedVector3Array()
+	var segments = 20
+	for i in range(segments + 1):
+		var t = float(i) / segments
+		# Quadratic bezier: B(t) = (1-t)²P0 + 2(1-t)tP1 + t²P2
+		var mt = 1.0 - t
+		var point = mt*mt*p0 + 2*mt*t*p1 + t*t*p2
+		curve_points.append(point)
+	
+	# Build tube mesh along curve
+	return _build_tube_mesh(curve_points)
+
+func _build_tube_mesh(points: PackedVector3Array) -> ArrayMesh:
+	var sides = 8  # octagonal cross section
+	var verts = PackedVector3Array()
+	var normals = PackedVector3Array()
+	var indices = PackedInt32Array()
+	var uvs = PackedVector2Array()
+	
+	# Current radius with pulse effect applied
+	var radius = hose_radius + hose_pulse_intensity * 0.006
+	
+	for i in range(points.size()):
+		# Calculate forward direction along curve
+		var forward: Vector3
+		if i < points.size() - 1:
+			forward = (points[i+1] - points[i]).normalized()
+		else:
+			forward = (points[i] - points[i-1]).normalized()
+		
+		# Create perpendicular frame
+		var up = Vector3.UP
+		if abs(forward.dot(up)) > 0.99:
+			up = Vector3.RIGHT
+		var right = forward.cross(up).normalized()
+		up = right.cross(forward).normalized()
+		
+		# Ring of vertices
+		for s in range(sides):
+			var angle = TAU * s / sides
+			var offset = right * cos(angle) * radius + up * sin(angle) * radius
+			verts.append(points[i] + offset)
+			normals.append(offset.normalized())
+			uvs.append(Vector2(float(s) / sides, float(i) / points.size()))
+	
+	# Generate triangle indices
+	for i in range(points.size() - 1):
+		for s in range(sides):
+			var next_s = (s + 1) % sides
+			var v0 = i * sides + s
+			var v1 = i * sides + next_s
+			var v2 = (i + 1) * sides + s
+			var v3 = (i + 1) * sides + next_s
+			
+			indices.append(v0)
+			indices.append(v2)
+			indices.append(v1)
+			indices.append(v1)
+			indices.append(v2)
+			indices.append(v3)
+	
+	# Build ArrayMesh
+	var arrays = []
+	arrays.resize(Mesh.ARRAY_MAX)
+	arrays[Mesh.ARRAY_VERTEX] = verts
+	arrays[Mesh.ARRAY_NORMAL] = normals
+	arrays[Mesh.ARRAY_TEX_UV] = uvs
+	arrays[Mesh.ARRAY_INDEX] = indices
+	
+	var mesh = ArrayMesh.new()
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	mesh.surface_set_material(0, hose_material)
+	return mesh
+
 
 func _draw_line_on_image(img: Image, x1: int, y1: int, x2: int, y2: int, thickness: int, color: Color) -> void:
 	var dx = abs(x2 - x1)
@@ -1683,6 +1847,23 @@ func _shoot_ice() -> void:
 	var tw = create_tween()
 	tw.tween_property(gun, "position:y", gun_base_pos.y - 0.2, 0.05)
 	tw.tween_property(gun, "position:y", gun_base_pos.y, 0.1)
+	
+	# Frost effect on hose
+	if hose_material:
+		var frost_tw = create_tween()
+		frost_tw.tween_method(
+			func(c): hose_material.albedo_color = c,
+			Color(0.62, 0.42, 0.22),   # warm rubber
+			Color(0.7, 0.85, 1.0),     # cold blue-white frost
+			0.15
+		)
+		frost_tw.tween_interval(0.8)  # hold frost color
+		frost_tw.tween_method(
+			func(c): hose_material.albedo_color = c,
+			Color(0.7, 0.85, 1.0),
+			Color(0.62, 0.42, 0.22),   # back to rubber
+			0.4
+		)
 	
 	var blast = ice_blast_scene.instantiate()
 	blasts.add_child(blast)
