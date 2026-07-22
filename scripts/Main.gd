@@ -1143,6 +1143,11 @@ func _process(delta: float) -> void:
 	
 	# Rebuild hose mesh every frame
 	if is_instance_valid(hose_mesh_instance) and is_instance_valid(gun):
+		# Force update the connector position here so hot-reloading works instantly without a game restart!
+		var connector = gun.get_node_or_null("HoseConnector")
+		if is_instance_valid(connector):
+			connector.position = Vector3(0.0, -0.32, 0.22) # Attached to the backside of the handle
+			connector.rotation_degrees = Vector3(90, 0, 0) # Pointing straight backward
 		_build_hose_mesh()
 		
 	# Update crosshair position to exactly match mouse pointer
@@ -1339,18 +1344,18 @@ func _build_hose_mesh() -> void:
 	var p0 = gun.transform * connector.position
 	
 	# P1 — sag/droop control point
-	# Pull heavily DOWN to create a real curve (not a straight line)
+	# Droop deep down and back towards player
 	var p1 = Vector3(
-		p0.x + 0.2 + hose_sway_offset, 
-		p0.y - 1.5 + hose_sag_offset,  
-		p0.z                     
+		p0.x + hose_sway_offset, 
+		p0.y - 1.2 + hose_sag_offset,  
+		p0.z + 0.5                     
 	)
 	
-	# P2 — exit point, bottom right of view
+	# P2 — exit point, bottom center of view
 	var p2 = Vector3(
-		p0.x + 1.5,   
-		p0.y - 1.0,   
-		p0.z + 0.5    
+		p0.x,   
+		p0.y - 2.5,   
+		p0.z + 1.2    
 	)
 	
 	# Generate bezier curve points
