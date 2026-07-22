@@ -1279,9 +1279,8 @@ func _build_hands() -> Node3D:
 	var hands = Node3D.new()
 	hands.name = "ProceduralHands"
 	
-	# Massive scale and position offset to FORCE visibility for debugging
-	hands.scale = Vector3(10.0, 10.0, 10.0)
-	hands.position = Vector3(0, 1.0, 0)
+	# Scaled down to a reasonable size to fit the gun
+	hands.scale = Vector3(2.5, 2.5, 2.5)
 	
 	var skin_mat = StandardMaterial3D.new()
 	skin_mat.albedo_color = Color(0.85, 0.65, 0.45) # Warm skin tone
@@ -1290,8 +1289,8 @@ func _build_hands() -> Node3D:
 	# --- RIGHT HAND (Trigger grip) ---
 	right_hand = Node3D.new()
 	right_hand.name = "RightHand"
-	# Moved significantly UP and RIGHT to be visible on screen
-	right_hand.position = Vector3(0.15, -0.1, 0.1) 
+	# Hugging the back right of the blaster
+	right_hand.position = Vector3(0.12, -0.05, 0.1) 
 	hands.add_child(right_hand)
 	
 	var r_palm_mesh = BoxMesh.new()
@@ -1334,8 +1333,8 @@ func _build_hands() -> Node3D:
 	# --- LEFT HAND (Supporting the barrel/pump) ---
 	left_hand = Node3D.new()
 	left_hand.name = "LeftHand"
-	# Position higher up and further left so it is clearly visible
-	left_hand.position = Vector3(-0.25, -0.15, -0.45)
+	# Hugging the left side of the barrel
+	left_hand.position = Vector3(-0.15, 0.0, -0.2)
 	left_hand.rotation_degrees = Vector3(0, 0, -45) # Angled inward
 	hands.add_child(left_hand)
 	
