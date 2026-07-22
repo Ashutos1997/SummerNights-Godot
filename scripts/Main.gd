@@ -1339,18 +1339,18 @@ func _build_hose_mesh() -> void:
 	var p0 = gun.transform * connector.position
 	
 	# P1 — sag/droop control point
-	# Droop deep down and back towards player
+	# Droop gently so it doesn't instantly leave the camera frustum
 	var p1 = Vector3(
 		p0.x + hose_sway_offset, 
-		p0.y - 1.2 + hose_sag_offset,  
-		p0.z + 0.5                     
+		p0.y - 0.3 + hose_sag_offset,  
+		p0.z                     
 	)
 	
-	# P2 — exit point, bottom right of view
+	# P2 — exit point, bottom of view
 	var p2 = Vector3(
-		p0.x + 0.5,   
-		p0.y - 2.5,   
-		p0.z + 1.5    
+		p0.x,   
+		p0.y - 0.8,   
+		p0.z - 0.2    # curve slightly into the scene to stay visible
 	)
 	
 	# Generate bezier curve points
