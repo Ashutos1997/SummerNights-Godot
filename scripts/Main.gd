@@ -636,7 +636,7 @@ func _build_scene() -> void:
 	connector.mesh = cyl
 	connector.material_override = hose_material
 	# Parent to gun so it automatically moves with recoil
-	connector.position = Vector3(0.0, -0.07, 0.05)
+	connector.position = Vector3(0.0, -0.45, -0.05)
 	connector.rotation_degrees = Vector3(90, 0, 0)
 	gun.add_child(connector)
 	
@@ -1334,22 +1334,22 @@ func _build_hose_mesh() -> void:
 	# P0 — gun underside attachment point
 	var p0 = Vector3(
 		gun.position.x + 0.0,   # centered on gun X
-		gun.position.y - 0.08,  # below gun
-		gun.position.z + 0.05   # slightly forward
+		gun.position.y - 0.45,  # below gun model
+		gun.position.z - 0.05   # matching connector Z
 	)
 	
 	# P1 — sag/droop control point
 	# This is what animates with firing and idle sway
 	var p1 = Vector3(
 		p0.x - 0.04 + hose_sway_offset,  # slight left swing
-		p0.y - 0.18 + hose_sag_offset,   # droop down
+		p0.y - 0.20 + hose_sag_offset,   # droop down
 		p0.z + 0.08                       # curve forward slightly
 	)
 	
 	# P2 — exit point, bottom of view, swings left
 	var p2 = Vector3(
-		p0.x - 0.12,  # more left — going behind player
-		p0.y - 0.35,  # exits below screen
+		p0.x - 0.15,  # more left — going behind player
+		p0.y - 0.50,  # exits below screen
 		p0.z + 0.05
 	)
 	
