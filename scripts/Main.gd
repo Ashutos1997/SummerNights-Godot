@@ -447,8 +447,8 @@ func _build_scene() -> void:
 	var face_sprite = Sprite3D.new()
 	face_sprite.name = "SunFace"
 	face_sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	face_sprite.pixel_size = 0.008
-	face_sprite.position = Vector3(0, 0, 2.2)
+	face_sprite.pixel_size = 0.004
+	face_sprite.position = Vector3(0, 0, 0.35)
 	face_sprite.no_depth_test = true
 	face_sprite.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
 	sun.add_child(face_sprite)
@@ -1220,7 +1220,7 @@ func _input(event: InputEvent) -> void:
 # Sun Face Procedural Drawing
 # ─────────────────────────────────────────────────────────────────────────────
 const FACE_SIZE = 128
-const FACE_COLOR = Color(0.15, 0.05, 0.0, 0.9)
+const FACE_COLOR = Color(0.0, 0.0, 0.0, 1.0)
 
 func _draw_face(expression: String) -> ImageTexture:
 	var img = Image.create(FACE_SIZE, FACE_SIZE, false, Image.FORMAT_RGBA8)
@@ -1313,8 +1313,6 @@ func _update_sun_face(ratio: float) -> void:
 	
 	if sun_face.texture != face_textures.get(expression):
 		sun_face.texture = face_textures.get(expression)
-	
-	sun_face.pixel_size = 0.008 / sun.scale.x
 	
 	if is_sun_frozen:
 		sun_face.modulate = Color(0.7, 0.9, 1.0, 1.0)
