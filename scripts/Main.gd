@@ -1310,12 +1310,12 @@ func _draw_half_pill_top(img: Image, cx: int, cy: int, w: int, h: int, color: Co
 				img.set_pixel(x, y, color)
 
 func _draw_angry(img: Image, cx: int, cy: int):
-	# Intense pill eyes
-	_draw_pill_on_image(img, cx - 24, cy - 4, 12, 24, FACE_COLOR)
-	_draw_pill_on_image(img, cx + 24, cy - 4, 12, 24, FACE_COLOR)
-	# Aggressive thick eyebrows intersecting eyes
-	_draw_line_on_image(img, cx - 40, cy - 24, cx - 12, cy - 12, 10, FACE_COLOR)
-	_draw_line_on_image(img, cx + 40, cy - 24, cx + 12, cy - 12, 10, FACE_COLOR)
+	# Intense pill eyes (slightly shorter and moved down)
+	_draw_pill_on_image(img, cx - 24, cy - 2, 12, 20, FACE_COLOR)
+	_draw_pill_on_image(img, cx + 24, cy - 2, 12, 20, FACE_COLOR)
+	# Aggressive thick eyebrows (moved higher to prevent outline merging)
+	_draw_line_on_image(img, cx - 38, cy - 32, cx - 12, cy - 22, 8, FACE_COLOR)
+	_draw_line_on_image(img, cx + 38, cy - 32, cx + 12, cy - 22, 8, FACE_COLOR)
 	# Frown (top half of a circle)
 	_draw_half_circle_top(img, cx, cy + 28, 16, FACE_COLOR)
 
