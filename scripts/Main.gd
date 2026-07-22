@@ -90,7 +90,7 @@ var hose_sag_offset: float = 0.0
 var hose_sway_offset: float = 0.0
 var hose_time: float = 0.0
 var hose_pulse_intensity: float = 0.0
-var hose_radius: float = 0.018
+var hose_radius: float = 0.06
 var hose_array_mesh: ArrayMesh
 var virtual_mouse_pos: Vector2
 var blasts:      Node3D
@@ -630,9 +630,9 @@ func _build_scene() -> void:
 	# Connector where hose meets the gun
 	var connector = MeshInstance3D.new()
 	var cyl = CylinderMesh.new()
-	cyl.top_radius = 0.022
-	cyl.bottom_radius = 0.022
-	cyl.height = 0.03
+	cyl.top_radius = 0.07
+	cyl.bottom_radius = 0.07
+	cyl.height = 0.1
 	connector.mesh = cyl
 	connector.material_override = hose_material
 	# Parent to gun so it automatically moves with recoil
@@ -1341,16 +1341,16 @@ func _build_hose_mesh() -> void:
 	# P1 — sag/droop control point
 	# This is what animates with firing and idle sway
 	var p1 = Vector3(
-		p0.x - 0.04 + hose_sway_offset,  # slight left swing
-		p0.y - 0.20 + hose_sag_offset,   # droop down
-		p0.z + 0.08                       # curve forward slightly
+		p0.x - 0.2 + hose_sway_offset,  # swing left
+		p0.y - 1.0 + hose_sag_offset,   # droop down significantly
+		p0.z + 0.2                      # curve forward
 	)
 	
 	# P2 — exit point, bottom of view, swings left
 	var p2 = Vector3(
-		p0.x - 0.15,  # more left — going behind player
-		p0.y - 0.50,  # exits below screen
-		p0.z + 0.05
+		p0.x - 0.6,   # far left — going behind player
+		p0.y - 2.0,   # well below screen
+		p0.z + 0.3
 	)
 	
 	# Generate bezier curve points
