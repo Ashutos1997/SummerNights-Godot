@@ -1279,6 +1279,10 @@ func _build_hands() -> Node3D:
 	var hands = Node3D.new()
 	hands.name = "ProceduralHands"
 	
+	# Massive scale and position offset to FORCE visibility for debugging
+	hands.scale = Vector3(10.0, 10.0, 10.0)
+	hands.position = Vector3(0, 1.0, 0)
+	
 	var skin_mat = StandardMaterial3D.new()
 	skin_mat.albedo_color = Color(0.85, 0.65, 0.45) # Warm skin tone
 	skin_mat.roughness = 0.9
