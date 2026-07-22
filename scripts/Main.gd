@@ -1333,31 +1333,34 @@ func _build_hands() -> Node3D:
 	# --- LEFT HAND (Supporting the barrel/pump) ---
 	left_hand = Node3D.new()
 	left_hand.name = "LeftHand"
-	# Tucked under and hugging the left side of the barrel
-	left_hand.position = Vector3(-0.08, -0.22, -0.4)
-	left_hand.rotation_degrees = Vector3(0, 0, -45) # Angled inward
+	# Centered under the front barrel
+	left_hand.position = Vector3(0.0, -0.22, -0.55)
 	hands.add_child(left_hand)
 	
+	# Flat horizontal palm cradling the barrel from below
+	var l_palm_mesh = BoxMesh.new()
+	l_palm_mesh.size = Vector3(0.12, 0.06, 0.14)
 	var l_palm = MeshInstance3D.new()
-	l_palm.mesh = r_palm_mesh
+	l_palm.mesh = l_palm_mesh
 	l_palm.material_override = skin_mat
 	left_hand.add_child(l_palm)
 	
-	# Left Fingers gripping
+	# Left Fingers (vertical, wrapping up the right side of the barrel)
 	for i in range(4):
 		var finger = MeshInstance3D.new()
 		finger.mesh = finger_mesh
 		finger.material_override = skin_mat
-		finger.position = Vector3(0.06, 0.06 - (i * 0.045), -0.06)
-		finger.rotation_degrees = Vector3(90, 0, 90)
+		# Positioned on the right edge of the palm, extending upwards
+		finger.position = Vector3(0.06, 0.05, 0.05 - (i * 0.035))
+		finger.rotation_degrees = Vector3(0, 0, 15) # Angled slightly inwards to grip
 		left_hand.add_child(finger)
 		
-	# Left Thumb (wrapping over the top of the barrel)
+	# Left Thumb (vertical, wrapping up the left side of the barrel)
 	var l_thumb = MeshInstance3D.new()
 	l_thumb.mesh = finger_mesh
 	l_thumb.material_override = skin_mat
-	l_thumb.position = Vector3(0.04, 0.08, 0.0)
-	l_thumb.rotation_degrees = Vector3(0, 0, 45)
+	l_thumb.position = Vector3(-0.06, 0.05, 0.02)
+	l_thumb.rotation_degrees = Vector3(0, 0, -25) # Angled inwards
 	left_hand.add_child(l_thumb)
 	
 	return hands
