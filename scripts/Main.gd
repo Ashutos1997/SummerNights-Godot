@@ -637,10 +637,10 @@ func _build_scene() -> void:
 	connector.mesh = cyl
 	connector.material_override = hose_material
 	# Parent to gun so it automatically moves with recoil
-	# Shifted to +Z and down to match the handle
-	connector.position = Vector3(0.0, -0.42, 0.15)
-	# Angled slightly to match handle slope
-	connector.rotation_degrees = Vector3(70, 0, 0)
+	# Shifted to +X (right side) and middle height
+	connector.position = Vector3(0.18, -0.28, 0.15)
+	# Angled to stick out to the right and slightly back
+	connector.rotation_degrees = Vector3(45, 0, -75)
 	gun.add_child(connector)
 	
 	# Water spray particles (attached to gun)
@@ -1334,23 +1334,23 @@ func _draw_circle_on_image(img: Image, cx: int, cy: int, radius: int, color: Col
 func _build_hose_mesh() -> void:
 	# Control points in camera-local space
 	
-	# P0 — exactly at the connector, applying gun's rotation and position!
+	# P0 — exactly at the connector, applying gun's rotation and position
 	var connector = gun.get_node("HoseConnector")
 	var p0 = gun.transform * connector.position
 	
 	# P1 — sag/droop control point
-	# Droop straight down so we get a nice U/J curve, not a straight line
-	var p1 = Vector3(
-		p0.x + hose_sway_offset,
-		p0.y - 1.2 + hose_sag_offset,
-		p0.z + 0.1
+	# Push it out to the right side based on the gun's orientation, then drop down
+	var p1 = p0 + (gun.transform.basis.x * 0.8) + Vector3(
+		hose_sway_offset,
+		-0.6 + hose_sag_offset,
+		0.2
 	)
 	
-	# P2 — exit point, bottom of view, swings left
-	var p2 = Vector3(
-		p0.x - 1.0,   # swing left to player's body
-		p0.y - 2.5,   # well below screen
-		p0.z + 1.0    # swing back towards camera
+	# P2 — exit point, bottom right of view
+	var p2 = p0 + Vector3(
+		1.8,   # swing far right off-screen
+		-2.5,  # well below screen
+		1.0    # swing back towards camera
 	)
 	
 	# Generate bezier curve points
