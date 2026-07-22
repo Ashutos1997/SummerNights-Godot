@@ -1220,7 +1220,7 @@ func _input(event: InputEvent) -> void:
 # Sun Face Procedural Drawing
 # ─────────────────────────────────────────────────────────────────────────────
 const FACE_SIZE = 128
-const FACE_COLOR = Color(0.0, 0.0, 0.0, 1.0)
+const FACE_COLOR = Color(1.0, 1.0, 1.0, 1.0)
 
 func _draw_face(expression: String) -> ImageTexture:
 	var img = Image.create_empty(FACE_SIZE, FACE_SIZE, false, Image.FORMAT_RGBA8)
@@ -1326,18 +1326,28 @@ func _draw_happy(img: Image, cx: int, cy: int):
 func _update_sun_face(ratio: float) -> void:
 	if not is_instance_valid(sun_face): return
 	var expression: String
-	if ratio >= 0.75: expression = "angry"
-	elif ratio >= 0.50: expression = "annoyed"
-	elif ratio >= 0.25: expression = "neutral"
-	else: expression = "happy"
+	var target_color: Color
+	
+	if ratio >= 0.75: 
+		expression = "angry"
+		target_color = Color(3.0, 0.2, 0.0) # Intense fiery red/orange glow
+	elif ratio >= 0.50: 
+		expression = "annoyed"
+		target_color = Color(2.0, 0.8, 0.1) # Bright warm golden glow
+	elif ratio >= 0.25: 
+		expression = "neutral"
+		target_color = Color(1.2, 1.0, 0.8) # Soft warm white glow
+	else: 
+		expression = "happy"
+		target_color = Color(0.5, 2.0, 3.0) # Vibrant cyan/blue watery glow
 	
 	if sun_face.texture != face_textures.get(expression):
 		sun_face.texture = face_textures.get(expression)
 	
 	if is_sun_frozen:
-		sun_face.modulate = Color(0.7, 0.9, 1.0, 1.0)
+		sun_face.modulate = Color(0.2, 0.5, 2.5) # Deep icy blue flash
 	else:
-		sun_face.modulate = Color(1.0, 1.0, 1.0, 1.0)
+		sun_face.modulate = target_color
 	
 	sun_face.visible = sun.visible
 
