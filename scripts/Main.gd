@@ -637,8 +637,8 @@ func _build_scene() -> void:
 	connector.mesh = cyl
 	connector.material_override = hose_material
 	# Parent to gun so it automatically moves with recoil
-	# Positioned at the black square on the left side of the barrel (water fill hole)
-	connector.position = Vector3(-0.16, -0.02, -0.35)
+	# Positioned at the small black circle on the left side of the orange handle
+	connector.position = Vector3(-0.08, -0.30, 0.16)
 	# Angled to stick straight out to the left
 	connector.rotation_degrees = Vector3(0, 0, 90)
 	gun.add_child(connector)
