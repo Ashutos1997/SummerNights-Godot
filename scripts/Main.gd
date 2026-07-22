@@ -1357,7 +1357,7 @@ func _update_sun_face(ratio: float) -> void:
 	else: 
 		expression = "happy"
 		
-	target_color = Color(2.0, 2.0, 2.0) # Bright glowing white face
+	target_color = Color(2.0, 2.0, 2.0, 0.85) # Bright glowing white face (semi-transparent to blend with sun)
 	
 	if sun_face.texture != face_textures.get(expression):
 		sun_face.texture = face_textures.get(expression)
