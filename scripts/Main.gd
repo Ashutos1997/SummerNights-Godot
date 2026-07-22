@@ -1223,7 +1223,7 @@ const FACE_SIZE = 128
 const FACE_COLOR = Color(0.0, 0.0, 0.0, 1.0)
 
 func _draw_face(expression: String) -> ImageTexture:
-	var img = Image.create(FACE_SIZE, FACE_SIZE, false, Image.FORMAT_RGBA8)
+	var img = Image.create_empty(FACE_SIZE, FACE_SIZE, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
 	var cx = FACE_SIZE / 2
 	var cy = FACE_SIZE / 2
