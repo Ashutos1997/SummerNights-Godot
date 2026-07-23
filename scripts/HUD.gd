@@ -22,6 +22,7 @@ signal reduce_motion_changed(enabled: bool)
 @onready var win_loading_lbl = $HUD/WinScreen/ColorRect/VBoxContainer/LoadingLbl
 @onready var end_screen        = $HUD/EndScreen
 @onready var end_title_lbl     = $HUD/EndScreen/ColorRect/VBoxContainer/Title
+@onready var end_title2_lbl    = $HUD/EndScreen/ColorRect/VBoxContainer/Title2
 @onready var end_subtitle_lbl  = $HUD/EndScreen/ColorRect/VBoxContainer/Subtitle
 @onready var end_level_lbl     = $HUD/EndScreen/ColorRect/VBoxContainer/LevelCount
 @onready var end_prompt_lbl    = $HUD/EndScreen/ColorRect/VBoxContainer/RestartPrompt
@@ -162,11 +163,21 @@ func _ready() -> void:
 	_style_lbl(win_level_lbl, 20, Color(1.0, 0.85, 0.2, 1.0), 4, Color(0.0, 0.0, 0.0, 1.0), font)
 	_style_lbl(win_loading_lbl, 16, Color(1.0, 1.0, 1.0, 1.0), 3, Color.BLACK, font)
 	
-	# End screen labels — match Title screen (64 / 22 / 16 / 16)
-	_style_lbl(end_title_lbl, 64, Color(1.0, 0.8, 0.2, 1.0), 3, Color.BLACK, font, 4)
-	_style_lbl(end_subtitle_lbl, 22, Color(1.0, 0.85, 0.2, 1.0), 2, Color.BLACK, font)
-	_style_lbl(end_level_lbl, 16, Color(1.0, 1.0, 1.0, 1.0), 1, Color.BLACK, font)
-	_style_lbl(end_prompt_lbl, 16, Color(1.0, 1.0, 1.0, 1.0), 2, Color.BLACK, font)
+	# End screen labels — match Title screen typographic drama
+	var title_color = Color(1.0, 0.75, 0.15, 1.0)
+	_style_lbl(end_title_lbl, 72, title_color, 0, Color.TRANSPARENT, font)
+	_style_lbl(end_title2_lbl, 72, title_color, 0, Color.TRANSPARENT, font)
+	
+	for lbl in [end_title_lbl, end_title2_lbl]:
+		if lbl:
+			lbl.add_theme_color_override("font_shadow_color", Color(1.0, 0.75, 0.15, 0.25))
+			lbl.add_theme_constant_override("shadow_offset_x", 0)
+			lbl.add_theme_constant_override("shadow_offset_y", 0)
+			lbl.add_theme_constant_override("shadow_outline_size", 12)
+
+	_style_lbl(end_subtitle_lbl, 18, Color(1.0, 0.75, 0.15, 0.55), 0, Color.TRANSPARENT, font)
+	_style_lbl(end_level_lbl, 16, Color(1.0, 0.75, 0.15, 0.35), 0, Color.TRANSPARENT, font)
+	_style_lbl(end_prompt_lbl, 14, Color(1.0, 0.75, 0.15, 0.3), 0, Color.TRANSPARENT, font)
 	if end_prompt_lbl and not reduce_motion:
 		var p_tw = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 		p_tw.tween_property(end_prompt_lbl, "modulate:a", 0.7, 1.2)
@@ -640,13 +651,19 @@ func _apply_language(lang: String) -> void:
 
 	# ── End screen ────────────────────────────────────────────────────────────
 	if end_title_lbl:
-		end_title_lbl.text = "여름 끝!" if is_kr else "SUMMER'S OVER"
+		end_title_lbl.text = "여름은" if is_kr else "SUMMER'S"
 		if font: end_title_lbl.add_theme_font_override("font", font)
+	if end_title2_lbl:
+		end_title2_lbl.text = "끝났다" if is_kr else "OVER"
+		if font: end_title2_lbl.add_theme_font_override("font", font)
 	if end_subtitle_lbl:
-		end_subtitle_lbl.text = "태양이 식었습니다." if is_kr else "The sun has been tamed."
+		end_subtitle_lbl.text = "태양이 길들여졌다" if is_kr else "THE SUN HAS BEEN TAMED"
 		if font: end_subtitle_lbl.add_theme_font_override("font", font)
+	if end_level_lbl:
+		end_level_lbl.text = "%d 레벨 완료" % GameState.level if is_kr else "%d LEVELS COMPLETED" % GameState.level
+		if font: end_level_lbl.add_theme_font_override("font", font)
 	if end_prompt_lbl:
-		end_prompt_lbl.text = "클릭 또는 스페이스바로 재시작" if is_kr else "Click or press Space to restart"
+		end_prompt_lbl.text = "클릭하거나 스페이스를 눌러 재시작" if is_kr else "CLICK OR PRESS SPACE TO RESTART"
 		if font: end_prompt_lbl.add_theme_font_override("font", font)
 
 	# ── Toggle highlight (color-only, no layout impact) ───────────────────────

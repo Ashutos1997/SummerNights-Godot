@@ -607,7 +607,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.02, 0.01, 0.05, 0.96)
+color = Color(0.03, 0.02, 0.06, 1)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HUD/EndScreen/ColorRect"]
 layout_mode = 1
@@ -624,45 +624,74 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 alignment = 1
-theme_override_constants/separation = 20
+theme_override_constants/separation = 0
 
 [node name="Title" type="Label" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
-theme_override_font_sizes/font_size = 64
-text = "☀ SUMMER COOLED DOWN"
+theme_override_colors/font_color = Color(1, 0.75, 0.15, 1)
+theme_override_colors/font_shadow_color = Color(1, 0.75, 0.15, 0.25)
+theme_override_constants/shadow_outline_size = 12
+theme_override_font_sizes/font_size = 72
+text = "SUMMER'S"
 horizontal_alignment = 1
+
+[node name="Title2" type="Label" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.75, 0.15, 1)
+theme_override_colors/font_shadow_color = Color(1, 0.75, 0.15, 0.25)
+theme_override_constants/shadow_outline_size = 12
+theme_override_font_sizes/font_size = 72
+text = "OVER"
+horizontal_alignment = 1
+
+[node name="Spacer0" type="Control" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+
+[node name="DividerContainer" type="CenterContainer" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+layout_mode = 2
+
+[node name="Divider" type="ColorRect" parent="HUD/EndScreen/ColorRect/VBoxContainer/DividerContainer"]
+custom_minimum_size = Vector2(80, 1)
+layout_mode = 2
+color = Color(1, 0.75, 0.15, 0.3)
+
+[node name="Spacer1" type="Control" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
 
 [node name="Subtitle" type="Label" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
-theme_override_font_sizes/font_size = 22
-text = "YOU SAVED THE SEASON"
+theme_override_colors/font_color = Color(1, 0.75, 0.15, 0.55)
+theme_override_font_sizes/font_size = 18
+text = "THE SUN HAS BEEN TAMED"
 horizontal_alignment = 1
+
+[node name="Spacer2" type="Control" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
 
 [node name="LevelCount" type="Label" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(1, 0.75, 0.15, 0.35)
 theme_override_font_sizes/font_size = 16
 text = "5 LEVELS COMPLETED"
 horizontal_alignment = 1
 
-[node name="Separator" type="PanelContainer" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
-custom_minimum_size = Vector2(200, 1)
+[node name="Spacer3" type="Control" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-size_flags_horizontal = 4
-mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_sep")
 
 [node name="RestartPrompt" type="Label" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 16
-text = "PRESS SPACE TO PLAY AGAIN"
+theme_override_colors/font_color = Color(1, 0.75, 0.15, 0.3)
+theme_override_font_sizes/font_size = 14
+text = "CLICK OR PRESS SPACE TO RESTART"
 horizontal_alignment = 1
 
 [node name="LoseScreen" type="Control" parent="HUD"]
