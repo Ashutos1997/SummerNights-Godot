@@ -178,7 +178,8 @@ func _process(delta: float) -> void:
 			if randf() < 0.001: 
 				b["state"] = "landing"
 				b["start_pos"] = node.position
-				var target = Vector3(randf_range(-15.0, 15.0), -1.95, randf_range(-8.0, 1.0))
+				# Narrowed X range (-6 to 6) to keep them strictly on the central beach, avoiding trees
+				var target = Vector3(randf_range(-6.0, 6.0), -1.95, randf_range(-8.0, 1.0))
 				b["target_pos"] = target
 				var mid = (b["start_pos"] + target) / 2.0
 				b["ctrl_pos"] = Vector3(mid.x, max(b["start_pos"].y + 5.0, 30.0), mid.z)
@@ -201,7 +202,8 @@ func _process(delta: float) -> void:
 				var vel = new_pos - node.position
 				node.position = new_pos
 				if vel.length_squared() > 0.001:
-					node.look_at(node.position + vel, Vector3.UP)
+					var target_transform = node.transform.looking_at(node.position + vel, Vector3.UP)
+					node.transform.basis = node.transform.basis.slerp(target_transform.basis, 6.0 * delta)
 				flap_rot = sin((time + (b["time_offset"] as float)) * (b["flap_speed"] as float)) * 0.35
 				
 		elif state == "sitting":
@@ -233,7 +235,8 @@ func _process(delta: float) -> void:
 				var vel = new_pos - node.position
 				node.position = new_pos
 				if vel.length_squared() > 0.001:
-					node.look_at(node.position + vel, Vector3.UP)
+					var target_transform = node.transform.looking_at(node.position + vel, Vector3.UP)
+					node.transform.basis = node.transform.basis.slerp(target_transform.basis, 6.0 * delta)
 				node.rotate_object_local(Vector3(1, 0, 0), 0.2) # pitch up
 				flap_rot = sin((time + (b["time_offset"] as float)) * (b["flap_speed"] as float) * 1.5) * 0.45
 		
