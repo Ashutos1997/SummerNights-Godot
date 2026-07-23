@@ -124,6 +124,8 @@ func _create_seagull_mesh() -> Node3D:
 	right_tip.position = Vector3(0.95, 0.0, 0.02)
 	right_pivot.add_child(right_tip)
 
+	bird_root.scale = Vector3(0.35, 0.35, 0.35)
+
 	return bird_root
 
 func scare_bird(b: Dictionary) -> void:
@@ -166,7 +168,7 @@ func _process(delta: float) -> void:
 			# Randomly decide to land (0.1% chance per frame per bird -> ~6% chance per second at 60fps)
 			if randf() < 0.001: 
 				b["state"] = "landing"
-				b["target_pos"] = Vector3(randf_range(-12.0, 12.0), 0.5, randf_range(2.0, 7.0))
+				b["target_pos"] = Vector3(randf_range(-15.0, 15.0), -1.95, randf_range(-12.0, 1.0))
 				
 		elif state == "landing":
 			var target = b["target_pos"] as Vector3
@@ -175,7 +177,7 @@ func _process(delta: float) -> void:
 			
 			if dist < 0.5:
 				b["state"] = "sitting"
-				node.position.y = 0.4 # lock perfectly to ground height
+				node.position.y = -1.95 # lock perfectly to ground height
 			else:
 				var move_dir = to_target.normalized()
 				var speed = 12.0 # fast dive
