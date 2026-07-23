@@ -2,6 +2,7 @@ extends Control
 
 @onready var color_rect = $ColorRect
 @onready var title_lbl = $ColorRect/VBoxContainer/Title
+@onready var title2_lbl = $ColorRect/VBoxContainer/Title2
 @onready var subtitle_lbl = $ColorRect/VBoxContainer/Subtitle
 @onready var prompt_lbl = $ColorRect/VBoxContainer/Prompt
 @onready var credit_lbl = $CreditLine
@@ -17,15 +18,27 @@ func _ready() -> void:
 	var font_path = "res://assets/ui/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
 	var font = load(font_path)
 	
-	if title_lbl: title_lbl.text = "여름밤" if is_kr else "SUMMER NIGHTS"
+	if title_lbl: title_lbl.text = "썸머" if is_kr else "SUMMER"
+	if title2_lbl: title2_lbl.text = "나이츠" if is_kr else "NIGHTS"
 	if subtitle_lbl: subtitle_lbl.text = "태양을 식혀라" if is_kr else "COOL DOWN THE SUN"
 	if prompt_lbl: prompt_lbl.text = "클릭 또는 스페이스바로 시작" if is_kr else "PRESS SPACE OR CLICK TO START"
 	
 	if font:
-		_style_label(title_lbl, 64, Color(1.0, 0.8, 0.2, 1.0), 3, Color.BLACK, font, 4)
-		_style_label(subtitle_lbl, 24 if is_kr else 22, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
-		_style_label(prompt_lbl, 20 if is_kr else 16, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
-		_style_label(credit_lbl, 16 if is_kr else 12, Color(1.0, 1.0, 1.0, 0.85), 1, Color.BLACK, font)
+		var title_color = Color(1.0, 0.75, 0.15, 1.0)
+		_style_label(title_lbl, 72, title_color, font)
+		_style_label(title2_lbl, 72, title_color, font)
+		
+		# Add title shadow overrides
+		for lbl in [title_lbl, title2_lbl]:
+			if lbl:
+				lbl.add_theme_color_override("font_shadow_color", Color(1.0, 0.75, 0.15, 0.25))
+				lbl.add_theme_constant_override("shadow_offset_x", 0)
+				lbl.add_theme_constant_override("shadow_offset_y", 0)
+				lbl.add_theme_constant_override("shadow_outline_size", 12)
+				
+		_style_label(subtitle_lbl, 20 if is_kr else 18, Color(1.0, 0.75, 0.15, 0.55), font)
+		_style_label(prompt_lbl, 16 if is_kr else 14, Color(1.0, 0.75, 0.15, 0.3), font)
+		_style_label(credit_lbl, 14 if is_kr else 12, Color(1.0, 0.75, 0.15, 0.18), font)
 
 	color_rect.modulate.a = 0.0
 	var tw = create_tween()
@@ -58,17 +71,15 @@ func _register_labels_recursive(node: Node) -> void:
 	for child in node.get_children():
 		_register_labels_recursive(child)
 
-func _style_label(lbl: Label, size: int, color: Color, out_size: int, out_color: Color, font: Font, letter_space: int = 0) -> void:
+func _style_label(lbl: Label, size: int, color: Color, font: Font) -> void:
 	if not lbl: return
 	if font:
 		lbl.add_theme_font_override("font", font)
 	lbl.add_theme_font_size_override("font_size", size)
 	lbl.add_theme_color_override("font_color", color)
-	if out_size > 0:
-		lbl.add_theme_constant_override("outline_size", out_size)
-		lbl.add_theme_color_override("font_outline_color", out_color)
-	if letter_space > 0:
-		lbl.add_theme_constant_override("letter_spacing", letter_space)
+	
+	# Ensure no outline is set to let it breathe
+	lbl.add_theme_constant_override("outline_size", 0)
 
 func _input(event: InputEvent) -> void:
 	if is_starting: return
