@@ -131,6 +131,15 @@ func _create_seagull_mesh() -> Node3D:
 func scare_bird(b: Dictionary) -> void:
 	if b.get("state") == "sitting" or b.get("state") == "landing":
 		b["state"] = "fleeing"
+		var node = b["node"] as Node3D
+		b["start_pos"] = node.position
+		var future_angle = (b["angle"] as float) + (b["speed"] as float) * 2.0
+		var rad = b["radius"] as float
+		var target = Vector3(center_pos.x + cos(future_angle)*rad, b["height"], center_pos.z + sin(future_angle)*rad)
+		b["target_pos"] = target
+		var mid = (b["start_pos"] + target) / 2.0
+		b["ctrl_pos"] = Vector3(mid.x, max(target.y + 5.0, 30.0), mid.z)
+		b["anim_t"] = 0.0
 
 func _process(delta: float) -> void:
 	var time = Time.get_ticks_msec() * 0.001
@@ -168,21 +177,31 @@ func _process(delta: float) -> void:
 			# Randomly decide to land (0.1% chance per frame per bird -> ~6% chance per second at 60fps)
 			if randf() < 0.001: 
 				b["state"] = "landing"
-				b["target_pos"] = Vector3(randf_range(-15.0, 15.0), -1.95, randf_range(-8.0, 1.0))
+				b["start_pos"] = node.position
+				var target = Vector3(randf_range(-15.0, 15.0), -1.95, randf_range(-8.0, 1.0))
+				b["target_pos"] = target
+				var mid = (b["start_pos"] + target) / 2.0
+				b["ctrl_pos"] = Vector3(mid.x, max(b["start_pos"].y + 5.0, 30.0), mid.z)
+				b["anim_t"] = 0.0
 				
 		elif state == "landing":
-			var target = b["target_pos"] as Vector3
-			var to_target = target - node.position
-			var dist = to_target.length()
+			var t = b.get("anim_t", 0.0) as float
+			t += delta / 2.5 # 2.5 seconds to land
+			b["anim_t"] = t
 			
-			if dist < 0.5:
+			if t >= 1.0:
 				b["state"] = "sitting"
 				node.position.y = -1.95 # lock perfectly to ground height
 			else:
-				var move_dir = to_target.normalized()
-				var speed = 12.0 # fast dive
-				node.position += move_dir * speed * delta
-				node.look_at(target, Vector3.UP)
+				var ease_t = t * t * (3.0 - 2.0 * t)
+				var p0 = b["start_pos"] as Vector3
+				var p1 = b["ctrl_pos"] as Vector3
+				var p2 = b["target_pos"] as Vector3
+				var new_pos = p0.lerp(p1, ease_t).lerp(p1.lerp(p2, ease_t), ease_t)
+				var vel = new_pos - node.position
+				node.position = new_pos
+				if vel.length_squared() > 0.001:
+					node.look_at(node.position + vel, Vector3.UP)
 				flap_rot = sin((time + (b["time_offset"] as float)) * (b["flap_speed"] as float)) * 0.35
 				
 		elif state == "sitting":
@@ -198,23 +217,23 @@ func _process(delta: float) -> void:
 			node.rotation.y = lerp_angle(node.rotation.y, target_y, 2.0 * delta)
 			
 		elif state == "fleeing":
-			var angle = b["angle"] as float
-			var rad = b["radius"] as float
-			var target_x = center_pos.x + cos(angle) * rad
-			var target_z = center_pos.z + sin(angle) * rad
-			var target_pos_orbit = Vector3(target_x, b["height"], target_z)
+			var t = b.get("anim_t", 0.0) as float
+			t += delta / 2.0 # 2 seconds to flee back to orbit
+			b["anim_t"] = t
 			
-			var to_target = target_pos_orbit - node.position
-			var dist = to_target.length()
-			
-			if dist < 2.0:
+			if t >= 1.0:
 				b["state"] = "orbiting"
 			else:
-				b["angle"] += b["speed"] * delta
-				var move_dir = to_target.normalized()
-				var speed = 18.0 # flee fast
-				node.position += move_dir * speed * delta
-				node.look_at(node.position + move_dir, Vector3.UP)
+				b["angle"] += b["speed"] * delta # keep updating orbit angle for future
+				var ease_t = t * t * (3.0 - 2.0 * t)
+				var p0 = b["start_pos"] as Vector3
+				var p1 = b["ctrl_pos"] as Vector3
+				var p2 = b["target_pos"] as Vector3
+				var new_pos = p0.lerp(p1, ease_t).lerp(p1.lerp(p2, ease_t), ease_t)
+				var vel = new_pos - node.position
+				node.position = new_pos
+				if vel.length_squared() > 0.001:
+					node.look_at(node.position + vel, Vector3.UP)
 				node.rotate_object_local(Vector3(1, 0, 0), 0.2) # pitch up
 				flap_rot = sin((time + (b["time_offset"] as float)) * (b["flap_speed"] as float) * 1.5) * 0.45
 		
