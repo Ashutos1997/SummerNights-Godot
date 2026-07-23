@@ -82,7 +82,7 @@ var sun_face:    Sprite3D
 var face_textures: Dictionary = {}
 var gun:         Node3D
 var muzzle:      Marker3D
-
+var seagull_layer: Node3D = null
 var virtual_mouse_pos: Vector2
 var blasts:      Node3D
 var particles:   GPUParticles3D
@@ -384,6 +384,7 @@ func _build_scene() -> void:
 		gulls.name = "SeagullLayer"
 		gulls.set_script(seagull_script)
 		add_child(gulls)
+		seagull_layer = gulls
 
 	blasts = Node3D.new()
 	add_child(blasts)
@@ -1122,6 +1123,21 @@ func _process(delta: float) -> void:
 			if hit_pos.distance_to(sun.position) > 4.5:
 				_spawn_wet_mark(hit_pos, hit_normal)
 				wet_spawn_timer = 0.08
+				
+		# Check Seagull Interception
+		if is_instance_valid(seagull_layer):
+			for bird in seagull_layer.birds:
+				var state = bird.get("state", "")
+				if state == "sitting" or state == "landing":
+					var b_node = bird["node"] as Node3D
+					if is_instance_valid(b_node):
+						var b_pos = b_node.global_position
+						var vec_to_bird = b_pos - aim_origin
+						var proj_t = vec_to_bird.dot(aim_dir)
+						if proj_t > 0.0:
+							var closest_pt = aim_origin + aim_dir * proj_t
+							if b_pos.distance_to(closest_pt) < 1.5:
+								seagull_layer.scare_bird(bird)
 		
 		# Check Solar Flare Interception (Requires ~0.33s of tracking water spray)
 		var intercepted_flares = []

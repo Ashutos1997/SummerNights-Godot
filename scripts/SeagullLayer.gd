@@ -52,7 +52,9 @@ func _spawn_seagulls() -> void:
 			"height": height,
 			"speed": speed,
 			"flap_speed": rng.randf_range(6.0, 8.5),
-			"time_offset": rng.randf_range(0.0, 100.0)
+			"time_offset": rng.randf_range(0.0, 100.0),
+			"state": "orbiting",
+			"target_pos": Vector3.ZERO
 		})
 
 func _create_seagull_mesh() -> Node3D:
@@ -124,40 +126,89 @@ func _create_seagull_mesh() -> Node3D:
 
 	return bird_root
 
+func scare_bird(b: Dictionary) -> void:
+	if b.get("state") == "sitting" or b.get("state") == "landing":
+		b["state"] = "fleeing"
+
 func _process(delta: float) -> void:
 	var time = Time.get_ticks_msec() * 0.001
 	for b in birds:
 		var node = b["node"] as Node3D
 		if not is_instance_valid(node): continue
 		
-		# Update orbital angle
-		b["angle"] += b["speed"] * delta
-		var angle = b["angle"] as float
-		var rad = b["radius"] as float
+		var state = b.get("state", "orbiting") as String
 		
-		# Position along circle centered at center_pos
-		var pos_x = center_pos.x + cos(angle) * rad
-		var pos_z = center_pos.z + sin(angle) * rad
-		node.position = Vector3(pos_x, b["height"], pos_z)
-		
-		# Orient bird facing along flight tangent direction
-		var tangent = Vector3(-sin(angle), 0, cos(angle)) * (1.0 if b["speed"] > 0 else -1.0)
-		node.look_at(node.position + tangent, Vector3.UP)
-		node.rotate_object_local(Vector3(0, 0, 1), -0.15 * (1.0 if b["speed"] > 0 else -1.0)) # Gentle turn bank angle
-		
-		# Wing flapping animation with periodic gliding pauses
-		var t_offset = b["time_offset"] as float
-		var cycle = fmod(time + t_offset, 6.0)
-		var flap_rot: float = 0.0
-		
-		if cycle < 4.0:
-			# Active flapping phase
-			flap_rot = sin((time + t_offset) * (b["flap_speed"] as float)) * 0.35
-		else:
-			# Glide phase
-			flap_rot = 0.05
-			
 		var l_wing = b["left_wing"] as Node3D
 		var r_wing = b["right_wing"] as Node3D
+		var flap_rot: float = 0.0
+		
+		if state == "orbiting":
+			# Update orbital angle
+			b["angle"] += b["speed"] * delta
+			var angle = b["angle"] as float
+			var rad = b["radius"] as float
+			
+			var pos_x = center_pos.x + cos(angle) * rad
+			var pos_z = center_pos.z + sin(angle) * rad
+			node.position = Vector3(pos_x, b["height"], pos_z)
+			
+			var tangent = Vector3(-sin(angle), 0, cos(angle)) * (1.0 if (b["speed"] as float) > 0 else -1.0)
+			node.look_at(node.position + tangent, Vector3.UP)
+			node.rotate_object_local(Vector3(0, 0, 1), -0.15 * (1.0 if (b["speed"] as float) > 0 else -1.0))
+			
+			var t_offset = b["time_offset"] as float
+			var cycle = fmod(time + t_offset, 6.0)
+			if cycle < 4.0:
+				flap_rot = sin((time + t_offset) * (b["flap_speed"] as float)) * 0.35
+			else:
+				flap_rot = 0.05
+				
+			# Randomly decide to land (0.1% chance per frame per bird -> ~6% chance per second at 60fps)
+			if randf() < 0.001: 
+				b["state"] = "landing"
+				b["target_pos"] = Vector3(randf_range(-12.0, 12.0), 0.5, randf_range(2.0, 7.0))
+				
+		elif state == "landing":
+			var target = b["target_pos"] as Vector3
+			var to_target = target - node.position
+			var dist = to_target.length()
+			
+			if dist < 0.5:
+				b["state"] = "sitting"
+				node.position.y = 0.4 # lock perfectly to ground height
+			else:
+				var move_dir = to_target.normalized()
+				var speed = 12.0 # fast dive
+				node.position += move_dir * speed * delta
+				node.look_at(target, Vector3.UP)
+				flap_rot = sin((time + (b["time_offset"] as float)) * (b["flap_speed"] as float)) * 0.35
+				
+		elif state == "sitting":
+			# Sit idle on the beach, lock rotation purely horizontal
+			var cur_rot = node.rotation
+			node.rotation = Vector3(0, cur_rot.y, 0)
+			flap_rot = 0.0
+			
+		elif state == "fleeing":
+			var angle = b["angle"] as float
+			var rad = b["radius"] as float
+			var target_x = center_pos.x + cos(angle) * rad
+			var target_z = center_pos.z + sin(angle) * rad
+			var target_pos_orbit = Vector3(target_x, b["height"], target_z)
+			
+			var to_target = target_pos_orbit - node.position
+			var dist = to_target.length()
+			
+			if dist < 2.0:
+				b["state"] = "orbiting"
+			else:
+				b["angle"] += b["speed"] * delta
+				var move_dir = to_target.normalized()
+				var speed = 18.0 # flee fast
+				node.position += move_dir * speed * delta
+				node.look_at(node.position + move_dir, Vector3.UP)
+				node.rotate_object_local(Vector3(1, 0, 0), 0.2) # pitch up
+				flap_rot = sin((time + (b["time_offset"] as float)) * (b["flap_speed"] as float) * 1.5) * 0.45
+		
 		if l_wing: l_wing.rotation.z = flap_rot
 		if r_wing: r_wing.rotation.z = -flap_rot
