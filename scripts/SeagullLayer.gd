@@ -124,7 +124,7 @@ func _create_seagull_mesh() -> Node3D:
 	right_tip.position = Vector3(0.95, 0.0, 0.02)
 	right_pivot.add_child(right_tip)
 
-	bird_root.scale = Vector3(0.5, 0.5, 0.5)
+	bird_root.scale = Vector3(1.0, 1.0, 1.0)
 
 	return bird_root
 
@@ -168,7 +168,7 @@ func _process(delta: float) -> void:
 			# Randomly decide to land (0.1% chance per frame per bird -> ~6% chance per second at 60fps)
 			if randf() < 0.001: 
 				b["state"] = "landing"
-				b["target_pos"] = Vector3(randf_range(-15.0, 15.0), -1.95, randf_range(-12.0, 1.0))
+				b["target_pos"] = Vector3(randf_range(-15.0, 15.0), -1.95, randf_range(-8.0, 1.0))
 				
 		elif state == "landing":
 			var target = b["target_pos"] as Vector3
@@ -189,9 +189,13 @@ func _process(delta: float) -> void:
 			# Sit idle on the beach, lock rotation purely horizontal
 			var cur_rot = node.rotation
 			node.rotation = Vector3(0, cur_rot.y, 0)
-			flap_rot = 0.8 # Fold wings down
-			if l_wing: l_wing.rotation.y = lerp(l_wing.rotation.y, -0.6, 10.0 * delta) # Sweep back
-			if r_wing: r_wing.rotation.y = lerp(r_wing.rotation.y, 0.6, 10.0 * delta)  # Sweep back
+			flap_rot = 1.2 # Fold wings sharply down against the body
+			if l_wing: l_wing.rotation.y = lerp(l_wing.rotation.y, -0.8, 10.0 * delta) # Sweep back sharply
+			if r_wing: r_wing.rotation.y = lerp(r_wing.rotation.y, 0.8, 10.0 * delta)  # Sweep back sharply
+			
+			# Slowly turn to show profile facing the center of the screen
+			var target_y = -PI/2.0 if node.position.x > 0 else PI/2.0
+			node.rotation.y = lerp_angle(node.rotation.y, target_y, 2.0 * delta)
 			
 		elif state == "fleeing":
 			var angle = b["angle"] as float
