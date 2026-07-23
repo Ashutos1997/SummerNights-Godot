@@ -40,7 +40,7 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 - Solar heat vents with critical cooling and steam geyser effects
 - Solar flare projectiles in parabolic arcs, interceptable for water refills
 - Procedural drifting 3D low-poly clouds (CloudLayer.gd)
-- Circling low-poly seagulls with wing flapping animation (SeagullLayer.gd)
+- Fully animated low-poly seagulls with curved Bezier flight paths, landing logic, and water interactions (SeagullLayer.gd)
 - Wind sway on palm trees and bushes
 - Custom GLSL shaders for sky, heat haze, and ocean ripples
 - WCAG 2.1 AA/AAA compliant UI with high-contrast mode, reduce motion, and adjustable sensitivity
