@@ -31,6 +31,7 @@ signal reduce_motion_changed(enabled: bool)
 @onready var phase2_label      = $HUD/Phase2Label
 @onready var lose_screen       = $HUD/LoseScreen
 @onready var lose_title_lbl    = $HUD/LoseScreen/ColorRect/VBoxContainer/Title
+@onready var lose_title2_lbl   = $HUD/LoseScreen/ColorRect/VBoxContainer/Title2
 @onready var lose_subtitle_lbl = $HUD/LoseScreen/ColorRect/VBoxContainer/Subtitle
 @onready var lose_level_lbl    = $HUD/LoseScreen/ColorRect/VBoxContainer/LevelLbl
 @onready var retry_btn         = $HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer/RetryBtn
@@ -178,6 +179,35 @@ func _ready() -> void:
 	_style_lbl(end_subtitle_lbl, 18, Color(1.0, 0.75, 0.15, 0.55), 0, Color.TRANSPARENT, font)
 	_style_lbl(end_level_lbl, 16, Color(1.0, 0.75, 0.15, 0.35), 0, Color.TRANSPARENT, font)
 	_style_lbl(end_prompt_lbl, 14, Color(1.0, 0.75, 0.15, 0.3), 0, Color.TRANSPARENT, font)
+	
+	# Lose screen labels — match Title screen typographic drama
+	_style_lbl(lose_title_lbl, 72, title_color, 0, Color.TRANSPARENT, font)
+	_style_lbl(lose_title2_lbl, 72, title_color, 0, Color.TRANSPARENT, font)
+	
+	for lbl in [lose_title_lbl, lose_title2_lbl]:
+		if lbl:
+			lbl.add_theme_color_override("font_shadow_color", Color(1.0, 0.75, 0.15, 0.25))
+			lbl.add_theme_constant_override("shadow_offset_x", 0)
+			lbl.add_theme_constant_override("shadow_offset_y", 0)
+			lbl.add_theme_constant_override("shadow_outline_size", 12)
+
+	_style_lbl(lose_subtitle_lbl, 18, Color(1.0, 0.75, 0.15, 0.55), 0, Color.TRANSPARENT, font)
+	_style_lbl(lose_level_lbl, 16, Color(1.0, 0.75, 0.15, 0.35), 0, Color.TRANSPARENT, font)
+	
+	for btn in [retry_btn, menu_btn]:
+		if btn:
+			if font: btn.add_theme_font_override("font", font)
+			btn.add_theme_font_size_override("font_size", 16)
+			btn.add_theme_color_override("font_color", Color(1.0, 0.75, 0.15, 0.5))
+			btn.add_theme_color_override("font_hover_color", Color(1.0, 0.75, 0.15, 1.0))
+			btn.add_theme_color_override("font_focus_color", Color(1.0, 0.75, 0.15, 1.0))
+			btn.add_theme_color_override("font_pressed_color", Color(1.0, 0.75, 0.15, 0.8))
+			var empty_style = StyleBoxEmpty.new()
+			btn.add_theme_stylebox_override("normal", empty_style)
+			btn.add_theme_stylebox_override("hover", empty_style)
+			btn.add_theme_stylebox_override("pressed", empty_style)
+			btn.add_theme_stylebox_override("focus", empty_style)
+			
 	if end_prompt_lbl and not reduce_motion:
 		var p_tw = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 		p_tw.tween_property(end_prompt_lbl, "modulate:a", 0.7, 1.2)
@@ -279,18 +309,6 @@ func _ready() -> void:
 	var style_lose_btn_hover = style_lose_btn.duplicate()
 	style_lose_btn_hover.bg_color = Color(1.0, 0.8, 0.2, 0.2)
 
-	for btn in [retry_btn, menu_btn]:
-		if btn:
-			if font: btn.add_theme_font_override("font", font)
-			btn.add_theme_font_size_override("font_size", 16)
-			btn.add_theme_constant_override("letter_spacing", 1)
-			btn.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 1.0))
-			btn.add_theme_constant_override("outline_size", 2)
-			btn.add_theme_color_override("font_outline_color", Color.BLACK)
-			btn.add_theme_stylebox_override("normal", style_lose_btn)
-			btn.add_theme_stylebox_override("hover", style_lose_btn_hover)
-			btn.add_theme_stylebox_override("pressed", style_lose_btn_hover)
-			btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 
 	for btn in [pause_resume_btn, settings_btn, credits_btn, pause_menu_btn]:
 		if btn:
@@ -611,8 +629,11 @@ func _apply_language(lang: String) -> void:
 
 	# ── Lose screen & Phase 2 ─────────────────────────────────────────────────
 	if lose_title_lbl:
-		lose_title_lbl.text = "태양이 이겼습니다" if is_kr else "☀ THE SUN WON"
+		lose_title_lbl.text = "태양이" if is_kr else "THE SUN"
 		if font: lose_title_lbl.add_theme_font_override("font", font)
+	if lose_title2_lbl:
+		lose_title2_lbl.text = "이겼습니다" if is_kr else "WON"
+		if font: lose_title2_lbl.add_theme_font_override("font", font)
 	if lose_subtitle_lbl:
 		lose_subtitle_lbl.text = "너무 뜨겁습니다" if is_kr else "TOO HOT TO HANDLE"
 		if font: lose_subtitle_lbl.add_theme_font_override("font", font)
