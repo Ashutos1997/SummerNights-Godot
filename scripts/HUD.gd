@@ -194,20 +194,7 @@ func _ready() -> void:
 	_style_lbl(lose_subtitle_lbl, 18, Color(1.0, 0.75, 0.15, 0.55), 0, Color.TRANSPARENT, font)
 	_style_lbl(lose_level_lbl, 16, Color(1.0, 0.75, 0.15, 0.35), 0, Color.TRANSPARENT, font)
 	
-	for btn in [retry_btn, menu_btn]:
-		if btn:
-			if font: btn.add_theme_font_override("font", font)
-			btn.add_theme_font_size_override("font_size", 16)
-			btn.add_theme_color_override("font_color", Color(1.0, 0.75, 0.15, 0.5))
-			btn.add_theme_color_override("font_hover_color", Color(1.0, 0.75, 0.15, 1.0))
-			btn.add_theme_color_override("font_focus_color", Color(1.0, 0.75, 0.15, 1.0))
-			btn.add_theme_color_override("font_pressed_color", Color(1.0, 0.75, 0.15, 0.8))
-			var empty_style = StyleBoxEmpty.new()
-			btn.add_theme_stylebox_override("normal", empty_style)
-			btn.add_theme_stylebox_override("hover", empty_style)
-			btn.add_theme_stylebox_override("pressed", empty_style)
-			btn.add_theme_stylebox_override("focus", empty_style)
-			
+
 	if end_prompt_lbl and not reduce_motion:
 		var p_tw = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 		p_tw.tween_property(end_prompt_lbl, "modulate:a", 0.7, 1.2)
@@ -310,7 +297,7 @@ func _ready() -> void:
 	style_lose_btn_hover.bg_color = Color(1.0, 0.8, 0.2, 0.2)
 
 
-	for btn in [pause_resume_btn, settings_btn, credits_btn, pause_menu_btn]:
+	for btn in [retry_btn, menu_btn, pause_resume_btn, settings_btn, credits_btn, pause_menu_btn]:
 		if btn:
 			if font: btn.add_theme_font_override("font", font)
 			btn.add_theme_font_size_override("font_size", 18)

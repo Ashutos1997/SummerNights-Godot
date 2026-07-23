@@ -728,6 +728,7 @@ offset_bottom = 100.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+	alignment = 1
 	theme_override_constants/separation = 0
 
 [node name="Title" type="Label" parent="HUD/LoseScreen/ColorRect/VBoxContainer"]
@@ -741,6 +742,11 @@ layout_mode = 2
 mouse_filter = 2
 text = "WON"
 horizontal_alignment = 1
+
+[node name="SpacerDivider" type="Control" parent="HUD/LoseScreen/ColorRect/VBoxContainer"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+mouse_filter = 2
 
 [node name="CenterContainer" type="CenterContainer" parent="HUD/LoseScreen/ColorRect/VBoxContainer"]
 layout_mode = 2
@@ -781,16 +787,16 @@ theme_override_constants/separation = 40
 alignment = 1
 
 [node name="RetryBtn" type="Button" parent="HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(160, 44)
 layout_mode = 2
 mouse_filter = 0
 text = "RETRY"
-flat = true
 
 [node name="MenuBtn" type="Button" parent="HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(160, 44)
 layout_mode = 2
 mouse_filter = 0
 text = "MAIN MENU"
-flat = true
 
 [node name="CreditsScreen" type="Control" parent="HUD"]
 layout_mode = 1
