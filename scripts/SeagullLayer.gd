@@ -60,23 +60,62 @@ func _spawn_seagulls() -> void:
 func _create_seagull_mesh() -> Node3D:
 	var bird_root = Node3D.new()
 	
-	# Main Body (tapered box)
+	# Main Body
 	var body_inst = MeshInstance3D.new()
 	var body_mesh = BoxMesh.new()
-	body_mesh.size = Vector3(0.28, 0.24, 0.75)
+	body_mesh.size = Vector3(0.25, 0.2, 0.55)
 	body_inst.mesh = body_mesh
 	body_inst.material_override = body_mat
 	bird_root.add_child(body_inst)
 	
-	# Beak (cone/prism pointing forward)
+	# Head
+	var head_inst = MeshInstance3D.new()
+	var head_mesh = BoxMesh.new()
+	head_mesh.size = Vector3(0.18, 0.18, 0.22)
+	head_inst.mesh = head_mesh
+	head_inst.material_override = body_mat
+	head_inst.position = Vector3(0, 0.12, -0.28)
+	bird_root.add_child(head_inst)
+	
+	# Eyes
+	for x in [-0.09, 0.09]:
+		var eye = MeshInstance3D.new()
+		var eye_mesh = BoxMesh.new()
+		eye_mesh.size = Vector3(0.04, 0.04, 0.04)
+		eye.mesh = eye_mesh
+		eye.material_override = wingtip_mat
+		eye.position = Vector3(x, 0.15, -0.34)
+		bird_root.add_child(eye)
+	
+	# Beak
 	var beak_inst = MeshInstance3D.new()
 	var beak_mesh = PrismMesh.new()
-	beak_mesh.size = Vector3(0.12, 0.3, 0.12)
+	beak_mesh.size = Vector3(0.08, 0.18, 0.08)
 	beak_inst.mesh = beak_mesh
 	beak_inst.material_override = beak_mat
 	beak_inst.rotation_degrees = Vector3(-90, 0, 0)
-	beak_inst.position = Vector3(0, -0.02, -0.45)
+	beak_inst.position = Vector3(0, 0.1, -0.46)
 	bird_root.add_child(beak_inst)
+	
+	# Tail
+	var tail_inst = MeshInstance3D.new()
+	var tail_mesh = PrismMesh.new()
+	tail_mesh.size = Vector3(0.15, 0.25, 0.04)
+	tail_inst.mesh = tail_mesh
+	tail_inst.material_override = wingtip_mat
+	tail_inst.rotation_degrees = Vector3(110, 0, 0)
+	tail_inst.position = Vector3(0, 0.08, 0.35)
+	bird_root.add_child(tail_inst)
+	
+	# Feet
+	for x in [-0.07, 0.07]:
+		var foot = MeshInstance3D.new()
+		var foot_mesh = BoxMesh.new()
+		foot_mesh.size = Vector3(0.06, 0.04, 0.12)
+		foot.mesh = foot_mesh
+		foot.material_override = beak_mat
+		foot.position = Vector3(x, -0.1, 0.05)
+		bird_root.add_child(foot)
 	
 	# Left Wing Pivot & Mesh
 	var left_pivot = Node3D.new()
