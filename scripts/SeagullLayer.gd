@@ -124,7 +124,7 @@ func _create_seagull_mesh() -> Node3D:
 	right_tip.position = Vector3(0.95, 0.0, 0.02)
 	right_pivot.add_child(right_tip)
 
-	bird_root.scale = Vector3(0.35, 0.35, 0.35)
+	bird_root.scale = Vector3(0.5, 0.5, 0.5)
 
 	return bird_root
 
@@ -189,7 +189,9 @@ func _process(delta: float) -> void:
 			# Sit idle on the beach, lock rotation purely horizontal
 			var cur_rot = node.rotation
 			node.rotation = Vector3(0, cur_rot.y, 0)
-			flap_rot = 0.0
+			flap_rot = 0.8 # Fold wings down
+			if l_wing: l_wing.rotation.y = lerp(l_wing.rotation.y, -0.6, 10.0 * delta) # Sweep back
+			if r_wing: r_wing.rotation.y = lerp(r_wing.rotation.y, 0.6, 10.0 * delta)  # Sweep back
 			
 		elif state == "fleeing":
 			var angle = b["angle"] as float
@@ -211,6 +213,11 @@ func _process(delta: float) -> void:
 				node.look_at(node.position + move_dir, Vector3.UP)
 				node.rotate_object_local(Vector3(1, 0, 0), 0.2) # pitch up
 				flap_rot = sin((time + (b["time_offset"] as float)) * (b["flap_speed"] as float) * 1.5) * 0.45
+		
+		if state != "sitting":
+			# Restore wing sweep for flying
+			if l_wing: l_wing.rotation.y = lerp(l_wing.rotation.y, 0.0, 15.0 * delta)
+			if r_wing: r_wing.rotation.y = lerp(r_wing.rotation.y, 0.0, 15.0 * delta)
 		
 		if l_wing: l_wing.rotation.z = flap_rot
 		if r_wing: r_wing.rotation.z = -flap_rot
