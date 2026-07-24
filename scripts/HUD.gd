@@ -369,8 +369,6 @@ func _ready() -> void:
 	win_screen.set_meta("accessible_name", "Level complete screen")
 	settings_screen.set_meta("accessible_name", "Settings screen")
 	credits_screen.set_meta("accessible_name", "Credits screen")
-	
-	_audit_labels()
 
 # ---------- Language -------------------------------------------------------
 

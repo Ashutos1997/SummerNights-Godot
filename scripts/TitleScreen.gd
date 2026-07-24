@@ -54,23 +54,6 @@ func _ready() -> void:
 	elif prompt_lbl:
 		prompt_lbl.modulate.a = 1.0
 
-	_audit_labels()
-
-func _audit_labels() -> void:
-	_register_labels_recursive(self)
-	print("--- TITLE SCREEN LABEL AUDIT ---")
-	for label in get_tree().get_nodes_in_group("labels"):
-		if label.is_inside_tree() and label.get_tree().current_scene == self:
-			var sz = label.get_theme_font_size("font_size")
-			print(label.name, " font_size: ", sz)
-
-func _register_labels_recursive(node: Node) -> void:
-	if node is Label:
-		if not node.is_in_group("labels"):
-			node.add_to_group("labels")
-	for child in node.get_children():
-		_register_labels_recursive(child)
-
 func _style_label(lbl: Label, size: int, color: Color, font: Font) -> void:
 	if not lbl: return
 	if font:
