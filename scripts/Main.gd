@@ -43,6 +43,7 @@ var is_measuring: bool = false
 var water_refill_count: int = 0
 
 # ─── New Level Config Variables ──────────────────────────────────────────────
+var current_config: Dictionary = {}
 var heat_regen_base: float = 2.0
 var sun_sway_amplitude: float = 0.0
 var sun_sway_speed: float = 0.0
@@ -153,9 +154,9 @@ func _ready() -> void:
 	cooldown_timer = 0.0
 	water_refill_count = 0
 	is_measuring = true
-	print("[MEASURE] Level started, timer running")
 
-	var cfg = GameState.LEVEL_CONFIG[GameState.level]
+	current_config = GameState.LEVEL_CONFIG[GameState.level]
+	var cfg = current_config
 	WATER_DRAIN_RATE = cfg.water_drain
 	heat_regen_base = cfg.heat_regen_base
 	sun_sway_amplitude = cfg.sun_sway_amplitude
@@ -210,26 +211,6 @@ func _ready() -> void:
 	flare_mat.emission_enabled = true
 	flare_mat.emission = Color(1.0, 0.45, 0.05)
 	flare_mat.emission_energy_multiplier = 4.0
-
-	print("--- DIAGNOSTICS START ---")
-	print("Audio driver: ", AudioServer.get_driver_name())
-	print("Audio mix rate: ", AudioServer.get_mix_rate())
-	print("Audio output latency: ", AudioServer.get_output_latency())
-	print("Current water drain rate: ", WATER_DRAIN_RATE)
-	if dir_light:
-		print("DirLight energy: ", dir_light.light_energy)
-		print("DirLight shadow enabled: ", dir_light.shadow_enabled)
-	if env_res:
-		print("Ambient energy: ", env_res.ambient_light_energy)
-		print("Ambient color: ", env_res.ambient_light_color)
-	if sun_mat:
-		print("Sun emission: ", sun_mat.emission_energy_multiplier)
-	for child in get_children():
-		print("Main child: ", child.name, " type: ", child.get_class())
-	if sun:
-		for child in sun.get_children():
-			print("Sun child: ", child.name, " type: ", child.get_class())
-	print("--- DIAGNOSTICS END ---")
 
 	# Handshake with persistent LoadingScreen on root viewport
 	var persistent_loader = get_tree().root.get_node_or_null("LoadingScreen")
@@ -1010,7 +991,7 @@ func _process(delta: float) -> void:
 			f_prop.rotation.x = sway_x
 		
 	# Increase difficulty based on level
-	var regen_rate = 5.0 + (level * 1.5)
+	var regen_rate = heat_regen_base
 		
 	if is_measuring:
 		cooldown_timer += delta
@@ -1215,9 +1196,6 @@ func _input(event: InputEvent) -> void:
 		is_shooting = false
 		return # Input guard: ignore gameplay mouse/keyboard input while menus are open
 
-	if event is InputEventKey and event.pressed:
-		if event.keycode == KEY_P:
-			_capture_screenshot()
 	if game_over: return
 	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 		virtual_mouse_pos += event.relative * mouse_sensitivity
@@ -1451,15 +1429,6 @@ func _setup_sun_mesh_and_material(node: Node) -> MeshInstance3D:
 			first_mesh = found
 	return first_mesh
 
-func _capture_screenshot() -> void:
-	await get_tree().process_frame
-	await get_tree().process_frame
-	var image = get_viewport().get_texture().get_image()
-	if image:
-		image.save_png("res://debug_endscreen.png")
-		print("Screenshot saved to debug_endscreen.png")
-	get_tree().quit()
-
 # ─────────────────────────────────────────────────────────────────────────────
 # On hit
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1574,8 +1543,6 @@ func _win() -> void:
 
 	if is_measuring:
 		is_measuring = false
-		print("[MEASURE] Sun cooled in: ", snapped(cooldown_timer, 0.01), " seconds")
-		print("[MEASURE] Water refills used: ", water_refill_count)
 	
 	sun_defeated_sfx.play()
 	var tween = create_tween()
@@ -1599,7 +1566,8 @@ func _win() -> void:
 			water_refill_count = 0
 			is_measuring = true
 			
-			var cfg = GameState.LEVEL_CONFIG[GameState.level]
+			current_config = GameState.LEVEL_CONFIG[GameState.level]
+			var cfg = current_config
 			WATER_DRAIN_RATE = cfg.water_drain
 			heat_regen_base = cfg.heat_regen_base
 			sun_sway_amplitude = cfg.sun_sway_amplitude
@@ -1619,7 +1587,6 @@ func _win() -> void:
 				if GameState.level == 3:
 					hud.show_ice_unlock()
 			
-			print("[MEASURE] Level started, timer running")
 			if sun_mat:
 				sun_mat.albedo_color = Color(1.0, 1.0, 1.0)
 				sun_mat.emission = Color(1.0, 0.7, 0.2)
@@ -1695,7 +1662,7 @@ func _trigger_phase2() -> void:
 
 func _shoot_ice() -> void:
 	GameState.ice_charges_remaining -= 1
-	var cfg = GameState.LEVEL_CONFIG[GameState.level]
+	var cfg = current_config
 	hud.update_ice_charges(GameState.ice_charges_remaining, cfg.ice_charges)
 	
 	ice_shoot_sfx.play()

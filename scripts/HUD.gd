@@ -119,14 +119,6 @@ func _ready() -> void:
 	
 	kenney_font = load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
 	galmuri_font = load("res://assets/fonts/Galmuri11.ttf")
-	if kenney_font:
-		print("HUD: Kenney Future font loaded.")
-	else:
-		print("HUD Warning: Kenney Future font not found.")
-	if galmuri_font:
-		print("HUD: Galmuri11 font loaded.")
-	else:
-		print("HUD Warning: Galmuri11 font not found.")
 	var font = kenney_font
 	
 	_style_lbl(heat_label, 22, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
@@ -134,9 +126,6 @@ func _ready() -> void:
 	_style_lbl(ice_label, 22, Color(0.5, 0.85, 1.0, 1.0), 3, Color.BLACK, font)
 	_style_lbl(ice_unlock_label, 24, Color(0.5, 0.85, 1.0, 1.0), 3, Color.BLACK, font)
 	_style_lbl(level_label, 22, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
-	
-	var lvl_sz = level_label.get_theme_font_size("font_size")
-	print("LVL label font size: ", lvl_sz)
 	
 	# Top right buttons (now in pause menu, styled separately below)
 
@@ -717,21 +706,6 @@ func _on_fullscreen_toggled(toggled: bool) -> void:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 	else:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-
-func _audit_labels() -> void:
-	_register_labels_recursive(self)
-	print("--- HUD LABEL AUDIT ---")
-	for label in get_tree().get_nodes_in_group("labels"):
-		if label.is_inside_tree() and (label.get_tree().current_scene == self or label.get_parent() != null):
-			var sz = label.get_theme_font_size("font_size")
-			print(label.name, " font_size: ", sz)
-
-func _register_labels_recursive(node: Node) -> void:
-	if node is Label:
-		if not node.is_in_group("labels"):
-			node.add_to_group("labels")
-	for child in node.get_children():
-		_register_labels_recursive(child)
 
 func _style_lbl(lbl: Label, size: int, color: Color, out_size: int, out_color: Color, font: Font = null, letter_space: int = 0) -> void:
 	if not lbl: return
