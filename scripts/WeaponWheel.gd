@@ -16,6 +16,7 @@ var name_label: Label
 var stats_label: Label
 
 var bg_dim: ColorRect
+var whoosh_player: AudioStreamPlayer = null
 
 func _ready() -> void:
 	weapons = GameState.WEAPONS.keys()
@@ -130,6 +131,16 @@ void fragment() {
 	
 	text_panel.hide()
 
+	# Synthesised weapon-switch whoosh — frequency sweep from 800→200Hz over 80ms
+	var gen = AudioStreamGenerator.new()
+	gen.mix_rate = 22050.0
+	gen.buffer_length = 0.15
+	whoosh_player = AudioStreamPlayer.new()
+	whoosh_player.stream = gen
+	whoosh_player.bus = "SFX_UI"
+	whoosh_player.volume_db = -14.0
+	add_child(whoosh_player)
+
 func _input(event: InputEvent) -> void:
 	if not active: return
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
@@ -178,6 +189,7 @@ func close() -> void:
 		var chosen = weapons[selected_index]
 		var w_cfg = GameState.WEAPONS[chosen]
 		if GameState.level >= w_cfg.unlock_level:
+			_play_whoosh()
 			open_tween.chain().tween_callback(func():
 				hide()
 				weapon_selected.emit(chosen)
@@ -186,6 +198,19 @@ func close() -> void:
 			open_tween.chain().tween_callback(hide)
 	else:
 		open_tween.chain().tween_callback(hide)
+
+func _play_whoosh() -> void:
+	if not whoosh_player: return
+	if not whoosh_player.playing:
+		whoosh_player.play()
+	var pb = whoosh_player.get_stream_playback() as AudioStreamGeneratorPlayback
+	if not pb: return
+	var frames = 1764  # ~80ms at 22050Hz
+	for i in range(frames):
+		var t = float(i) / 22050.0
+		var freq = lerp(800.0, 200.0, float(i) / float(frames))
+		var envelope = pow(1.0 - float(i) / float(frames), 0.5)
+		pb.push_frame(Vector2.ONE * sin(TAU * freq * t) * 0.3 * envelope)
 
 func _process(delta: float) -> void:
 	if not active: return

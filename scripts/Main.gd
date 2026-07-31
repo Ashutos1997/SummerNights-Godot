@@ -1874,8 +1874,8 @@ func _spawn_damage_number(amount: float, is_crit: bool, pos: Vector3) -> void:
 	lbl.outline_modulate = Color.BLACK
 	
 	var offset = Vector3(randf_range(-2.5, 2.5), randf_range(-1.5, 1.5), randf_range(-2.0, 2.0))
-	lbl.global_position = pos + offset
 	add_child(lbl)
+	lbl.global_position = pos + offset
 	
 	var tw = create_tween().set_parallel(true)
 	tw.tween_property(lbl, "global_position:y", lbl.global_position.y + 5.0, 0.7).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)

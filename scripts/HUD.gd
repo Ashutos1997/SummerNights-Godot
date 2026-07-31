@@ -83,6 +83,9 @@ var cursor_screen_pos: Vector2 = Vector2.ZERO  # Tracks virtual mouse for captur
 var target_heat: float = 100.0
 var target_water: float = 100.0
 
+var pause_blur: ColorRect = null
+var ui_tick_player: AudioStreamPlayer = null
+
 func _process(delta: float) -> void:
 	if heat_bar:
 		if reduce_motion:
@@ -120,7 +123,11 @@ func _ready() -> void:
 	credits_screen.visible = false
 	end_screen.visible = false
 	
+	# Pause blur backdrop (same shader as weapon wheel)
+	pause_blur = _make_blur_backdrop()
 
+	# UI tick player for button hover SFX
+	ui_tick_player = _make_ui_tick_player()
 
 	if weapon_wheel:
 		weapon_wheel.weapon_selected.connect(func(w_id): weapon_changed.emit(w_id))
@@ -318,6 +325,7 @@ func _ready() -> void:
 			btn.add_theme_stylebox_override("pressed", style_lose_btn_hover)
 			btn.add_theme_stylebox_override("focus", style_focus)
 			btn.focus_mode = Control.FOCUS_ALL
+			btn.mouse_entered.connect(_play_ui_tick)
 			
 	if retry_btn:
 		retry_btn.pressed.connect(_on_retry_pressed)
@@ -729,6 +737,62 @@ func _on_fullscreen_toggled(toggled: bool) -> void:
 	else:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 
+func _make_blur_backdrop() -> ColorRect:
+	var rect = ColorRect.new()
+	rect.color = Color.WHITE
+	rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rect.visible = false
+	var shader = Shader.new()
+	shader.code = """
+shader_type canvas_item;
+uniform sampler2D screen_texture : hint_screen_texture, filter_linear_mipmap;
+uniform float blur_amount : hint_range(0.0, 5.0) = 0.0;
+uniform float dim_amount : hint_range(0.0, 1.0) = 0.0;
+void fragment() {
+	vec4 bg = textureLod(screen_texture, SCREEN_UV, blur_amount);
+	COLOR = mix(bg, vec4(0.0, 0.0, 0.0, 1.0), dim_amount);
+}
+"""
+	var smat = ShaderMaterial.new()
+	smat.shader = shader
+	smat.set_shader_parameter("blur_amount", 0.0)
+	smat.set_shader_parameter("dim_amount", 0.0)
+	rect.material = smat
+	# Insert behind pause_screen but above the game HUD
+	var hud_node = get_node_or_null("HUD")
+	if hud_node:
+		hud_node.add_child(rect)
+		hud_node.move_child(rect, pause_screen.get_index())
+	else:
+		add_child(rect)
+	return rect
+
+func _make_ui_tick_player() -> AudioStreamPlayer:
+	# Synthesise a short 10ms 1kHz sine tick — no audio file needed
+	var gen = AudioStreamGenerator.new()
+	gen.mix_rate = 22050.0
+	gen.buffer_length = 0.05
+	var player = AudioStreamPlayer.new()
+	player.stream = gen
+	player.bus = "SFX_UI"
+	player.volume_db = -18.0
+	add_child(player)
+	return player
+
+func _play_ui_tick() -> void:
+	if not ui_tick_player: return
+	if not ui_tick_player.playing:
+		ui_tick_player.play()
+	var pb = ui_tick_player.get_stream_playback() as AudioStreamGeneratorPlayback
+	if not pb: return
+	var frames = 512
+	var freq = 1800.0
+	for i in range(frames):
+		var t = float(i) / 22050.0
+		var envelope = 1.0 - (float(i) / float(frames))
+		pb.push_frame(Vector2.ONE * sin(TAU * freq * t) * 0.25 * envelope)
+
 func _style_lbl(lbl: Label, size: int, color: Color, out_size: int, out_color: Color, font: Font = null, letter_space: int = 0) -> void:
 	if not lbl: return
 	if font:
@@ -889,6 +953,12 @@ func _input(event: InputEvent) -> void:
 			return
 
 func _pause_game() -> void:
+	# Animate blur backdrop in
+	if pause_blur:
+		pause_blur.visible = true
+		var btw = create_tween().set_parallel(true)
+		btw.tween_method(func(v): pause_blur.material.set_shader_parameter("blur_amount", v), 0.0, 2.5, 0.25)
+		btw.tween_method(func(v): pause_blur.material.set_shader_parameter("dim_amount", v), 0.0, 0.55, 0.25)
 	pause_screen.visible = true
 	pause_screen.modulate.a = 0.0
 	var tw = create_tween()
@@ -907,6 +977,12 @@ func _pause_game() -> void:
 	if pause_resume_btn: pause_resume_btn.grab_focus()
 
 func _resume_game() -> void:
+	# Animate blur backdrop out
+	if pause_blur:
+		var btw = create_tween().set_parallel(true)
+		btw.tween_method(func(v): pause_blur.material.set_shader_parameter("blur_amount", v), 2.5, 0.0, 0.2)
+		btw.tween_method(func(v): pause_blur.material.set_shader_parameter("dim_amount", v), 0.55, 0.0, 0.2)
+		btw.chain().tween_callback(func(): pause_blur.visible = false)
 	var tw = create_tween()
 	tw.tween_property(pause_screen, "modulate:a", 0.0, 0.2)
 	await tw.finished
