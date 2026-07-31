@@ -1082,9 +1082,10 @@ func _process(delta: float) -> void:
 	is_firing = false
 	
 	if is_title_screen:
-		title_cam_angle += 0.05 * delta
+		title_cam_angle += 0.3 * delta  # time accumulator (not a rotation angle)
+		var swing = sin(title_cam_angle) * 0.52  # ±~30° arc in radians
 		var cam_dist = 6.0
-		camera.position = Vector3(sin(title_cam_angle) * cam_dist, 2.0, cos(title_cam_angle) * cam_dist)
+		camera.position = Vector3(sin(swing) * cam_dist, 2.0, cos(swing) * cam_dist)
 		camera.look_at(Vector3(0, 1, 0), Vector3.UP)
 		
 		# Slowly drift the sun and clouds
