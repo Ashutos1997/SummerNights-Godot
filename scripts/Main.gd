@@ -97,6 +97,38 @@ func _load_weapon_model() -> void:
 		base_drain = current_config.water_drain
 	WATER_DRAIN_RATE = base_drain * w_cfg.water_drain
 	
+	if shoot_loop_sfx:
+		if GameState.current_weapon_id == "heavy":
+			shoot_loop_sfx.pitch_scale = 0.6
+		elif GameState.current_weapon_id == "precision":
+			shoot_loop_sfx.pitch_scale = 1.5
+		else:
+			shoot_loop_sfx.pitch_scale = 1.0
+
+	if gun_spray:
+		var p_mat = gun_spray.process_material as ParticleProcessMaterial
+		var g_mesh = gun_spray.draw_pass_1 as BoxMesh
+		var g_mat = g_mesh.material as StandardMaterial3D
+		if GameState.current_weapon_id == "heavy":
+			gun_spray.amount = 200
+			p_mat.spread = 12.0
+			g_mesh.size = Vector3(0.3, 0.3, 0.3)
+			g_mat.albedo_color = Color(0.0, 0.4, 0.9, 0.9) # Deep heavy blue
+		elif GameState.current_weapon_id == "precision":
+			gun_spray.amount = 60
+			p_mat.spread = 0.5
+			g_mesh.size = Vector3(0.05, 0.05, 0.5)
+			g_mat.albedo_color = Color(0.8, 0.9, 1.0, 0.8) # Laser blue
+			p_mat.initial_velocity_min = 40.0
+			p_mat.initial_velocity_max = 50.0
+		else:
+			gun_spray.amount = 100
+			p_mat.spread = 5.0
+			g_mesh.size = Vector3(0.15, 0.15, 0.15)
+			g_mat.albedo_color = Color(0.0, 0.8, 1.0, 0.8) # Cyan
+			p_mat.initial_velocity_min = 25.0
+			p_mat.initial_velocity_max = 35.0
+	
 	water_changed.emit(water_tank, MAX_WATER)
 
 # ─── End Game & Level Transitions ─────────────────────────────────────────
@@ -217,7 +249,7 @@ func _ready() -> void:
 	hud.game_resumed.connect(_on_game_resumed)
 	hud.weapon_changed.connect(_on_weapon_changed)
 	
-	_load_weapon_model()
+	
 	
 	GameState.ice_charges_remaining = cfg.ice_charges
 	hud.update_ice_charges(GameState.ice_charges_remaining, cfg.ice_charges)
@@ -253,6 +285,8 @@ func _ready() -> void:
 	flare_mat.emission_enabled = true
 	flare_mat.emission = Color(1.0, 0.45, 0.05)
 	flare_mat.emission_energy_multiplier = 4.0
+	
+	_load_weapon_model()
 
 	# Handshake with persistent LoadingScreen on root viewport
 	var persistent_loader = get_tree().root.get_node_or_null("LoadingScreen")
@@ -1095,6 +1129,17 @@ func _process(delta: float) -> void:
 	camera.position = camera.position.lerp(Vector3(0, 0, 5), 8.0 * delta)
 	camera.rotation.x = lerp(camera.rotation.x, 0.0, 8.0 * delta)
 	
+	# Dynamic FOV
+	var target_fov = 75.0
+	if is_shooting and can_shoot:
+		if GameState.current_weapon_id == "heavy":
+			target_fov = 83.0 # Wide, powerful pushback
+		elif GameState.current_weapon_id == "precision":
+			target_fov = 70.0 # Slight zoom-in for sniping focus
+		else:
+			target_fov = 77.0 # Slight push
+	camera.fov = lerp(camera.fov, target_fov, 8.0 * delta)
+	
 	
 		
 	# Update crosshair position to exactly match mouse pointer
@@ -1473,7 +1518,10 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 	sun_hit_tween.tween_method(func(val): sun_mat.emission_energy_multiplier = val, 1.0, 3.5, 0.06)
 	sun_hit_tween.tween_method(func(val): sun_mat.emission_energy_multiplier = val, 3.5, 1.0, 0.12)
 	if not is_shaking:
-		shake(0.12, 0.015)
+		var strength = 0.015
+		if GameState.current_weapon_id == "heavy": strength = 0.025
+		elif GameState.current_weapon_id == "precision": strength = 0.005
+		shake(0.12, strength)
 	if hit_cooldown <= 0.0:
 		hit_sfx.play()
 		hit_cooldown = HIT_COOLDOWN
