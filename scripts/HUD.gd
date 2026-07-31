@@ -83,7 +83,7 @@ var cursor_screen_pos: Vector2 = Vector2.ZERO  # Tracks virtual mouse for captur
 var target_heat: float = 100.0
 var target_water: float = 100.0
 
-var pause_blur: ColorRect = null
+var pause_blur: ColorRect = null  # pause_screen's own ColorRect with blur shader
 var ui_tick_player: AudioStreamPlayer = null
 
 func _process(delta: float) -> void:
@@ -123,8 +123,9 @@ func _ready() -> void:
 	credits_screen.visible = false
 	end_screen.visible = false
 	
-	# Pause blur backdrop (same shader as weapon wheel)
-	pause_blur = _make_blur_backdrop()
+	# Apply blur shader to pause_screen's existing ColorRect
+	pause_blur = $HUD/pause_screen/ColorRect
+	_apply_pause_blur_shader(pause_blur)
 
 	# UI tick player for button hover SFX
 	ui_tick_player = _make_ui_tick_player()
@@ -737,12 +738,8 @@ func _on_fullscreen_toggled(toggled: bool) -> void:
 	else:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 
-func _make_blur_backdrop() -> ColorRect:
-	var rect = ColorRect.new()
-	rect.color = Color.WHITE
-	rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	rect.visible = false
+func _apply_pause_blur_shader(rect: ColorRect) -> void:
+	if not rect: return
 	var shader = Shader.new()
 	shader.code = """
 shader_type canvas_item;
@@ -759,14 +756,7 @@ void fragment() {
 	smat.set_shader_parameter("blur_amount", 0.0)
 	smat.set_shader_parameter("dim_amount", 0.0)
 	rect.material = smat
-	# Insert behind pause_screen but above the game HUD
-	var hud_node = get_node_or_null("HUD")
-	if hud_node:
-		hud_node.add_child(rect)
-		hud_node.move_child(rect, pause_screen.get_index())
-	else:
-		add_child(rect)
-	return rect
+	rect.color = Color.WHITE
 
 func _make_ui_tick_player() -> AudioStreamPlayer:
 	# Synthesise a short 10ms 1kHz sine tick — no audio file needed
@@ -953,16 +943,17 @@ func _input(event: InputEvent) -> void:
 			return
 
 func _pause_game() -> void:
-	# Animate blur backdrop in
-	if pause_blur:
-		pause_blur.visible = true
-		var btw = create_tween().set_parallel(true)
-		btw.tween_method(func(v): pause_blur.material.set_shader_parameter("blur_amount", v), 0.0, 2.5, 0.25)
-		btw.tween_method(func(v): pause_blur.material.set_shader_parameter("dim_amount", v), 0.0, 0.55, 0.25)
+	# Reset shader params then show pause_screen
+	if pause_blur and pause_blur.material is ShaderMaterial:
+		pause_blur.material.set_shader_parameter("blur_amount", 0.0)
+		pause_blur.material.set_shader_parameter("dim_amount", 0.0)
 	pause_screen.visible = true
 	pause_screen.modulate.a = 0.0
-	var tw = create_tween()
+	var tw = create_tween().set_parallel(true)
 	tw.tween_property(pause_screen, "modulate:a", 1.0, 0.25)
+	if pause_blur and pause_blur.material is ShaderMaterial:
+		tw.tween_method(func(v): pause_blur.material.set_shader_parameter("blur_amount", v), 0.0, 2.5, 0.25)
+		tw.tween_method(func(v): pause_blur.material.set_shader_parameter("dim_amount", v), 0.0, 0.5, 0.25)
 	emit_signal("game_paused")
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	# Set up Tab/arrow key order for pause menu buttons
@@ -977,14 +968,11 @@ func _pause_game() -> void:
 	if pause_resume_btn: pause_resume_btn.grab_focus()
 
 func _resume_game() -> void:
-	# Animate blur backdrop out
-	if pause_blur:
-		var btw = create_tween().set_parallel(true)
-		btw.tween_method(func(v): pause_blur.material.set_shader_parameter("blur_amount", v), 2.5, 0.0, 0.2)
-		btw.tween_method(func(v): pause_blur.material.set_shader_parameter("dim_amount", v), 0.55, 0.0, 0.2)
-		btw.chain().tween_callback(func(): pause_blur.visible = false)
-	var tw = create_tween()
+	var tw = create_tween().set_parallel(true)
 	tw.tween_property(pause_screen, "modulate:a", 0.0, 0.2)
+	if pause_blur and pause_blur.material is ShaderMaterial:
+		tw.tween_method(func(v): pause_blur.material.set_shader_parameter("blur_amount", v), 2.5, 0.0, 0.2)
+		tw.tween_method(func(v): pause_blur.material.set_shader_parameter("dim_amount", v), 0.5, 0.0, 0.2)
 	await tw.finished
 	pause_screen.visible = false
 	emit_signal("game_resumed")
