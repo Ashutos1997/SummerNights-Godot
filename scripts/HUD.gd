@@ -982,6 +982,7 @@ func _close_settings() -> void:
 		settings_screen.visible = false
 		if opened_from_pause:
 			pause_screen.visible = true
+			if pause_resume_btn: pause_resume_btn.grab_focus()
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	)
@@ -1014,6 +1015,7 @@ func _close_credits() -> void:
 		credits_screen.visible = false
 		if opened_from_pause:
 			pause_screen.visible = true
+			if pause_resume_btn: pause_resume_btn.grab_focus()
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	)
