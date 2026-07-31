@@ -282,7 +282,12 @@ func _ready() -> void:
 	emit_signal("level_config_loaded", cfg.timer)
 	crosshair_moved.connect(hud._on_crosshair_moved)
 	hud.sensitivity_changed.connect(func(val): GameState.mouse_sensitivity = val)
-	hud.reduce_motion_changed.connect(func(enabled): reduce_motion = enabled)
+	hud.reduce_motion_changed.connect(func(enabled):
+		reduce_motion = enabled
+		if enabled and is_instance_valid(sunspot_tween):
+			sunspot_tween.kill()
+			if sunspot_node: sunspot_node.scale = Vector3(1.0, 1.0, 1.0)
+	)
 	mouse_sensitivity = GameState.mouse_sensitivity
 	reduce_motion = GameState.reduce_motion
 	heat_changed.emit(temperature, MAX_TEMP)
@@ -946,9 +951,10 @@ func _relocate_sunspot() -> void:
 		
 		if is_instance_valid(sunspot_tween): sunspot_tween.kill()
 		sunspot_node.scale = Vector3(1.0, 1.0, 1.0)
-		sunspot_tween = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-		sunspot_tween.tween_property(sunspot_node, "scale", Vector3(1.25, 1.25, 1.25), 0.5)
-		sunspot_tween.tween_property(sunspot_node, "scale", Vector3(1.0, 1.0, 1.0), 0.5)
+		if not reduce_motion:
+			sunspot_tween = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+			sunspot_tween.tween_property(sunspot_node, "scale", Vector3(1.25, 1.25, 1.25), 0.5)
+			sunspot_tween.tween_property(sunspot_node, "scale", Vector3(1.0, 1.0, 1.0), 0.5)
 
 func _spawn_solar_flare() -> void:
 	flare_spawn_timer = randf_range(9.0, 12.0)

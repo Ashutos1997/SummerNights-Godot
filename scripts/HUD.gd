@@ -294,6 +294,17 @@ func _ready() -> void:
 	style_lose_btn_hover.bg_color = Color(1.0, 0.8, 0.2, 0.2)
 
 
+	# Keyboard focus ring — amber outline so keyboard users can see where they are
+	var style_focus = StyleBoxFlat.new()
+	style_focus.bg_color = Color(0, 0, 0, 0)
+	style_focus.border_color = Color(1.0, 0.85, 0.2, 1.0)
+	style_focus.set_border_width_all(2)
+	style_focus.set_corner_radius_all(6)
+	style_focus.content_margin_left = 6
+	style_focus.content_margin_right = 6
+	style_focus.content_margin_top = 4
+	style_focus.content_margin_bottom = 4
+
 	for btn in [retry_btn, menu_btn, pause_resume_btn, settings_btn, credits_btn, pause_menu_btn]:
 		if btn:
 			if font: btn.add_theme_font_override("font", font)
@@ -305,7 +316,8 @@ func _ready() -> void:
 			btn.add_theme_stylebox_override("normal", style_lose_btn)
 			btn.add_theme_stylebox_override("hover", style_lose_btn_hover)
 			btn.add_theme_stylebox_override("pressed", style_lose_btn_hover)
-			btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+			btn.add_theme_stylebox_override("focus", style_focus)
+			btn.focus_mode = Control.FOCUS_ALL
 			
 	if retry_btn:
 		retry_btn.pressed.connect(_on_retry_pressed)
@@ -883,6 +895,16 @@ func _pause_game() -> void:
 	tw.tween_property(pause_screen, "modulate:a", 1.0, 0.25)
 	emit_signal("game_paused")
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	# Set up Tab/arrow key order for pause menu buttons
+	if pause_resume_btn and settings_btn and credits_btn and pause_menu_btn:
+		pause_resume_btn.focus_neighbor_bottom = pause_resume_btn.get_path_to(settings_btn)
+		settings_btn.focus_neighbor_top = settings_btn.get_path_to(pause_resume_btn)
+		settings_btn.focus_neighbor_bottom = settings_btn.get_path_to(credits_btn)
+		credits_btn.focus_neighbor_top = credits_btn.get_path_to(settings_btn)
+		credits_btn.focus_neighbor_bottom = credits_btn.get_path_to(pause_menu_btn)
+		pause_menu_btn.focus_neighbor_top = pause_menu_btn.get_path_to(credits_btn)
+	await get_tree().process_frame
+	if pause_resume_btn: pause_resume_btn.grab_focus()
 
 func _resume_game() -> void:
 	var tw = create_tween()
@@ -921,6 +943,8 @@ func _open_settings() -> void:
 	var tw = create_tween()
 	tw.set_ease(Tween.EASE_OUT)
 	tw.tween_property(settings_screen, "modulate:a", 1.0, 0.3)
+	await get_tree().process_frame
+	if sfx_slider: sfx_slider.grab_focus()
 
 func _close_settings() -> void:
 	var tw = create_tween()
@@ -951,6 +975,8 @@ func _open_credits() -> void:
 	var tw = create_tween()
 	tw.set_ease(Tween.EASE_OUT)
 	tw.tween_property(credits_screen, "modulate:a", 1.0, 0.25)
+	await get_tree().process_frame
+	if credits_back_btn: credits_back_btn.grab_focus()
 
 func _close_credits() -> void:
 	var tw = create_tween()
