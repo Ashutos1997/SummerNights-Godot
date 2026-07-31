@@ -164,48 +164,40 @@ func _ready() -> void:
 	else:
 		ice_row.visible = false
 
-	# Win screen labels — matches Credits title (32), section header (20), and body (16)
-	_style_lbl(win_title_lbl, 32, Color(1.0, 0.9, 0.2, 1.0), 4, Color(0.0, 0.0, 0.0, 1.0), font)
-	_style_lbl(win_level_lbl, 20, Color(1.0, 0.85, 0.2, 1.0), 4, Color(0.0, 0.0, 0.0, 1.0), font)
-	_style_lbl(win_loading_lbl, 16, Color(1.0, 1.0, 1.0, 1.0), 3, Color.BLACK, font)
-	
-	# End screen labels — match Title screen typographic drama
 	var title_color = Color(1.0, 0.75, 0.15, 1.0)
-	_style_lbl(end_title_lbl, 72, title_color, 0, Color.TRANSPARENT, font)
-	_style_lbl(end_title2_lbl, 72, title_color, 0, Color.TRANSPARENT, font)
+	var subtitle_size = 20 if is_kr else 18
+	var prompt_size = 16 if is_kr else 14
 	
-	for lbl in [end_title_lbl, end_title2_lbl]:
+	# Common title style (matches Title Screen)
+	for lbl in [win_title_lbl, end_title_lbl, end_title2_lbl, lose_title_lbl, lose_title2_lbl]:
 		if lbl:
-			lbl.add_theme_color_override("font_shadow_color", Color(1.0, 0.75, 0.15, 0.25))
-			lbl.add_theme_constant_override("shadow_offset_x", 0)
-			lbl.add_theme_constant_override("shadow_offset_y", 0)
+			_style_lbl(lbl, 72, title_color, 8, Color(0, 0, 0, 1.0), font)
+			lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
+			lbl.add_theme_constant_override("shadow_offset_x", 4)
+			lbl.add_theme_constant_override("shadow_offset_y", 4)
 			lbl.add_theme_constant_override("shadow_outline_size", 12)
-
-	_style_lbl(end_subtitle_lbl, 18, Color(1.0, 0.75, 0.15, 0.55), 0, Color.TRANSPARENT, font)
-	_style_lbl(end_level_lbl, 16, Color(1.0, 0.75, 0.15, 0.35), 0, Color.TRANSPARENT, font)
-	_style_lbl(end_prompt_lbl, 14, Color(1.0, 0.75, 0.15, 0.3), 0, Color.TRANSPARENT, font)
-	
-	# Lose screen labels — match Title screen typographic drama
-	_style_lbl(lose_title_lbl, 72, title_color, 0, Color.TRANSPARENT, font)
-	_style_lbl(lose_title2_lbl, 72, title_color, 0, Color.TRANSPARENT, font)
-	
-	for lbl in [lose_title_lbl, lose_title2_lbl]:
+			
+	# Subtitles and Level Labels
+	for lbl in [win_level_lbl, end_subtitle_lbl, lose_subtitle_lbl, end_level_lbl, lose_level_lbl]:
 		if lbl:
-			lbl.add_theme_color_override("font_shadow_color", Color(1.0, 0.75, 0.15, 0.25))
-			lbl.add_theme_constant_override("shadow_offset_x", 0)
-			lbl.add_theme_constant_override("shadow_offset_y", 0)
-			lbl.add_theme_constant_override("shadow_outline_size", 12)
+			_style_lbl(lbl, subtitle_size, title_color, 5, Color(0, 0, 0, 1.0), font)
+			
+	# Prompts & small text
+	for lbl in [win_loading_lbl, end_prompt_lbl]:
+		if lbl:
+			_style_lbl(lbl, prompt_size, Color.WHITE, 5, Color(0, 0, 0, 1.0), font)
 
-	_style_lbl(lose_subtitle_lbl, 18, Color(1.0, 0.75, 0.15, 0.55), 0, Color.TRANSPARENT, font)
-	_style_lbl(lose_level_lbl, 16, Color(1.0, 0.75, 0.15, 0.35), 0, Color.TRANSPARENT, font)
-	
-
-	if end_prompt_lbl and not reduce_motion:
-		var p_tw = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-		p_tw.tween_property(end_prompt_lbl, "modulate:a", 0.7, 1.2)
-		p_tw.tween_property(end_prompt_lbl, "modulate:a", 1.0, 1.2)
-	elif end_prompt_lbl:
-		end_prompt_lbl.modulate.a = 1.0
+	# Pulse animations for prompts
+	if not reduce_motion:
+		for lbl in [win_loading_lbl, end_prompt_lbl]:
+			if lbl:
+				var pulse_tw = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+				pulse_tw.tween_property(lbl, "modulate:a", 0.7, 1.2)
+				pulse_tw.tween_property(lbl, "modulate:a", 1.0, 1.2)
+	else:
+		for lbl in [win_loading_lbl, end_prompt_lbl]:
+			if lbl:
+				lbl.modulate.a = 1.0
 	_style_lbl(settings_title, 36, Color(1.0, 0.88, 0.3, 1.0), 4, Color.BLACK, font)
 	_style_lbl(credits_title, 32, Color(1.0, 0.88, 0.3, 1.0), 4, Color.BLACK, font)
 	
@@ -881,7 +873,7 @@ func _input(event: InputEvent) -> void:
 		if (event is InputEventKey and event.pressed and event.keycode == KEY_SPACE) or (event is InputEventMouseButton and event.pressed):
 			GameState.reset()
 			get_viewport().set_input_as_handled()
-			get_tree().change_scene_to_file("res://scenes/TitleScreen.tscn")
+			get_tree().change_scene_to_file("res://scenes/Main.tscn")
 			return
 
 func _pause_game() -> void:
@@ -1031,7 +1023,7 @@ func _on_retry_pressed() -> void:
 
 func _on_menu_pressed() -> void:
 	GameState.level = 1
-	get_tree().change_scene_to_file("res://scenes/TitleScreen.tscn")
+	get_tree().change_scene_to_file("res://scenes/Main.tscn")
 
 func update_ice_charges(charges: int, max_charges: int) -> void:
 	if max_charges <= 0:

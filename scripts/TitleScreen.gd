@@ -15,7 +15,7 @@ func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 	var is_kr = GameState.language == "KR"
-	var font_path = "res://assets/ui/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
+	var font_path = "res://assets/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
 	var font = load(font_path)
 	
 	if title_lbl: title_lbl.text = "썸머" if is_kr else "SUMMER"
@@ -28,7 +28,7 @@ func _ready() -> void:
 		_style_label(title_lbl, 72, title_color, font)
 		_style_label(title2_lbl, 72, title_color, font)
 		
-		# Add title shadow overrides
+		# Add title shadow overrides — applied identically for EN and KR
 		for lbl in [title_lbl, title2_lbl]:
 			if lbl:
 				lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
@@ -39,7 +39,14 @@ func _ready() -> void:
 				lbl.add_theme_constant_override("outline_size", 8)
 				
 		_style_label(subtitle_lbl, 20 if is_kr else 18, Color(1.0, 0.75, 0.15, 1.0), font)
+		# Subtitle also gets a subtle outline for legibility against the 3D background
+		if subtitle_lbl:
+			subtitle_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
+			subtitle_lbl.add_theme_constant_override("outline_size", 4)
 		_style_label(prompt_lbl, 16 if is_kr else 14, Color(1.0, 1.0, 1.0, 1.0), font)
+		if prompt_lbl:
+			prompt_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
+			prompt_lbl.add_theme_constant_override("outline_size", 3)
 		_style_label(credit_lbl, 14 if is_kr else 12, Color(1.0, 1.0, 1.0, 0.7), font)
 
 	color_rect.modulate.a = 0.0

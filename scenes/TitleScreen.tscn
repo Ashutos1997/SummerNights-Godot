@@ -38,23 +38,11 @@ alignment = 1
 
 [node name="Title" type="Label" parent="ColorRect/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.75, 0.15, 1)
-theme_override_colors/font_shadow_color = Color(1, 0.75, 0.15, 0.25)
-theme_override_constants/shadow_offset_x = 0
-theme_override_constants/shadow_offset_y = 0
-theme_override_constants/shadow_outline_size = 12
-theme_override_font_sizes/font_size = 72
 text = "SUMMER"
 horizontal_alignment = 1
 
 [node name="Title2" type="Label" parent="ColorRect/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.75, 0.15, 1)
-theme_override_colors/font_shadow_color = Color(1, 0.75, 0.15, 0.25)
-theme_override_constants/shadow_offset_x = 0
-theme_override_constants/shadow_offset_y = 0
-theme_override_constants/shadow_outline_size = 12
-theme_override_font_sizes/font_size = 72
 text = "NIGHTS"
 horizontal_alignment = 1
 
@@ -76,8 +64,6 @@ layout_mode = 2
 
 [node name="Subtitle" type="Label" parent="ColorRect/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.75, 0.15, 0.55)
-theme_override_font_sizes/font_size = 18
 text = "COOL DOWN THE SUN"
 horizontal_alignment = 1
 
@@ -87,8 +73,6 @@ layout_mode = 2
 
 [node name="Prompt" type="Label" parent="ColorRect/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.75, 0.15, 0.3)
-theme_override_font_sizes/font_size = 14
 text = "PRESS SPACE OR CLICK TO START"
 horizontal_alignment = 1
 
