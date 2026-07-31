@@ -6,7 +6,9 @@ var temperature: float    = 100.0
 const MAX_TEMP: float     = 100.0
 var water_tank: float     = 100.0
 var MAX_WATER: float      = 100.0
-var current_weapon_power: float = 12.0
+var current_weapon_power: float = 14.0
+var current_weapon_crit: float = 2.0
+var current_weapon_recharge: float = 15.0
 var WATER_DRAIN_RATE: float = 8.75 # Base drain rate
 var is_shooting: bool     = false
 var is_firing: bool       = false
@@ -87,6 +89,8 @@ func _load_weapon_model() -> void:
 	MAX_WATER = w_cfg.water_capacity
 	water_tank = MAX_WATER
 	current_weapon_power = w_cfg.cooling_power
+	current_weapon_crit = w_cfg.crit_multiplier
+	current_weapon_recharge = w_cfg.recharge_rate
 	
 	var base_drain = 8.75
 	if current_config.has("water_drain"):
@@ -1183,8 +1187,8 @@ func _process(delta: float) -> void:
 				if sizzle_sfx:
 					sizzle_sfx.play()
 				
-				# Reward: Instantly refill +30% Water Tank!
-				water_tank = min(MAX_WATER, water_tank + MAX_WATER * 0.30)
+				# Reward: Instantly refill +40% Water Tank!
+				water_tank = min(MAX_WATER, water_tank + MAX_WATER * 0.40)
 				water_refill_count += 1
 				water_changed.emit(water_tank, MAX_WATER)
 
@@ -1201,7 +1205,7 @@ func _process(delta: float) -> void:
 			_on_hit(delta, target_pos)
 	else:
 		gun_spray.emitting = false
-		water_tank = min(MAX_WATER, water_tank + 15.0 * delta)
+		water_tank = min(MAX_WATER, water_tank + current_weapon_recharge * delta)
 			
 	# Audio loop timer — stop loop layer after 0.12s of no firing
 	if is_firing:
@@ -1473,10 +1477,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 	if hit_cooldown <= 0.0:
 		hit_sfx.play()
 		hit_cooldown = HIT_COOLDOWN
-	var regen_rate = 5.0 + (level * 1.5)
-	if not is_shooting:
-		temperature = min(MAX_TEMP, temperature + regen_rate * delta)
-	else:
+	if is_shooting:
 		# Check if hitting active Sunspot / Critical Heat Vent
 		var is_critical: bool = false
 		if sunspot_node:
@@ -1485,7 +1486,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				is_critical = true
 				
 		if is_critical:
-			temperature = max(0.0, temperature - current_weapon_power * 2.0 * delta) # 2.0x Critical Cooling Boost!
+			temperature = max(0.0, temperature - current_weapon_power * current_weapon_crit * delta) # Weapon specific critical boost
 			if sizzle_sfx and not sizzle_sfx.playing:
 				sizzle_sfx.play()
 			if steam_particles:
