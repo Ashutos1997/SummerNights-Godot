@@ -7,8 +7,8 @@ extends Control
 @onready var prompt_lbl = $ColorRect/VBoxContainer/Prompt
 @onready var credit_lbl = $CreditLine
 
-var main_scene = preload("res://scenes/Main.tscn")
-var loading_scene = preload("res://scenes/LoadingScreen.tscn")
+signal start_game
+
 var is_starting: bool = false
 
 func _ready() -> void:
@@ -31,14 +31,16 @@ func _ready() -> void:
 		# Add title shadow overrides
 		for lbl in [title_lbl, title2_lbl]:
 			if lbl:
-				lbl.add_theme_color_override("font_shadow_color", Color(1.0, 0.75, 0.15, 0.25))
-				lbl.add_theme_constant_override("shadow_offset_x", 0)
-				lbl.add_theme_constant_override("shadow_offset_y", 0)
+				lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
+				lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
+				lbl.add_theme_constant_override("shadow_offset_x", 4)
+				lbl.add_theme_constant_override("shadow_offset_y", 4)
 				lbl.add_theme_constant_override("shadow_outline_size", 12)
+				lbl.add_theme_constant_override("outline_size", 8)
 				
-		_style_label(subtitle_lbl, 20 if is_kr else 18, Color(1.0, 0.75, 0.15, 0.55), font)
-		_style_label(prompt_lbl, 16 if is_kr else 14, Color(1.0, 0.75, 0.15, 0.3), font)
-		_style_label(credit_lbl, 14 if is_kr else 12, Color(1.0, 0.75, 0.15, 0.18), font)
+		_style_label(subtitle_lbl, 20 if is_kr else 18, Color(1.0, 0.75, 0.15, 1.0), font)
+		_style_label(prompt_lbl, 16 if is_kr else 14, Color(1.0, 1.0, 1.0, 1.0), font)
+		_style_label(credit_lbl, 14 if is_kr else 12, Color(1.0, 1.0, 1.0, 0.7), font)
 
 	color_rect.modulate.a = 0.0
 	var tw = create_tween()
@@ -60,9 +62,8 @@ func _style_label(lbl: Label, size: int, color: Color, font: Font) -> void:
 		lbl.add_theme_font_override("font", font)
 	lbl.add_theme_font_size_override("font_size", size)
 	lbl.add_theme_color_override("font_color", color)
-	
-	# Ensure no outline is set to let it breathe
-	lbl.add_theme_constant_override("outline_size", 0)
+	lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
+	lbl.add_theme_constant_override("outline_size", 5)
 
 func _input(event: InputEvent) -> void:
 	if is_starting: return
@@ -76,8 +77,4 @@ func _start_game() -> void:
 	if is_starting: return
 	is_starting = true
 	GameState.reset()
-	
-	var loader = loading_scene.instantiate()
-	get_tree().root.add_child(loader)
-	await loader.start_sequence()
-	get_tree().change_scene_to_packed(main_scene)
+	start_game.emit()

@@ -58,6 +58,10 @@ var is_two_phase: bool = false
 var phase2_triggered: bool = false
 var phase2_heat: float = 0.0
 
+var title_screen_ui: Control = null
+var is_title_screen: bool = true
+var title_cam_angle: float = 0.0
+
 
 # ─── Sky colours at each temp threshold ──────────────────────────────────────
 const SKY := [
@@ -150,6 +154,7 @@ var sun_rays_node: Node3D
 var sun_face:    Sprite3D
 var face_textures: Dictionary = {}
 var gun:         Node3D
+var frost_aura:  GPUParticles3D
 var muzzle:      Marker3D
 var seagull_layer: Node3D = null
 var virtual_mouse_pos: Vector2
@@ -237,10 +242,12 @@ func _ready() -> void:
 	level_timer = cfg.timer
 	timer_running = true
 
-	virtual_mouse_pos = get_viewport().get_visible_rect().size / 2.0
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	hud = load("res://scenes/HUD.tscn").instantiate()
 	add_child(hud)
+	hud.visible = false
+	gun.visible = false
+	
 	heat_changed.connect(hud._on_heat_changed)
 	water_changed.connect(hud._on_water_changed)
 	sun_defeated.connect(hud._on_sun_defeated)
@@ -286,7 +293,31 @@ func _ready() -> void:
 	flare_mat.emission = Color(1.0, 0.45, 0.05)
 	flare_mat.emission_energy_multiplier = 4.0
 	
+	frost_aura = GPUParticles3D.new()
+	var fa_mat = ParticleProcessMaterial.new()
+	fa_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	fa_mat.emission_sphere_radius = 6.0
+	fa_mat.gravity = Vector3(0, -1.0, 0)
+	fa_mat.scale_min = 0.2
+	fa_mat.scale_max = 0.6
+	var fa_mesh = BoxMesh.new()
+	var fa_mmat = StandardMaterial3D.new()
+	fa_mmat.albedo_color = Color(0.8, 0.9, 1.0, 0.5)
+	fa_mmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	fa_mesh.material = fa_mmat
+	frost_aura.process_material = fa_mat
+	frost_aura.draw_pass_1 = fa_mesh
+	frost_aura.amount = 50
+	frost_aura.lifetime = 2.0
+	frost_aura.emitting = false
+	if sun:
+		sun.add_child(frost_aura)
+	
 	_load_weapon_model()
+
+	title_screen_ui = load("res://scenes/TitleScreen.tscn").instantiate()
+	add_child(title_screen_ui)
+	title_screen_ui.start_game.connect(_on_title_start_game)
 
 	# Handshake with persistent LoadingScreen on root viewport
 	var persistent_loader = get_tree().root.get_node_or_null("LoadingScreen")
@@ -303,6 +334,29 @@ func _ready() -> void:
 		var tw = create_tween()
 		tw.tween_property(overlay, "modulate:a", 0.0, 0.3)
 		tw.tween_callback(overlay.queue_free)
+
+func _on_title_start_game() -> void:
+	if title_screen_ui:
+		var tw = create_tween()
+		tw.tween_property(title_screen_ui, "modulate:a", 0.0, 0.5)
+		tw.tween_callback(title_screen_ui.queue_free)
+	
+	is_title_screen = false
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	hud.visible = true
+	
+	gun.visible = true
+	gun.position.y = gun_base_pos.y - 1.0
+	var gtw = create_tween()
+	gtw.tween_property(gun, "position:y", gun_base_pos.y, 0.6).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	
+	var cam_tw = create_tween()
+	cam_tw.set_parallel(true)
+	cam_tw.tween_property(camera, "position", Vector3(0, 0, 5), 0.6).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
+	cam_tw.tween_property(camera, "rotation", Vector3.ZERO, 0.6).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
+	
+	timer_running = true
+	virtual_mouse_pos = get_viewport().get_visible_rect().size / 2.0
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Build Scene
@@ -1010,12 +1064,28 @@ func _process(delta: float) -> void:
 		return
 		
 	timer_running = true
+	is_firing = false
+	
+	if is_title_screen:
+		title_cam_angle += 0.05 * delta
+		var cam_dist = 6.0
+		camera.position = Vector3(sin(title_cam_angle) * cam_dist, 2.0, cos(title_cam_angle) * cam_dist)
+		camera.look_at(Vector3(0, 1, 0), Vector3.UP)
+		
+		# Slowly drift the sun and clouds
+		if sun_mesh:
+			sun_mesh.rotation.y += 0.2 * delta
+		if sun_rays_node:
+			sun_rays_node.rotation.z += 0.1 * delta
+		return
 
 	if timer_running and not defeat_triggered:
 		if is_sun_frozen:
 			sun_freeze_timer -= delta
 			if sun_freeze_timer <= 0.0:
 				is_sun_frozen = false
+				if frost_aura:
+					frost_aura.emitting = false
 				if sun_mat:
 					var tw = create_tween()
 					tw.tween_property(sun_mat, "albedo_color", Color(1.0, 1.0, 1.0), 0.5)
@@ -1226,11 +1296,13 @@ func _process(delta: float) -> void:
 		for flare in intercepted_flares:
 			var f_node = flare["node"] as Node3D
 			if is_instance_valid(f_node):
-				if steam_particles:
-					steam_particles.global_position = f_node.global_position
-					steam_particles.restart()
+				var flare_pos = f_node.global_position
+				steam_particles.global_position = flare_pos
+				steam_particles.emitting = true
 				if sizzle_sfx:
 					sizzle_sfx.play()
+				
+				_spawn_flare_explosion(flare_pos)
 				
 				# Reward: Instantly refill +40% Water Tank!
 				water_tank = min(MAX_WATER, water_tank + MAX_WATER * 0.40)
@@ -1770,10 +1842,77 @@ func _shoot_ice() -> void:
 	blast.global_position = muzzle.global_position
 	blast.look_at(target_pos, Vector3.UP)
 
+func _spawn_flare_explosion(pos: Vector3) -> void:
+	var poof = GPUParticles3D.new()
+	var pmat = ParticleProcessMaterial.new()
+	pmat.direction = Vector3(0, 1, 0)
+	pmat.spread = 180.0
+	pmat.initial_velocity_min = 5.0
+	pmat.initial_velocity_max = 10.0
+	pmat.gravity = Vector3(0, 2.0, 0)
+	pmat.scale_min = 0.5
+	pmat.scale_max = 1.5
+	
+	var mesh = BoxMesh.new()
+	mesh.size = Vector3(0.5, 0.5, 0.5)
+	var mat = StandardMaterial3D.new()
+	mat.albedo_color = Color(1.0, 1.0, 1.0, 0.6)
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mesh.material = mat
+	
+	poof.process_material = pmat
+	poof.draw_pass_1 = mesh
+	poof.emitting = true
+	poof.one_shot = true
+	poof.explosiveness = 1.0
+	poof.amount = 15
+	poof.lifetime = 0.5
+	poof.global_position = pos
+	
+	add_child(poof)
+	get_tree().create_timer(1.0).timeout.connect(poof.queue_free)
+
+func _spawn_ice_nova() -> void:
+	if not sun: return
+	var nova = GPUParticles3D.new()
+	var pmat = ParticleProcessMaterial.new()
+	pmat.direction = Vector3(0, 0, 1)
+	pmat.spread = 180.0
+	pmat.initial_velocity_min = 15.0
+	pmat.initial_velocity_max = 25.0
+	pmat.gravity = Vector3(0, 0, 0)
+	pmat.scale_min = 0.5
+	pmat.scale_max = 2.0
+	
+	var mesh = BoxMesh.new()
+	var mat = StandardMaterial3D.new()
+	mat.albedo_color = Color(0.6, 0.8, 1.0, 0.8)
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.emission_enabled = true
+	mat.emission = Color(0.2, 0.5, 1.0)
+	mesh.material = mat
+	
+	nova.process_material = pmat
+	nova.draw_pass_1 = mesh
+	nova.emitting = true
+	nova.one_shot = true
+	nova.explosiveness = 1.0
+	nova.amount = 40
+	nova.lifetime = 0.8
+	nova.global_position = sun.global_position
+	
+	add_child(nova)
+	get_tree().create_timer(1.0).timeout.connect(nova.queue_free)
+
 func freeze_sun() -> void:
 	is_sun_frozen = true
 	sun_freeze_timer = 3.0
 	ice_hit_sfx.play()
+	
+	_spawn_ice_nova()
+	if frost_aura:
+		frost_aura.emitting = true
+		
 	if sun_mat:
 		var tw = create_tween()
 		tw.tween_property(sun_mat, "albedo_color", Color(0.8, 0.9, 1.0), 0.3)
