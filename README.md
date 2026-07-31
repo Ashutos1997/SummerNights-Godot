@@ -30,6 +30,7 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 | Move mouse | Aim the water cannon |
 | Left click (hold) | Fire water spray |
 | Right click / R | Fire Ice Burst (when charged) |
+| Tab (hold) | Open Weapon Selection Wheel |
 | ESC | Open Settings / Credits |
 
 ---
