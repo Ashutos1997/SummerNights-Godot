@@ -33,6 +33,7 @@ var shoot_loop_sfx: AudioStreamPlayer
 var hit_sfx: AudioStreamPlayer
 var sun_defeated_sfx: AudioStreamPlayer
 var water_empty_sfx: AudioStreamPlayer
+var ambient_sfx: AudioStreamPlayer
 var sun_hit_tween: Tween
 var is_shaking: bool = false
 var level: int            = 1
@@ -201,6 +202,14 @@ func _ready() -> void:
 	ice_hit_sfx.stream = preload("res://assets/audio/sfx/ice_hit.ogg")
 	ice_hit_sfx.volume_db = -2.0
 	add_child(ice_hit_sfx)
+	
+	ambient_sfx = AudioStreamPlayer.new()
+	var ocean_stream = load("res://assets/audio/sfx/ocean_waves.wav")
+	ambient_sfx.stream = ocean_stream
+	ambient_sfx.volume_db = -12.0
+	ambient_sfx.finished.connect(ambient_sfx.play)
+	add_child(ambient_sfx)
+	ambient_sfx.play()
 
 	# Heat Haze screen distortion overlay (drawn under HUD text)
 	var haze_layer = CanvasLayer.new()
@@ -1594,19 +1603,15 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 		if GameState.current_weapon_id == "heavy": strength = 0.025
 		elif GameState.current_weapon_id == "precision": strength = 0.005
 		shake(0.12, strength)
-	if hit_cooldown <= 0.0:
-		hit_sfx.play()
-		hit_cooldown = HIT_COOLDOWN
+	var is_critical: bool = false
 	if is_shooting:
-		# Check if hitting active Sunspot / Critical Heat Vent
-		var is_critical: bool = false
 		if sunspot_node:
 			var spot_dist = target_pos.distance_to(sunspot_node.global_position)
 			if spot_dist < 2.5:
 				is_critical = true
 				
 		if is_critical:
-			temperature = max(0.0, temperature - current_weapon_power * current_weapon_crit * delta) # Weapon specific critical boost
+			temperature = max(0.0, temperature - current_weapon_power * current_weapon_crit * delta)
 			if sizzle_sfx and not sizzle_sfx.playing:
 				sizzle_sfx.play()
 			if steam_particles:
@@ -1614,8 +1619,17 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				steam_particles.restart()
 			critical_hit.emit()
 		else:
-			temperature = max(0.0, temperature - current_weapon_power * delta) # Dynamic standard cooling
+			temperature = max(0.0, temperature - current_weapon_power * delta)
 			projectile_hit.emit()
+			
+	if hit_cooldown <= 0.0:
+		hit_sfx.play()
+		hit_cooldown = HIT_COOLDOWN
+		
+		# Spawn floating number (calculating DPS burst for the popup)
+		var dmg_val = current_weapon_power
+		if is_critical: dmg_val *= current_weapon_crit
+		_spawn_damage_number(dmg_val, is_critical, target_pos)
 		
 	_update_sky(false)
 	
@@ -1841,6 +1855,26 @@ func _shoot_ice() -> void:
 		
 	blast.global_position = muzzle.global_position
 	blast.look_at(target_pos, Vector3.UP)
+
+func _spawn_damage_number(amount: float, is_crit: bool, pos: Vector3) -> void:
+	var lbl = Label3D.new()
+	lbl.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	lbl.no_depth_test = true
+	lbl.text = "-%d" % round(amount * 10.0)
+	lbl.font = preload("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+	lbl.font_size = 600 if is_crit else 350
+	lbl.modulate = Color(1.0, 0.8, 0.1) if is_crit else Color(0.3, 0.8, 1.0)
+	lbl.outline_size = 32
+	lbl.outline_modulate = Color.BLACK
+	
+	var offset = Vector3(randf_range(-2.5, 2.5), randf_range(-1.5, 1.5), randf_range(-2.0, 2.0))
+	lbl.global_position = pos + offset
+	add_child(lbl)
+	
+	var tw = create_tween().set_parallel(true)
+	tw.tween_property(lbl, "global_position:y", lbl.global_position.y + 5.0, 0.7).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+	tw.tween_property(lbl, "modulate:a", 0.0, 0.6).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_EXPO)
+	tw.chain().tween_callback(lbl.queue_free)
 
 func _spawn_flare_explosion(pos: Vector3) -> void:
 	var poof = GPUParticles3D.new()

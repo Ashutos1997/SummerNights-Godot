@@ -15,11 +15,39 @@ var text_panel: PanelContainer
 var name_label: Label
 var stats_label: Label
 
+var bg_dim: ColorRect
+
 func _ready() -> void:
 	weapons = GameState.WEAPONS.keys()
 	hide()
 	modulate.a = 0.0
 	scale = Vector2(0.8, 0.8)
+	
+	bg_dim = ColorRect.new()
+	bg_dim.color = Color.WHITE
+	
+	var shader = Shader.new()
+	shader.code = """
+shader_type canvas_item;
+uniform sampler2D screen_texture : hint_screen_texture, filter_linear_mipmap;
+uniform float blur_amount : hint_range(0.0, 5.0) = 0.0;
+uniform float dim_amount : hint_range(0.0, 1.0) = 0.0;
+
+void fragment() {
+	vec4 bg = textureLod(screen_texture, SCREEN_UV, blur_amount);
+	COLOR = mix(bg, vec4(0.0, 0.0, 0.0, 1.0), dim_amount);
+}
+"""
+	var smat = ShaderMaterial.new()
+	smat.shader = shader
+	smat.set_shader_parameter("blur_amount", 0.0)
+	smat.set_shader_parameter("dim_amount", 0.0)
+	bg_dim.material = smat
+	
+	bg_dim.set_anchors_preset(PRESET_FULL_RECT)
+	bg_dim.mouse_filter = MOUSE_FILTER_IGNORE
+	get_parent().call_deferred("add_child", bg_dim)
+	get_parent().call_deferred("move_child", bg_dim, get_index())
 	
 	var is_kr = GameState.language == "KR"
 	var font_path = "res://assets/ui/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
@@ -61,10 +89,10 @@ func _ready() -> void:
 	text_panel = PanelContainer.new()
 	var style = StyleBoxFlat.new()
 	style.bg_color = Color(0.05, 0.02, 0.1, 0.85)
-	style.corner_radius_top_left = 4
-	style.corner_radius_top_right = 4
-	style.corner_radius_bottom_right = 4
-	style.corner_radius_bottom_left = 4
+	style.corner_radius_top_left = 16
+	style.corner_radius_top_right = 16
+	style.corner_radius_bottom_right = 16
+	style.corner_radius_bottom_left = 16
 	style.expand_margin_left = 16.0
 	style.expand_margin_right = 16.0
 	style.expand_margin_top = 8.0
@@ -126,6 +154,9 @@ func open() -> void:
 	open_tween = create_tween().set_parallel(true).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 	open_tween.tween_property(self, "modulate:a", 1.0, 0.2)
 	open_tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.2)
+	if bg_dim and bg_dim.material:
+		open_tween.tween_property(bg_dim.material, "shader_parameter/blur_amount", 2.5, 0.2)
+		open_tween.tween_property(bg_dim.material, "shader_parameter/dim_amount", 0.5, 0.2)
 
 func close() -> void:
 	if not active: return
@@ -139,6 +170,9 @@ func close() -> void:
 	open_tween = create_tween().set_parallel(true).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CUBIC)
 	open_tween.tween_property(self, "modulate:a", 0.0, 0.15)
 	open_tween.tween_property(self, "scale", Vector2(0.9, 0.9), 0.15)
+	if bg_dim and bg_dim.material:
+		open_tween.tween_property(bg_dim.material, "shader_parameter/blur_amount", 0.0, 0.15)
+		open_tween.tween_property(bg_dim.material, "shader_parameter/dim_amount", 0.0, 0.15)
 	
 	if selected_index >= 0 and selected_index < weapons.size():
 		var chosen = weapons[selected_index]
@@ -243,13 +277,11 @@ func _process(delta: float) -> void:
 
 func _draw() -> void:
 	var center = size / 2.0
+	
 	var inner_radius = 100.0
 	var outer_radius = 240.0
 	var slice_size = TAU / weapons.size()
 	var padding_angle = 0.05
-	
-	# Dim bg
-	draw_rect(Rect2(Vector2.ZERO, size), Color(0, 0, 0, 0.4))
 	
 	for i in range(weapons.size()):
 		var start_angle = i * slice_size - PI/2 - slice_size/2 + padding_angle

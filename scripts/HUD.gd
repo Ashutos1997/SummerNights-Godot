@@ -119,6 +119,8 @@ func _ready() -> void:
 	settings_screen.visible = false
 	credits_screen.visible = false
 	end_screen.visible = false
+	
+
 
 	if weapon_wheel:
 		weapon_wheel.weapon_selected.connect(func(w_id): weapon_changed.emit(w_id))
