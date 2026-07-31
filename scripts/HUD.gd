@@ -2,7 +2,9 @@ extends CanvasLayer
 
 signal sensitivity_changed(value: float)
 signal reduce_motion_changed(enabled: bool)
+signal weapon_changed(weapon_id: String)
 
+@onready var weapon_wheel = $HUD/WeaponWheel
 @onready var heat_bar = $HUD/SunHeatBar/HeatBar
 @onready var heat_label = $HUD/SunHeatBar/Label
 @onready var water_bar_container = $HUD/resource_container/water_row
@@ -13,7 +15,8 @@ signal reduce_motion_changed(enabled: bool)
 @onready var ice_label = $HUD/resource_container/ice_row/Label
 @onready var ice_bar = $HUD/resource_container/ice_row/IceBarContainer/IceBar
 @onready var charge_dots = $HUD/resource_container/ice_row/IceBarContainer/ChargeDots
-@onready var ice_unlock_label = $HUD/IceUnlockLabel
+@onready var ice_unlock_label = $HUD/UnlockPrompts/IceUnlockLabel
+@onready var weapon_unlock_label = $HUD/UnlockPrompts/WeaponUnlockLabel
 @onready var crosshair = $HUD/Crosshair
 @onready var win_screen = $HUD/WinScreen
 @onready var level_label = $HUD/LevelLabel
@@ -106,12 +109,21 @@ func _process(delta: float) -> void:
 
 func _ready() -> void:
 	heat_label.scale = Vector2(1.0, 1.0)
-	win_screen.visible = false
-	settings_screen.visible = false
-	credits_screen.visible = false
-	lose_screen.visible = false
 	phase2_label.visible = false
 	timer_label.text = ""
+	
+	# Hide all screens initially except for crosshair and HUD elements
+	win_screen.visible = false
+	pause_screen.visible = false
+	lose_screen.visible = false
+	settings_screen.visible = false
+	credits_screen.visible = false
+	end_screen.visible = false
+
+	if weapon_wheel:
+		weapon_wheel.weapon_selected.connect(func(w_id): weapon_changed.emit(w_id))
+
+	var is_kr = GameState.language == "KR"
 	crosshair.pivot_offset = crosshair.size / 2.0
 	win_screen.pivot_offset = get_viewport().get_visible_rect().size / 2.0
 	
@@ -124,7 +136,9 @@ func _ready() -> void:
 	_style_lbl(heat_label, 22, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
 	_style_lbl(water_label, 22, Color(0.4, 0.9, 1.0, 1.0), 3, Color.BLACK, font)
 	_style_lbl(ice_label, 22, Color(0.5, 0.85, 1.0, 1.0), 3, Color.BLACK, font)
-	_style_lbl(ice_unlock_label, 24, Color(0.5, 0.85, 1.0, 1.0), 3, Color.BLACK, font)
+	_style_lbl(ice_unlock_label, 22, Color(0.5, 0.85, 1.0, 1.0), 3, Color.BLACK, font)
+	if weapon_unlock_label:
+		_style_lbl(weapon_unlock_label, 22, Color(1.0, 0.9, 0.2, 1.0), 3, Color.BLACK, font)
 	_style_lbl(level_label, 22, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
 	
 	# Top right buttons (now in pause menu, styled separately below)
@@ -491,7 +505,11 @@ func _apply_language(lang: String) -> void:
 	if ice_unlock_label:
 		ice_unlock_label.text = "아이스 버스트 해금: 태양을 얼려라  [RMB / R]" if is_kr else "ICE BURST UNLOCKED: FREEZE THE SUN [RMB / R]"
 		ice_unlock_label.add_theme_font_override("font", kenney_font)
-		ice_unlock_label.add_theme_font_size_override("font_size", 28 if is_kr else 24)
+		ice_unlock_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
+	if weapon_unlock_label:
+		weapon_unlock_label.text = "무기 해금됨: [TAB] 을 길게 눌러 장착" if is_kr else "WEAPON UNLOCKED: HOLD [TAB] TO EQUIP"
+		weapon_unlock_label.add_theme_font_override("font", kenney_font)
+		weapon_unlock_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
 	if level_label:
 		level_label.text = "%02d 단계" % GameState.level if is_kr else "LVL  %02d" % GameState.level
 		if font: level_label.add_theme_font_override("font", font)
@@ -825,7 +843,22 @@ func show_end_screen() -> void:
 	tw.tween_property(end_screen, "modulate:a", 1.0, 0.4)
 
 func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.keycode == KEY_TAB and not event.echo:
+		if event.pressed:
+			if not weapon_wheel.active and not pause_screen.visible and not win_screen.visible and not end_screen.visible and not lose_screen.visible:
+				weapon_wheel.open()
+				get_viewport().set_input_as_handled()
+		else:
+			if weapon_wheel.active:
+				weapon_wheel.close()
+				get_viewport().set_input_as_handled()
+
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+		if weapon_wheel.active:
+			weapon_wheel.close()
+			get_viewport().set_input_as_handled()
+			return
+			
 		if settings_screen and settings_screen.visible:
 			_close_settings()
 			get_viewport().set_input_as_handled()
@@ -1013,3 +1046,13 @@ func show_ice_unlock() -> void:
 	tween.tween_interval(6.0)
 	tween.tween_property(ice_unlock_label, "modulate:a", 0.0, 0.5)
 	tween.tween_callback(func(): ice_unlock_label.visible = false)
+
+func show_weapon_unlock() -> void:
+	if not weapon_unlock_label: return
+	weapon_unlock_label.visible = true
+	var tween = create_tween()
+	weapon_unlock_label.modulate.a = 0.0
+	tween.tween_property(weapon_unlock_label, "modulate:a", 1.0, 0.5)
+	tween.tween_interval(5.0)
+	tween.tween_property(weapon_unlock_label, "modulate:a", 0.0, 0.5)
+	tween.tween_callback(func(): weapon_unlock_label.visible = false)

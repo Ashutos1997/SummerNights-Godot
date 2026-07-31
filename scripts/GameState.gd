@@ -58,6 +58,37 @@ const LEVEL_CONFIG = {
 	},
 }
 
+const WEAPONS = {
+	"standard": {
+		"name": "Standard Blaster",
+		"model": "res://assets/blaster.glb",
+		"scale": Vector3(1, 1, 1),
+		"water_capacity": 100.0,
+		"water_drain": 1.0,
+		"cooling_power": 12.0,
+		"unlock_level": 1
+	},
+	"heavy": {
+		"name": "Heavy Cannon",
+		"model": "res://assets/blaster.glb",
+		"scale": Vector3(1.5, 1.5, 1.5),
+		"water_capacity": 200.0,
+		"water_drain": 1.5,
+		"cooling_power": 18.0,
+		"unlock_level": 3
+	},
+	"precision": {
+		"name": "Precision Stream",
+		"model": "res://assets/blaster.glb",
+		"scale": Vector3(0.5, 0.5, 1.5),
+		"water_capacity": 80.0,
+		"water_drain": 0.6,
+		"cooling_power": 15.0,
+		"unlock_level": 2
+	}
+}
+
+var current_weapon_id: String = "standard"
 var level: int = 1
 var sfx_volume: float = 1.0
 var mouse_sensitivity: float = 1.0

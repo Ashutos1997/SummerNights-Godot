@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://d1c2b3a4e5f6g"]
+[gd_scene load_steps=12 format=3 uid="uid://d1c2b3a4e5f6g"]
 
 [ext_resource type="Script" path="res://scripts/HUD.gd" id="1_script"]
 [ext_resource type="FontFile" path="res://assets/ui/fonts/Fonts/Kenney Pixel.ttf" id="2_font"]
@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/crosshairs/PNG/White/crosshair115.png" id="6_crosshair"]
 [ext_resource type="Texture2D" path="res://assets/ui/ui_adventure/PNG/Default/progress_red.png" id="7_prog_red"]
 [ext_resource type="Texture2D" path="res://assets/ui/ui_adventure/PNG/Default/progress_blue.png" id="8_prog_blue"]
+[ext_resource type="Script" path="res://scripts/WeaponWheel.gd" id="9_wheel"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
 bg_color = Color(0.05, 0.02, 0.1, 0.95)
@@ -135,6 +136,7 @@ theme_override_constants/separation = 12
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
+vertical_alignment = 2
 text = "💧 WATER"
 horizontal_alignment = 2
 
@@ -161,6 +163,7 @@ theme_override_constants/separation = 12
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
+vertical_alignment = 2
 text = "❄ ICE BURST"
 horizontal_alignment = 2
 
@@ -186,20 +189,32 @@ layout_mode = 2
 size_flags_vertical = 4
 theme_override_constants/separation = 4
 
-[node name="IceUnlockLabel" type="Label" parent="HUD"]
-visible = false
+[node name="UnlockPrompts" type="VBoxContainer" parent="HUD"]
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 24.0
-offset_top = -48.0
+offset_top = -88.0
 offset_right = 424.0
 offset_bottom = -24.0
 grow_vertical = 0
+mouse_filter = 2
+alignment = 2
+
+[node name="IceUnlockLabel" type="Label" parent="HUD/UnlockPrompts"]
+visible = false
+layout_mode = 2
 theme_override_font_sizes/font_size = 14
 vertical_alignment = 2
-text = "❄ ICE BURST UNLOCKED: FREEZE THE SUN [RMB / R]"
+text = "ICE BURST UNLOCKED: FREEZE THE SUN [RMB / R]"
+
+[node name="WeaponUnlockLabel" type="Label" parent="HUD/UnlockPrompts"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+vertical_alignment = 2
+text = "WEAPON UNLOCKED: HOLD [TAB] TO EQUIP"
 
 
 [node name="Crosshair" type="TextureRect" parent="HUD"]
@@ -798,6 +813,15 @@ layout_mode = 2
 mouse_filter = 0
 text = "MAIN MENU"
 
+[node name="WeaponWheel" type="Control" parent="HUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("9_wheel")
+
 [node name="CreditsScreen" type="Control" parent="HUD"]
 layout_mode = 1
 anchors_preset = 15
@@ -983,6 +1007,14 @@ mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.85)
 theme_override_font_sizes/font_size = 12
 text = "Galmuri11  ·  quiple  ·  SIL OFL"
+horizontal_alignment = 1
+
+[node name="ItmUI4" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColRight"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "Weapon Wheel UI  ·  Procedural GDScript Draw API"
 horizontal_alignment = 1
 
 [node name="Spacer3" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ColContainer/ColRight"]

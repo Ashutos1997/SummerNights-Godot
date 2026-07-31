@@ -5,8 +5,9 @@ extends Node3D
 var temperature: float    = 100.0
 const MAX_TEMP: float     = 100.0
 var water_tank: float     = 100.0
-const MAX_WATER: float    = 100.0
-var WATER_DRAIN_RATE: float = 8.75 # Reduced by 65% from 25.0 to make water tank last 3x longer
+var MAX_WATER: float      = 100.0
+var current_weapon_power: float = 12.0
+var WATER_DRAIN_RATE: float = 8.75 # Base drain rate
 var is_shooting: bool     = false
 var is_firing: bool       = false
 var fire_stop_timer: float = 0.0
@@ -64,6 +65,37 @@ const SKY := [
 	{"t":  25, "bg": Color(0.38, 0.73, 0.93)},
 	{"t":   0, "bg": Color(0.08, 0.53, 0.85)},
 ]
+
+func _on_weapon_changed(w_id: String) -> void:
+	GameState.current_weapon_id = w_id
+	_load_weapon_model()
+	
+var gun_model: Node3D
+
+func _load_weapon_model() -> void:
+	if gun_model:
+		gun_model.queue_free()
+		
+	var w_cfg = GameState.WEAPONS[GameState.current_weapon_id]
+	gun_model = load(w_cfg.model).instantiate()
+	gun_model.rotation_degrees = Vector3(0, 180, 0)
+	gun_model.scale = w_cfg.scale
+	gun_model.position = Vector3(0, -0.3, -0.1)
+	_adjust_gun_materials(gun_model)
+	gun.add_child(gun_model)
+	
+	MAX_WATER = w_cfg.water_capacity
+	water_tank = MAX_WATER
+	current_weapon_power = w_cfg.cooling_power
+	
+	var base_drain = 8.75
+	if current_config.has("water_drain"):
+		base_drain = current_config.water_drain
+	WATER_DRAIN_RATE = base_drain * w_cfg.water_drain
+	
+	water_changed.emit(water_tank, MAX_WATER)
+
+# ─── End Game & Level Transitions ─────────────────────────────────────────
 
 # ─── Node references ─────────────────────────────────────────────────────────
 var world_env:   WorldEnvironment
@@ -179,10 +211,16 @@ func _ready() -> void:
 	game_complete.connect(hud.show_end_screen)
 	hud.game_paused.connect(_on_game_paused)
 	hud.game_resumed.connect(_on_game_resumed)
+	hud.weapon_changed.connect(_on_weapon_changed)
+	
+	_load_weapon_model()
 	
 	GameState.ice_charges_remaining = cfg.ice_charges
 	hud.update_ice_charges(GameState.ice_charges_remaining, cfg.ice_charges)
+	if GameState.level == 2:
+		hud.show_weapon_unlock()
 	if GameState.level == 3:
+		hud.show_weapon_unlock()
 		hud.show_ice_unlock()
 		
 	projectile_hit.connect(hud._on_projectile_hit)
@@ -191,7 +229,7 @@ func _ready() -> void:
 	phase2_started.connect(hud._on_phase2_started)
 	emit_signal("level_config_loaded", cfg.timer)
 	crosshair_moved.connect(hud._on_crosshair_moved)
-	hud.sensitivity_changed.connect(func(val): mouse_sensitivity = val)
+	hud.sensitivity_changed.connect(func(val): GameState.mouse_sensitivity = val)
 	hud.reduce_motion_changed.connect(func(enabled): reduce_motion = enabled)
 	mouse_sensitivity = GameState.mouse_sensitivity
 	reduce_motion = GameState.reduce_motion
@@ -571,14 +609,6 @@ func _build_scene() -> void:
 	gun.position = gun_base_pos
 	add_child(gun)
 	
-	# Load Kenney's 3D Blaster GLB
-	var gun_model = load("res://assets/blaster.glb").instantiate()
-	# Rotate 180 on Y because Kenney models default to facing +Z (backward relative to camera)
-	gun_model.rotation_degrees = Vector3(0, 180, 0)
-	gun_model.scale = Vector3(1.0, 1.0, 1.0)
-	gun_model.position = Vector3(0, -0.3, -0.1) # Position comfortably in bottom-right corner
-	_adjust_gun_materials(gun_model)
-	gun.add_child(gun_model)
 	muzzle = Marker3D.new()
 	muzzle.name = "Muzzle"
 	muzzle.position = Vector3(0, 0, -1.0)
@@ -1455,7 +1485,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				is_critical = true
 				
 		if is_critical:
-			temperature = max(0.0, temperature - 24.0 * delta) # 2.4x Critical Cooling Boost!
+			temperature = max(0.0, temperature - current_weapon_power * 2.0 * delta) # 2.0x Critical Cooling Boost!
 			if sizzle_sfx and not sizzle_sfx.playing:
 				sizzle_sfx.play()
 			if steam_particles:
@@ -1463,7 +1493,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				steam_particles.restart()
 			critical_hit.emit()
 		else:
-			temperature = max(0.0, temperature - 10.0 * delta) # Balanced standard cooling
+			temperature = max(0.0, temperature - current_weapon_power * delta) # Dynamic standard cooling
 			projectile_hit.emit()
 		
 	_update_sky(false)
@@ -1584,7 +1614,10 @@ func _win() -> void:
 			GameState.ice_charges_remaining = cfg.ice_charges
 			if hud:
 				hud.update_ice_charges(GameState.ice_charges_remaining, cfg.ice_charges)
+				if GameState.level == 2:
+					hud.show_weapon_unlock()
 				if GameState.level == 3:
+					hud.show_weapon_unlock()
 					hud.show_ice_unlock()
 			
 			if sun_mat:
