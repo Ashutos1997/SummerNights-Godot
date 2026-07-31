@@ -20,7 +20,10 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 - **Strategic Heat Vents:** The sun has a white-hot critical vent on its surface. Hitting this spot directly cools the sun **2.4x faster**.
 - **Solar Flares (Fireballs):** The sun periodically launches fiery solar flares towards you. You must intercept them mid-air by tracking them with the water stream for 0.33s. Destroying a flare rewards an instant **+30% Water Tank refill**.
 - **Ice Burst:** Starting in Level 3, unlock the powerful Ice Burst mechanic! Build up 3 charges over time and right-click (or press R) to fire a freezing shard at the sun, completely stopping all sun movement and heat regeneration for 3 seconds.
-
+- **3 Unlockable Weapons:** Hold TAB to slow time and open the weapon wheel. Unlock new water blasters as you progress:
+  - **Standard Blaster (Lvl 1):** Balanced cooling power and water drain.
+  - **Precision Stream (Lvl 2):** Low power, but features a massive **4.0x Critical Hit multiplier** for perfect aim.
+  - **Heavy Cannon (Lvl 3):** Extreme raw cooling power, but drains your water tank incredibly fast.
 ---
 
 ## Controls
@@ -30,7 +33,7 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 | Move mouse | Aim the water cannon |
 | Left click (hold) | Fire water spray |
 | Right click / R | Fire Ice Burst (when charged) |
-| Tab (hold) | Open Weapon Selection Wheel |
+| Tab (hold) | Open Weapon Selection Wheel (Mouse to highlight, Left Click to confirm) |
 | ESC | Open Settings / Credits |
 
 ---
@@ -43,8 +46,9 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 - Procedural drifting 3D low-poly clouds (CloudLayer.gd)
 - Fully animated low-poly seagulls with curved Bezier flight paths, landing logic, and water interactions (SeagullLayer.gd)
 - Wind sway on palm trees and bushes
-- Custom GLSL shaders for sky, heat haze, and ocean ripples
-- WCAG 2.1 AA/AAA compliant UI with high-contrast mode, reduce motion, and adjustable sensitivity
+- Custom GLSL shaders for sky, heat haze, pause blur, and ocean ripples
+- WCAG 2.1 AA/AAA compliant UI with full keyboard navigation, high-contrast mode, reduce motion, and adjustable sensitivity
+- Code-synthesized procedural UI audio (hover ticks, weapon swooshes) using `AudioStreamGenerator`
 - Exported as Universal Binary (macOS Intel + Apple Silicon) and Windows .exe
 
 ---
@@ -121,3 +125,4 @@ SummerNights-Godot/
 | Procedural Clouds and Seagulls | Hand-crafted GDScript | - |
 | Sun Face Expressions | Procedural Godot Image draw API | - |
 | Weapon Wheel UI | Procedural GDScript draw API | - |
+| Synthesized UI Audio (Ticks/Whoosh) | Procedural AudioStreamGenerator | - |
