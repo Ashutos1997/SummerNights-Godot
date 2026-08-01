@@ -129,3 +129,4 @@ SummerNights-Godot/
 | 태양 표정 (Sun Face) | 절차적 Godot Image draw API | - |
 | 무기 선택 휠 (Weapon Wheel UI) | 절차적 GDScript draw API | - |
 | 합성 UI 오디오 (틱/휘리릭) | 절차적 AudioStreamGenerator | - |
+| VFX 및 오디오 - 태양풍 (Solar Wind) | 절차적 파티클 및 AudioStreamGenerator | - |

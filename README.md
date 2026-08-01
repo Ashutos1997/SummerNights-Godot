@@ -128,3 +128,4 @@ SummerNights-Godot/
 | Sun Face Expressions | Procedural Godot Image draw API | - |
 | Weapon Wheel UI | Procedural GDScript draw API | - |
 | Synthesized UI Audio (Ticks/Whoosh) | Procedural AudioStreamGenerator | - |
+| VFX & Audio - Solar Wind Hazard | Procedural Particles & AudioStreamGenerator | - |
