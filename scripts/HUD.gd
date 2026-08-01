@@ -1105,16 +1105,6 @@ func show_wind_warning(state: int, pulse_scale: float = 1.0, is_kr: bool = false
 		wind_warning_label.modulate.a = 1.0
 		wind_warning_label.visible = true
 
-func _on_sun_defeated(completed_level: int) -> void:
-	get_tree().reload_current_scene()
-
-func _on_retry_pressed() -> void:
-	get_tree().reload_current_scene()
-
-func _on_menu_pressed() -> void:
-	GameState.level = 1
-	get_tree().change_scene_to_file("res://scenes/Main.tscn")
-
 func update_ice_charges(charges: int, max_charges: int) -> void:
 	if max_charges <= 0:
 		ice_row.visible = false
