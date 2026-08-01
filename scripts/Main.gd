@@ -69,10 +69,12 @@ const WIND_IDLE_MIN: float = 8.0
 const WIND_IDLE_MAX: float = 12.0
 const WIND_WARN_DURATION: float = 1.5
 const WIND_ACTIVE_DURATION: float = 3.0
-const WIND_DRIFT_SPEED: float = 280.0  # pixels/sec at full strength
+const WIND_DRIFT_SPEED: float = 280.0  # pixels/sec at full strength (level 4 base)
 var wind_particles: GPUParticles3D = null
 var wind_warn_label: Label3D = null
 var wind_sfx: AudioStreamPlayer = null
+var wind_elapsed: float = 0.0  # time accumulator for turbulence
+var wind_level_mult: float = 1.0  # scales intensity per level
 
 var title_screen_ui: Control = null
 var is_title_screen: bool = true
@@ -270,6 +272,9 @@ func _ready() -> void:
 	wind_state = 0
 	wind_timer = randf_range(WIND_IDLE_MIN, WIND_IDLE_MAX)
 	wind_strength = 0.0
+	wind_elapsed = 0.0
+	# Level 5 gets 30% stronger, more frequent gusts
+	wind_level_mult = 1.3 if GameState.level >= 5 else 1.0
 
 	level_timer = cfg.timer
 	timer_running = true
@@ -1222,7 +1227,10 @@ func _process(delta: float) -> void:
 	# Aim gun (apply wind drift to virtual mouse position)
 	var mouse_pos = virtual_mouse_pos
 	if wind_state == 2 and wind_strength > 0.0:
-		virtual_mouse_pos.x += wind_direction * wind_strength * delta
+		wind_elapsed += delta
+		# Turbulent drift: base drift + sine wobble for organic feel
+		var turbulence = 1.0 + sin(wind_elapsed * 5.0) * 0.35 + sin(wind_elapsed * 13.0) * 0.15
+		virtual_mouse_pos.x += wind_direction * wind_strength * turbulence * wind_level_mult * delta
 		var viewport_size = get_viewport().get_visible_rect().size
 		virtual_mouse_pos.x = clamp(virtual_mouse_pos.x, 0, viewport_size.x)
 		mouse_pos = virtual_mouse_pos
@@ -1251,6 +1259,11 @@ func _process(delta: float) -> void:
 	# Camera recoil spring back (smoothly returns to target coordinate 0,0,5 and rotation 0)
 	camera.position = camera.position.lerp(Vector3(0, 0, 5), 8.0 * delta)
 	camera.rotation.x = lerp(camera.rotation.x, 0.0, 8.0 * delta)
+	# Solar wind camera roll (subtle tilt to sell the push)
+	var target_roll = 0.0
+	if wind_state == 2 and wind_strength > 0.0 and not reduce_motion:
+		target_roll = wind_direction * -0.03  # ~1.7° tilt opposite to drift
+	camera.rotation.z = lerp(camera.rotation.z, target_roll, 5.0 * delta)
 	
 	# Dynamic FOV
 	var target_fov = 75.0
@@ -1790,6 +1803,8 @@ func _win() -> void:
 			wind_state = 0
 			wind_timer = randf_range(WIND_IDLE_MIN, WIND_IDLE_MAX)
 			wind_strength = 0.0
+			wind_elapsed = 0.0
+			wind_level_mult = 1.3 if GameState.level >= 5 else 1.0
 			
 			level_timer = cfg.timer
 			timer_running = true
@@ -1861,6 +1876,13 @@ func _spawn_wet_mark(pos: Vector3, normal: Vector3) -> void:
 # Solar Wind Hazard
 # ─────────────────────────────────────────────────────────────────────────────
 func _process_solar_wind(delta: float) -> void:
+	# Ice Burst suppresses wind entirely
+	if is_sun_frozen:
+		if wind_state == 2:
+			wind_strength = 0.0
+			if wind_particles: wind_particles.emitting = false
+		return
+	
 	wind_timer -= delta
 	
 	match wind_state:
@@ -1869,10 +1891,14 @@ func _process_solar_wind(delta: float) -> void:
 				wind_state = 1
 				wind_timer = WIND_WARN_DURATION
 				wind_direction = [-1.0, 1.0].pick_random()
+				wind_elapsed = 0.0
 				# Show warning
 				if not wind_warn_label:
 					_setup_solar_wind_visuals()
 				if wind_warn_label:
+					var is_kr = GameState.language == "KR"
+					wind_warn_label.text = "⚠ 태양풍 접근!" if is_kr else "⚠ WIND INCOMING!"
+					wind_warn_label.modulate = Color(1.0, 0.9, 0.3, 1.0)
 					wind_warn_label.visible = true
 					wind_warn_label.modulate.a = 0.0
 					var tw = create_tween()
@@ -1883,16 +1909,23 @@ func _process_solar_wind(delta: float) -> void:
 				var sfx_pb = wind_sfx.get_stream_playback() as AudioStreamGeneratorPlayback if wind_sfx else null
 				if sfx_pb:
 					_fill_wind_warning_audio(sfx_pb)
-		1:  # Warning — visual buildup
+		1:  # Warning — pulsing label buildup
+			# Pulse the warning label scale
+			if wind_warn_label and not reduce_motion:
+				var pulse = 1.0 + sin(wind_elapsed * 12.0) * 0.08
+				wind_warn_label.pixel_size = 0.01 * pulse
+			wind_elapsed += delta
 			if wind_timer <= 0.0:
 				wind_state = 2
 				wind_timer = WIND_ACTIVE_DURATION
 				wind_strength = WIND_DRIFT_SPEED
-				# Switch warning to "SOLAR WIND!" text
+				wind_elapsed = 0.0
+				# Switch warning text
 				if wind_warn_label:
 					var is_kr = GameState.language == "KR"
 					wind_warn_label.text = "태양풍!" if is_kr else "SOLAR WIND!"
 					wind_warn_label.modulate = Color(1.0, 0.6, 0.1, 1.0)
+					wind_warn_label.pixel_size = 0.01  # Reset pulse
 				# Enable particle streaks (match wind direction)
 				if wind_particles:
 					var pmat = wind_particles.process_material as ParticleProcessMaterial
@@ -1910,7 +1943,10 @@ func _process_solar_wind(delta: float) -> void:
 				wind_strength = lerp(wind_strength, 0.0, 4.0 * delta)
 			if wind_timer <= 0.0:
 				wind_state = 0
-				wind_timer = randf_range(WIND_IDLE_MIN, WIND_IDLE_MAX)
+				# Level 5: shorter cooldown between gusts
+				var idle_min = WIND_IDLE_MIN * (0.7 if wind_level_mult > 1.0 else 1.0)
+				var idle_max = WIND_IDLE_MAX * (0.7 if wind_level_mult > 1.0 else 1.0)
+				wind_timer = randf_range(idle_min, idle_max)
 				wind_strength = 0.0
 				# Hide warning and particles
 				if wind_warn_label:
@@ -1962,11 +1998,16 @@ func _setup_solar_wind_visuals() -> void:
 	mesh.material = mat
 	wind_particles.draw_pass_1 = mesh
 	
-	wind_particles.amount = 40
-	wind_particles.lifetime = 0.6
+	wind_particles.amount = 60
+	wind_particles.lifetime = 0.8
 	wind_particles.explosiveness = 0.0
 	wind_particles.emitting = false
-	wind_particles.global_position = Vector3(0, 3, -8)
+	wind_particles.global_position = Vector3(0, 3, -5)
+	# Wide emission box so streaks fill the viewport
+	var pmat2 = wind_particles.process_material as ParticleProcessMaterial
+	if pmat2:
+		pmat2.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+		pmat2.emission_box_extents = Vector3(0.5, 6.0, 8.0)
 	add_child(wind_particles)
 	
 	# Synthesized wind SFX
