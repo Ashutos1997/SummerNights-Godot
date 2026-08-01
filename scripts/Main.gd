@@ -71,7 +71,6 @@ const WIND_WARN_DURATION: float = 1.5
 const WIND_ACTIVE_DURATION: float = 3.0
 const WIND_DRIFT_SPEED: float = 280.0  # pixels/sec at full strength (level 4 base)
 var wind_particles: GPUParticles3D = null
-var wind_warn_label: Label3D = null
 var wind_sfx: AudioStreamPlayer = null
 var wind_elapsed: float = 0.0  # time accumulator for turbulence
 var wind_level_mult: float = 1.0  # scales intensity per level
@@ -1892,17 +1891,11 @@ func _process_solar_wind(delta: float) -> void:
 				wind_timer = WIND_WARN_DURATION
 				wind_direction = [-1.0, 1.0].pick_random()
 				wind_elapsed = 0.0
-				# Show warning
-				if not wind_warn_label:
+				# Show warning on HUD
+				if not wind_particles:
 					_setup_solar_wind_visuals()
-				if wind_warn_label:
-					var is_kr = GameState.language == "KR"
-					wind_warn_label.text = "⚠ 태양풍 접근!" if is_kr else "⚠ WIND INCOMING!"
-					wind_warn_label.modulate = Color(1.0, 0.9, 0.3, 1.0)
-					wind_warn_label.visible = true
-					wind_warn_label.modulate.a = 0.0
-					var tw = create_tween()
-					tw.tween_property(wind_warn_label, "modulate:a", 1.0, 0.3)
+				if hud and hud.has_method("show_wind_warning"):
+					hud.show_wind_warning(1, 1.0, GameState.language == "KR")
 				# Start wind SFX building up
 				if wind_sfx and not wind_sfx.playing:
 					wind_sfx.play()
@@ -1910,22 +1903,22 @@ func _process_solar_wind(delta: float) -> void:
 				if sfx_pb:
 					_fill_wind_warning_audio(sfx_pb)
 		1:  # Warning — pulsing label buildup
-			# Pulse the warning label scale
-			if wind_warn_label and not reduce_motion:
-				var pulse = 1.0 + sin(wind_elapsed * 12.0) * 0.08
-				wind_warn_label.pixel_size = 0.01 * pulse
 			wind_elapsed += delta
+			var pulse = 1.0
+			if not reduce_motion:
+				pulse = 1.0 + sin(wind_elapsed * 12.0) * 0.08
+			if hud and hud.has_method("show_wind_warning"):
+				hud.show_wind_warning(1, pulse, GameState.language == "KR")
+				
 			if wind_timer <= 0.0:
 				wind_state = 2
 				wind_timer = WIND_ACTIVE_DURATION
 				wind_strength = WIND_DRIFT_SPEED
 				wind_elapsed = 0.0
-				# Switch warning text
-				if wind_warn_label:
-					var is_kr = GameState.language == "KR"
-					wind_warn_label.text = "태양풍!" if is_kr else "SOLAR WIND!"
-					wind_warn_label.modulate = Color(1.0, 0.6, 0.1, 1.0)
-					wind_warn_label.pixel_size = 0.01  # Reset pulse
+				# Switch warning text on HUD
+				if hud and hud.has_method("show_wind_warning"):
+					hud.show_wind_warning(2, 1.0, GameState.language == "KR")
+
 				# Enable particle streaks (match wind direction)
 				if wind_particles:
 					var pmat = wind_particles.process_material as ParticleProcessMaterial
@@ -1949,31 +1942,26 @@ func _process_solar_wind(delta: float) -> void:
 				wind_timer = randf_range(idle_min, idle_max)
 				wind_strength = 0.0
 				# Hide warning and particles
-				if wind_warn_label:
-					var tw = create_tween()
-					tw.tween_property(wind_warn_label, "modulate:a", 0.0, 0.3)
-					tw.tween_callback(func(): wind_warn_label.visible = false)
+				if hud and hud.has_method("show_wind_warning"):
+					hud.show_wind_warning(0)
 				if wind_particles:
 					wind_particles.emitting = false
 				if wind_sfx:
 					wind_sfx.stop()
 
+	# Update visual reactivity to wind
+	var wind_factor = clamp(wind_strength / WIND_DRIFT_SPEED, 0.0, 1.0)
+	if haze_mat:
+		haze_mat.set_shader_parameter("wind_strength", wind_factor)
+		haze_mat.set_shader_parameter("wind_dir", wind_direction)
+		
+	if wind_state == 2 and sun_mat:
+		# Base emission is 1.0. We pulse it up to 1.8 rapidly during wind
+		sun_mat.emission_energy_multiplier = 1.0 + sin(wind_elapsed * 25.0) * 0.8 * wind_factor
+	elif wind_state != 2 and sun_mat:
+		sun_mat.emission_energy_multiplier = lerp(sun_mat.emission_energy_multiplier, 1.0, 5.0 * delta)
+
 func _setup_solar_wind_visuals() -> void:
-	# Warning label (3D text near the sun)
-	wind_warn_label = Label3D.new()
-	wind_warn_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	wind_warn_label.no_depth_test = true
-	var is_kr = GameState.language == "KR"
-	wind_warn_label.text = "⚠ 태양풍 접근!" if is_kr else "⚠ WIND INCOMING!"
-	wind_warn_label.font = preload("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
-	wind_warn_label.font_size = 300
-	wind_warn_label.modulate = Color(1.0, 0.9, 0.3, 1.0)
-	wind_warn_label.outline_size = 16
-	wind_warn_label.outline_modulate = Color.BLACK
-	wind_warn_label.visible = false
-	wind_warn_label.global_position = Vector3(0, 8, -15)
-	add_child(wind_warn_label)
-	
 	# GPU Particle streaks — horizontal lines rushing across the screen
 	wind_particles = GPUParticles3D.new()
 	var pmat = ParticleProcessMaterial.new()
@@ -1984,17 +1972,36 @@ func _setup_solar_wind_visuals() -> void:
 	pmat.gravity = Vector3.ZERO
 	pmat.scale_min = 0.3
 	pmat.scale_max = 0.8
-	pmat.color = Color(1.0, 0.85, 0.3, 0.5)
-	wind_particles.process_material = pmat
+	# Alpha curve for smooth fade in/out
+	var alpha_curve_tex = CurveTexture.new()
+	var acurve = Curve.new()
+	acurve.add_point(Vector2(0, 0))
+	acurve.add_point(Vector2(0.2, 1.0))
+	acurve.add_point(Vector2(0.8, 1.0))
+	acurve.add_point(Vector2(1.0, 0.0))
+	alpha_curve_tex.curve = acurve
+	pmat.alpha_curve = alpha_curve_tex
 	
-	var mesh = BoxMesh.new()
-	mesh.size = Vector3(2.0, 0.03, 0.03)  # Long thin streaks
+	wind_particles.process_material = pmat
+	wind_particles.trail_enabled = true
+	wind_particles.trail_lifetime = 0.3
+	
+	var mesh = RibbonTrailMesh.new()
+	mesh.size = 0.2
+	var width_curve = Curve.new()
+	width_curve.add_point(Vector2(0, 0.1))
+	width_curve.add_point(Vector2(0.2, 1.0))
+	width_curve.add_point(Vector2(1.0, 0.0))
+	mesh.curve = width_curve
+	
 	var mat = StandardMaterial3D.new()
-	mat.albedo_color = Color(1.0, 0.85, 0.3, 0.6)
+	mat.albedo_color = Color(1.0, 0.85, 0.3, 0.4)
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	mat.emission_enabled = true
 	mat.emission = Color(1.0, 0.7, 0.2)
 	mat.emission_energy_multiplier = 2.0
+	mat.use_particle_trails = true
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 	mesh.material = mat
 	wind_particles.draw_pass_1 = mesh
 	
