@@ -59,6 +59,21 @@ var is_two_phase: bool = false
 var phase2_triggered: bool = false
 var phase2_heat: float = 0.0
 
+# ─── Solar Wind Hazard ───────────────────────────────────────────────────────
+var solar_wind_enabled: bool = false
+var wind_state: int = 0  # 0=idle, 1=warning, 2=active
+var wind_timer: float = 0.0
+var wind_direction: float = 0.0  # -1.0 or 1.0
+var wind_strength: float = 0.0  # Current drift force (pixels/sec)
+const WIND_IDLE_MIN: float = 8.0
+const WIND_IDLE_MAX: float = 12.0
+const WIND_WARN_DURATION: float = 1.5
+const WIND_ACTIVE_DURATION: float = 3.0
+const WIND_DRIFT_SPEED: float = 280.0  # pixels/sec at full strength
+var wind_particles: GPUParticles3D = null
+var wind_warn_label: Label3D = null
+var wind_sfx: AudioStreamPlayer = null
+
 var title_screen_ui: Control = null
 var is_title_screen: bool = true
 var title_cam_angle: float = 0.0
@@ -251,6 +266,11 @@ func _ready() -> void:
 	phase2_heat = cfg.phase2_heat
 	phase2_triggered = false
 	
+	solar_wind_enabled = cfg.get("solar_wind", false)
+	wind_state = 0
+	wind_timer = randf_range(WIND_IDLE_MIN, WIND_IDLE_MAX)
+	wind_strength = 0.0
+
 	level_timer = cfg.timer
 	timer_running = true
 
@@ -1195,8 +1215,17 @@ func _process(delta: float) -> void:
 		temperature += heat_regen_base * delta # Sun gets hotter over time
 		_update_sky(false)
 
-	# Aim gun
+	# Solar Wind hazard
+	if solar_wind_enabled and not is_title_screen:
+		_process_solar_wind(delta)
+
+	# Aim gun (apply wind drift to virtual mouse position)
 	var mouse_pos = virtual_mouse_pos
+	if wind_state == 2 and wind_strength > 0.0:
+		virtual_mouse_pos.x += wind_direction * wind_strength * delta
+		var viewport_size = get_viewport().get_visible_rect().size
+		virtual_mouse_pos.x = clamp(virtual_mouse_pos.x, 0, viewport_size.x)
+		mouse_pos = virtual_mouse_pos
 	var ray_origin = camera.project_ray_origin(mouse_pos)
 	var ray_normal = camera.project_ray_normal(mouse_pos)
 	# Project to sun's Z depth
@@ -1757,6 +1786,11 @@ func _win() -> void:
 			phase2_heat = cfg.phase2_heat
 			phase2_triggered = false
 			
+			solar_wind_enabled = cfg.get("solar_wind", false)
+			wind_state = 0
+			wind_timer = randf_range(WIND_IDLE_MIN, WIND_IDLE_MAX)
+			wind_strength = 0.0
+			
 			level_timer = cfg.timer
 			timer_running = true
 			emit_signal("level_config_loaded", cfg.timer)
@@ -1822,6 +1856,146 @@ func _spawn_wet_mark(pos: Vector3, normal: Vector3) -> void:
 	var tween = create_tween()
 	tween.tween_property(decal, "modulate:a", 0.0, 2.5).set_delay(1.5)
 	tween.tween_callback(decal.queue_free)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Solar Wind Hazard
+# ─────────────────────────────────────────────────────────────────────────────
+func _process_solar_wind(delta: float) -> void:
+	wind_timer -= delta
+	
+	match wind_state:
+		0:  # Idle — waiting for next gust
+			if wind_timer <= 0.0:
+				wind_state = 1
+				wind_timer = WIND_WARN_DURATION
+				wind_direction = [-1.0, 1.0].pick_random()
+				# Show warning
+				if not wind_warn_label:
+					_setup_solar_wind_visuals()
+				if wind_warn_label:
+					wind_warn_label.visible = true
+					wind_warn_label.modulate.a = 0.0
+					var tw = create_tween()
+					tw.tween_property(wind_warn_label, "modulate:a", 1.0, 0.3)
+				# Start wind SFX building up
+				if wind_sfx and not wind_sfx.playing:
+					wind_sfx.play()
+				var sfx_pb = wind_sfx.get_stream_playback() as AudioStreamGeneratorPlayback if wind_sfx else null
+				if sfx_pb:
+					_fill_wind_warning_audio(sfx_pb)
+		1:  # Warning — visual buildup
+			if wind_timer <= 0.0:
+				wind_state = 2
+				wind_timer = WIND_ACTIVE_DURATION
+				wind_strength = WIND_DRIFT_SPEED
+				# Switch warning to "SOLAR WIND!" text
+				if wind_warn_label:
+					var is_kr = GameState.language == "KR"
+					wind_warn_label.text = "태양풍!" if is_kr else "SOLAR WIND!"
+					wind_warn_label.modulate = Color(1.0, 0.6, 0.1, 1.0)
+				# Enable particle streaks (match wind direction)
+				if wind_particles:
+					var pmat = wind_particles.process_material as ParticleProcessMaterial
+					if pmat:
+						pmat.direction = Vector3(wind_direction, 0, 0)
+					wind_particles.emitting = true
+				# Fill active wind audio
+				if wind_sfx:
+					var sfx_pb = wind_sfx.get_stream_playback() as AudioStreamGeneratorPlayback
+					if sfx_pb:
+						_fill_wind_active_audio(sfx_pb)
+		2:  # Active — drifting aim
+			# Smooth ramp-down near end
+			if wind_timer < 0.8:
+				wind_strength = lerp(wind_strength, 0.0, 4.0 * delta)
+			if wind_timer <= 0.0:
+				wind_state = 0
+				wind_timer = randf_range(WIND_IDLE_MIN, WIND_IDLE_MAX)
+				wind_strength = 0.0
+				# Hide warning and particles
+				if wind_warn_label:
+					var tw = create_tween()
+					tw.tween_property(wind_warn_label, "modulate:a", 0.0, 0.3)
+					tw.tween_callback(func(): wind_warn_label.visible = false)
+				if wind_particles:
+					wind_particles.emitting = false
+				if wind_sfx:
+					wind_sfx.stop()
+
+func _setup_solar_wind_visuals() -> void:
+	# Warning label (3D text near the sun)
+	wind_warn_label = Label3D.new()
+	wind_warn_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	wind_warn_label.no_depth_test = true
+	var is_kr = GameState.language == "KR"
+	wind_warn_label.text = "⚠ 태양풍 접근!" if is_kr else "⚠ WIND INCOMING!"
+	wind_warn_label.font = preload("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+	wind_warn_label.font_size = 300
+	wind_warn_label.modulate = Color(1.0, 0.9, 0.3, 1.0)
+	wind_warn_label.outline_size = 16
+	wind_warn_label.outline_modulate = Color.BLACK
+	wind_warn_label.visible = false
+	wind_warn_label.global_position = Vector3(0, 8, -15)
+	add_child(wind_warn_label)
+	
+	# GPU Particle streaks — horizontal lines rushing across the screen
+	wind_particles = GPUParticles3D.new()
+	var pmat = ParticleProcessMaterial.new()
+	pmat.direction = Vector3(1, 0, 0)  # Will be flipped by wind_direction
+	pmat.spread = 10.0
+	pmat.initial_velocity_min = 15.0
+	pmat.initial_velocity_max = 25.0
+	pmat.gravity = Vector3.ZERO
+	pmat.scale_min = 0.3
+	pmat.scale_max = 0.8
+	pmat.color = Color(1.0, 0.85, 0.3, 0.5)
+	wind_particles.process_material = pmat
+	
+	var mesh = BoxMesh.new()
+	mesh.size = Vector3(2.0, 0.03, 0.03)  # Long thin streaks
+	var mat = StandardMaterial3D.new()
+	mat.albedo_color = Color(1.0, 0.85, 0.3, 0.6)
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.emission_enabled = true
+	mat.emission = Color(1.0, 0.7, 0.2)
+	mat.emission_energy_multiplier = 2.0
+	mesh.material = mat
+	wind_particles.draw_pass_1 = mesh
+	
+	wind_particles.amount = 40
+	wind_particles.lifetime = 0.6
+	wind_particles.explosiveness = 0.0
+	wind_particles.emitting = false
+	wind_particles.global_position = Vector3(0, 3, -8)
+	add_child(wind_particles)
+	
+	# Synthesized wind SFX
+	var gen = AudioStreamGenerator.new()
+	gen.mix_rate = 22050.0
+	gen.buffer_length = 0.5
+	wind_sfx = AudioStreamPlayer.new()
+	wind_sfx.stream = gen
+	wind_sfx.bus = "SFX_UI"
+	wind_sfx.volume_db = -16.0
+	add_child(wind_sfx)
+
+func _fill_wind_warning_audio(pb: AudioStreamGeneratorPlayback) -> void:
+	# Rising low hum to build tension
+	var frames = 2000
+	for i in range(frames):
+		var t = float(i) / 22050.0
+		var freq = lerp(120.0, 300.0, float(i) / float(frames))
+		var envelope = float(i) / float(frames) * 0.15
+		pb.push_frame(Vector2.ONE * sin(TAU * freq * t) * envelope)
+
+func _fill_wind_active_audio(pb: AudioStreamGeneratorPlayback) -> void:
+	# Sustained whoosh — noise-like sound with modulation
+	var frames = 4000
+	for i in range(frames):
+		var t = float(i) / 22050.0
+		var noise = sin(TAU * 180.0 * t) * 0.3 + sin(TAU * 340.0 * t) * 0.2 + sin(TAU * 90.0 * t) * 0.15
+		var wobble = sin(TAU * 3.0 * t) * 0.5 + 0.5
+		pb.push_frame(Vector2.ONE * noise * wobble * 0.2)
 
 func _trigger_phase2() -> void:
 	timer_running = false # pause timer briefly

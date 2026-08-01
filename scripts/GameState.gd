@@ -11,6 +11,7 @@ const LEVEL_CONFIG = {
 		"two_phase": false,
 		"phase2_heat": 0.0,
 		"ice_charges": 0,
+		"solar_wind": false,
 	},
 	2: {
 		"timer": 40.0,
@@ -22,6 +23,7 @@ const LEVEL_CONFIG = {
 		"two_phase": false,
 		"phase2_heat": 0.0,
 		"ice_charges": 0,
+		"solar_wind": false,
 	},
 	3: {
 		"timer": 40.0,
@@ -33,6 +35,7 @@ const LEVEL_CONFIG = {
 		"two_phase": false,
 		"phase2_heat": 0.0,
 		"ice_charges": 3,
+		"solar_wind": false,
 	},
 	4: {
 		"timer": 40.0,
@@ -44,6 +47,7 @@ const LEVEL_CONFIG = {
 		"two_phase": false,
 		"phase2_heat": 0.0,
 		"ice_charges": 3,
+		"solar_wind": true,
 	},
 	5: {
 		"timer": 90.0,
@@ -55,6 +59,7 @@ const LEVEL_CONFIG = {
 		"two_phase": true,
 		"phase2_heat": 60.0,
 		"ice_charges": 5,
+		"solar_wind": true,
 	},
 }
 
