@@ -965,7 +965,7 @@ func _on_settings_btn_hover(hovered: bool) -> void:
 
 func _on_settings_btn_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_open_settings()
+		_on_settings_pressed()
 
 func _open_settings() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -985,6 +985,7 @@ func _close_settings() -> void:
 		settings_screen.visible = false
 		if opened_from_pause:
 			pause_screen.visible = true
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 			if pause_resume_btn: pause_resume_btn.grab_focus()
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -998,7 +999,7 @@ func _on_credits_btn_hover(hovered: bool) -> void:
 
 func _on_credits_btn_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_open_credits()
+		_on_credits_pressed()
 
 func _open_credits() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -1018,6 +1019,7 @@ func _close_credits() -> void:
 		credits_screen.visible = false
 		if opened_from_pause:
 			pause_screen.visible = true
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 			if pause_resume_btn: pause_resume_btn.grab_focus()
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
