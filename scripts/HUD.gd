@@ -32,7 +32,6 @@ signal weapon_changed(weapon_id: String)
 
 @onready var timer_label       = $HUD/TimerLabel
 @onready var phase2_label      = $HUD/Phase2Label
-@onready var wind_warning_label= $HUD/WindWarningLabel
 @onready var lose_screen       = $HUD/LoseScreen
 @onready var lose_title_lbl    = $HUD/LoseScreen/ColorRect/VBoxContainer/Title
 @onready var lose_title2_lbl   = $HUD/LoseScreen/ColorRect/VBoxContainer/Title2
@@ -113,7 +112,6 @@ func _process(delta: float) -> void:
 func _ready() -> void:
 	heat_label.scale = Vector2(1.0, 1.0)
 	phase2_label.visible = false
-	wind_warning_label.visible = false
 	timer_label.text = ""
 	
 	# Hide all screens initially except for crosshair and HUD elements
@@ -1077,34 +1075,6 @@ func _on_phase2_started() -> void:
 	p_tw.tween_interval(2.0)
 	p_tw.tween_property(phase2_label, "modulate:a", 0.0, 0.5)
 	p_tw.tween_callback(func(): phase2_label.visible = false)
-
-func show_wind_warning(state: int, pulse_scale: float = 1.0, is_kr: bool = false) -> void:
-	if not wind_warning_label: return
-	
-	if state == 0:
-		# Hide
-		var tw = create_tween()
-		tw.tween_property(wind_warning_label, "modulate:a", 0.0, 0.3)
-		tw.tween_callback(func(): wind_warning_label.visible = false)
-	elif state == 1:
-		# Warning buildup
-		if not wind_warning_label.visible:
-			wind_warning_label.visible = true
-			wind_warning_label.modulate.a = 0.0
-			wind_warning_label.text = "⚠ 태양풍 접근!" if is_kr else "⚠ WIND INCOMING!"
-			wind_warning_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.3, 1.0))
-			var tw = create_tween()
-			tw.tween_property(wind_warning_label, "modulate:a", 1.0, 0.3)
-		# Apply scale pulse (default scale is 1.0, we just multiply scale)
-		wind_warning_label.scale = Vector2(pulse_scale, pulse_scale)
-	elif state == 2:
-		# Active
-		wind_warning_label.text = "태양풍!" if is_kr else "SOLAR WIND!"
-		wind_warning_label.add_theme_color_override("font_color", Color(1.0, 0.6, 0.1, 1.0))
-		wind_warning_label.scale = Vector2(1.0, 1.0)
-		wind_warning_label.modulate.a = 1.0
-		wind_warning_label.visible = true
-
 
 func _on_retry_pressed() -> void:
 	get_tree().reload_current_scene()
