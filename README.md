@@ -24,6 +24,7 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
   - **Standard Blaster (Lvl 1):** Balanced cooling power and water drain.
   - **Precision Stream (Lvl 2):** Low power, but features a massive **4.0x Critical Hit multiplier** for perfect aim.
   - **Heavy Cannon (Lvl 3):** Extreme raw cooling power, but drains your water tank incredibly fast.
+- **Solar Wind (Level 4+):** Periodic gusts of solar wind push your aim sideways for 3 seconds, forcing you to fight the drift. A warning flashes before each gust — brace yourself! Particle streaks and a rising hum signal the incoming blast.
 ---
 
 ## Controls
@@ -43,6 +44,7 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 - Water tank resource management with drain and recharge cycle
 - Solar heat vents with critical cooling and steam geyser effects
 - Solar flare projectiles in parabolic arcs, interceptable for water refills
+- Solar wind gusts that push your aim sideways with GPU particle streak visuals
 - Procedural drifting 3D low-poly clouds (CloudLayer.gd)
 - Fully animated low-poly seagulls with curved Bezier flight paths, landing logic, and water interactions (SeagullLayer.gd)
 - Wind sway on palm trees and bushes
