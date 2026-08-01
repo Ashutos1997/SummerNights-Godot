@@ -1105,8 +1105,6 @@ func show_wind_warning(state: int, pulse_scale: float = 1.0, is_kr: bool = false
 		wind_warning_label.modulate.a = 1.0
 		wind_warning_label.visible = true
 
-func _on_sun_defeated(level: int) -> void:
-	get_tree().reload_current_scene()
 
 func _on_retry_pressed() -> void:
 	get_tree().reload_current_scene()
