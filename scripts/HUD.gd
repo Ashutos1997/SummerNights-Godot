@@ -281,6 +281,7 @@ func _ready() -> void:
 			btn.add_theme_stylebox_override("hover", style_back_hover)
 			btn.add_theme_stylebox_override("pressed", style_back_hover)
 			btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+			btn.mouse_entered.connect(_play_ui_tick)
 
 	# Lose Screen buttons
 	var style_lose_btn = StyleBoxFlat.new()
@@ -433,6 +434,7 @@ func _build_lang_row(font: Font) -> void:
 	btn_en.add_theme_color_override("font_outline_color", Color.BLACK)
 	btn_en.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 	btn_en.add_theme_stylebox_override("hover", StyleBoxEmpty.new())
+	btn_en.mouse_entered.connect(_play_ui_tick)
 	btn_en.pressed.connect(func(): _on_language_toggle("EN"))
 	toggle_box.add_child(btn_en)
 	lang_btn_en = btn_en
@@ -455,6 +457,7 @@ func _build_lang_row(font: Font) -> void:
 	btn_kr.add_theme_color_override("font_outline_color", Color.BLACK)
 	btn_kr.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 	btn_kr.add_theme_stylebox_override("hover", StyleBoxEmpty.new())
+	btn_kr.mouse_entered.connect(_play_ui_tick)
 	btn_kr.pressed.connect(func(): _on_language_toggle("KR"))
 	toggle_box.add_child(btn_kr)
 	lang_btn_kr = btn_kr

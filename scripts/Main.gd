@@ -195,6 +195,7 @@ var sun_freeze_timer: float = 0.0
 var active_flares: Array[Dictionary] = []
 var flare_spawn_timer: float = 8.0
 var flare_mat: StandardMaterial3D
+var flare_intercept_sfx: AudioStreamPlayer
 
 var foliage_props: Array[Node3D] = []
 
@@ -219,6 +220,12 @@ func _ready() -> void:
 	ice_hit_sfx.stream = preload("res://assets/audio/sfx/ice_hit.ogg")
 	ice_hit_sfx.volume_db = -2.0
 	add_child(ice_hit_sfx)
+	
+	flare_intercept_sfx = AudioStreamPlayer.new()
+	flare_intercept_sfx.stream = preload("res://assets/audio/sfx/hit_sun.ogg")
+	flare_intercept_sfx.pitch_scale = 0.6
+	flare_intercept_sfx.volume_db = -4.0
+	add_child(flare_intercept_sfx)
 	
 	ambient_sfx = AudioStreamPlayer.new()
 	var ocean_stream = load("res://assets/audio/sfx/ocean_waves.wav")
@@ -1154,6 +1161,16 @@ func _process(delta: float) -> void:
 			game_over = true
 			is_shooting = false
 			if gun_spray: gun_spray.emitting = false
+			
+			# Dramatic Game Over Impact
+			shake(0.5, 0.08)
+			if sun_mat:
+				var tw = create_tween()
+				tw.tween_property(sun_mat, "emission_energy_multiplier", 12.0, 0.3)
+				tw.parallel().tween_property(sun_mat, "albedo_color", Color(4.0, 2.0, 1.0), 0.3)
+				if sun_mesh:
+					tw.parallel().tween_property(sun_mesh, "scale", Vector3(1.2, 1.2, 1.2), 0.3)
+					
 			timer_expired.emit()
 
 		
@@ -1368,6 +1385,9 @@ func _process(delta: float) -> void:
 				steam_particles.emitting = true
 				if sizzle_sfx:
 					sizzle_sfx.play()
+				if flare_intercept_sfx:
+					flare_intercept_sfx.play()
+				shake(0.2, 0.03)
 				
 				_spawn_flare_explosion(flare_pos)
 				
@@ -2204,7 +2224,7 @@ func freeze_sun() -> void:
 	is_sun_frozen = true
 	sun_freeze_timer = 3.0
 	ice_hit_sfx.play()
-	
+	shake(0.4, 0.06)
 	_spawn_ice_nova()
 	if frost_aura:
 		frost_aura.emitting = true
