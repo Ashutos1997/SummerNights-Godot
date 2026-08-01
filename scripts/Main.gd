@@ -65,8 +65,8 @@ var wind_state: int = 0  # 0=idle, 1=warning, 2=active
 var wind_timer: float = 0.0
 var wind_direction: float = 0.0  # -1.0 or 1.0
 var wind_strength: float = 0.0  # Current drift force (pixels/sec)
-const WIND_IDLE_MIN: float = 8.0
-const WIND_IDLE_MAX: float = 12.0
+const WIND_IDLE_MIN: float = 12.0
+const WIND_IDLE_MAX: float = 16.0
 const WIND_WARN_DURATION: float = 1.5
 const WIND_ACTIVE_DURATION: float = 3.0
 const WIND_DRIFT_SPEED: float = 280.0  # pixels/sec at full strength (level 4 base)
@@ -990,7 +990,8 @@ func _relocate_sunspot() -> void:
 			sunspot_tween.tween_property(sunspot_node, "scale", Vector3(1.0, 1.0, 1.0), 0.5)
 
 func _spawn_solar_flare() -> void:
-	flare_spawn_timer = randf_range(9.0, 12.0)
+	var lvl = float(GameState.level)
+	flare_spawn_timer = randf_range(12.0 - lvl, 15.0 - lvl)
 	var flare_root = Node3D.new()
 	
 	# Low-Poly Solar Mass Cluster (5 overlapping low-poly spheres matching CloudLayer style)
