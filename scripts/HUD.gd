@@ -254,6 +254,13 @@ func _ready() -> void:
 	_setup_weapon_hud()
 
 	if esc_hint_label:
+		# Reparent to UnlockPrompts so it stacks above the weapon HUD
+		var unlock_prompts = $HUD/UnlockPrompts
+		if unlock_prompts:
+			esc_hint_label.get_parent().remove_child(esc_hint_label)
+			unlock_prompts.add_child(esc_hint_label)
+			unlock_prompts.move_child(esc_hint_label, 0) # Put it at the top of the stack
+
 		esc_hint_label.visible = true
 		esc_hint_label.modulate.a = 0.6
 		var tw = create_tween()
@@ -1219,5 +1226,5 @@ func _update_weapon_hud(w_id: String) -> void:
 	if w_cfg:
 		hud_weapon_model = load(w_cfg.model).instantiate()
 		hud_weapon_model.scale = w_cfg.scale * 1.0
-		hud_weapon_model.position = Vector3(0, -0.2, -0.1)
+		hud_weapon_model.position = Vector3(0, 0.0, -0.1)
 		hud_weapon_vp.add_child(hud_weapon_model)
