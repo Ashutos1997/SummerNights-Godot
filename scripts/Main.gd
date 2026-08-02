@@ -54,6 +54,7 @@ var sun_sway_speed: float = 0.0
 var sun_figure8: bool = false
 var sun_move_time: float = 0.0
 var level_timer: float = 0.0
+var wave_timer: float = 0.0
 var timer_running: bool = false
 var is_two_phase: bool = false
 var phase2_triggered: bool = false
@@ -115,8 +116,13 @@ func _load_weapon_model() -> void:
 	current_weapon_recharge = w_cfg.recharge_rate
 	
 	var base_drain = 8.75
-	if current_config.has("water_drain"):
-		base_drain = current_config.water_drain
+	heat_regen = current_config.heat_regen_base
+	if GameState.is_survival_mode:
+		level_timer = 0.0
+		wave_timer = 0.0
+		heat_regen = 2.5 # Initial base heat for Wave 1
+	else:
+		level_timer = current_config.timer
 	WATER_DRAIN_RATE = base_drain * w_cfg.water_drain
 	
 	if shoot_loop_sfx:
@@ -302,13 +308,18 @@ func _ready() -> void:
 	
 	
 	
-	GameState.ice_charges_remaining = cfg.ice_charges
-	hud.update_ice_charges(GameState.ice_charges_remaining, cfg.ice_charges)
-	if GameState.level == 2:
-		hud.show_weapon_unlock()
-	if GameState.level == 3:
-		hud.show_weapon_unlock()
-		hud.show_ice_unlock()
+	if GameState.is_survival_mode:
+		GameState.ice_charges_remaining = 3 # Start with some ice in Endless Mode
+		hud.update_ice_charges(GameState.ice_charges_remaining, 3)
+		hud.ice_row.visible = true
+	else:
+		GameState.ice_charges_remaining = cfg.ice_charges
+		hud.update_ice_charges(GameState.ice_charges_remaining, cfg.ice_charges)
+		if GameState.level == 2:
+			hud.show_weapon_unlock()
+		if GameState.level == 3:
+			hud.show_weapon_unlock()
+			hud.show_ice_unlock()
 		
 	projectile_hit.connect(hud._on_projectile_hit)
 	timer_tick.connect(hud._on_timer_tick)
@@ -1154,24 +1165,46 @@ func _process(delta: float) -> void:
 		var spd_mult = 0.0 if is_sun_frozen else 1.0
 		sun_time += delta * spd_mult
 		
-		level_timer -= delta
-		timer_tick.emit(level_timer)
-		if level_timer <= 0.0:
-			timer_running = false
-			game_over = true
-			is_shooting = false
-			if gun_spray: gun_spray.emitting = false
+		if GameState.is_survival_mode:
+			GameState.survival_time += delta
+			wave_timer += delta
+			timer_tick.emit(GameState.survival_time)
 			
-			# Dramatic Game Over Impact
-			shake(0.5, 0.08)
-			if sun_mat:
-				var tw = create_tween()
-				tw.tween_property(sun_mat, "emission_energy_multiplier", 12.0, 0.3)
-				tw.parallel().tween_property(sun_mat, "albedo_color", Color(4.0, 2.0, 1.0), 0.3)
-				if sun_mesh:
-					tw.parallel().tween_property(sun_mesh, "scale", Vector3(1.2, 1.2, 1.2), 0.3)
-					
-			timer_expired.emit()
+			if wave_timer < 10.0:
+				heat_regen = 2.0 # The Release
+			else:
+				heat_regen = 2.5 + (GameState.current_wave * 1.5) # The Tension
+				
+			if wave_timer >= 60.0:
+				wave_timer = 0.0
+				GameState.current_wave += 1
+				GameState.ice_charges_remaining += 1
+				hud.update_ice_charges(GameState.ice_charges_remaining, GameState.ice_charges_remaining)
+				hud.level_label.text = "WAVE %02d" % GameState.current_wave
+				
+				# Dynamic Hazards
+				sun_figure8 = GameState.current_wave >= 3
+				solar_wind = GameState.current_wave >= 4
+				flare_spawn_timer = min(flare_spawn_timer, max(2.5, 8.0 - (GameState.current_wave * 0.5)))
+		else:
+			level_timer -= delta
+			timer_tick.emit(level_timer)
+			if level_timer <= 0.0:
+				timer_running = false
+				game_over = true
+				is_shooting = false
+				if gun_spray: gun_spray.emitting = false
+				
+				# Dramatic Game Over Impact
+				shake(0.5, 0.08)
+				if sun_mat:
+					var tw = create_tween()
+					tw.tween_property(sun_mat, "emission_energy_multiplier", 12.0, 0.3)
+					tw.parallel().tween_property(sun_mat, "albedo_color", Color(4.0, 2.0, 1.0), 0.3)
+					if sun_mesh:
+						tw.parallel().tween_property(sun_mesh, "scale", Vector3(1.2, 1.2, 1.2), 0.3)
+						
+				timer_expired.emit()
 
 		
 	# Relocate sunspot on timer

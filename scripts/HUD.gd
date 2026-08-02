@@ -524,7 +524,10 @@ func _apply_language(lang: String) -> void:
 		weapon_unlock_label.add_theme_font_override("font", kenney_font)
 		weapon_unlock_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
 	if level_label:
-		level_label.text = "%02d 단계" % GameState.level if is_kr else "LVL  %02d" % GameState.level
+		if GameState.is_survival_mode:
+			level_label.text = "웨이브 %02d" % GameState.current_wave if is_kr else "WAVE %02d" % GameState.current_wave
+		else:
+			level_label.text = "%02d 단계" % GameState.level if is_kr else "LVL  %02d" % GameState.level
 		if font: level_label.add_theme_font_override("font", font)
 		level_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
 	if timer_label:
@@ -849,7 +852,10 @@ func _on_critical_hit() -> void:
 	hit_tween.tween_property(crosshair, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
 
 func _on_sun_defeated(level: int) -> void:
-	level_label.text = "LVL  %02d" % level
+	if GameState.is_survival_mode:
+		level_label.text = "WAVE %02d" % GameState.current_wave
+	else:
+		level_label.text = "LVL  %02d" % level
 	if win_level_lbl:
 		win_level_lbl.text = "LEVEL %02d COMPLETE" % level
 	
@@ -1038,15 +1044,22 @@ var timer_pulse_active: bool = false
 func _on_timer_tick(seconds: float) -> void:
 	if not timer_label: return
 	var secs = max(0, int(seconds))
-	timer_label.text = "%02d" % secs
 	
-	if seconds <= 10.0:
-		timer_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.2, 1.0))
-		if not timer_pulse_active:
-			timer_pulse_active = true
-			var tw = create_tween().set_loops()
-			tw.tween_property(timer_label, "modulate:a", 0.3, 0.4)
-			tw.tween_property(timer_label, "modulate:a", 1.0, 0.4)
+	if GameState.is_survival_mode:
+		var m = secs / 60
+		var s = secs % 60
+		timer_label.text = "%02d:%02d" % [m, s]
+		timer_label.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 1.0))
+	else:
+		timer_label.text = "%02d" % secs
+		
+		if seconds <= 10.0:
+			timer_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.2, 1.0))
+			if not timer_pulse_active:
+				timer_pulse_active = true
+				var tw = create_tween().set_loops()
+				tw.tween_property(timer_label, "modulate:a", 0.3, 0.4)
+				tw.tween_property(timer_label, "modulate:a", 1.0, 0.4)
 
 func _on_timer_expired() -> void:
 	show_lose_screen()
@@ -1055,7 +1068,15 @@ func show_lose_screen() -> void:
 	if not lose_screen: return
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	if lose_level_lbl:
-		lose_level_lbl.text = "%02d 단계 실패" % GameState.level if GameState.language == "KR" else "LEVEL %02d FAILED" % GameState.level
+		if GameState.is_survival_mode:
+			var m = int(GameState.survival_time) / 60
+			var s = int(GameState.survival_time) % 60
+			if GameState.language == "KR":
+				lose_level_lbl.text = "생존 시간: %02d:%02d (도달 웨이브: %d)" % [m, s, GameState.current_wave]
+			else:
+				lose_level_lbl.text = "SURVIVED: %02d:%02d (WAVES: %d)" % [m, s, GameState.current_wave]
+		else:
+			lose_level_lbl.text = "%02d 단계 실패" % GameState.level if GameState.language == "KR" else "LEVEL %02d FAILED" % GameState.level
 	lose_screen.visible = true
 	lose_screen.modulate.a = 0.0
 	var tw = create_tween()
