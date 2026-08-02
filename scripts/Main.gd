@@ -409,6 +409,7 @@ func _on_title_start_game(is_survival: bool) -> void:
 	
 	is_title_screen = false
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	hud._apply_language(GameState.language)
 	hud.visible = true
 	
 	gun.visible = true
