@@ -673,6 +673,12 @@ func _apply_language(lang: String) -> void:
 	if phase2_label:
 		phase2_label.text = "2단계" if is_kr else "PHASE 2"
 		if font: phase2_label.add_theme_font_override("font", font)
+	if settings_back_btn:
+		settings_back_btn.text = "뒤로" if is_kr else "BACK"
+		if font: settings_back_btn.add_theme_font_override("font", font)
+		
+	if is_instance_valid(hud_weapon_model):
+		_update_weapon_hud(GameState.current_weapon_id)
 
 	# ── Pause screen ──────────────────────────────────────────────────────────
 	if pause_title:
@@ -1167,13 +1173,13 @@ func _setup_weapon_hud() -> void:
 	
 	var panel = PanelContainer.new()
 	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.05, 0.02, 0.1, 0.75)
-	style.border_color = Color(1.0, 0.88, 0.3, 0.5)
+	style.bg_color = Color(0.0, 0.0, 0.0, 0.5)
+	style.border_color = Color(0.5, 0.85, 1.0, 0.5)
 	style.set_border_width_all(1)
-	style.corner_radius_top_left = 12
-	style.corner_radius_top_right = 12
-	style.corner_radius_bottom_right = 12
-	style.corner_radius_bottom_left = 12
+	style.corner_radius_top_left = 8
+	style.corner_radius_top_right = 8
+	style.corner_radius_bottom_right = 8
+	style.corner_radius_bottom_left = 8
 	style.expand_margin_left = 4.0
 	style.expand_margin_right = 4.0
 	style.expand_margin_top = 4.0
@@ -1231,7 +1237,7 @@ func _update_weapon_hud(w_id: String) -> void:
 		
 		if hud_weapon_label:
 			var font = galmuri_font if GameState.language == "KR" else kenney_font
-			_style_lbl(hud_weapon_label, 14, Color(1.0, 0.95, 0.5, 1.0), 2, Color.BLACK, font)
+			_style_lbl(hud_weapon_label, 12, Color(0.8, 0.95, 1.0, 1.0), 2, Color.BLACK, font)
 			var w_name = w_cfg.name.to_upper()
 			if GameState.language == "KR":
 				match w_id:
