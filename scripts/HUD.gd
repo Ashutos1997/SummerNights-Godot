@@ -37,6 +37,7 @@ signal weapon_changed(weapon_id: String)
 @onready var lose_title2_lbl   = $HUD/LoseScreen/ColorRect/VBoxContainer/Title2
 @onready var lose_subtitle_lbl = $HUD/LoseScreen/ColorRect/VBoxContainer/Subtitle
 @onready var lose_level_lbl    = $HUD/LoseScreen/ColorRect/VBoxContainer/LevelLbl
+@onready var lose_wave_time_lbl= $HUD/LoseScreen/ColorRect/VBoxContainer/WaveTimeLbl
 @onready var retry_btn         = $HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer/RetryBtn
 @onready var menu_btn          = $HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer/MenuBtn
 
@@ -181,7 +182,7 @@ func _ready() -> void:
 			lbl.add_theme_constant_override("shadow_outline_size", 12)
 			
 	# Subtitles and Level Labels
-	for lbl in [win_level_lbl, end_subtitle_lbl, lose_subtitle_lbl, end_level_lbl, lose_level_lbl]:
+	for lbl in [win_level_lbl, end_subtitle_lbl, lose_subtitle_lbl, end_level_lbl, lose_level_lbl, lose_wave_time_lbl]:
 		if lbl:
 			_style_lbl(lbl, subtitle_size, title_color, 5, Color(0, 0, 0, 1.0), font)
 			
@@ -648,6 +649,8 @@ func _apply_language(lang: String) -> void:
 	if lose_level_lbl:
 		lose_level_lbl.text = "%02d 단계 실패" % GameState.level if is_kr else "LEVEL %02d FAILED" % GameState.level
 		if font: lose_level_lbl.add_theme_font_override("font", font)
+	if lose_wave_time_lbl:
+		lose_wave_time_lbl.hide()
 	if retry_btn:
 		retry_btn.text = "다시 시도" if is_kr else "RETRY"
 		if font: retry_btn.add_theme_font_override("font", font)
@@ -1068,11 +1071,20 @@ func show_lose_screen() -> void:
 			var m = int(GameState.survival_time) / 60
 			var s = int(GameState.survival_time) % 60
 			if GameState.language == "KR":
-				lose_level_lbl.text = "생존 시간: %02d:%02d (도달 웨이브: %d)" % [m, s, GameState.current_wave]
+				lose_level_lbl.text = "도달 웨이브: %d" % GameState.current_wave
 			else:
-				lose_level_lbl.text = "SURVIVED: %02d:%02d (WAVES: %d)" % [m, s, GameState.current_wave]
+				lose_level_lbl.text = "WAVES CLEARED: %d" % GameState.current_wave
+			
+			if lose_wave_time_lbl:
+				lose_wave_time_lbl.show()
+				if GameState.language == "KR":
+					lose_wave_time_lbl.text = "생존 시간: %02d:%02d" % [m, s]
+				else:
+					lose_wave_time_lbl.text = "SURVIVED: %02d:%02d" % [m, s]
 		else:
 			lose_level_lbl.text = "%02d 단계 실패" % GameState.level if GameState.language == "KR" else "LEVEL %02d FAILED" % GameState.level
+			if lose_wave_time_lbl:
+				lose_wave_time_lbl.hide()
 	lose_screen.visible = true
 	lose_screen.modulate.a = 0.0
 	var tw = create_tween()
