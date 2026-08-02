@@ -69,6 +69,7 @@ void fragment() {
 		var vp = SubViewport.new()
 		vp.transparent_bg = true
 		vp.own_world_3d = true
+		vp.msaa_3d = Viewport.MSAA_4X
 		svc.add_child(vp)
 		
 		var cam = Camera3D.new()

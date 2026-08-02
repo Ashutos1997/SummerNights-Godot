@@ -1175,7 +1175,7 @@ func show_weapon_unlock() -> void:
 func _setup_weapon_hud() -> void:
 	var margin = MarginContainer.new()
 	margin.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	margin.add_theme_constant_override("margin_left", 12)
+	margin.add_theme_constant_override("margin_left", 0)
 	margin.add_theme_constant_override("margin_top", 16)
 	margin.add_theme_constant_override("margin_bottom", 12)
 	
@@ -1204,6 +1204,7 @@ func _setup_weapon_hud() -> void:
 	hud_weapon_vp = SubViewport.new()
 	hud_weapon_vp.transparent_bg = true
 	hud_weapon_vp.own_world_3d = true
+	hud_weapon_vp.msaa_3d = Viewport.MSAA_4X
 	svc.add_child(hud_weapon_vp)
 	
 	var cam = Camera3D.new()
