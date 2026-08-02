@@ -82,6 +82,7 @@ var heat_tween: Tween
 # Weapon HUD
 var hud_weapon_vp: SubViewport
 var hud_weapon_model: Node3D
+var hud_weapon_label: Label
 
 var reduce_motion: bool = false
 var cursor_screen_pos: Vector2 = Vector2.ZERO  # Tracks virtual mouse for captured mode
@@ -1159,19 +1160,46 @@ func show_weapon_unlock() -> void:
 	tween.tween_callback(func(): weapon_unlock_label.visible = false)
 
 func _setup_weapon_hud() -> void:
-	var cc = CenterContainer.new()
-	cc.size_flags_horizontal = Control.SIZE_SHRINK_END
+	var margin = MarginContainer.new()
+	margin.size_flags_horizontal = Control.SIZE_SHRINK_END
+	margin.add_theme_constant_override("margin_right", 8)
+	margin.add_theme_constant_override("margin_bottom", 12)
+	
+	var panel = PanelContainer.new()
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.05, 0.02, 0.1, 0.75)
+	style.border_color = Color(1.0, 0.88, 0.3, 0.5)
+	style.set_border_width_all(1)
+	style.corner_radius_top_left = 12
+	style.corner_radius_top_right = 12
+	style.corner_radius_bottom_right = 12
+	style.corner_radius_bottom_left = 12
+	style.expand_margin_left = 8.0
+	style.expand_margin_right = 8.0
+	style.expand_margin_top = 8.0
+	style.expand_margin_bottom = 8.0
+	panel.add_theme_stylebox_override("panel", style)
+	margin.add_child(panel)
+	
+	var vbox = VBoxContainer.new()
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_theme_constant_override("separation", 4)
+	panel.add_child(vbox)
 	
 	var svc = SubViewportContainer.new()
 	svc.stretch = true
-	svc.custom_minimum_size = Vector2(100, 100)
-	cc.add_child(svc)
+	svc.custom_minimum_size = Vector2(120, 120)
+	vbox.add_child(svc)
+	
+	hud_weapon_label = Label.new()
+	hud_weapon_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(hud_weapon_label)
 	
 	# Add to resource_container at index 0 (above water/ice)
 	var rc = $HUD/resource_container
 	if rc:
-		rc.add_child(cc)
-		rc.move_child(cc, 0)
+		rc.add_child(margin)
+		rc.move_child(margin, 0)
 		
 	hud_weapon_vp = SubViewport.new()
 	hud_weapon_vp.transparent_bg = true
@@ -1179,7 +1207,7 @@ func _setup_weapon_hud() -> void:
 	svc.add_child(hud_weapon_vp)
 	
 	var cam = Camera3D.new()
-	cam.position = Vector3(0, 0, 2.0)
+	cam.position = Vector3(0, 0, 2.5)
 	hud_weapon_vp.add_child(cam)
 	
 	var light = DirectionalLight3D.new()
@@ -1198,6 +1226,17 @@ func _update_weapon_hud(w_id: String) -> void:
 	var w_cfg = GameState.WEAPONS.get(w_id)
 	if w_cfg:
 		hud_weapon_model = load(w_cfg.model).instantiate()
-		hud_weapon_model.scale = w_cfg.scale * 0.4
+		hud_weapon_model.scale = w_cfg.scale * 0.7
 		hud_weapon_model.position = Vector3(0, -0.3, -0.1)
 		hud_weapon_vp.add_child(hud_weapon_model)
+		
+		if hud_weapon_label:
+			var font = galmuri_font if GameState.language == "KR" else kenney_font
+			_style_lbl(hud_weapon_label, 14, Color(1.0, 0.95, 0.5, 1.0), 2, Color.BLACK, font)
+			var w_name = w_cfg.name.to_upper()
+			if GameState.language == "KR":
+				match w_id:
+					"standard": w_name = "표준 블래스터"
+					"heavy": w_name = "헤비 캐논"
+					"precision": w_name = "정밀 스트림"
+			hud_weapon_label.text = w_name
