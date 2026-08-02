@@ -1428,6 +1428,8 @@ func _process(delta: float) -> void:
 		water_mat.uv1_offset += Vector3(0.02 * delta, 0.02 * delta, 0) # Scrolling ripples
 
 func _input(event: InputEvent) -> void:
+	if is_title_screen:
+		return
 	if hud and "lose_screen" in hud and hud.lose_screen != null and hud.lose_screen.visible:
 		return
 	if hud and (hud.settings_screen.visible or hud.credits_screen.visible or hud.pause_screen.visible):
