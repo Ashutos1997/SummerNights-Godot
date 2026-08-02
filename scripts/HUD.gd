@@ -881,6 +881,9 @@ func show_end_screen() -> void:
 	tw.tween_property(end_screen, "modulate:a", 1.0, 0.4)
 
 func _input(event: InputEvent) -> void:
+	if not visible:
+		return
+		
 	if event is InputEventKey and event.keycode == KEY_TAB and not event.echo:
 		if event.pressed:
 			if not weapon_wheel.active and not pause_screen.visible and not win_screen.visible and not end_screen.visible and not lose_screen.visible:

@@ -6,6 +6,7 @@ extends Control
 @onready var subtitle_lbl = $ColorRect/VBoxContainer/Subtitle
 @onready var normal_btn = $ColorRect/VBoxContainer/ButtonsBox/NormalBtn
 @onready var survival_btn = $ColorRect/VBoxContainer/ButtonsBox/SurvivalBtn
+@onready var credit_lbl = $CreditLine
 
 signal start_game(is_survival: bool)
 
@@ -59,6 +60,8 @@ func _ready() -> void:
 				style_normal.border_color = Color(1.0, 0.85, 0.2, 0.6)
 				style_normal.set_border_width_all(1)
 				style_normal.set_corner_radius_all(4)
+				style_normal.content_margin_left = 24.0
+				style_normal.content_margin_right = 24.0
 				var style_hover = style_normal.duplicate()
 				style_hover.bg_color = Color(1.0, 0.85, 0.2, 0.2)
 				style_hover.border_color = Color(1.0, 0.85, 0.2, 1.0)
