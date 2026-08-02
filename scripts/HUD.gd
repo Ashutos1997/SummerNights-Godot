@@ -80,9 +80,8 @@ var hit_tween: Tween
 var heat_tween: Tween
 
 # Weapon HUD
-var hud_weapon_vp: SubViewport
-var hud_weapon_model: Node3D
-var hud_weapon_label: Label
+var hud_weapon_icons: Dictionary = {}  # w_id -> TextureRect
+var hud_weapon_container: HBoxContainer
 
 var reduce_motion: bool = false
 var cursor_screen_pos: Vector2 = Vector2.ZERO  # Tracks virtual mouse for captured mode
@@ -91,10 +90,7 @@ var target_water: float = 100.0
 
 var ui_tick_player: AudioStreamPlayer = null
 
-func _process(delta: float) -> void:
-	if is_instance_valid(hud_weapon_model):
-		hud_weapon_model.rotation.y -= 1.5 * delta
-		
+func _process(delta: float) -> void:	
 	if heat_bar:
 		if reduce_motion:
 			heat_bar.value = target_heat
@@ -684,7 +680,7 @@ func _apply_language(lang: String) -> void:
 		settings_back_btn.text = "뒤로" if is_kr else "BACK"
 		if font: settings_back_btn.add_theme_font_override("font", font)
 		
-	if is_instance_valid(hud_weapon_model):
+	if hud_weapon_container:
 		_update_weapon_hud(GameState.current_weapon_id)
 
 	# ── Pause screen ──────────────────────────────────────────────────────────
@@ -1188,45 +1184,68 @@ func _setup_weapon_hud() -> void:
 	style.corner_radius_top_right = 8
 	style.corner_radius_bottom_right = 8
 	style.corner_radius_bottom_left = 8
+	style.content_margin_left = 6
+	style.content_margin_right = 6
+	style.content_margin_top = 6
+	style.content_margin_bottom = 6
 	panel.add_theme_stylebox_override("panel", style)
 	margin.add_child(panel)
 	
-	var svc = SubViewportContainer.new()
-	svc.stretch = true
-	svc.custom_minimum_size = Vector2(100, 100)
-	panel.add_child(svc)
+	hud_weapon_container = HBoxContainer.new()
+	hud_weapon_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	hud_weapon_container.add_theme_constant_override("separation", 4)
+	panel.add_child(hud_weapon_container)
+	
+	# Render each weapon into a SubViewport and capture its image
+	for w_id in GameState.WEAPONS.keys():
+		var w_cfg = GameState.WEAPONS[w_id]
+		
+		# Create a temporary SubViewport to render the weapon
+		var vp = SubViewport.new()
+		vp.size = Vector2i(256, 256)
+		vp.transparent_bg = true
+		vp.own_world_3d = true
+		vp.msaa_3d = Viewport.MSAA_4X
+		vp.render_target_update_mode = SubViewport.UPDATE_ONCE
+		add_child(vp)
+		
+		var cam = Camera3D.new()
+		cam.position = Vector3(0, 0, 2.0)
+		vp.add_child(cam)
+		
+		var light = DirectionalLight3D.new()
+		light.rotation_degrees = Vector3(-30, 45, 0)
+		light.light_energy = 1.2
+		vp.add_child(light)
+		
+		var model = load(w_cfg.model).instantiate()
+		model.scale = w_cfg.scale * 1.0
+		model.position = Vector3(0, -0.3, -0.1)
+		vp.add_child(model)
+		
+		# Create TextureRect that will show the captured image
+		var tex_rect = TextureRect.new()
+		tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		tex_rect.texture = vp.get_texture()
+		hud_weapon_container.add_child(tex_rect)
+		hud_weapon_icons[w_id] = tex_rect
 	
 	# Add to UnlockPrompts at the bottom
 	var rc = $HUD/UnlockPrompts
 	if rc:
 		rc.add_child(margin)
-		
-	hud_weapon_vp = SubViewport.new()
-	hud_weapon_vp.transparent_bg = true
-	hud_weapon_vp.own_world_3d = true
-	hud_weapon_vp.msaa_3d = Viewport.MSAA_4X
-	svc.add_child(hud_weapon_vp)
-	
-	var cam = Camera3D.new()
-	cam.position = Vector3(0, 0, 2.0)
-	hud_weapon_vp.add_child(cam)
-	
-	var light = DirectionalLight3D.new()
-	light.rotation_degrees = Vector3(-30, 45, 0)
-	light.light_energy = 1.2
-	hud_weapon_vp.add_child(light)
 	
 	_update_weapon_hud(GameState.current_weapon_id)
 
 func _update_weapon_hud(w_id: String) -> void:
-	if not hud_weapon_vp: return
+	if not hud_weapon_container: return
 	
-	if is_instance_valid(hud_weapon_model):
-		hud_weapon_model.queue_free()
-		
-	var w_cfg = GameState.WEAPONS.get(w_id)
-	if w_cfg:
-		hud_weapon_model = load(w_cfg.model).instantiate()
-		hud_weapon_model.scale = w_cfg.scale * 1.0
-		hud_weapon_model.position = Vector3(0, -0.3, -0.1)
-		hud_weapon_vp.add_child(hud_weapon_model)
+	for id in hud_weapon_icons:
+		var icon = hud_weapon_icons[id]
+		if id == w_id:
+			icon.custom_minimum_size = Vector2(64, 64)
+			icon.modulate = Color(1.0, 1.0, 1.0, 1.0)
+		else:
+			icon.custom_minimum_size = Vector2(40, 40)
+			icon.modulate = Color(0.5, 0.5, 0.5, 0.5)
