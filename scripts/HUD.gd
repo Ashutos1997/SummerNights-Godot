@@ -257,46 +257,7 @@ func _ready() -> void:
 		tw.tween_property(esc_hint_label, "modulate:a", 0.0, 1.0)
 		tw.tween_callback(func(): esc_hint_label.visible = false)
 
-func _setup_weapon_hud() -> void:
-	var svc = SubViewportContainer.new()
-	svc.stretch = true
-	svc.custom_minimum_size = Vector2(80, 80)
-	
-	# Add to resource_container at index 0 (above water/ice)
-	var rc = $HUD/resource_container
-	if rc:
-		rc.add_child(svc)
-		rc.move_child(svc, 0)
-		
-	hud_weapon_vp = SubViewport.new()
-	hud_weapon_vp.transparent_bg = true
-	hud_weapon_vp.own_world_3d = true
-	svc.add_child(hud_weapon_vp)
-	
-	var cam = Camera3D.new()
-	cam.position = Vector3(0, 0, 2.0)
-	hud_weapon_vp.add_child(cam)
-	
-	var light = DirectionalLight3D.new()
-	light.rotation_degrees = Vector3(-30, 45, 0)
-	light.light_energy = 1.2
-	hud_weapon_vp.add_child(light)
-	
-	_update_weapon_hud(GameState.current_weapon_id)
-
-func _update_weapon_hud(w_id: String) -> void:
-	if not hud_weapon_vp: return
-	
-	if is_instance_valid(hud_weapon_model):
-		hud_weapon_model.queue_free()
-		
-	var w_cfg = GameState.WEAPONS.get(w_id)
-	if w_cfg:
-		hud_weapon_model = load(w_cfg.model).instantiate()
-		hud_weapon_model.scale = w_cfg.scale * 0.4
-		hud_weapon_model.position = Vector3(0, -0.3, -0.1)
-		hud_weapon_vp.add_child(hud_weapon_model)
-
+	# Empty - removed injected functions
 	# Slider texture overrides
 	var grab_tex = load("res://assets/ui/kenney_ui_pack/slide_hangle.png")
 	if grab_tex:
@@ -1193,3 +1154,43 @@ func show_weapon_unlock() -> void:
 	tween.tween_interval(5.0)
 	tween.tween_property(weapon_unlock_label, "modulate:a", 0.0, 0.5)
 	tween.tween_callback(func(): weapon_unlock_label.visible = false)
+
+func _setup_weapon_hud() -> void:
+	var svc = SubViewportContainer.new()
+	svc.stretch = true
+	svc.custom_minimum_size = Vector2(80, 80)
+	
+	# Add to resource_container at index 0 (above water/ice)
+	var rc = $HUD/resource_container
+	if rc:
+		rc.add_child(svc)
+		rc.move_child(svc, 0)
+		
+	hud_weapon_vp = SubViewport.new()
+	hud_weapon_vp.transparent_bg = true
+	hud_weapon_vp.own_world_3d = true
+	svc.add_child(hud_weapon_vp)
+	
+	var cam = Camera3D.new()
+	cam.position = Vector3(0, 0, 2.0)
+	hud_weapon_vp.add_child(cam)
+	
+	var light = DirectionalLight3D.new()
+	light.rotation_degrees = Vector3(-30, 45, 0)
+	light.light_energy = 1.2
+	hud_weapon_vp.add_child(light)
+	
+	_update_weapon_hud(GameState.current_weapon_id)
+
+func _update_weapon_hud(w_id: String) -> void:
+	if not hud_weapon_vp: return
+	
+	if is_instance_valid(hud_weapon_model):
+		hud_weapon_model.queue_free()
+		
+	var w_cfg = GameState.WEAPONS.get(w_id)
+	if w_cfg:
+		hud_weapon_model = load(w_cfg.model).instantiate()
+		hud_weapon_model.scale = w_cfg.scale * 0.4
+		hud_weapon_model.position = Vector3(0, -0.3, -0.1)
+		hud_weapon_vp.add_child(hud_weapon_model)
