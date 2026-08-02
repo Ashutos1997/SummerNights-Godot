@@ -1760,9 +1760,20 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 	# Force an immediate visual update override which will be reset next frame by _update_sky
 	
 	if temperature <= 0.0:
-		if GameState.is_survival_mode:
+		if is_two_phase and not phase2_triggered:
+			phase2_triggered = true
+			_trigger_phase2()
+		elif GameState.is_survival_mode:
+			if sun_defeated_sfx: sun_defeated_sfx.play()
 			GameState.current_wave += 1
 			GameState.ice_charges_remaining += 1
+			
+			# Boss wave reward
+			if (GameState.current_wave - 1) % 5 == 0:
+				water_tank = MAX_WATER
+				GameState.ice_charges_remaining += 1
+				water_changed.emit(water_tank, MAX_WATER)
+				
 			max_survival_ice_charges = max(max_survival_ice_charges, GameState.ice_charges_remaining)
 			if hud:
 				hud.update_ice_charges(GameState.ice_charges_remaining, max_survival_ice_charges)
@@ -1778,7 +1789,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 					hud.level_label.text = "WAVE %02d" % GameState.current_wave
 				
 				var flash = ColorRect.new()
-				flash.color = Color(1.0, 0.9, 0.5, 0.6)
+				flash.color = Color(0.3, 0.7, 1.0, 0.6) if (GameState.current_wave - 1) % 5 == 0 else Color(1.0, 0.9, 0.5, 0.6)
 				flash.anchor_right = 1.0
 				flash.anchor_bottom = 1.0
 				flash.z_index = 150
@@ -1792,6 +1803,15 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			solar_wind_enabled = GameState.current_wave >= 4
 			flare_spawn_timer = min(flare_spawn_timer, max(2.5, 8.0 - (GameState.current_wave * 0.5)))
 			
+			# Prepare next boss wave
+			if GameState.current_wave % 5 == 0:
+				is_two_phase = true
+				phase2_triggered = false
+				phase2_heat = GameState.LEVEL_CONFIG[5].phase2_heat
+			else:
+				is_two_phase = false
+				phase2_triggered = false
+			
 			if solar_wind_enabled:
 				wind_state = 0
 				wind_timer = randf_range(4.0, 7.0)
@@ -1801,11 +1821,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			level_timer = min(120.0, 60.0 + (level_timer * 0.5)) # Bank 50% of remaining time
 			wave_timer = 0.0
 		else:
-			if is_two_phase and not phase2_triggered:
-				phase2_triggered = true
-				_trigger_phase2()
-			else:
-				_win()
+			_win()
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Temp system / Middle States
