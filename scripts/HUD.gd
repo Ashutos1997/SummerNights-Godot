@@ -91,6 +91,9 @@ var target_water: float = 100.0
 var ui_tick_player: AudioStreamPlayer = null
 
 func _process(delta: float) -> void:
+	if is_instance_valid(hud_weapon_model):
+		hud_weapon_model.rotation.y -= 1.5 * delta
+		
 	if heat_bar:
 		if reduce_motion:
 			heat_bar.value = target_heat
@@ -1067,7 +1070,7 @@ func _on_timer_tick(seconds: float) -> void:
 			tw.tween_property(timer_label, "modulate:a", 0.3, 0.4)
 			tw.tween_property(timer_label, "modulate:a", 1.0, 0.4)
 	else:
-		timer_label.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 1.0) if GameState.is_survival_mode else Color(1.0, 1.0, 1.0, 1.0))
+		timer_label.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 1.0))
 
 func _on_timer_expired() -> void:
 	show_lose_screen()
@@ -1156,15 +1159,19 @@ func show_weapon_unlock() -> void:
 	tween.tween_callback(func(): weapon_unlock_label.visible = false)
 
 func _setup_weapon_hud() -> void:
+	var cc = CenterContainer.new()
+	cc.size_flags_horizontal = Control.SIZE_SHRINK_END
+	
 	var svc = SubViewportContainer.new()
 	svc.stretch = true
-	svc.custom_minimum_size = Vector2(80, 80)
+	svc.custom_minimum_size = Vector2(100, 100)
+	cc.add_child(svc)
 	
 	# Add to resource_container at index 0 (above water/ice)
 	var rc = $HUD/resource_container
 	if rc:
-		rc.add_child(svc)
-		rc.move_child(svc, 0)
+		rc.add_child(cc)
+		rc.move_child(cc, 0)
 		
 	hud_weapon_vp = SubViewport.new()
 	hud_weapon_vp.transparent_bg = true
