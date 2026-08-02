@@ -1185,7 +1185,7 @@ func _process(delta: float) -> void:
 				
 				# Dynamic Hazards
 				sun_figure8 = GameState.current_wave >= 3
-				solar_wind = GameState.current_wave >= 4
+				solar_wind_enabled = GameState.current_wave >= 4
 				flare_spawn_timer = min(flare_spawn_timer, max(2.5, 8.0 - (GameState.current_wave * 0.5)))
 		else:
 			level_timer -= delta
