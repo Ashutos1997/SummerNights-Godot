@@ -1200,7 +1200,7 @@ func _process(delta: float) -> void:
 				heat_regen_base = 2.5 + (GameState.current_wave * 1.5) # The Tension
 			
 			if is_two_phase and phase2_triggered:
-				heat_regen_base *= 2.0 # The Boss Phase is extremely aggressive
+				heat_regen_base *= 1.2 # The Boss Phase is aggressive but beatable with base gun
 
 		
 	# Relocate sunspot on timer
