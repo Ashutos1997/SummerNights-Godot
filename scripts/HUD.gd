@@ -80,8 +80,8 @@ var hit_tween: Tween
 var heat_tween: Tween
 
 # Weapon HUD
-var hud_weapon_icons: Dictionary = {}  # w_id -> TextureRect
-var hud_weapon_container: HBoxContainer
+var hud_weapon_icons: Dictionary = {}  # w_id -> ImageTexture
+var hud_weapon_container: TextureRect
 
 var reduce_motion: bool = false
 var cursor_screen_pos: Vector2 = Vector2.ZERO  # Tracks virtual mouse for captured mode
