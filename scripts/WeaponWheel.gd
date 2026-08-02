@@ -164,9 +164,11 @@ func open() -> void:
 	
 	if open_tween: open_tween.kill()
 	
-	# Ensure bg_dim is always directly behind this wheel in the draw order
+	# Ensure bg_dim draws behind the wheel regardless of child order changes
 	if bg_dim and bg_dim.get_parent():
-		bg_dim.get_parent().move_child(bg_dim, get_index())
+		var parent = bg_dim.get_parent()
+		parent.move_child(bg_dim, parent.get_child_count() - 1)
+		parent.move_child(self, parent.get_child_count() - 1)
 	
 	open_tween = create_tween().set_parallel(true).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 	open_tween.tween_property(self, "modulate:a", 1.0, 0.2)
