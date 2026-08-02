@@ -1763,6 +1763,10 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			max_survival_ice_charges = max(max_survival_ice_charges, GameState.ice_charges_remaining)
 			if hud:
 				hud.update_ice_charges(GameState.ice_charges_remaining, max_survival_ice_charges)
+				
+				if GameState.current_wave == 2 or GameState.current_wave == 3:
+					hud.show_weapon_unlock()
+					
 				if GameState.language == "KR":
 					hud.level_label.text = "웨이브 %02d" % GameState.current_wave
 				else:

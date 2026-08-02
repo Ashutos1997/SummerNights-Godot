@@ -147,7 +147,8 @@ func _input(event: InputEvent) -> void:
 		if selected_index >= 0 and selected_index < weapons.size():
 			var w_id = weapons[selected_index]
 			var w_cfg = GameState.WEAPONS[w_id]
-			if GameState.level >= w_cfg.unlock_level:
+			var prog = GameState.current_wave if GameState.is_survival_mode else GameState.level
+			if prog >= w_cfg.unlock_level:
 				close()
 				get_viewport().set_input_as_handled()
 
@@ -188,7 +189,8 @@ func close() -> void:
 	if selected_index >= 0 and selected_index < weapons.size():
 		var chosen = weapons[selected_index]
 		var w_cfg = GameState.WEAPONS[chosen]
-		if GameState.level >= w_cfg.unlock_level:
+		var prog = GameState.current_wave if GameState.is_survival_mode else GameState.level
+		if prog >= w_cfg.unlock_level:
 			_play_whoosh()
 			open_tween.chain().tween_callback(func():
 				hide()
@@ -238,7 +240,8 @@ func _process(delta: float) -> void:
 		var is_selected = (i == selected_index)
 		
 		var w_id = weapons[i]
-		var is_locked = GameState.level < GameState.WEAPONS[w_id].unlock_level
+		var prog = GameState.current_wave if GameState.is_survival_mode else GameState.level
+		var is_locked = prog < GameState.WEAPONS[w_id].unlock_level
 		
 		# Rotate model
 		var actual_delta = delta / Engine.time_scale
@@ -268,7 +271,8 @@ func _process(delta: float) -> void:
 		var w_cfg = GameState.WEAPONS[w_id]
 		var is_kr = GameState.language == "KR"
 		
-		var is_locked = GameState.level < w_cfg.unlock_level
+		var prog = GameState.current_wave if GameState.is_survival_mode else GameState.level
+		var is_locked = prog < w_cfg.unlock_level
 		
 		var w_name = w_cfg.name.to_upper()
 		if is_kr:
@@ -281,10 +285,16 @@ func _process(delta: float) -> void:
 		if is_locked:
 			name_label.label_settings.font_color = Color(0.6, 0.6, 0.6, 1.0) # Greyed out name
 			stats_label.label_settings.font_color = Color(1.0, 0.3, 0.3, 1.0) # Red warning
-			if is_kr:
-				stats_label.text = "레벨 %d 에서 잠금 해제됨" % w_cfg.unlock_level
+			if GameState.is_survival_mode:
+				if is_kr:
+					stats_label.text = "웨이브 %d 에서 잠금 해제됨" % w_cfg.unlock_level
+				else:
+					stats_label.text = "UNLOCKS AT WAVE %d" % w_cfg.unlock_level
 			else:
-				stats_label.text = "UNLOCKS AT LEVEL %d" % w_cfg.unlock_level
+				if is_kr:
+					stats_label.text = "레벨 %d 에서 잠금 해제됨" % w_cfg.unlock_level
+				else:
+					stats_label.text = "UNLOCKS AT LEVEL %d" % w_cfg.unlock_level
 		else:
 			name_label.label_settings.font_color = Color(1.0, 0.95, 0.5, 1.0)
 			stats_label.label_settings.font_color = Color(1.0, 0.8, 0.2, 1.0)
