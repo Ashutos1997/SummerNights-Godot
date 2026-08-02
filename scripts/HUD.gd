@@ -1161,8 +1161,8 @@ func show_weapon_unlock() -> void:
 
 func _setup_weapon_hud() -> void:
 	var margin = MarginContainer.new()
-	margin.size_flags_horizontal = Control.SIZE_SHRINK_END
-	margin.add_theme_constant_override("margin_right", 8)
+	margin.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	margin.add_theme_constant_override("margin_top", 12)
 	margin.add_theme_constant_override("margin_bottom", 12)
 	
 	var panel = PanelContainer.new()
@@ -1174,32 +1174,31 @@ func _setup_weapon_hud() -> void:
 	style.corner_radius_top_right = 12
 	style.corner_radius_bottom_right = 12
 	style.corner_radius_bottom_left = 12
-	style.expand_margin_left = 8.0
-	style.expand_margin_right = 8.0
-	style.expand_margin_top = 8.0
-	style.expand_margin_bottom = 8.0
+	style.expand_margin_left = 4.0
+	style.expand_margin_right = 4.0
+	style.expand_margin_top = 4.0
+	style.expand_margin_bottom = 4.0
 	panel.add_theme_stylebox_override("panel", style)
 	margin.add_child(panel)
 	
 	var vbox = VBoxContainer.new()
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	vbox.add_theme_constant_override("separation", 4)
+	vbox.add_theme_constant_override("separation", 2)
 	panel.add_child(vbox)
 	
 	var svc = SubViewportContainer.new()
 	svc.stretch = true
-	svc.custom_minimum_size = Vector2(120, 120)
+	svc.custom_minimum_size = Vector2(80, 80)
 	vbox.add_child(svc)
 	
 	hud_weapon_label = Label.new()
 	hud_weapon_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(hud_weapon_label)
 	
-	# Add to resource_container at index 0 (above water/ice)
-	var rc = $HUD/resource_container
+	# Add to UnlockPrompts at the bottom
+	var rc = $HUD/UnlockPrompts
 	if rc:
 		rc.add_child(margin)
-		rc.move_child(margin, 0)
 		
 	hud_weapon_vp = SubViewport.new()
 	hud_weapon_vp.transparent_bg = true
@@ -1207,7 +1206,7 @@ func _setup_weapon_hud() -> void:
 	svc.add_child(hud_weapon_vp)
 	
 	var cam = Camera3D.new()
-	cam.position = Vector3(0, 0, 2.5)
+	cam.position = Vector3(0, 0, 2.0)
 	hud_weapon_vp.add_child(cam)
 	
 	var light = DirectionalLight3D.new()
