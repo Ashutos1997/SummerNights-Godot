@@ -163,6 +163,11 @@ func open() -> void:
 	pivot_offset = size / 2.0
 	
 	if open_tween: open_tween.kill()
+	
+	# Ensure bg_dim is always directly behind this wheel in the draw order
+	if bg_dim and bg_dim.get_parent():
+		bg_dim.get_parent().move_child(bg_dim, get_index())
+	
 	open_tween = create_tween().set_parallel(true).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 	open_tween.tween_property(self, "modulate:a", 1.0, 0.2)
 	open_tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.2)

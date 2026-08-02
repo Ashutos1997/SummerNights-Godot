@@ -93,7 +93,7 @@ const SKY := [
 ]
 
 var gun_model: Node3D
-
+ 
 func _on_weapon_changed(w_id: String) -> void:
 	GameState.current_weapon_id = w_id
 	_load_weapon_model()
