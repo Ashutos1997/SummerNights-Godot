@@ -92,11 +92,11 @@ const SKY := [
 	{"t":   0, "bg": Color(0.08, 0.53, 0.85)},
 ]
 
+var gun_model: Node3D
+
 func _on_weapon_changed(w_id: String) -> void:
 	GameState.current_weapon_id = w_id
 	_load_weapon_model()
-	
-var gun_model: Node3D
 
 func _load_weapon_model() -> void:
 	if gun_model:
