@@ -1191,20 +1191,20 @@ func _setup_weapon_hud() -> void:
 	panel.add_theme_stylebox_override("panel", style)
 	margin.add_child(panel)
 	
-	hud_weapon_container = HBoxContainer.new()
-	hud_weapon_container.alignment = BoxContainer.ALIGNMENT_CENTER
-	hud_weapon_container.add_theme_constant_override("separation", 4)
-	panel.add_child(hud_weapon_container)
+	var hud_weapon_tex_rect = TextureRect.new()
+	hud_weapon_tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	hud_weapon_tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	hud_weapon_tex_rect.custom_minimum_size = Vector2(64, 64)
+	panel.add_child(hud_weapon_tex_rect)
+	hud_weapon_container = hud_weapon_tex_rect
 	
 	# Render each weapon into a SubViewport and capture its image
 	var temp_viewports: Array = []
-	var temp_tex_rects: Array = []
 	var temp_w_ids: Array = []
 	
 	for w_id in GameState.WEAPONS.keys():
 		var w_cfg = GameState.WEAPONS[w_id]
 		
-		# Create a temporary SubViewport to render the weapon
 		var vp = SubViewport.new()
 		vp.size = Vector2i(256, 256)
 		vp.transparent_bg = true
@@ -1226,23 +1226,13 @@ func _setup_weapon_hud() -> void:
 		model.position = Vector3(0, -0.3, -0.1)
 		vp.add_child(model)
 		
-		# Create TextureRect placeholder
-		var tex_rect = TextureRect.new()
-		tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		hud_weapon_container.add_child(tex_rect)
-		hud_weapon_icons[w_id] = tex_rect
-		
 		temp_viewports.append(vp)
-		temp_tex_rects.append(tex_rect)
 		temp_w_ids.append(w_id)
 	
 	# Add to UnlockPrompts at the bottom
 	var rc = $HUD/UnlockPrompts
 	if rc:
 		rc.add_child(margin)
-	
-	_update_weapon_hud(GameState.current_weapon_id)
 	
 	# Wait 2 frames for viewports to render, then capture and free them
 	await get_tree().process_frame
@@ -1252,17 +1242,13 @@ func _setup_weapon_hud() -> void:
 		var vp = temp_viewports[i]
 		var img = vp.get_texture().get_image()
 		var img_tex = ImageTexture.create_from_image(img)
-		temp_tex_rects[i].texture = img_tex
+		hud_weapon_icons[temp_w_ids[i]] = img_tex
 		vp.queue_free()
+	
+	_update_weapon_hud(GameState.current_weapon_id)
 
 func _update_weapon_hud(w_id: String) -> void:
 	if not hud_weapon_container: return
-	
-	for id in hud_weapon_icons:
-		var icon = hud_weapon_icons[id]
-		if id == w_id:
-			icon.custom_minimum_size = Vector2(64, 64)
-			icon.modulate = Color(1.0, 1.0, 1.0, 1.0)
-		else:
-			icon.custom_minimum_size = Vector2(40, 40)
-			icon.modulate = Color(0.5, 0.5, 0.5, 0.5)
+	var tex = hud_weapon_icons.get(w_id)
+	if tex:
+		hud_weapon_container.texture = tex
