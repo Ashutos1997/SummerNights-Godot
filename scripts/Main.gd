@@ -311,9 +311,9 @@ func _ready() -> void:
 	
 	
 	if GameState.is_survival_mode:
-		GameState.ice_charges_remaining = 3 # Start with some ice in Endless Mode
-		hud.update_ice_charges(GameState.ice_charges_remaining, 3)
-		hud.ice_row.visible = true
+		GameState.ice_charges_remaining = 0 # Start with 0 ice in Endless Mode
+		hud.update_ice_charges(GameState.ice_charges_remaining, max_survival_ice_charges)
+		hud.ice_row.visible = false
 	else:
 		GameState.ice_charges_remaining = cfg.ice_charges
 		hud.update_ice_charges(GameState.ice_charges_remaining, cfg.ice_charges)
@@ -1766,6 +1766,8 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				
 				if GameState.current_wave == 2 or GameState.current_wave == 3:
 					hud.show_weapon_unlock()
+				if GameState.current_wave == 2:
+					hud.show_ice_unlock()
 					
 				if GameState.language == "KR":
 					hud.level_label.text = "웨이브 %02d" % GameState.current_wave
