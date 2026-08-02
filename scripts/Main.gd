@@ -1138,7 +1138,6 @@ func _process(delta: float) -> void:
 		return
 		
 	timer_running = true
-	is_firing = false
 	
 	if is_title_screen:
 		title_cam_angle += 0.3 * delta  # time accumulator (not a rotation angle)
