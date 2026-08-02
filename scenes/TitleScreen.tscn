@@ -71,10 +71,20 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 
-[node name="Prompt" type="Label" parent="ColorRect/VBoxContainer"]
+[node name="ButtonsBox" type="HBoxContainer" parent="ColorRect/VBoxContainer"]
 layout_mode = 2
-text = "PRESS SPACE OR CLICK TO START"
-horizontal_alignment = 1
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="NormalBtn" type="Button" parent="ColorRect/VBoxContainer/ButtonsBox"]
+custom_minimum_size = Vector2(180, 48)
+layout_mode = 2
+text = "NORMAL MODE"
+
+[node name="SurvivalBtn" type="Button" parent="ColorRect/VBoxContainer/ButtonsBox"]
+custom_minimum_size = Vector2(180, 48)
+layout_mode = 2
+text = "ENDLESS MODE"
 
 [node name="CreditLine" type="Label" parent="."]
 layout_mode = 1

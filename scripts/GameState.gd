@@ -107,6 +107,7 @@ var reduce_motion: bool = false
 var fullscreen: bool = false
 var language: String = "EN"  # "EN" or "KR"
 var ice_charges_remaining: int = 0
+var is_survival_mode: bool = false
 
 func reset() -> void:
 	level = 1

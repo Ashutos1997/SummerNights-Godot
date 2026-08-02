@@ -384,7 +384,7 @@ func _ready() -> void:
 		tw.tween_property(overlay, "modulate:a", 0.0, 0.3)
 		tw.tween_callback(overlay.queue_free)
 
-func _on_title_start_game() -> void:
+func _on_title_start_game(is_survival: bool) -> void:
 	if title_screen_ui:
 		var tw = create_tween()
 		tw.tween_property(title_screen_ui, "modulate:a", 0.0, 0.5)
