@@ -1176,6 +1176,7 @@ func _setup_weapon_hud() -> void:
 	var margin = MarginContainer.new()
 	margin.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	margin.add_theme_constant_override("margin_left", 12)
+	margin.add_theme_constant_override("margin_top", 16)
 	margin.add_theme_constant_override("margin_bottom", 12)
 	
 	var panel = PanelContainer.new()
@@ -1183,10 +1184,10 @@ func _setup_weapon_hud() -> void:
 	style.bg_color = Color(0.0, 0.0, 0.0, 0.5)
 	style.border_color = Color(0.5, 0.85, 1.0, 0.5)
 	style.set_border_width_all(2)
-	style.corner_radius_top_left = 50
-	style.corner_radius_top_right = 50
-	style.corner_radius_bottom_right = 50
-	style.corner_radius_bottom_left = 50
+	style.corner_radius_top_left = 8
+	style.corner_radius_top_right = 8
+	style.corner_radius_bottom_right = 8
+	style.corner_radius_bottom_left = 8
 	panel.add_theme_stylebox_override("panel", style)
 	margin.add_child(panel)
 	
@@ -1226,5 +1227,5 @@ func _update_weapon_hud(w_id: String) -> void:
 	if w_cfg:
 		hud_weapon_model = load(w_cfg.model).instantiate()
 		hud_weapon_model.scale = w_cfg.scale * 1.0
-		hud_weapon_model.position = Vector3(0, 0.0, -0.1)
+		hud_weapon_model.position = Vector3(0, -0.3, -0.1)
 		hud_weapon_vp.add_child(hud_weapon_model)
