@@ -79,6 +79,10 @@ var water_tween: Tween
 var hit_tween: Tween
 var heat_tween: Tween
 
+# Weapon HUD
+var hud_weapon_vp: SubViewport
+var hud_weapon_model: Node3D
+
 var reduce_motion: bool = false
 var cursor_screen_pos: Vector2 = Vector2.ZERO  # Tracks virtual mouse for captured mode
 var target_heat: float = 100.0
@@ -127,7 +131,10 @@ func _ready() -> void:
 	ui_tick_player = _make_ui_tick_player()
 
 	if weapon_wheel:
-		weapon_wheel.weapon_selected.connect(func(w_id): weapon_changed.emit(w_id))
+		weapon_wheel.weapon_selected.connect(func(w_id):
+			weapon_changed.emit(w_id)
+			_update_weapon_hud(w_id)
+		)
 
 	var is_kr = GameState.language == "KR"
 	crosshair.pivot_offset = crosshair.size / 2.0
@@ -240,6 +247,7 @@ func _ready() -> void:
 		if pause_title: _style_lbl(pause_title, 32, Color(1.0, 0.85, 0.2, 1.0), 3, Color.BLACK, font)
 
 	_apply_language(GameState.language)
+	_setup_weapon_hud()
 
 	if esc_hint_label:
 		esc_hint_label.visible = true
@@ -248,6 +256,46 @@ func _ready() -> void:
 		tw.tween_interval(2.0)
 		tw.tween_property(esc_hint_label, "modulate:a", 0.0, 1.0)
 		tw.tween_callback(func(): esc_hint_label.visible = false)
+
+func _setup_weapon_hud() -> void:
+	var svc = SubViewportContainer.new()
+	svc.stretch = true
+	svc.custom_minimum_size = Vector2(80, 80)
+	
+	# Add to resource_container at index 0 (above water/ice)
+	var rc = $HUD/resource_container
+	if rc:
+		rc.add_child(svc)
+		rc.move_child(svc, 0)
+		
+	hud_weapon_vp = SubViewport.new()
+	hud_weapon_vp.transparent_bg = true
+	hud_weapon_vp.own_world_3d = true
+	svc.add_child(hud_weapon_vp)
+	
+	var cam = Camera3D.new()
+	cam.position = Vector3(0, 0, 2.0)
+	hud_weapon_vp.add_child(cam)
+	
+	var light = DirectionalLight3D.new()
+	light.rotation_degrees = Vector3(-30, 45, 0)
+	light.light_energy = 1.2
+	hud_weapon_vp.add_child(light)
+	
+	_update_weapon_hud(GameState.current_weapon_id)
+
+func _update_weapon_hud(w_id: String) -> void:
+	if not hud_weapon_vp: return
+	
+	if is_instance_valid(hud_weapon_model):
+		hud_weapon_model.queue_free()
+		
+	var w_cfg = GameState.WEAPONS.get(w_id)
+	if w_cfg:
+		hud_weapon_model = load(w_cfg.model).instantiate()
+		hud_weapon_model.scale = w_cfg.scale * 0.4
+		hud_weapon_model.position = Vector3(0, -0.3, -0.1)
+		hud_weapon_vp.add_child(hud_weapon_model)
 
 	# Slider texture overrides
 	var grab_tex = load("res://assets/ui/kenney_ui_pack/slide_hangle.png")
