@@ -1198,6 +1198,9 @@ func _process(delta: float) -> void:
 				heat_regen_base = 2.0 # The Release
 			else:
 				heat_regen_base = 2.5 + (GameState.current_wave * 1.5) # The Tension
+			
+			if is_two_phase and phase2_triggered:
+				heat_regen_base *= 2.0 # The Boss Phase is extremely aggressive
 
 		
 	# Relocate sunspot on timer
@@ -1807,7 +1810,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			if GameState.current_wave % 5 == 0:
 				is_two_phase = true
 				phase2_triggered = false
-				phase2_heat = GameState.LEVEL_CONFIG[5].phase2_heat
+				phase2_heat = 100.0 # Boss always starts Phase 2 at full heat (MAX_TEMP)
 			else:
 				is_two_phase = false
 				phase2_triggered = false
@@ -1816,6 +1819,12 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				wind_state = 0
 				wind_timer = randf_range(4.0, 7.0)
 				wind_level_mult = min(2.5, 1.0 + (GameState.current_wave - 4) * 0.15)
+				wind_strength = 0.0
+				if wind_warn_label:
+					wind_warn_label.visible = false
+					wind_warn_label.modulate.a = 0.0
+				if wind_particles: wind_particles.emitting = false
+				if wind_sfx: wind_sfx.stop()
 			
 			temperature = MAX_TEMP
 			level_timer = min(120.0, 60.0 + (level_timer * 0.5)) # Bank 50% of remaining time
