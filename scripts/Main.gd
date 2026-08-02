@@ -1792,9 +1792,10 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			if solar_wind_enabled:
 				wind_state = 0
 				wind_timer = randf_range(4.0, 7.0)
+				wind_level_mult = min(2.5, 1.0 + (GameState.current_wave - 4) * 0.15)
 			
 			temperature = MAX_TEMP
-			level_timer = 60.0
+			level_timer = min(120.0, 60.0 + (level_timer * 0.5)) # Bank 50% of remaining time
 			wave_timer = 0.0
 		else:
 			if is_two_phase and not phase2_triggered:
