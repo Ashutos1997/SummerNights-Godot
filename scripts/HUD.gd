@@ -1168,38 +1168,25 @@ func show_weapon_unlock() -> void:
 func _setup_weapon_hud() -> void:
 	var margin = MarginContainer.new()
 	margin.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	margin.add_theme_constant_override("margin_top", 12)
+	margin.add_theme_constant_override("margin_left", 12)
 	margin.add_theme_constant_override("margin_bottom", 12)
 	
 	var panel = PanelContainer.new()
 	var style = StyleBoxFlat.new()
 	style.bg_color = Color(0.0, 0.0, 0.0, 0.5)
 	style.border_color = Color(0.5, 0.85, 1.0, 0.5)
-	style.set_border_width_all(1)
-	style.corner_radius_top_left = 8
-	style.corner_radius_top_right = 8
-	style.corner_radius_bottom_right = 8
-	style.corner_radius_bottom_left = 8
-	style.expand_margin_left = 4.0
-	style.expand_margin_right = 4.0
-	style.expand_margin_top = 4.0
-	style.expand_margin_bottom = 4.0
+	style.set_border_width_all(2)
+	style.corner_radius_top_left = 50
+	style.corner_radius_top_right = 50
+	style.corner_radius_bottom_right = 50
+	style.corner_radius_bottom_left = 50
 	panel.add_theme_stylebox_override("panel", style)
 	margin.add_child(panel)
 	
-	var vbox = VBoxContainer.new()
-	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	vbox.add_theme_constant_override("separation", 2)
-	panel.add_child(vbox)
-	
 	var svc = SubViewportContainer.new()
 	svc.stretch = true
-	svc.custom_minimum_size = Vector2(80, 80)
-	vbox.add_child(svc)
-	
-	hud_weapon_label = Label.new()
-	hud_weapon_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(hud_weapon_label)
+	svc.custom_minimum_size = Vector2(100, 100)
+	panel.add_child(svc)
 	
 	# Add to UnlockPrompts at the bottom
 	var rc = $HUD/UnlockPrompts
@@ -1231,17 +1218,6 @@ func _update_weapon_hud(w_id: String) -> void:
 	var w_cfg = GameState.WEAPONS.get(w_id)
 	if w_cfg:
 		hud_weapon_model = load(w_cfg.model).instantiate()
-		hud_weapon_model.scale = w_cfg.scale * 0.7
-		hud_weapon_model.position = Vector3(0, -0.3, -0.1)
+		hud_weapon_model.scale = w_cfg.scale * 1.0
+		hud_weapon_model.position = Vector3(0, -0.2, -0.1)
 		hud_weapon_vp.add_child(hud_weapon_model)
-		
-		if hud_weapon_label:
-			var font = galmuri_font if GameState.language == "KR" else kenney_font
-			_style_lbl(hud_weapon_label, 12, Color(0.8, 0.95, 1.0, 1.0), 2, Color.BLACK, font)
-			var w_name = w_cfg.name.to_upper()
-			if GameState.language == "KR":
-				match w_id:
-					"standard": w_name = "표준 블래스터"
-					"heavy": w_name = "헤비 캐논"
-					"precision": w_name = "정밀 스트림"
-			hud_weapon_label.text = w_name
