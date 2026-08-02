@@ -1197,6 +1197,10 @@ func _setup_weapon_hud() -> void:
 	panel.add_child(hud_weapon_container)
 	
 	# Render each weapon into a SubViewport and capture its image
+	var temp_viewports: Array = []
+	var temp_tex_rects: Array = []
+	var temp_w_ids: Array = []
+	
 	for w_id in GameState.WEAPONS.keys():
 		var w_cfg = GameState.WEAPONS[w_id]
 		
@@ -1205,7 +1209,6 @@ func _setup_weapon_hud() -> void:
 		vp.size = Vector2i(256, 256)
 		vp.transparent_bg = true
 		vp.own_world_3d = true
-		vp.msaa_3d = Viewport.MSAA_4X
 		vp.render_target_update_mode = SubViewport.UPDATE_ONCE
 		add_child(vp)
 		
@@ -1223,13 +1226,16 @@ func _setup_weapon_hud() -> void:
 		model.position = Vector3(0, -0.3, -0.1)
 		vp.add_child(model)
 		
-		# Create TextureRect that will show the captured image
+		# Create TextureRect placeholder
 		var tex_rect = TextureRect.new()
 		tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		tex_rect.texture = vp.get_texture()
 		hud_weapon_container.add_child(tex_rect)
 		hud_weapon_icons[w_id] = tex_rect
+		
+		temp_viewports.append(vp)
+		temp_tex_rects.append(tex_rect)
+		temp_w_ids.append(w_id)
 	
 	# Add to UnlockPrompts at the bottom
 	var rc = $HUD/UnlockPrompts
@@ -1237,6 +1243,17 @@ func _setup_weapon_hud() -> void:
 		rc.add_child(margin)
 	
 	_update_weapon_hud(GameState.current_weapon_id)
+	
+	# Wait 2 frames for viewports to render, then capture and free them
+	await get_tree().process_frame
+	await get_tree().process_frame
+	
+	for i in temp_viewports.size():
+		var vp = temp_viewports[i]
+		var img = vp.get_texture().get_image()
+		var img_tex = ImageTexture.create_from_image(img)
+		temp_tex_rects[i].texture = img_tex
+		vp.queue_free()
 
 func _update_weapon_hud(w_id: String) -> void:
 	if not hud_weapon_container: return
