@@ -284,11 +284,11 @@ func _ready() -> void:
 	# Level 5 gets 30% stronger, more frequent gusts
 	wind_level_mult = 1.3 if GameState.level >= 5 else 1.0
 
-	heat_regen = cfg.heat_regen_base
+	heat_regen_base = cfg.heat_regen_base
 	if GameState.is_survival_mode:
 		level_timer = 0.0
 		wave_timer = 0.0
-		heat_regen = 2.5 # Initial base heat for Wave 1
+		heat_regen_base = 2.5 # Initial base heat for Wave 1
 	else:
 		level_timer = cfg.timer
 	timer_running = true
@@ -1172,9 +1172,9 @@ func _process(delta: float) -> void:
 			timer_tick.emit(GameState.survival_time)
 			
 			if wave_timer < 10.0:
-				heat_regen = 2.0 # The Release
+				heat_regen_base = 2.0 # The Release
 			else:
-				heat_regen = 2.5 + (GameState.current_wave * 1.5) # The Tension
+				heat_regen_base = 2.5 + (GameState.current_wave * 1.5) # The Tension
 				
 			if wave_timer >= 60.0:
 				wave_timer = 0.0
