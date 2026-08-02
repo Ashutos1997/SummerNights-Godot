@@ -1181,7 +1181,10 @@ func _process(delta: float) -> void:
 				GameState.current_wave += 1
 				GameState.ice_charges_remaining += 1
 				hud.update_ice_charges(GameState.ice_charges_remaining, GameState.ice_charges_remaining)
-				hud.level_label.text = "WAVE %02d" % GameState.current_wave
+				if GameState.language == "KR":
+					hud.level_label.text = "웨이브 %02d" % GameState.current_wave
+				else:
+					hud.level_label.text = "WAVE %02d" % GameState.current_wave
 				
 				# Dynamic Hazards
 				sun_figure8 = GameState.current_wave >= 3
@@ -1764,11 +1767,14 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 	# Force an immediate visual update override which will be reset next frame by _update_sky
 	
 	if temperature <= 0.0:
-		if is_two_phase and not phase2_triggered:
-			phase2_triggered = true
-			_trigger_phase2()
+		if GameState.is_survival_mode:
+			temperature = 0.0
 		else:
-			_win()
+			if is_two_phase and not phase2_triggered:
+				phase2_triggered = true
+				_trigger_phase2()
+			else:
+				_win()
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Temp system / Middle States
