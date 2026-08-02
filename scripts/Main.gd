@@ -56,6 +56,7 @@ var sun_move_time: float = 0.0
 var level_timer: float = 0.0
 var wave_timer: float = 0.0
 var timer_running: bool = false
+var max_survival_ice_charges: int = 3
 var is_two_phase: bool = false
 var phase2_triggered: bool = false
 var phase2_heat: float = 0.0
@@ -1263,6 +1264,10 @@ func _process(delta: float) -> void:
 	# Solar Wind hazard
 	if solar_wind_enabled and not is_title_screen:
 		_process_solar_wind(delta)
+	else:
+		wind_strength = 0.0
+		if wind_particles and wind_particles.emitting:
+			wind_particles.emitting = false
 
 	# Aim gun (apply wind drift to virtual mouse position)
 	var mouse_pos = virtual_mouse_pos
@@ -1755,8 +1760,9 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 		if GameState.is_survival_mode:
 			GameState.current_wave += 1
 			GameState.ice_charges_remaining += 1
+			max_survival_ice_charges = max(max_survival_ice_charges, GameState.ice_charges_remaining)
 			if hud:
-				hud.update_ice_charges(GameState.ice_charges_remaining, GameState.ice_charges_remaining)
+				hud.update_ice_charges(GameState.ice_charges_remaining, max_survival_ice_charges)
 				if GameState.language == "KR":
 					hud.level_label.text = "웨이브 %02d" % GameState.current_wave
 				else:
@@ -1776,6 +1782,10 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			sun_figure8 = GameState.current_wave >= 3
 			solar_wind_enabled = GameState.current_wave >= 4
 			flare_spawn_timer = min(flare_spawn_timer, max(2.5, 8.0 - (GameState.current_wave * 0.5)))
+			
+			if solar_wind_enabled:
+				wind_state = 0
+				wind_timer = randf_range(4.0, 7.0)
 			
 			temperature = MAX_TEMP
 			level_timer = 60.0
@@ -2165,8 +2175,8 @@ func _trigger_phase2() -> void:
 
 func _shoot_ice() -> void:
 	GameState.ice_charges_remaining -= 1
-	var cfg = current_config
-	hud.update_ice_charges(GameState.ice_charges_remaining, cfg.ice_charges)
+	var total = max_survival_ice_charges if GameState.is_survival_mode else current_config.ice_charges
+	hud.update_ice_charges(GameState.ice_charges_remaining, total)
 	
 	ice_shoot_sfx.play()
 	
