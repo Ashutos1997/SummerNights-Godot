@@ -1045,21 +1045,17 @@ func _on_timer_tick(seconds: float) -> void:
 	if not timer_label: return
 	var secs = max(0, int(seconds))
 	
-	if GameState.is_survival_mode:
-		var m = secs / 60
-		var s = secs % 60
-		timer_label.text = "%02d:%02d" % [m, s]
-		timer_label.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 1.0))
+	timer_label.text = "%02d" % secs
+	
+	if seconds <= 10.0:
+		timer_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.2, 1.0))
+		if not timer_pulse_active:
+			timer_pulse_active = true
+			var tw = create_tween().set_loops()
+			tw.tween_property(timer_label, "modulate:a", 0.3, 0.4)
+			tw.tween_property(timer_label, "modulate:a", 1.0, 0.4)
 	else:
-		timer_label.text = "%02d" % secs
-		
-		if seconds <= 10.0:
-			timer_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.2, 1.0))
-			if not timer_pulse_active:
-				timer_pulse_active = true
-				var tw = create_tween().set_loops()
-				tw.tween_property(timer_label, "modulate:a", 0.3, 0.4)
-				tw.tween_property(timer_label, "modulate:a", 1.0, 0.4)
+		timer_label.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 1.0) if GameState.is_survival_mode else Color(1.0, 1.0, 1.0, 1.0))
 
 func _on_timer_expired() -> void:
 	show_lose_screen()

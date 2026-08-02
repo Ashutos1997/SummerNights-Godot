@@ -286,7 +286,7 @@ func _ready() -> void:
 
 	heat_regen_base = cfg.heat_regen_base
 	if GameState.is_survival_mode:
-		level_timer = 0.0
+		level_timer = 60.0
 		wave_timer = 0.0
 		heat_regen_base = 2.5 # Initial base heat for Wave 1
 	else:
@@ -1167,49 +1167,33 @@ func _process(delta: float) -> void:
 		var spd_mult = 0.0 if is_sun_frozen else 1.0
 		sun_time += delta * spd_mult
 		
+		level_timer -= delta
+		timer_tick.emit(level_timer)
+		if level_timer <= 0.0:
+			timer_running = false
+			game_over = true
+			is_shooting = false
+			if gun_spray: gun_spray.emitting = false
+			
+			# Dramatic Game Over Impact
+			shake(0.5, 0.08)
+			if sun_mat:
+				var tw = create_tween()
+				tw.tween_property(sun_mat, "emission_energy_multiplier", 12.0, 0.3)
+				tw.parallel().tween_property(sun_mat, "albedo_color", Color(4.0, 2.0, 1.0), 0.3)
+				if sun_mesh:
+					tw.parallel().tween_property(sun_mesh, "scale", Vector3(1.2, 1.2, 1.2), 0.3)
+					
+			timer_expired.emit()
+			
 		if GameState.is_survival_mode:
 			GameState.survival_time += delta
 			wave_timer += delta
-			timer_tick.emit(GameState.survival_time)
 			
 			if wave_timer < 10.0:
 				heat_regen_base = 2.0 # The Release
 			else:
 				heat_regen_base = 2.5 + (GameState.current_wave * 1.5) # The Tension
-				
-			if wave_timer >= 60.0:
-				wave_timer = 0.0
-				GameState.current_wave += 1
-				GameState.ice_charges_remaining += 1
-				hud.update_ice_charges(GameState.ice_charges_remaining, GameState.ice_charges_remaining)
-				if GameState.language == "KR":
-					hud.level_label.text = "웨이브 %02d" % GameState.current_wave
-				else:
-					hud.level_label.text = "WAVE %02d" % GameState.current_wave
-				
-				# Dynamic Hazards
-				sun_figure8 = GameState.current_wave >= 3
-				solar_wind_enabled = GameState.current_wave >= 4
-				flare_spawn_timer = min(flare_spawn_timer, max(2.5, 8.0 - (GameState.current_wave * 0.5)))
-		else:
-			level_timer -= delta
-			timer_tick.emit(level_timer)
-			if level_timer <= 0.0:
-				timer_running = false
-				game_over = true
-				is_shooting = false
-				if gun_spray: gun_spray.emitting = false
-				
-				# Dramatic Game Over Impact
-				shake(0.5, 0.08)
-				if sun_mat:
-					var tw = create_tween()
-					tw.tween_property(sun_mat, "emission_energy_multiplier", 12.0, 0.3)
-					tw.parallel().tween_property(sun_mat, "albedo_color", Color(4.0, 2.0, 1.0), 0.3)
-					if sun_mesh:
-						tw.parallel().tween_property(sun_mesh, "scale", Vector3(1.2, 1.2, 1.2), 0.3)
-						
-				timer_expired.emit()
 
 		
 	# Relocate sunspot on timer
@@ -1769,7 +1753,33 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 	
 	if temperature <= 0.0:
 		if GameState.is_survival_mode:
-			temperature = 0.0
+			GameState.current_wave += 1
+			GameState.ice_charges_remaining += 1
+			if hud:
+				hud.update_ice_charges(GameState.ice_charges_remaining, GameState.ice_charges_remaining)
+				if GameState.language == "KR":
+					hud.level_label.text = "웨이브 %02d" % GameState.current_wave
+				else:
+					hud.level_label.text = "WAVE %02d" % GameState.current_wave
+				
+				var flash = ColorRect.new()
+				flash.color = Color(1.0, 0.9, 0.5, 0.6)
+				flash.anchor_right = 1.0
+				flash.anchor_bottom = 1.0
+				flash.z_index = 150
+				flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				hud.add_child(flash)
+				var tw = create_tween()
+				tw.tween_property(flash, "modulate:a", 0.0, 0.4)
+				tw.tween_callback(flash.queue_free)
+				
+			sun_figure8 = GameState.current_wave >= 3
+			solar_wind_enabled = GameState.current_wave >= 4
+			flare_spawn_timer = min(flare_spawn_timer, max(2.5, 8.0 - (GameState.current_wave * 0.5)))
+			
+			temperature = MAX_TEMP
+			level_timer = 60.0
+			wave_timer = 0.0
 		else:
 			if is_two_phase and not phase2_triggered:
 				phase2_triggered = true
