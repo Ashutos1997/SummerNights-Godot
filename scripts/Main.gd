@@ -1126,11 +1126,15 @@ func _process(delta: float) -> void:
 		return
 
 	if game_over:
+		if is_instance_valid(shoot_loop_sfx):
+			shoot_loop_sfx.stop()
 		return
 	if hud and (hud.settings_screen.visible or hud.credits_screen.visible or hud.pause_screen.visible):
 		if gun_spray: gun_spray.emitting = false
 		is_shooting = false
 		timer_running = false
+		if is_instance_valid(shoot_loop_sfx):
+			shoot_loop_sfx.stop()
 		return
 		
 	timer_running = true
