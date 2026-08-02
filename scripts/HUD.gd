@@ -1173,7 +1173,6 @@ func _setup_weapon_hud() -> void:
 	margin.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	margin.add_theme_constant_override("margin_left", 0)
 	margin.add_theme_constant_override("margin_top", 16)
-	margin.add_theme_constant_override("margin_bottom", 12)
 	
 	var panel = PanelContainer.new()
 	var style = StyleBoxFlat.new()
