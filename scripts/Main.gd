@@ -116,13 +116,8 @@ func _load_weapon_model() -> void:
 	current_weapon_recharge = w_cfg.recharge_rate
 	
 	var base_drain = 8.75
-	heat_regen = current_config.heat_regen_base
-	if GameState.is_survival_mode:
-		level_timer = 0.0
-		wave_timer = 0.0
-		heat_regen = 2.5 # Initial base heat for Wave 1
-	else:
-		level_timer = current_config.timer
+	if current_config.has("water_drain"):
+		base_drain = current_config.water_drain
 	WATER_DRAIN_RATE = base_drain * w_cfg.water_drain
 	
 	if shoot_loop_sfx:
@@ -289,7 +284,13 @@ func _ready() -> void:
 	# Level 5 gets 30% stronger, more frequent gusts
 	wind_level_mult = 1.3 if GameState.level >= 5 else 1.0
 
-	level_timer = cfg.timer
+	heat_regen = cfg.heat_regen_base
+	if GameState.is_survival_mode:
+		level_timer = 0.0
+		wave_timer = 0.0
+		heat_regen = 2.5 # Initial base heat for Wave 1
+	else:
+		level_timer = cfg.timer
 	timer_running = true
 
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
