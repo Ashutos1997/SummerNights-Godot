@@ -201,19 +201,7 @@ grow_vertical = 0
 mouse_filter = 2
 alignment = 2
 
-[node name="IceUnlockLabel" type="Label" parent="HUD/UnlockPrompts"]
-visible = false
-layout_mode = 2
-theme_override_font_sizes/font_size = 14
-vertical_alignment = 2
-text = "ICE BURST UNLOCKED: FREEZE THE SUN [RMB / R]"
-
-[node name="WeaponUnlockLabel" type="Label" parent="HUD/UnlockPrompts"]
-visible = false
-layout_mode = 2
-theme_override_font_sizes/font_size = 14
-vertical_alignment = 2
-text = "WEAPON UNLOCKED: HOLD [TAB] TO EQUIP"
+	
 
 
 [node name="Crosshair" type="TextureRect" parent="HUD"]
@@ -290,6 +278,20 @@ theme_override_constants/outline_size = 2
 theme_override_font_sizes/font_size = 22
 horizontal_alignment = 2
 text = "00"
+
+[node name="ToastContainer" type="VBoxContainer" parent="HUD"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -400.0
+offset_top = 70.0
+offset_right = -24.0
+offset_bottom = 270.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_override_constants/separation = 8
+alignment = 0
 
 [node name="esc_hint_label" type="Label" parent="HUD"]
 visible = false

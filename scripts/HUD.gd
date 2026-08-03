@@ -15,8 +15,7 @@ signal weapon_changed(weapon_id: String)
 @onready var ice_label = $HUD/resource_container/ice_row/Label
 @onready var ice_bar = $HUD/resource_container/ice_row/IceBarContainer/IceBar
 @onready var charge_dots = $HUD/resource_container/ice_row/IceBarContainer/ChargeDots
-@onready var ice_unlock_label = $HUD/UnlockPrompts/IceUnlockLabel
-@onready var weapon_unlock_label = $HUD/UnlockPrompts/WeaponUnlockLabel
+@onready var toast_container = $HUD/ToastContainer
 @onready var crosshair = $HUD/Crosshair
 @onready var win_screen = $HUD/WinScreen
 @onready var level_label = $HUD/LevelLabel
@@ -149,9 +148,7 @@ func _ready() -> void:
 	_style_lbl(heat_label, 22, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
 	_style_lbl(water_label, 22, Color(0.4, 0.9, 1.0, 1.0), 3, Color.BLACK, font)
 	_style_lbl(ice_label, 22, Color(0.5, 0.85, 1.0, 1.0), 3, Color.BLACK, font)
-	_style_lbl(ice_unlock_label, 22, Color(0.5, 0.85, 1.0, 1.0), 3, Color.BLACK, font)
-	if weapon_unlock_label:
-		_style_lbl(weapon_unlock_label, 22, Color(1.0, 0.9, 0.2, 1.0), 3, Color.BLACK, font)
+
 	_style_lbl(level_label, 22, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
 	
 	# Top right buttons (now in pause menu, styled separately below)
@@ -532,14 +529,7 @@ func _apply_language(lang: String) -> void:
 		ice_label.text = "얼음 폭발" if is_kr else "ICE BURST"
 		if font: ice_label.add_theme_font_override("font", font)
 		ice_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
-	if ice_unlock_label:
-		ice_unlock_label.text = "아이스 버스트 해금: 태양을 얼려라  [RMB / R]" if is_kr else "ICE BURST UNLOCKED: FREEZE THE SUN [RMB / R]"
-		ice_unlock_label.add_theme_font_override("font", kenney_font)
-		ice_unlock_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
-	if weapon_unlock_label:
-		weapon_unlock_label.text = "무기 해금됨: [TAB] 을 길게 눌러 장착" if is_kr else "WEAPON UNLOCKED: HOLD [TAB] TO EQUIP"
-		weapon_unlock_label.add_theme_font_override("font", kenney_font)
-		weapon_unlock_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
+
 	if level_label:
 		if GameState.is_survival_mode:
 			level_label.text = "웨이브 %02d" % GameState.current_wave if is_kr else "WAVE %02d" % GameState.current_wave
@@ -1149,24 +1139,103 @@ func update_ice_charges(charges: int, max_charges: int) -> void:
 		ice_row.visible = true
 		ice_bar.value = (float(charges) / float(max_charges)) * 100.0
 
+func show_toast(title: String, description: String, icon_path: String, color: Color) -> void:
+	if not toast_container: return
+	
+	var is_kr = GameState.language == "KR"
+	var font = kenney_font if kenney_font else load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+	
+	var panel = PanelContainer.new()
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.05, 0.05, 0.1, 0.85)
+	style.border_color = color
+	style.set_border_width_all(2)
+	style.corner_radius_top_left = 6
+	style.corner_radius_top_right = 6
+	style.corner_radius_bottom_right = 6
+	style.corner_radius_bottom_left = 6
+	style.content_margin_left = 12
+	style.content_margin_right = 16
+	style.content_margin_top = 8
+	style.content_margin_bottom = 8
+	panel.add_theme_stylebox_override("panel", style)
+	
+	var hbox = HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 12)
+	panel.add_child(hbox)
+	
+	if icon_path != "":
+		var tex_rect = TextureRect.new()
+		tex_rect.texture = load(icon_path)
+		tex_rect.custom_minimum_size = Vector2(32, 32)
+		tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		tex_rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		tex_rect.modulate = color
+		hbox.add_child(tex_rect)
+	
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 0)
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	hbox.add_child(vbox)
+	
+	var title_lbl = Label.new()
+	title_lbl.text = title
+	title_lbl.add_theme_font_override("font", font)
+	title_lbl.add_theme_font_size_override("font_size", 24 if is_kr else 20)
+	title_lbl.add_theme_color_override("font_color", color)
+	title_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+	title_lbl.add_theme_constant_override("outline_size", 3)
+	vbox.add_child(title_lbl)
+	
+	var desc_lbl = Label.new()
+	desc_lbl.text = description
+	desc_lbl.add_theme_font_override("font", font)
+	desc_lbl.add_theme_font_size_override("font_size", 18 if is_kr else 14)
+	desc_lbl.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9, 1.0))
+	desc_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+	desc_lbl.add_theme_constant_override("outline_size", 2)
+	vbox.add_child(desc_lbl)
+	
+	toast_container.add_child(panel)
+	
+	# Play a little sound if we have one
+	var audio = AudioStreamPlayer.new()
+	audio.stream = load("res://assets/sfx/ui_tick.wav")
+	audio.volume_db = -5.0
+	audio.bus = "SFX"
+	add_child(audio)
+	audio.play()
+	
+	# Slide in animation
+	panel.position.x = 400
+	panel.modulate.a = 0.0
+	var tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(panel, "position:x", 0.0, 0.4)
+	tween.tween_property(panel, "modulate:a", 1.0, 0.4)
+	
+	# Slide out animation
+	tween.chain().tween_interval(4.0)
+	var out_tween = tween.chain().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	out_tween.tween_property(panel, "position:x", 400.0, 0.3)
+	out_tween.tween_property(panel, "modulate:a", 0.0, 0.3)
+	
+	out_tween.chain().tween_callback(func():
+		panel.queue_free()
+		audio.queue_free()
+	)
+
 func show_ice_unlock() -> void:
-	ice_unlock_label.visible = true
-	var tween = create_tween()
-	ice_unlock_label.modulate.a = 0.0
-	tween.tween_property(ice_unlock_label, "modulate:a", 1.0, 0.5)
-	tween.tween_interval(6.0)
-	tween.tween_property(ice_unlock_label, "modulate:a", 0.0, 0.5)
-	tween.tween_callback(func(): ice_unlock_label.visible = false)
+	var is_kr = GameState.language == "KR"
+	var title = "아이스 버스트 해금" if is_kr else "ICE BURST UNLOCKED"
+	var desc = "태양을 얼려라 [RMB / R]" if is_kr else "FREEZE THE SUN [RMB / R]"
+	show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_white.png", Color(0.5, 0.85, 1.0, 1.0))
 
 func show_weapon_unlock() -> void:
-	if not weapon_unlock_label: return
-	weapon_unlock_label.visible = true
-	var tween = create_tween()
-	weapon_unlock_label.modulate.a = 0.0
-	tween.tween_property(weapon_unlock_label, "modulate:a", 1.0, 0.5)
-	tween.tween_interval(5.0)
-	tween.tween_property(weapon_unlock_label, "modulate:a", 0.0, 0.5)
-	tween.tween_callback(func(): weapon_unlock_label.visible = false)
+	var is_kr = GameState.language == "KR"
+	var title = "무기 해금됨" if is_kr else "WEAPON UNLOCKED"
+	var desc = "[TAB] 을 길게 눌러 장착" if is_kr else "HOLD [TAB] TO EQUIP"
+	show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1.0, 0.9, 0.2, 1.0))
 
 func _setup_weapon_hud() -> void:
 	var margin = MarginContainer.new()
