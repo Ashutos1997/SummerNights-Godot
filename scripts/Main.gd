@@ -1841,6 +1841,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
 				hud.add_child(flash)
 				var tw = create_tween()
+				tw.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 				tw.tween_property(flash, "modulate:a", 0.0, 0.4)
 				tw.tween_callback(flash.queue_free)
 				

@@ -42,11 +42,11 @@ signal shop_closed()
 @onready var menu_btn          = $HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer/MenuBtn
 
 @onready var shop_overlay      = $HUD/ShopOverlay
-@onready var shop_title        = $HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/Title
-@onready var shop_subtitle     = $HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/Subtitle
-@onready var shop_opt1         = $HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/OptionsContainer/Option1
-@onready var shop_opt2         = $HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/OptionsContainer/Option2
-@onready var shop_opt3         = $HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/OptionsContainer/Option3
+@onready var shop_title        = $HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/Title
+@onready var shop_subtitle     = $HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/Subtitle
+@onready var shop_opt1         = $HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/OptionsContainer/Option1
+@onready var shop_opt2         = $HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/OptionsContainer/Option2
+@onready var shop_opt3         = $HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/OptionsContainer/Option3
 
 @onready var pause_screen       = $HUD/pause_screen
 @onready var pause_title        = $HUD/pause_screen/ColorRect/VBoxContainer/Title
@@ -157,6 +157,25 @@ void fragment() {
 		smat.set_shader_parameter("blur_amount", 0.0)
 		smat.set_shader_parameter("dim_amount", 0.0)
 		shop_overlay.get_node("ColorRect").material = smat
+		
+		# Style the cards with adventure UI panel
+		var panel_tex = load("res://assets/ui/ui_adventure/PNG/Default/panel_brown.png")
+		var sbox = StyleBoxTexture.new()
+		sbox.texture = panel_tex
+		sbox.texture_margin_left = 10
+		sbox.texture_margin_top = 10
+		sbox.texture_margin_right = 10
+		sbox.texture_margin_bottom = 10
+		sbox.modulate_color = Color(1, 1, 1, 0.85)
+
+		var hover_sbox = sbox.duplicate()
+		hover_sbox.modulate_color = Color(1, 1, 1, 1.0)
+		
+		for btn in [shop_opt1, shop_opt2, shop_opt3]:
+			btn.add_theme_stylebox_override("normal", sbox)
+			btn.add_theme_stylebox_override("hover", hover_sbox)
+			btn.add_theme_stylebox_override("pressed", hover_sbox)
+			btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 		
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	

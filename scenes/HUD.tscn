@@ -1138,39 +1138,38 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="PanelContainer" type="PanelContainer" parent="HUD/ShopOverlay/CenterContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="HUD/ShopOverlay/CenterContainer"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxTexture_panel")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HUD/ShopOverlay/CenterContainer/PanelContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/ShopOverlay/CenterContainer/MarginContainer"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="Title" type="Label" parent="HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer"]
+[node name="Title" type="Label" parent="HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
 theme_override_font_sizes/font_size = 48
 text = "BOSS DEFEATED"
 horizontal_alignment = 1
 
-[node name="Subtitle" type="Label" parent="HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer"]
+[node name="Subtitle" type="Label" parent="HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Choose your permanent reward..."
 horizontal_alignment = 1
 
-[node name="OptionsContainer" type="HBoxContainer" parent="HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer"]
+[node name="OptionsContainer" type="HBoxContainer" parent="HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 16
 alignment = 1
 
-[node name="Option1" type="Button" parent="HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/OptionsContainer"]
+[node name="Option1" type="Button" parent="HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/OptionsContainer"]
 custom_minimum_size = Vector2(260, 360)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
 
-[node name="VBox" type="VBoxContainer" parent="HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/OptionsContainer/Option1"]
+[node name="VBox" type="VBoxContainer" parent="HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/OptionsContainer/Option1"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1181,7 +1180,7 @@ mouse_filter = 2
 theme_override_constants/separation = 16
 alignment = 1
 
-[node name="TitleLabel" type="Label" parent="HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/OptionsContainer/Option1/VBox"]
+[node name="TitleLabel" type="Label" parent="HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/OptionsContainer/Option1/VBox"]
 custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
@@ -1190,7 +1189,7 @@ text = "Title"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="DescLabel" type="Label" parent="HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/OptionsContainer/Option1/VBox"]
+[node name="DescLabel" type="Label" parent="HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/OptionsContainer/Option1/VBox"]
 custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.8)
@@ -1199,13 +1198,13 @@ text = "Description text goes here"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="Option2" type="Button" parent="HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/OptionsContainer"]
+[node name="Option2" type="Button" parent="HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/OptionsContainer"]
 custom_minimum_size = Vector2(260, 360)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
 
-[node name="VBox" type="VBoxContainer" parent="HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/OptionsContainer/Option2"]
+[node name="VBox" type="VBoxContainer" parent="HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/OptionsContainer/Option2"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1216,7 +1215,7 @@ mouse_filter = 2
 theme_override_constants/separation = 16
 alignment = 1
 
-[node name="TitleLabel" type="Label" parent="HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/OptionsContainer/Option2/VBox"]
+[node name="TitleLabel" type="Label" parent="HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/OptionsContainer/Option2/VBox"]
 custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
@@ -1225,7 +1224,7 @@ text = "Title"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="DescLabel" type="Label" parent="HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/OptionsContainer/Option2/VBox"]
+[node name="DescLabel" type="Label" parent="HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/OptionsContainer/Option2/VBox"]
 custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.8)
@@ -1234,13 +1233,13 @@ text = "Description text goes here"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="Option3" type="Button" parent="HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/OptionsContainer"]
+[node name="Option3" type="Button" parent="HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/OptionsContainer"]
 custom_minimum_size = Vector2(260, 360)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
 
-[node name="VBox" type="VBoxContainer" parent="HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/OptionsContainer/Option3"]
+[node name="VBox" type="VBoxContainer" parent="HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/OptionsContainer/Option3"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1251,7 +1250,7 @@ mouse_filter = 2
 theme_override_constants/separation = 16
 alignment = 1
 
-[node name="TitleLabel" type="Label" parent="HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/OptionsContainer/Option3/VBox"]
+[node name="TitleLabel" type="Label" parent="HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/OptionsContainer/Option3/VBox"]
 custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
@@ -1260,7 +1259,7 @@ text = "Title"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="DescLabel" type="Label" parent="HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/OptionsContainer/Option3/VBox"]
+[node name="DescLabel" type="Label" parent="HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/OptionsContainer/Option3/VBox"]
 custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.8)
