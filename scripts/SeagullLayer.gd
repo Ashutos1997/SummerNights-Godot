@@ -166,10 +166,9 @@ func _create_seagull_mesh() -> Node3D:
 	bird_root.scale = Vector3(1.5, 1.5, 1.5)
 	
 	# Squawk SFX
-	var squawk_sfx = AudioStreamPlayer3D.new()
+	var squawk_sfx = AudioStreamPlayer.new()
 	squawk_sfx.stream = load("res://assets/audio/sfx/hit_sun.ogg")
-	squawk_sfx.volume_db = -8.0
-	squawk_sfx.max_distance = 40.0
+	squawk_sfx.volume_db = -2.0 # Louder and non-spatial so it doesn't get lost
 	squawk_sfx.name = "SquawkSfx"
 	bird_root.add_child(squawk_sfx)
 	
