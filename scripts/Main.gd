@@ -1818,9 +1818,10 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				GameState.ice_charges_remaining += 1 + GameState.bonus_ice_charges
 				water_changed.emit(water_tank, MAX_WATER)
 				
-				if hud:
-					get_tree().paused = true
-					hud.show_shop()
+				# Temporarily disabled shop logic per user request
+				# if hud:
+				# 	get_tree().paused = true
+				# 	hud.show_shop()
 				
 			max_survival_ice_charges = max(max_survival_ice_charges, GameState.ice_charges_remaining)
 			if hud:
