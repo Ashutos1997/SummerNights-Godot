@@ -1882,14 +1882,14 @@ func _update_sky(instant: bool) -> void:
 	if haze_mat:
 		haze_mat.set_shader_parameter("heat_ratio", ratio)
 		
-	# Dynamic Heat Lighting
+	# Static lighting (Removed dynamic heat darkening per user feedback)
 	if world_env and world_env.environment:
 		var env = world_env.environment
-		env.ambient_light_color = Color(0.75, 0.65, 0.6).lerp(Color(0.4, 0.1, 0.1), ratio)
-		env.volumetric_fog_albedo = Color(0.9, 0.6, 0.3).lerp(Color(0.8, 0.2, 0.1), ratio)
+		env.ambient_light_color = Color(0.75, 0.65, 0.6)
+		env.volumetric_fog_albedo = Color(0.9, 0.6, 0.3)
 		
 	if dir_light:
-		dir_light.light_color = Color(1.0, 0.75, 0.35).lerp(Color(1.0, 0.3, 0.1), ratio)
+		dir_light.light_color = Color(1.0, 0.75, 0.35)
 
 	# Sun visual phases (Middle states)
 	if not is_sun_frozen:
