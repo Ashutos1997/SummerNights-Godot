@@ -205,6 +205,7 @@ var active_weather: String = "none" # "none", "rain", "eclipse"
 var weather_timer: float = 0.0
 var weather_duration: float = 0.0
 var weather_rain_particles: GPUParticles3D
+var weather_blend: float = 0.0
 
 var foliage_props: Array[Node3D] = []
 
@@ -1309,11 +1310,13 @@ func _process(delta: float) -> void:
 	
 	# Weather system logic
 	if active_weather == "none":
+		weather_blend = max(0.0, weather_blend - delta * 1.5)
 		if weather_timer > 0.0 and timer_running:
 			weather_timer -= delta
 			if weather_timer <= 0.0:
 				_start_weather_event()
 	else:
+		weather_blend = min(1.0, weather_blend + delta * 1.5)
 		if weather_duration > 0.0 and timer_running:
 			weather_duration -= delta
 			if weather_duration <= 0.0:
@@ -1972,68 +1975,81 @@ func _update_sky(instant: bool) -> void:
 	# Drive shader sky heat uniform — controls orange→blue sky transition
 	if _sky_shader_mat:
 		_sky_shader_mat.set_shader_parameter("sun_heat", ratio)
+		_sky_shader_mat.set_shader_parameter("eclipse_mix", weather_blend if active_weather == "eclipse" else 0.0)
 		
 	# Drive heat haze screen distortion based on temperature heat ratio
 	if haze_mat:
 		haze_mat.set_shader_parameter("heat_ratio", ratio)
 		
-	# Weather Overrides
+	# Weather Overrides (Smoothly blended)
+	var base_amb = Color(0.75, 0.65, 0.6)
+	var base_dir = Color(1.0, 0.75, 0.35)
+	
+	var target_amb = base_amb
+	var target_dir = base_dir
+	
 	if active_weather == "rain":
-		if world_env and world_env.environment:
-			var env = world_env.environment
-			env.ambient_light_color = Color(0.4, 0.45, 0.6) # Cool, dark blue
-		if dir_light:
-			dir_light.light_color = Color(0.6, 0.65, 0.8)
+		target_amb = Color(0.4, 0.45, 0.6)
+		target_dir = Color(0.6, 0.65, 0.8)
 	elif active_weather == "eclipse":
-		if world_env and world_env.environment:
-			var env = world_env.environment
-			env.ambient_light_color = Color(0.3, 0.1, 0.4) # Moody twilight purple
-		if dir_light:
-			dir_light.light_color = Color(0.4, 0.1, 0.3)
-	else:
-		# Static lighting (Removed dynamic heat darkening per user feedback)
-		if world_env and world_env.environment:
-			var env = world_env.environment
-			env.ambient_light_color = Color(0.75, 0.65, 0.6)
-			env.volumetric_fog_albedo = Color(0.9, 0.6, 0.3)
-			
-		if dir_light:
-			dir_light.light_color = Color(1.0, 0.75, 0.35)
+		target_amb = Color(0.3, 0.1, 0.4)
+		target_dir = Color(0.4, 0.1, 0.3)
+		
+	if world_env and world_env.environment:
+		var env = world_env.environment
+		env.ambient_light_color = base_amb.lerp(target_amb, weather_blend)
+		env.volumetric_fog_albedo = Color(0.9, 0.6, 0.3)
+		
+	if dir_light:
+		dir_light.light_color = base_dir.lerp(target_dir, weather_blend)
 
 	# Sun visual phases (Middle states)
-	if active_weather == "eclipse":
-		sun_mat.emission = Color(0.8, 0.7, 1.0) # Bright corona
-		sun_mat.albedo_color = Color(0.05, 0.05, 0.1) # Dark silhouette
-		if sun_ray_mat:
-			sun_ray_mat.emission = Color(0.6, 0.2, 0.8) # Deep purple rays
-			sun_ray_mat.albedo_color = Color(0.3, 0.0, 0.5)
-		sun_bob_speed = 0.2
-		sun_bob_amp = 0.2
-	elif not is_sun_frozen:
+	var sun_base_albedo = Color.WHITE
+	var sun_base_emission = Color(1.0, 0.7, 0.2)
+	var ray_base_emission = Color(0.95, 0.35, 0.1)
+	var ray_base_albedo = Color(0.95, 0.35, 0.1)
+	var t_bob_spd = 2.0
+	var t_bob_amp = 0.8
+	var emission_mult = 1.8
+	
+	if not is_sun_frozen:
 		if temperature > 75.0:
-			# Scorching
-			sun_mat.emission = Color(1.0, 0.7, 0.2)
-			sun_mat.albedo_color = Color(1.0, 1.0, 1.0)
-			if sun_ray_mat:
-				sun_ray_mat.emission = Color(0.95, 0.35, 0.1)
-				sun_ray_mat.albedo_color = Color(0.95, 0.35, 0.1)
-			sun_bob_speed = 2.0
-			sun_bob_amp = 0.8
+			sun_base_emission = Color(1.0, 0.7, 0.2)
+			ray_base_emission = Color(0.95, 0.35, 0.1)
+			ray_base_albedo = Color(0.95, 0.35, 0.1)
+			t_bob_spd = 2.0
+			t_bob_amp = 0.8
 		elif temperature > 40.0:
-			# Neutralizing
-			sun_mat.emission = Color(1.0, 0.85, 0.4)
-			if sun_ray_mat:
-				sun_ray_mat.emission = Color(0.85, 0.45, 0.2)
-				sun_ray_mat.albedo_color = Color(0.85, 0.45, 0.2)
-			sun_bob_speed = 1.2
-			sun_bob_amp = 0.5
+			sun_base_emission = Color(1.0, 0.85, 0.4)
+			ray_base_emission = Color(0.85, 0.45, 0.2)
+			ray_base_albedo = Color(0.85, 0.45, 0.2)
+			t_bob_spd = 1.2
+			t_bob_amp = 0.5
 		else:
-			# Weakened
-			sun_mat.emission = Color(0.7, 0.7, 1.0)
-			if sun_ray_mat:
-				sun_ray_mat.emission = Color(0.35, 0.45, 0.75)
-				sun_ray_mat.albedo_color = Color(0.35, 0.45, 0.75)
-			sun_bob_speed = 0.5
+			sun_base_emission = Color(0.7, 0.7, 1.0)
+			ray_base_emission = Color(0.35, 0.45, 0.75)
+			ray_base_albedo = Color(0.35, 0.45, 0.75)
+			t_bob_spd = 0.5
+			t_bob_amp = 0.5
+			
+	if active_weather == "eclipse":
+		sun_base_albedo = sun_base_albedo.lerp(Color(0.01, 0.01, 0.02), weather_blend)
+		emission_mult = lerpf(1.8, 0.0, weather_blend) # Kill the sun's internal emission completely
+		ray_base_emission = ray_base_emission.lerp(Color(0.8, 0.3, 1.0), weather_blend) # Bright purple corona
+		ray_base_albedo = ray_base_albedo.lerp(Color(0.5, 0.1, 0.8), weather_blend)
+		t_bob_spd = lerpf(t_bob_spd, 0.2, weather_blend)
+		t_bob_amp = lerpf(t_bob_amp, 0.2, weather_blend)
+		
+	sun_mat.albedo_color = sun_base_albedo
+	sun_mat.emission = sun_base_emission
+	sun_mat.emission_energy_multiplier = emission_mult
+	if sun_ray_mat:
+		sun_ray_mat.emission = ray_base_emission
+		sun_ray_mat.albedo_color = ray_base_albedo
+		sun_ray_mat.emission_energy_multiplier = lerpf(1.5, 3.0, weather_blend if active_weather == "eclipse" else 0.0)
+		
+	sun_bob_speed = t_bob_spd
+	sun_bob_amp = t_bob_amp
 	heat_changed.emit(temperature, MAX_TEMP)
 	
 

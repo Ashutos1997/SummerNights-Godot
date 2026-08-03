@@ -31,6 +31,7 @@ uniform float cloud_scale       : hint_range(0.5, 8.0, 0.1) = 3.5;
 // ── Temperature-driven transition ───────────────────────────────────────────
 // 0.0 = cool dusk blue, 1.0 = scorching orange sunset
 uniform float sun_heat : hint_range(0.0, 1.0, 0.01) = 1.0;
+uniform float eclipse_mix : hint_range(0.0, 1.0, 0.01) = 0.0;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Hash / value noise helpers (no texture needed)
@@ -100,10 +101,17 @@ void sky() {
 	sky_col = mix(sky_col,
 		mix(cool_horizon, cool_zenith, smoothstep(-0.1, 0.8, h)),
 		cool_factor * 0.7);
+		
+	// ── Eclipse override ─────────────────────────────────────────────────
+	vec3 eclipse_zenith = vec3(0.02, 0.0, 0.05);
+	vec3 eclipse_horizon = vec3(0.15, 0.02, 0.2);
+	sky_col = mix(sky_col,
+		mix(eclipse_horizon, eclipse_zenith, smoothstep(-0.1, 0.8, h)),
+		eclipse_mix);
 
 	// ── Horizon glow ─────────────────────────────────────────────────────
 	float glow_mask = exp(-abs(h) / horizon_glow_size);
-	sky_col += horizon_glow_color.rgb * glow_mask * 0.6 * sun_heat;
+	sky_col += horizon_glow_color.rgb * glow_mask * 0.6 * sun_heat * (1.0 - eclipse_mix);
 
 	// ── Animated clouds ───────────────────────────────────────────────────
 	// Only draw clouds in upper hemisphere (h > -0.04)
@@ -135,6 +143,10 @@ void sky() {
 
 		// Cool the cloud colors when sun cools
 		cloud_col = mix(cloud_col, vec3(0.25, 0.3, 0.55), cool_factor * 0.5);
+		
+		// Eclipse clouds
+		vec3 eclipse_cloud = mix(vec3(0.01, 0.0, 0.05), vec3(0.1, 0.02, 0.2), lit);
+		cloud_col = mix(cloud_col, eclipse_cloud, eclipse_mix);
 
 		sky_col = mix(sky_col, cloud_col, cloud_mask * 0.88);
 	}
