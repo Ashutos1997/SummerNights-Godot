@@ -851,20 +851,29 @@ func show_shop() -> void:
 
 func _get_random_upgrades(count: int) -> Array:
 	var pool = [
-		{"id": "water", "name": "Expanded Tank", "desc": "+30% Max Water"},
-		{"id": "cooling", "name": "High-Pressure Pump", "desc": "+20% Cooling Power"},
-		{"id": "ice", "name": "Ice Mastery", "desc": "+1 Max Ice Charge"},
-		{"id": "heat", "name": "Thermal Insulation", "desc": "-15% Base Heat Gen"}
+		{"id": "water", "name": "💧 Expanded Tank", "desc": "+30% Max Water"},
+		{"id": "cooling", "name": "⚙️ High-Pressure Pump", "desc": "+20% Cooling Power"},
+		{"id": "ice", "name": "❄️ Ice Mastery", "desc": "+1 Max Ice Charge"},
+		{"id": "heat", "name": "🌡️ Thermal Insulation", "desc": "-15% Base Heat Gen"}
 	]
 	pool.shuffle()
 	return pool.slice(0, count)
 
 func _setup_shop_button(btn: Button, upgrade: Dictionary) -> void:
-	var title_lbl = btn.get_node("VBox/TitleLabel") as Label
-	var desc_lbl = btn.get_node("VBox/DescLabel") as Label
+	var title_lbl = btn.get_node("Margin/VBox/TitleLabel") as Label
+	var desc_lbl = btn.get_node("Margin/VBox/DescLabel") as Label
 	
 	if title_lbl:
 		title_lbl.text = upgrade["name"]
+		# Apply nice drop shadow settings like the Weapon Wheel
+		var ls = LabelSettings.new()
+		ls.font = title_lbl.get_theme_font("font") if title_lbl.has_theme_font_override("font") else null
+		ls.font_size = 28
+		ls.font_color = Color(1.0, 0.9, 0.2, 1.0)
+		ls.outline_size = 4
+		ls.outline_color = Color(0, 0, 0, 1)
+		title_lbl.label_settings = ls
+		
 	if desc_lbl:
 		desc_lbl.text = upgrade["desc"]
 
