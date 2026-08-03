@@ -572,8 +572,8 @@ func _apply_language(lang: String) -> void:
 			if sep:
 				sep.add_theme_stylebox_override("separator", sep_style)
 
-	var row_texts_en := ["SFX Volume", "Sensitivity", "Reduce Motion", "Fullscreen", "Language"]
-	var row_texts_kr := ["효과음 볼륨", "감도", "화면 움직임 감소", "전체 화면", "언어"]
+	var row_texts_en := ["Master Volume", "Sensitivity", "Reduce Motion", "Fullscreen", "Language"]
+	var row_texts_kr := ["전체 볼륨", "마우스 감도", "화면 흔들림 감소", "전체 화면", "언어"]
 	var row_names    := ["RowSFX", "RowSens", "RowMotion", "RowFullscreen", "RowLanguage"]
 	if settings_vbox:
 		for i in range(row_names.size()):
@@ -742,6 +742,8 @@ func _on_sfx_volume_changed(val: float) -> void:
 	if idx1 != -1: AudioServer.set_bus_volume_db(idx1, db_val)
 	var idx2 = AudioServer.get_bus_index("SFX_UI")
 	if idx2 != -1: AudioServer.set_bus_volume_db(idx2, db_val)
+	var idx_master = AudioServer.get_bus_index("Master")
+	if idx_master != -1: AudioServer.set_bus_volume_db(idx_master, db_val)
 
 func _on_sens_changed(val: float) -> void:
 	GameState.mouse_sensitivity = val
