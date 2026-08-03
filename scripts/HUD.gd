@@ -140,6 +140,24 @@ func _ready() -> void:
 		shop_opt2.pressed.connect(_on_shop_opt2_pressed)
 		shop_opt3.pressed.connect(_on_shop_opt3_pressed)
 		
+		var shader = Shader.new()
+		shader.code = """
+shader_type canvas_item;
+uniform sampler2D screen_texture : hint_screen_texture, filter_linear_mipmap;
+uniform float blur_amount : hint_range(0.0, 5.0) = 0.0;
+uniform float dim_amount : hint_range(0.0, 1.0) = 0.0;
+
+void fragment() {
+	vec4 bg = textureLod(screen_texture, SCREEN_UV, blur_amount);
+	COLOR = mix(bg, vec4(0.0, 0.0, 0.0, 1.0), dim_amount);
+}
+"""
+		var smat = ShaderMaterial.new()
+		smat.shader = shader
+		smat.set_shader_parameter("blur_amount", 0.0)
+		smat.set_shader_parameter("dim_amount", 0.0)
+		shop_overlay.get_node("ColorRect").material = smat
+		
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	
 	# UI tick player for button hover SFX
@@ -796,9 +814,16 @@ func show_shop() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	shop_overlay.visible = true
 	shop_overlay.modulate.a = 0.0
+	
+	var bg = shop_overlay.get_node("ColorRect")
+	bg.material.set_shader_parameter("blur_amount", 0.0)
+	bg.material.set_shader_parameter("dim_amount", 0.0)
+	
 	var tw = create_tween()
 	tw.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	tw.tween_property(shop_overlay, "modulate:a", 1.0, 0.3)
+	tw.parallel().tween_property(bg.material, "shader_parameter/blur_amount", 2.0, 0.3)
+	tw.parallel().tween_property(bg.material, "shader_parameter/dim_amount", 0.6, 0.3)
 	
 	current_shop_upgrades = _get_random_upgrades(3)
 	_setup_shop_button(shop_opt1, current_shop_upgrades[0])
@@ -816,7 +841,13 @@ func _get_random_upgrades(count: int) -> Array:
 	return pool.slice(0, count)
 
 func _setup_shop_button(btn: Button, upgrade: Dictionary) -> void:
-	btn.text = upgrade["name"] + "\n" + upgrade["desc"]
+	var title_lbl = btn.get_node("VBox/TitleLabel") as Label
+	var desc_lbl = btn.get_node("VBox/DescLabel") as Label
+	
+	if title_lbl:
+		title_lbl.text = upgrade["name"]
+	if desc_lbl:
+		desc_lbl.text = upgrade["desc"]
 
 func _apply_upgrade(upgrade_id: String) -> void:
 	if upgrade_id == "water":
@@ -830,9 +861,12 @@ func _apply_upgrade(upgrade_id: String) -> void:
 		
 	ui_tick_player.play()
 	
+	var bg = shop_overlay.get_node("ColorRect")
 	var tw = create_tween()
 	tw.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	tw.tween_property(shop_overlay, "modulate:a", 0.0, 0.3)
+	tw.parallel().tween_property(bg.material, "shader_parameter/blur_amount", 0.0, 0.3)
+	tw.parallel().tween_property(bg.material, "shader_parameter/dim_amount", 0.0, 0.3)
 	tw.tween_callback(func():
 		shop_overlay.visible = false
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)

@@ -121,4 +121,3 @@ func _start_game(is_survival: bool, is_dev: bool = false) -> void:
 	if is_dev:
 		GameState.current_wave = 5
 	start_game.emit(is_survival)
-
