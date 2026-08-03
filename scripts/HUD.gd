@@ -1207,20 +1207,27 @@ func show_toast(title: String, description: String, icon_path: String, color: Co
 	add_child(audio)
 	audio.play()
 	
-	# Fade in animation
+	# Slide in animation
+	panel.position.x = 400
 	panel.modulate.a = 0.0
 	var tween = create_tween()
 	
-	# 1. Fade in
-	tween.tween_property(panel, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	# 1. Slide in
+	tween.set_parallel(true)
+	tween.tween_property(panel, "position:x", 0.0, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(panel, "modulate:a", 1.0, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	
 	# 2. Wait
+	tween.set_parallel(false)
 	tween.tween_interval(3.5)
 	
-	# 3. Fade out
-	tween.tween_property(panel, "modulate:a", 0.0, 0.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	# 3. Slide out
+	tween.tween_property(panel, "position:x", 400.0, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	tween.set_parallel(true)
+	tween.tween_property(panel, "modulate:a", 0.0, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
 	
 	# 4. Cleanup
+	tween.set_parallel(false)
 	tween.tween_callback(func():
 		panel.queue_free()
 		audio.queue_free()
