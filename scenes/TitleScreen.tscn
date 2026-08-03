@@ -86,6 +86,12 @@ custom_minimum_size = Vector2(180, 48)
 layout_mode = 2
 text = "ENDLESS MODE"
 
+[node name="DevBtn" type="Button" parent="ColorRect/VBoxContainer/ButtonsBox"]
+custom_minimum_size = Vector2(180, 48)
+layout_mode = 2
+text = "[DEV] WAVE 5 TEST"
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+
 [node name="CreditLine" type="Label" parent="."]
 layout_mode = 1
 anchors_preset = 7

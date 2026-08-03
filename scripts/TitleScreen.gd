@@ -6,6 +6,7 @@ extends Control
 @onready var subtitle_lbl = $ColorRect/VBoxContainer/Subtitle
 @onready var normal_btn = $ColorRect/VBoxContainer/ButtonsBox/NormalBtn
 @onready var survival_btn = $ColorRect/VBoxContainer/ButtonsBox/SurvivalBtn
+@onready var dev_btn = $ColorRect/VBoxContainer/ButtonsBox/DevBtn
 @onready var credit_lbl = $CreditLine
 
 signal start_game(is_survival: bool)
@@ -49,25 +50,36 @@ func _ready() -> void:
 		
 		# Style buttons
 		if normal_btn and survival_btn:
-			for btn in [normal_btn, survival_btn]:
+			for btn in [normal_btn, survival_btn, dev_btn]:
+				if not btn: continue
 				btn.add_theme_font_override("font", font)
 				btn.add_theme_font_size_override("font_size", 20 if is_kr else 18)
-				btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+				if btn != dev_btn:
+					btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
 				btn.add_theme_color_override("font_outline_color", Color.BLACK)
 				btn.add_theme_constant_override("outline_size", 2)
 				var style_normal = StyleBoxFlat.new()
 				style_normal.bg_color = Color(0, 0, 0, 0.4)
 				style_normal.border_color = Color(1.0, 0.85, 0.2, 0.6)
-				style_normal.set_border_width_all(1)
-				style_normal.set_corner_radius_all(4)
-				style_normal.content_margin_left = 24.0
-				style_normal.content_margin_right = 24.0
-				var style_hover = style_normal.duplicate()
-				style_hover.bg_color = Color(1.0, 0.85, 0.2, 0.2)
-				style_hover.border_color = Color(1.0, 0.85, 0.2, 1.0)
+				if btn == dev_btn:
+					style_normal.border_color = Color(1.0, 0.2, 0.2, 0.6)
+				style_normal.border_width_bottom = 2
+				style_normal.border_width_top = 2
+				style_normal.border_width_left = 2
+				style_normal.border_width_right = 2
 				btn.add_theme_stylebox_override("normal", style_normal)
+				
+				var style_hover = style_normal.duplicate()
+				style_hover.bg_color = Color(1.0, 0.75, 0.15, 0.2)
+				if btn == dev_btn:
+					style_hover.bg_color = Color(1.0, 0.2, 0.2, 0.2)
 				btn.add_theme_stylebox_override("hover", style_hover)
-				btn.add_theme_stylebox_override("pressed", style_hover)
+				
+				var style_pressed = style_normal.duplicate()
+				style_pressed.bg_color = Color(1.0, 0.75, 0.15, 0.4)
+				if btn == dev_btn:
+					style_pressed.bg_color = Color(1.0, 0.2, 0.2, 0.4)
+				btn.add_theme_stylebox_override("pressed", style_pressed)
 				btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 
 	color_rect.modulate.a = 0.0
@@ -76,9 +88,11 @@ func _ready() -> void:
 	tw.tween_property(color_rect, "modulate:a", 1.0, 0.5)
 
 	if normal_btn:
-		normal_btn.pressed.connect(func(): _start_game(false))
+		normal_btn.pressed.connect(_on_normal_pressed)
 	if survival_btn:
-		survival_btn.pressed.connect(func(): _start_game(true))
+		survival_btn.pressed.connect(_on_survival_pressed)
+	if dev_btn:
+		dev_btn.pressed.connect(_on_dev_pressed)
 
 func _style_label(lbl: Label, size: int, color: Color, font: Font) -> void:
 	if not lbl: return
@@ -89,9 +103,22 @@ func _style_label(lbl: Label, size: int, color: Color, font: Font) -> void:
 	lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
 	lbl.add_theme_constant_override("outline_size", 5)
 
-func _start_game(is_survival: bool) -> void:
+func _on_normal_pressed() -> void:
 	if is_starting: return
+	_start_game(false)
+
+func _on_survival_pressed() -> void:
+	if is_starting: return
+	_start_game(true)
+	
+func _on_dev_pressed() -> void:
+	_start_game(true, true)
+
+func _start_game(is_survival: bool, is_dev: bool = false) -> void:
 	is_starting = true
 	GameState.reset()
 	GameState.is_survival_mode = is_survival
+	if is_dev:
+		GameState.current_wave = 5
 	start_game.emit(is_survival)
+
