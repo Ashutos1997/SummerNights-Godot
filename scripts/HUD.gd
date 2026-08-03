@@ -797,6 +797,7 @@ func show_shop() -> void:
 	shop_overlay.visible = true
 	shop_overlay.modulate.a = 0.0
 	var tw = create_tween()
+	tw.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	tw.tween_property(shop_overlay, "modulate:a", 1.0, 0.3)
 	
 	current_shop_upgrades = _get_random_upgrades(3)
@@ -830,6 +831,7 @@ func _apply_upgrade(upgrade_id: String) -> void:
 	ui_tick_player.play()
 	
 	var tw = create_tween()
+	tw.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	tw.tween_property(shop_overlay, "modulate:a", 0.0, 0.3)
 	tw.tween_callback(func():
 		shop_overlay.visible = false

@@ -1848,6 +1848,9 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			solar_wind_enabled = GameState.current_wave >= 4
 			flare_spawn_timer = min(flare_spawn_timer, max(2.5, 8.0 - (GameState.current_wave * 0.5)))
 			
+			sun_sway_amplitude = min(8.0, GameState.current_wave * 1.5)
+			sun_sway_speed = min(2.0, 0.5 + GameState.current_wave * 0.2)
+			
 			# Prepare next boss wave
 			if GameState.current_wave % 5 == 0:
 				is_two_phase = true

@@ -1119,6 +1119,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = SubResource("Theme_hud")
 
 [node name="ColorRect" type="ColorRect" parent="HUD/ShopOverlay"]
 layout_mode = 1
@@ -1164,13 +1165,19 @@ theme_override_constants/separation = 16
 alignment = 1
 
 [node name="Option1" type="Button" parent="HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/OptionsContainer"]
-custom_minimum_size = Vector2(200, 100)
+custom_minimum_size = Vector2(240, 120)
 layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
 
 [node name="Option2" type="Button" parent="HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/OptionsContainer"]
-custom_minimum_size = Vector2(200, 100)
+custom_minimum_size = Vector2(240, 120)
 layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
 
 [node name="Option3" type="Button" parent="HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/OptionsContainer"]
-custom_minimum_size = Vector2(200, 100)
+custom_minimum_size = Vector2(240, 120)
 layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
