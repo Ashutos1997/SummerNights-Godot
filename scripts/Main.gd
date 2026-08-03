@@ -164,6 +164,7 @@ var sky_mat:     ProceduralSkyMaterial
 var _sky_shader_mat: ShaderMaterial
 var haze_mat:    ShaderMaterial
 var steam_particles: GPUParticles3D
+var splash_particles: GPUParticles3D
 var dir_light:   DirectionalLight3D
 var camera:      Camera3D
 var sun:         Node3D
@@ -762,6 +763,32 @@ func _build_scene() -> void:
 	steam_particles.amount = 15
 	steam_particles.lifetime = 1.2
 	sun.add_child(steam_particles)
+	
+	# Water splash particles
+	splash_particles = GPUParticles3D.new()
+	var sp_mat = ParticleProcessMaterial.new()
+	sp_mat.direction = Vector3(0, 1, 0)
+	sp_mat.spread = 70.0
+	sp_mat.initial_velocity_min = 4.0
+	sp_mat.initial_velocity_max = 8.0
+	sp_mat.gravity = Vector3(0, -12.0, 0)
+	sp_mat.scale_min = 0.1
+	sp_mat.scale_max = 0.3
+	var sp_mesh = SphereMesh.new()
+	sp_mesh.radius = 0.2
+	sp_mesh.height = 0.4
+	var sp_mesh_mat = StandardMaterial3D.new()
+	sp_mesh_mat.albedo_color = Color(0.2, 0.7, 1.0, 0.8)
+	sp_mesh_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	sp_mesh.material = sp_mesh_mat
+	splash_particles.process_material = sp_mat
+	splash_particles.draw_pass_1 = sp_mesh
+	splash_particles.emitting = false
+	splash_particles.one_shot = true
+	splash_particles.explosiveness = 0.95
+	splash_particles.amount = 25
+	splash_particles.lifetime = 0.6
+	add_child(splash_particles)
  
 	# ── Gun ──────────────────────────────────────────────────────────────────
 	gun = Node3D.new()
@@ -1369,6 +1396,9 @@ func _process(delta: float) -> void:
 			if hit_pos.distance_to(sun.position) > 4.5:
 				_spawn_wet_mark(hit_pos, hit_normal)
 				wet_spawn_timer = 0.08
+				if splash_particles and randf() < 0.3:
+					splash_particles.global_position = hit_pos
+					splash_particles.restart()
 				
 		# Check Seagull Interception
 		if is_instance_valid(seagull_layer):
@@ -1405,6 +1435,9 @@ func _process(delta: float) -> void:
 						if steam_particles and randf() < 0.2:
 							steam_particles.global_position = flare_pos
 							steam_particles.restart()
+						if splash_particles and randf() < 0.2:
+							splash_particles.global_position = flare_pos
+							splash_particles.restart()
 							
 						if cur_hp <= 0.0:
 							intercepted_flares.append(flare)
@@ -1749,6 +1782,9 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 		particles.restart()
 	if not steam_particles.emitting:
 		steam_particles.restart()
+	if splash_particles and not splash_particles.emitting and randf() < 0.3:
+		splash_particles.global_position = sunspot_node.global_position
+		splash_particles.restart()
 	
 
 		
@@ -1845,6 +1881,15 @@ func _update_sky(instant: bool) -> void:
 	# Drive heat haze screen distortion based on temperature heat ratio
 	if haze_mat:
 		haze_mat.set_shader_parameter("heat_ratio", ratio)
+		
+	# Dynamic Heat Lighting
+	if world_env and world_env.environment:
+		var env = world_env.environment
+		env.ambient_light_color = Color(0.75, 0.65, 0.6).lerp(Color(0.4, 0.1, 0.1), ratio)
+		env.volumetric_fog_albedo = Color(0.9, 0.6, 0.3).lerp(Color(0.8, 0.2, 0.1), ratio)
+		
+	if dir_light:
+		dir_light.light_color = Color(1.0, 0.75, 0.35).lerp(Color(1.0, 0.3, 0.1), ratio)
 
 	# Sun visual phases (Middle states)
 	if not is_sun_frozen:
