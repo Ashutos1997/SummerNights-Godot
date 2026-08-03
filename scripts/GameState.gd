@@ -111,8 +111,19 @@ var is_survival_mode: bool = false
 var current_wave: int = 1
 var survival_time: float = 0.0
 
+# Shop Upgrades
+var max_water_mult: float = 1.0
+var cooling_power_mult: float = 1.0
+var heat_resistance: float = 0.0
+var bonus_ice_charges: int = 0
+
 func reset() -> void:
 	level = 1
 	ice_charges_remaining = 0
 	current_wave = 1
 	survival_time = 0.0
+	
+	max_water_mult = 1.0
+	cooling_power_mult = 1.0
+	heat_resistance = 0.0
+	bonus_ice_charges = 0

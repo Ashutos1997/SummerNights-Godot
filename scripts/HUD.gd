@@ -3,6 +3,7 @@ extends CanvasLayer
 signal sensitivity_changed(value: float)
 signal reduce_motion_changed(enabled: bool)
 signal weapon_changed(weapon_id: String)
+signal shop_closed()
 
 @onready var weapon_wheel = $HUD/WeaponWheel
 @onready var heat_bar = $HUD/SunHeatBar/HeatBar
@@ -39,6 +40,13 @@ signal weapon_changed(weapon_id: String)
 @onready var lose_wave_time_lbl= $HUD/LoseScreen/ColorRect/VBoxContainer/WaveTimeLbl
 @onready var retry_btn         = $HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer/RetryBtn
 @onready var menu_btn          = $HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer/MenuBtn
+
+@onready var shop_overlay      = $HUD/ShopOverlay
+@onready var shop_title        = $HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/Title
+@onready var shop_subtitle     = $HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/Subtitle
+@onready var shop_opt1         = $HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/OptionsContainer/Option1
+@onready var shop_opt2         = $HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/OptionsContainer/Option2
+@onready var shop_opt3         = $HUD/ShopOverlay/CenterContainer/PanelContainer/VBoxContainer/OptionsContainer/Option3
 
 @onready var pause_screen       = $HUD/pause_screen
 @onready var pause_title        = $HUD/pause_screen/ColorRect/VBoxContainer/Title
@@ -125,6 +133,14 @@ func _ready() -> void:
 	settings_screen.visible = false
 	credits_screen.visible = false
 	end_screen.visible = false
+	
+	if shop_overlay:
+		shop_overlay.visible = false
+		shop_opt1.pressed.connect(_on_shop_opt1_pressed)
+		shop_opt2.pressed.connect(_on_shop_opt2_pressed)
+		shop_opt3.pressed.connect(_on_shop_opt3_pressed)
+		
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	
 	# UI tick player for button hover SFX
 	ui_tick_player = _make_ui_tick_player()
@@ -765,6 +781,70 @@ func _make_ui_tick_player() -> AudioStreamPlayer:
 	player.volume_db = -18.0
 	add_child(player)
 	return player
+
+func _on_github_btn_pressed() -> void:
+	OS.shell_open("https://github.com/Ashutos1997/SummerNights-Godot")
+	ui_tick_player.play()
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Shop Logic
+# ─────────────────────────────────────────────────────────────────────────────
+
+var current_shop_upgrades = []
+
+func show_shop() -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	shop_overlay.visible = true
+	shop_overlay.modulate.a = 0.0
+	var tw = create_tween()
+	tw.tween_property(shop_overlay, "modulate:a", 1.0, 0.3)
+	
+	current_shop_upgrades = _get_random_upgrades(3)
+	_setup_shop_button(shop_opt1, current_shop_upgrades[0])
+	_setup_shop_button(shop_opt2, current_shop_upgrades[1])
+	_setup_shop_button(shop_opt3, current_shop_upgrades[2])
+
+func _get_random_upgrades(count: int) -> Array:
+	var pool = [
+		{"id": "water", "name": "Expanded Tank", "desc": "+30% Max Water"},
+		{"id": "cooling", "name": "High-Pressure Pump", "desc": "+20% Cooling Power"},
+		{"id": "ice", "name": "Ice Mastery", "desc": "+1 Max Ice Charge"},
+		{"id": "heat", "name": "Thermal Insulation", "desc": "-15% Base Heat Gen"}
+	]
+	pool.shuffle()
+	return pool.slice(0, count)
+
+func _setup_shop_button(btn: Button, upgrade: Dictionary) -> void:
+	btn.text = upgrade["name"] + "\n" + upgrade["desc"]
+
+func _apply_upgrade(upgrade_id: String) -> void:
+	if upgrade_id == "water":
+		GameState.max_water_mult += 0.3
+	elif upgrade_id == "cooling":
+		GameState.cooling_power_mult += 0.2
+	elif upgrade_id == "ice":
+		GameState.bonus_ice_charges += 1
+	elif upgrade_id == "heat":
+		GameState.heat_resistance += 0.15
+		
+	ui_tick_player.play()
+	
+	var tw = create_tween()
+	tw.tween_property(shop_overlay, "modulate:a", 0.0, 0.3)
+	tw.tween_callback(func():
+		shop_overlay.visible = false
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		shop_closed.emit()
+	)
+
+func _on_shop_opt1_pressed() -> void:
+	_apply_upgrade(current_shop_upgrades[0]["id"])
+
+func _on_shop_opt2_pressed() -> void:
+	_apply_upgrade(current_shop_upgrades[1]["id"])
+
+func _on_shop_opt3_pressed() -> void:
+	_apply_upgrade(current_shop_upgrades[2]["id"])
 
 func _play_ui_tick() -> void:
 	if not ui_tick_player: return

@@ -110,9 +110,9 @@ func _load_weapon_model() -> void:
 	_adjust_gun_materials(gun_model)
 	gun.add_child(gun_model)
 	
-	MAX_WATER = w_cfg.water_capacity
+	MAX_WATER = w_cfg.water_capacity * GameState.max_water_mult
 	water_tank = MAX_WATER
-	current_weapon_power = w_cfg.cooling_power
+	current_weapon_power = w_cfg.cooling_power * GameState.cooling_power_mult
 	current_weapon_crit = w_cfg.crit_multiplier
 	current_weapon_recharge = w_cfg.recharge_rate
 	
@@ -260,6 +260,9 @@ func _ready() -> void:
 	_build_environment()
 	_update_sky(true)
 	_sync_light_to_sun()
+	
+	if hud:
+		hud.shop_closed.connect(_on_shop_closed)
 	
 	level = GameState.level
 	defeat_triggered = false
@@ -1290,7 +1293,7 @@ func _process(delta: float) -> void:
 	
 	# Heat Regeneration
 	if temperature < MAX_TEMP and not is_sun_frozen:
-		temperature += heat_regen_base * delta # Sun gets hotter over time
+		temperature += (heat_regen_base * (1.0 - GameState.heat_resistance)) * delta # Sun gets hotter over time
 		_update_sky(false)
 
 	# Solar Wind hazard
@@ -1809,12 +1812,16 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			# Boss wave reward
 			if (GameState.current_wave - 1) % 5 == 0:
 				water_tank = MAX_WATER
-				GameState.ice_charges_remaining += 1
+				GameState.ice_charges_remaining += 1 + GameState.bonus_ice_charges
 				water_changed.emit(water_tank, MAX_WATER)
+				
+				if hud:
+					get_tree().paused = true
+					hud.show_shop()
 				
 			max_survival_ice_charges = max(max_survival_ice_charges, GameState.ice_charges_remaining)
 			if hud:
-				hud.update_ice_charges(GameState.ice_charges_remaining, max_survival_ice_charges)
+				hud.update_ice_charges(GameState.ice_charges_remaining, max_survival_ice_charges + GameState.bonus_ice_charges)
 				
 				if GameState.current_wave == 2 or GameState.current_wave == 3:
 					hud.show_weapon_unlock()
@@ -2255,6 +2262,7 @@ func _trigger_phase2() -> void:
 func _shoot_ice() -> void:
 	GameState.ice_charges_remaining -= 1
 	var total = max_survival_ice_charges if GameState.is_survival_mode else current_config.ice_charges
+	total += GameState.bonus_ice_charges
 	hud.update_ice_charges(GameState.ice_charges_remaining, total)
 	
 	ice_shoot_sfx.play()
@@ -2386,3 +2394,12 @@ func _on_game_paused() -> void:
 func _on_game_resumed() -> void:
 	timer_running = true
 	shoot_loop_sfx.stream_paused = false
+
+func _on_shop_closed() -> void:
+	_load_weapon_model() # Refreshes stats in case multipliers changed
+	
+	if hud:
+		hud.update_ice_charges(GameState.ice_charges_remaining, (max_survival_ice_charges if GameState.is_survival_mode else GameState.LEVEL_CONFIG[GameState.level]["ice_charges"]) + GameState.bonus_ice_charges)
+	
+	if get_tree().paused:
+		get_tree().paused = false
