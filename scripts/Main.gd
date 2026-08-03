@@ -1380,7 +1380,8 @@ func _process(delta: float) -> void:
 	# Heat Regeneration
 	if temperature < MAX_TEMP and not is_sun_frozen and active_weather != "eclipse":
 		temperature += (heat_regen_base * (1.0 - GameState.heat_resistance)) * delta # Sun gets hotter over time
-		_update_sky(false)
+		
+	_update_sky(false)
 
 	# Solar Wind hazard
 	if solar_wind_enabled and not is_title_screen:
