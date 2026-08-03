@@ -875,7 +875,7 @@ func _setup_shop_button(btn: Button, upgrade: Dictionary) -> void:
 		title_lbl.text = upgrade["name"]
 		# Apply nice drop shadow settings like the Weapon Wheel
 		var ls = LabelSettings.new()
-		ls.font = title_lbl.get_theme_font("font") if title_lbl.has_theme_font_override("font") else null
+		# Inherit font from theme by leaving ls.font untouched
 		ls.font_size = 28
 		ls.font_color = Color(1.0, 0.9, 0.2, 1.0)
 		ls.outline_size = 4
