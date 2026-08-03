@@ -158,18 +158,22 @@ void fragment() {
 		smat.set_shader_parameter("dim_amount", 0.0)
 		shop_overlay.get_node("ColorRect").material = smat
 		
-		# Style the cards with adventure UI panel
-		var panel_tex = load("res://assets/ui/ui_adventure/PNG/Default/panel_brown.png")
-		var sbox = StyleBoxTexture.new()
-		sbox.texture = panel_tex
-		sbox.texture_margin_left = 10
-		sbox.texture_margin_top = 10
-		sbox.texture_margin_right = 10
-		sbox.texture_margin_bottom = 10
-		sbox.modulate_color = Color(1, 1, 1, 0.85)
+		# Style the cards with Weapon Wheel sleek UI
+		var sbox = StyleBoxFlat.new()
+		sbox.bg_color = Color(0.05, 0.02, 0.1, 0.85)
+		sbox.corner_radius_top_left = 16
+		sbox.corner_radius_top_right = 16
+		sbox.corner_radius_bottom_right = 16
+		sbox.corner_radius_bottom_left = 16
+		sbox.border_width_bottom = 2
+		sbox.border_width_top = 2
+		sbox.border_width_left = 2
+		sbox.border_width_right = 2
+		sbox.border_color = Color(1.0, 0.85, 0.2, 0.3)
 
 		var hover_sbox = sbox.duplicate()
-		hover_sbox.modulate_color = Color(1, 1, 1, 1.0)
+		hover_sbox.border_color = Color(1.0, 0.85, 0.2, 1.0)
+		hover_sbox.bg_color = Color(0.1, 0.05, 0.15, 0.95)
 		
 		for btn in [shop_opt1, shop_opt2, shop_opt3]:
 			btn.add_theme_stylebox_override("normal", sbox)
