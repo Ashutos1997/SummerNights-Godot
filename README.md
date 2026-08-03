@@ -73,20 +73,29 @@ SummerNights-Godot/
 │   ├── TitleScreen.tscn
 │   ├── LoadingScreen.tscn
 │   ├── Main.tscn
-│   └── HUD.tscn
+│   ├── HUD.tscn
+│   ├── GameScene.tscn
+│   └── IceBlast.tscn
 ├── scripts/
 │   ├── Main.gd               - Core game loop, solar flares, vents, environment
 │   ├── HUD.gd                - HUD, settings, credits, crosshair, victory screens
+│   ├── GameScene.gd          - Game mode manager (Wave/Endless)
+│   ├── WaterGun.gd           - Water gun shooting logic and capacity
+│   ├── WeaponWheel.gd        - Weapon selection UI and logic
+│   ├── IceBlast.gd           - Ice blast projectile physics and effects
+│   ├── Sun.gd                - Sun face expressions and reactions
 │   ├── CloudLayer.gd         - Procedural drifting 3D clouds
 │   ├── SeagullLayer.gd       - Animated low-poly seagulls
+│   ├── TitleScreen.gd        - Title screen interactions
 │   ├── GameState.gd          - Autoload state (level, volume, accessibility)
 │   └── LoadingScreen.gd      - Loading screen transitions
 └── assets/
     ├── summer_night_sky.gdshader
     ├── heat_haze.gdshader
     ├── stylized_water.gdshader
+    ├── sky_gradient.gdshader
     ├── models/
-    ├── pirate/
+    ├── textures/
     └── audio/
 ```
 

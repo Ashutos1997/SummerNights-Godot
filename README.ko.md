@@ -73,21 +73,30 @@ SummerNights-Godot/
 │   ├── TitleScreen.tscn      - 타이틀 화면
 │   ├── LoadingScreen.tscn    - 로딩 화면
 │   ├── Main.tscn             - 3D 게임플레이 씬
-│   └── HUD.tscn              - 2D UI 레이어
+│   ├── HUD.tscn              - 2D UI 레이어
+│   ├── GameScene.tscn        - 게임 씬
+│   └── IceBlast.tscn         - 얼음 폭발 씬
 ├── scripts/
 │   ├── Main.gd               - 핵심 게임 루프, 태양 파편, 분출구, 환경
 │   ├── HUD.gd                - HUD, 설정, 크레딧, 크로스헤어, 승리 화면
+│   ├── GameScene.gd          - 게임 모드 관리자 (웨이브/무한 모드)
+│   ├── WaterGun.gd           - 물총 발사 로직 및 물탱크 용량 관리
+│   ├── WeaponWheel.gd        - 무기 선택 UI 및 로직
+│   ├── IceBlast.gd           - 얼음 폭발 발사체 물리 및 효과
+│   ├── Sun.gd                - 태양 표정 및 반응
 │   ├── CloudLayer.gd         - 절차적 생성 3D 구름
 │   ├── SeagullLayer.gd       - 애니메이션 갈매기
+│   ├── TitleScreen.gd        - 타이틀 화면 상호작용
 │   ├── GameState.gd          - 오토로드 상태 (레벨, 볼륨, 접근성, 언어)
 │   └── LoadingScreen.gd      - 로딩 화면 전환
 └── assets/
     ├── summer_night_sky.gdshader
     ├── heat_haze.gdshader
     ├── stylized_water.gdshader
+    ├── sky_gradient.gdshader
     ├── fonts/                - Galmuri11.ttf (한국어 지원)
     ├── models/
-    ├── pirate/
+    ├── textures/
     └── audio/
 ```
 
