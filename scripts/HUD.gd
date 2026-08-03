@@ -3,7 +3,7 @@ extends CanvasLayer
 signal sensitivity_changed(value: float)
 signal reduce_motion_changed(enabled: bool)
 signal weapon_changed(weapon_id: String)
-signal shop_closed()
+
 
 @onready var weapon_wheel = $HUD/WeaponWheel
 @onready var heat_bar = $HUD/SunHeatBar/HeatBar
@@ -41,12 +41,7 @@ signal shop_closed()
 @onready var retry_btn         = $HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer/RetryBtn
 @onready var menu_btn          = $HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer/MenuBtn
 
-@onready var shop_overlay      = $HUD/ShopOverlay
-@onready var shop_title        = $HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/Title
-@onready var shop_subtitle     = $HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/Subtitle
-@onready var shop_opt1         = $HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/OptionsContainer/Option1
-@onready var shop_opt2         = $HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/OptionsContainer/Option2
-@onready var shop_opt3         = $HUD/ShopOverlay/CenterContainer/MarginContainer/VBoxContainer/OptionsContainer/Option3
+
 
 @onready var pause_screen       = $HUD/pause_screen
 @onready var pause_title        = $HUD/pause_screen/ColorRect/VBoxContainer/Title
@@ -134,52 +129,7 @@ func _ready() -> void:
 	credits_screen.visible = false
 	end_screen.visible = false
 	
-	if shop_overlay:
-		shop_overlay.visible = false
-		shop_opt1.pressed.connect(_on_shop_opt1_pressed)
-		shop_opt2.pressed.connect(_on_shop_opt2_pressed)
-		shop_opt3.pressed.connect(_on_shop_opt3_pressed)
-		
-		var shader = Shader.new()
-		shader.code = """
-shader_type canvas_item;
-uniform sampler2D screen_texture : hint_screen_texture, filter_linear_mipmap;
-uniform float blur_amount : hint_range(0.0, 5.0) = 0.0;
-uniform float dim_amount : hint_range(0.0, 1.0) = 0.0;
 
-void fragment() {
-	vec4 bg = textureLod(screen_texture, SCREEN_UV, blur_amount);
-	COLOR = mix(bg, vec4(0.0, 0.0, 0.0, 1.0), dim_amount);
-}
-"""
-		var smat = ShaderMaterial.new()
-		smat.shader = shader
-		smat.set_shader_parameter("blur_amount", 0.0)
-		smat.set_shader_parameter("dim_amount", 0.0)
-		shop_overlay.get_node("ColorRect").material = smat
-		
-		# Style the cards with Weapon Wheel sleek UI
-		var sbox = StyleBoxFlat.new()
-		sbox.bg_color = Color(0.05, 0.02, 0.1, 0.85)
-		sbox.corner_radius_top_left = 16
-		sbox.corner_radius_top_right = 16
-		sbox.corner_radius_bottom_right = 16
-		sbox.corner_radius_bottom_left = 16
-		sbox.border_width_bottom = 2
-		sbox.border_width_top = 2
-		sbox.border_width_left = 2
-		sbox.border_width_right = 2
-		sbox.border_color = Color(1.0, 0.85, 0.2, 0.3)
-
-		var hover_sbox = sbox.duplicate()
-		hover_sbox.border_color = Color(1.0, 0.85, 0.2, 1.0)
-		hover_sbox.bg_color = Color(0.1, 0.05, 0.15, 0.95)
-		
-		for btn in [shop_opt1, shop_opt2, shop_opt3]:
-			btn.add_theme_stylebox_override("normal", sbox)
-			btn.add_theme_stylebox_override("hover", hover_sbox)
-			btn.add_theme_stylebox_override("pressed", hover_sbox)
-			btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 		
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	
@@ -827,100 +777,6 @@ func _on_github_btn_pressed() -> void:
 	OS.shell_open("https://github.com/Ashutos1997/SummerNights-Godot")
 	ui_tick_player.play()
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Shop Logic
-# ─────────────────────────────────────────────────────────────────────────────
-
-var current_shop_upgrades = []
-
-func show_shop() -> void:
-	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	shop_overlay.visible = true
-	shop_overlay.modulate.a = 0.0
-	
-	var bg = shop_overlay.get_node("ColorRect")
-	bg.material.set_shader_parameter("blur_amount", 0.0)
-	bg.material.set_shader_parameter("dim_amount", 0.0)
-	
-	var tw = create_tween()
-	tw.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-	tw.tween_property(shop_overlay, "modulate:a", 1.0, 0.3)
-	tw.parallel().tween_property(bg.material, "shader_parameter/blur_amount", 2.0, 0.3)
-	tw.parallel().tween_property(bg.material, "shader_parameter/dim_amount", 0.6, 0.3)
-	
-	shop_opt1.disabled = false
-	shop_opt2.disabled = false
-	shop_opt3.disabled = false
-	
-	current_shop_upgrades = _get_random_upgrades(3)
-	_setup_shop_button(shop_opt1, current_shop_upgrades[0])
-	_setup_shop_button(shop_opt2, current_shop_upgrades[1])
-	_setup_shop_button(shop_opt3, current_shop_upgrades[2])
-
-func _get_random_upgrades(count: int) -> Array:
-	var pool = [
-		{"id": "water", "name": "💧 Expanded Tank", "desc": "+30% Max Water"},
-		{"id": "cooling", "name": "⚙️ High-Pressure Pump", "desc": "+20% Cooling Power"},
-		{"id": "ice", "name": "❄️ Ice Mastery", "desc": "+1 Max Ice Charge"},
-		{"id": "heat", "name": "🌡️ Thermal Insulation", "desc": "-15% Base Heat Gen"}
-	]
-	pool.shuffle()
-	return pool.slice(0, count)
-
-func _setup_shop_button(btn: Button, upgrade: Dictionary) -> void:
-	var title_lbl = btn.get_node("Margin/VBox/TitleLabel") as Label
-	var desc_lbl = btn.get_node("Margin/VBox/DescLabel") as Label
-	
-	if title_lbl:
-		title_lbl.text = upgrade["name"]
-		# Apply nice drop shadow settings like the Weapon Wheel
-		var ls = LabelSettings.new()
-		# Inherit font from theme by leaving ls.font untouched
-		ls.font_size = 28
-		ls.font_color = Color(1.0, 0.9, 0.2, 1.0)
-		ls.outline_size = 4
-		ls.outline_color = Color(0, 0, 0, 1)
-		title_lbl.label_settings = ls
-		
-	if desc_lbl:
-		desc_lbl.text = upgrade["desc"]
-
-func _apply_upgrade(upgrade_id: String) -> void:
-	if upgrade_id == "water":
-		GameState.max_water_mult += 0.3
-	elif upgrade_id == "cooling":
-		GameState.cooling_power_mult += 0.2
-	elif upgrade_id == "ice":
-		GameState.bonus_ice_charges += 1
-	elif upgrade_id == "heat":
-		GameState.heat_resistance += 0.15
-		
-	shop_opt1.disabled = true
-	shop_opt2.disabled = true
-	shop_opt3.disabled = true
-		
-	ui_tick_player.play()
-	
-	var bg = shop_overlay.get_node("ColorRect")
-	var tw = create_tween()
-	tw.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-	tw.tween_property(shop_overlay, "modulate:a", 0.0, 0.3)
-	tw.parallel().tween_property(bg.material, "shader_parameter/blur_amount", 0.0, 0.3)
-	tw.parallel().tween_property(bg.material, "shader_parameter/dim_amount", 0.0, 0.3)
-	tw.tween_callback(func():
-		shop_overlay.visible = false
-		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-		shop_closed.emit()
-	)
-
-func _on_shop_opt1_pressed() -> void:
-	_apply_upgrade(current_shop_upgrades[0]["id"])
-
-func _on_shop_opt2_pressed() -> void:
-	_apply_upgrade(current_shop_upgrades[1]["id"])
-
-func _on_shop_opt3_pressed() -> void:
-	_apply_upgrade(current_shop_upgrades[2]["id"])
 
 func _play_ui_tick() -> void:
 	if not ui_tick_player: return

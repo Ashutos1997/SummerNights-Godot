@@ -261,9 +261,7 @@ func _ready() -> void:
 	_update_sky(true)
 	_sync_light_to_sun()
 	
-	if hud:
-		hud.shop_closed.connect(_on_shop_closed)
-	
+
 	level = GameState.level
 	defeat_triggered = false
 	cooldown_timer = 0.0
@@ -2402,12 +2400,3 @@ func _on_game_paused() -> void:
 func _on_game_resumed() -> void:
 	timer_running = true
 	shoot_loop_sfx.stream_paused = false
-
-func _on_shop_closed() -> void:
-	_load_weapon_model() # Refreshes stats in case multipliers changed
-	
-	if hud:
-		hud.update_ice_charges(GameState.ice_charges_remaining, (max_survival_ice_charges if GameState.is_survival_mode else GameState.LEVEL_CONFIG[GameState.level]["ice_charges"]) + GameState.bonus_ice_charges)
-	
-	if get_tree().paused:
-		get_tree().paused = false
