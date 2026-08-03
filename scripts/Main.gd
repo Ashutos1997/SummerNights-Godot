@@ -1260,19 +1260,22 @@ func _process(delta: float) -> void:
 		cooldown_timer += delta
 
 	# Sun bob and rotate
-	sun.position.y = sun_base_pos.y + sin(sun_time * sun_bob_speed) * sun_bob_amp
-	
 	if sun_sway_amplitude > 0.0:
 		var spd_mult = 0.0 if is_sun_frozen else 1.0
 		sun_move_time += delta * spd_mult
 		var x_offset = sin(sun_move_time * sun_sway_speed) * sun_sway_amplitude
-		var z_offset = 0.0
-		if sun_figure8:
-			z_offset = sin(sun_move_time * sun_sway_speed * 2.0) * (sun_sway_amplitude * 0.4)
 		sun.position.x = sun_base_pos.x + x_offset
-		sun.position.z = sun_base_pos.z + z_offset
+		
+		if sun_figure8:
+			var y_offset = sin(sun_move_time * sun_sway_speed * 2.0) * (sun_sway_amplitude * 0.5)
+			sun.position.y = sun_base_pos.y + y_offset
+			sun.position.z = sun_base_pos.z
+		else:
+			sun.position.y = sun_base_pos.y + sin(sun_time * sun_bob_speed) * sun_bob_amp
+			sun.position.z = sun_base_pos.z
 	else:
 		sun.position.x = sun_base_pos.x
+		sun.position.y = sun_base_pos.y + sin(sun_time * sun_bob_speed) * sun_bob_amp
 		sun.position.z = sun_base_pos.z
 
 	if sun_mesh:

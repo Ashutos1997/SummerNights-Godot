@@ -848,6 +848,10 @@ func show_shop() -> void:
 	tw.parallel().tween_property(bg.material, "shader_parameter/blur_amount", 2.0, 0.3)
 	tw.parallel().tween_property(bg.material, "shader_parameter/dim_amount", 0.6, 0.3)
 	
+	shop_opt1.disabled = false
+	shop_opt2.disabled = false
+	shop_opt3.disabled = false
+	
 	current_shop_upgrades = _get_random_upgrades(3)
 	_setup_shop_button(shop_opt1, current_shop_upgrades[0])
 	_setup_shop_button(shop_opt2, current_shop_upgrades[1])
@@ -890,6 +894,10 @@ func _apply_upgrade(upgrade_id: String) -> void:
 		GameState.bonus_ice_charges += 1
 	elif upgrade_id == "heat":
 		GameState.heat_resistance += 0.15
+		
+	shop_opt1.disabled = true
+	shop_opt2.disabled = true
+	shop_opt3.disabled = true
 		
 	ui_tick_player.play()
 	
