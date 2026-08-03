@@ -108,6 +108,7 @@ var fullscreen: bool = false
 var language: String = "EN"  # "EN" or "KR"
 var ice_charges_remaining: int = 0
 var is_survival_mode: bool = false
+var is_dev_mode: bool = false
 var current_wave: int = 1
 var survival_time: float = 0.0
 

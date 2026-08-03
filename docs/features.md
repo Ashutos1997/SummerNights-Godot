@@ -36,6 +36,12 @@ Weather events can randomly trigger mid-wave, forcing the player to adapt:
 *   **Dynamic Sky & Lighting:** The sky gradient, sun color (albedo/emission), and ambient lighting transition dynamically from afternoon to sunset as the wave progresses.
 *   **Sun Expressions:** The 2D face on the Sun reacts to events (getting angry, taking damage, critical states).
 *   **Heat Distortion:** A screen-space shader applies heat shimmer/refraction over the environment, which intensifies as the Sun gets hotter.
+
+## 6. Testing / Dev Mode
+Clicking `[DEV]` on the Title Screen starts the game in Developer Mode (starts at Wave 5). The following hotkeys become available:
+*   `[R]` - Instantly trigger a Rainstorm
+*   `[E]` - Instantly trigger a Solar Eclipse
+*   `[W]` - Skip current wave
 *   **Decorative Layers:**
     *   **Cloud Layer:** Stylized 3D clouds that float across the sky.
     *   **Seagull Layer:** Flocks of seagulls that fly in the distance.

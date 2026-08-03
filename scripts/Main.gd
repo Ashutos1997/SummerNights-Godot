@@ -2532,11 +2532,14 @@ func _reset_weather() -> void:
 	var wave_len = GameState.LEVEL_CONFIG[GameState.level].timer if not GameState.is_survival_mode else 60.0
 	weather_timer = randf_range(wave_len * 0.4, wave_len * 0.8)
 
-func _start_weather_event() -> void:
+func _start_weather_event(force_type: String = "") -> void:
 	if active_weather != "none": return
 	
-	# 50/50 chance for Rainstorm or Eclipse
-	if randf() > 0.5:
+	var is_rain = randf() > 0.5
+	if force_type == "rain": is_rain = true
+	elif force_type == "eclipse": is_rain = false
+	
+	if is_rain:
 		active_weather = "rain"
 		weather_duration = 10.0
 		weather_rain_particles.emitting = true
@@ -2556,3 +2559,16 @@ func _end_weather_event() -> void:
 		
 	active_weather = "none"
 	_update_sky(false)
+
+func _unhandled_input(event: InputEvent) -> void:
+	if GameState.is_dev_mode and event is InputEventKey and event.pressed and not event.echo:
+		match event.keycode:
+			KEY_R:
+				_end_weather_event()
+				_start_weather_event("rain")
+			KEY_E:
+				_end_weather_event()
+				_start_weather_event("eclipse")
+			KEY_W:
+				if level_timer > 0.0:
+					level_timer = 0.1 # Skip wave

@@ -6,6 +6,7 @@ extends Control
 @onready var subtitle_lbl = $ColorRect/VBoxContainer/Subtitle
 @onready var normal_btn = $ColorRect/VBoxContainer/ButtonsBox/NormalBtn
 @onready var survival_btn = $ColorRect/VBoxContainer/ButtonsBox/SurvivalBtn
+@onready var dev_btn = $ColorRect/VBoxContainer/ButtonsBox/DevBtn
 @onready var credit_lbl = $CreditLine
 
 signal start_game(is_survival: bool)
@@ -24,6 +25,7 @@ func _ready() -> void:
 	if subtitle_lbl: subtitle_lbl.text = "태양을 식혀라" if is_kr else "COOL DOWN THE SUN"
 	if normal_btn: normal_btn.text = "일반 모드" if is_kr else "NORMAL MODE"
 	if survival_btn: survival_btn.text = "무한 모드" if is_kr else "ENDLESS MODE"
+	if dev_btn: dev_btn.text = "DEV"
 	
 	if font:
 		var title_color = Color(1.0, 0.75, 0.15, 1.0)
@@ -48,8 +50,8 @@ func _ready() -> void:
 		_style_label(credit_lbl, 14 if is_kr else 12, Color(1.0, 1.0, 1.0, 0.7), font)
 		
 		# Style buttons
-		if normal_btn and survival_btn:
-			for btn in [normal_btn, survival_btn]:
+		if normal_btn and survival_btn and dev_btn:
+			for btn in [normal_btn, survival_btn, dev_btn]:
 				if not btn: continue
 				btn.add_theme_font_override("font", font)
 				btn.add_theme_font_size_override("font_size", 20 if is_kr else 18)
@@ -78,6 +80,8 @@ func _ready() -> void:
 					style_pressed.bg_color = Color(1.0, 0.8, 0.2, 0.4)
 				elif btn == survival_btn:
 					style_pressed.bg_color = Color(0.2, 0.8, 1.0, 0.4)
+				elif btn == dev_btn:
+					style_pressed.bg_color = Color(0.8, 0.2, 1.0, 0.4)
 				btn.add_theme_stylebox_override("pressed", style_pressed)
 				btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 
@@ -90,6 +94,8 @@ func _ready() -> void:
 		normal_btn.pressed.connect(_on_normal_pressed)
 	if survival_btn:
 		survival_btn.pressed.connect(_on_survival_pressed)
+	if dev_btn:
+		dev_btn.pressed.connect(_on_dev_pressed)
 
 func _style_label(lbl: Label, size: int, color: Color, font: Font) -> void:
 	if not lbl: return
@@ -108,10 +114,18 @@ func _on_survival_pressed() -> void:
 	if is_starting: return
 	_start_game(true)
 
+func _on_dev_pressed() -> void:
+	if is_starting: return
+	_start_game(false, true)
+
 func _start_game(is_survival: bool, is_dev: bool = false) -> void:
 	is_starting = true
 	GameState.reset()
 	GameState.is_survival_mode = is_survival
+	
 	if is_dev:
-		GameState.current_wave = 5
-	start_game.emit(is_survival)
+		GameState.is_dev_mode = true
+		
+	var tw = create_tween()
+	tw.tween_property(color_rect, "modulate:a", 0.0, 0.5)
+	tw.tween_callback(func(): start_game.emit(is_survival))
