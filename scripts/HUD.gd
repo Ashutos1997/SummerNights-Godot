@@ -1207,29 +1207,20 @@ func show_toast(title: String, description: String, icon_path: String, color: Co
 	add_child(audio)
 	audio.play()
 	
-	# Slide in animation
-	panel.position.x = 400
+	# Fade in animation
 	panel.modulate.a = 0.0
 	var tween = create_tween()
 	
-	# 1. Slide in (parallel)
-	tween.set_parallel(true)
-	tween.tween_property(panel, "position:x", 0.0, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tween.tween_property(panel, "modulate:a", 1.0, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	# 1. Fade in
+	tween.tween_property(panel, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	
-	# 2. Wait (sequential)
-	tween.set_parallel(false)
-	tween.tween_interval(6.0)
+	# 2. Wait
+	tween.tween_interval(3.5)
 	
-	# 3. Slide out
-	# First out-property MUST be sequential to wait for the interval
-	tween.tween_property(panel, "position:x", 400.0, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-	# Second out-property is parallel to the first
-	tween.set_parallel(true)
-	tween.tween_property(panel, "modulate:a", 0.0, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	# 3. Fade out
+	tween.tween_property(panel, "modulate:a", 0.0, 0.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 	
-	# 4. Cleanup (sequential)
-	tween.set_parallel(false)
+	# 4. Cleanup
 	tween.tween_callback(func():
 		panel.queue_free()
 		audio.queue_free()

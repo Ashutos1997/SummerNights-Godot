@@ -319,8 +319,7 @@ func _ready() -> void:
 		hud.update_ice_charges(GameState.ice_charges_remaining, cfg.ice_charges)
 		if GameState.level == 2:
 			hud.show_weapon_unlock()
-		if GameState.level == 3:
-			hud.show_weapon_unlock()
+		elif GameState.level == 3:
 			hud.show_ice_unlock()
 		
 	projectile_hit.connect(hud._on_projectile_hit)
