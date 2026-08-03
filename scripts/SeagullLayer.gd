@@ -164,6 +164,47 @@ func _create_seagull_mesh() -> Node3D:
 	right_pivot.add_child(right_tip)
 
 	bird_root.scale = Vector3(1.0, 1.0, 1.0)
+	
+	# Squawk SFX
+	var squawk_sfx = AudioStreamPlayer3D.new()
+	squawk_sfx.stream = load("res://assets/audio/sfx/hit_sun.ogg")
+	squawk_sfx.volume_db = -8.0
+	squawk_sfx.max_distance = 40.0
+	squawk_sfx.name = "SquawkSfx"
+	bird_root.add_child(squawk_sfx)
+	
+	# Feathers Particles
+	var feathers = GPUParticles3D.new()
+	feathers.name = "Feathers"
+	feathers.emitting = false
+	feathers.one_shot = true
+	feathers.explosiveness = 0.95
+	feathers.amount = 8
+	feathers.lifetime = 1.5
+	
+	var f_mat = StandardMaterial3D.new()
+	f_mat.albedo_color = Color(0.9, 0.9, 0.95)
+	f_mat.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+	
+	var f_mesh = QuadMesh.new()
+	f_mesh.size = Vector2(0.06, 0.12)
+	f_mesh.material = f_mat
+	feathers.draw_pass_1 = f_mesh
+	
+	var f_proc = ParticleProcessMaterial.new()
+	f_proc.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	f_proc.emission_sphere_radius = 0.4
+	f_proc.direction = Vector3(0, 1, 0)
+	f_proc.spread = 80.0
+	f_proc.initial_velocity_min = 1.0
+	f_proc.initial_velocity_max = 3.0
+	f_proc.gravity = Vector3(0, -0.8, 0)
+	f_proc.angular_velocity_min = -180.0
+	f_proc.angular_velocity_max = 180.0
+	f_proc.damping_min = 1.0
+	f_proc.damping_max = 2.0
+	feathers.process_material = f_proc
+	bird_root.add_child(feathers)
 
 	return bird_root
 
@@ -172,12 +213,28 @@ func scare_bird(b: Dictionary) -> void:
 		b["state"] = "fleeing"
 		var node = b["node"] as Node3D
 		b["start_pos"] = node.position
+		
+		# Squawk!
+		var sfx = node.get_node_or_null("SquawkSfx")
+		if sfx:
+			sfx.pitch_scale = randf_range(3.0, 4.5) # Pitch up to sound like a squeak/squawk
+			sfx.play()
+			
+		# Feathers!
+		var feathers = node.get_node_or_null("Feathers")
+		if feathers:
+			feathers.restart()
+			
+		# Fly away faster!
+		b["speed"] = (b["speed"] as float) * 1.5
+		b["flap_speed"] = (b["flap_speed"] as float) * 1.5
+		
 		var future_angle = (b["angle"] as float) + (b["speed"] as float) * 2.0
 		var rad = b["radius"] as float
 		var target = Vector3(center_pos.x + cos(future_angle)*rad, b["height"], center_pos.z + sin(future_angle)*rad)
 		b["target_pos"] = target
 		var mid = (b["start_pos"] + target) / 2.0
-		b["ctrl_pos"] = Vector3(mid.x, max(target.y + 5.0, 30.0), mid.z)
+		b["ctrl_pos"] = Vector3(mid.x, max(target.y + 8.0, 30.0), mid.z) # Fly up higher and faster
 		b["anim_t"] = 0.0
 
 func _process(delta: float) -> void:
@@ -259,7 +316,7 @@ func _process(delta: float) -> void:
 			
 		elif state == "fleeing":
 			var t = b.get("anim_t", 0.0) as float
-			t += delta / 2.0 # 2 seconds to flee back to orbit
+			t += delta / 1.2 # 1.2 seconds to flee back to orbit (much faster than landing)
 			b["anim_t"] = t
 			
 			if t >= 1.0:
