@@ -27,7 +27,12 @@ This document serves as the master record for all currently implemented features
 *   **Solar Wind:** A physical force emitted by the Sun that pushes the player's crosshair away, requiring them to actively fight the mouse to maintain aim.
 *   **Two-Phase Bosses:** Boss waves (e.g., Wave 5) have two phases. Depleting the timer triggers Phase 2, which resets the timer and immediately spikes the heat to a critical level (e.g., 60%).
 
-## 4. Visuals & Environment
+## 4. Dynamic Weather Events
+Weather events can randomly trigger mid-wave, forcing the player to adapt:
+*   **Rainstorms:** A massive downpour begins. Ambient lighting cools, and the Sun's heat begins to slowly drop. The player's water tank rapidly refills, allowing for infinite firing during the storm.
+*   **Solar Eclipses:** The sky drops into a moody twilight and the Sun becomes a dark silhouette with a bright corona. The Sun stops passively generating heat, but it begins rapidly firing high-speed, dark purple "Shadow Flares" that must be intercepted.
+
+## 5. Visuals & Environment
 *   **Dynamic Sky & Lighting:** The sky gradient, sun color (albedo/emission), and ambient lighting transition dynamically from afternoon to sunset as the wave progresses.
 *   **Sun Expressions:** The 2D face on the Sun reacts to events (getting angry, taking damage, critical states).
 *   **Heat Distortion:** A screen-space shader applies heat shimmer/refraction over the environment, which intensifies as the Sun gets hotter.

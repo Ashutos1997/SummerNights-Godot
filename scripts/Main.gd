@@ -200,6 +200,12 @@ var flare_spawn_timer: float = 8.0
 var flare_mat: StandardMaterial3D
 var flare_intercept_sfx: AudioStreamPlayer
 
+# Weather system
+var active_weather: String = "none" # "none", "rain", "eclipse"
+var weather_timer: float = 0.0
+var weather_duration: float = 0.0
+var weather_rain_particles: GPUParticles3D
+
 var foliage_props: Array[Node3D] = []
 
 var water_mat:   Material
@@ -295,6 +301,7 @@ func _ready() -> void:
 	else:
 		level_timer = cfg.timer
 	timer_running = true
+	_reset_weather()
 
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	hud = load("res://scenes/HUD.tscn").instantiate()
@@ -548,6 +555,43 @@ func _build_scene() -> void:
 	camera = Camera3D.new()
 	camera.position = Vector3(0, 0, 5)
 	add_child(camera)
+	
+	# ── Weather Rain Particles ───────────────────────────────────────────────
+	weather_rain_particles = GPUParticles3D.new()
+	weather_rain_particles.name = "RainStorm"
+	
+	var rain_mat = StandardMaterial3D.new()
+	rain_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	rain_mat.albedo_color = Color(0.6, 0.8, 1.0, 0.4)
+	rain_mat.emission_enabled = true
+	rain_mat.emission = Color(0.3, 0.5, 0.8)
+	rain_mat.emission_energy_multiplier = 0.2
+	rain_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	
+	var rain_mesh = QuadMesh.new()
+	rain_mesh.size = Vector2(0.04, 1.2)
+	rain_mesh.material = rain_mat
+	
+	weather_rain_particles.mesh = rain_mesh
+	weather_rain_particles.amount = 800
+	weather_rain_particles.lifetime = 1.0
+	weather_rain_particles.fixed_fps = 60
+	weather_rain_particles.visibility_aabb = AABB(Vector3(-50, -50, -50), Vector3(100, 100, 100))
+	
+	var rain_proc = ParticleProcessMaterial.new()
+	rain_proc.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	rain_proc.emission_box_extents = Vector3(40.0, 2.0, 40.0)
+	rain_proc.direction = Vector3(0, -1, 0)
+	rain_proc.spread = 5.0
+	rain_proc.initial_velocity_min = 35.0
+	rain_proc.initial_velocity_max = 45.0
+	rain_proc.gravity = Vector3(0, -20.0, 0)
+	weather_rain_particles.process_material = rain_proc
+	
+	camera.add_child(weather_rain_particles)
+	weather_rain_particles.position = Vector3(0, 15, 0)
+	weather_rain_particles.emitting = false
+
 
 	# ── Animated Drifting Low-Poly 3D Cloud Layer ───────────────────────────
 	var cloud_layer_script = load("res://scripts/CloudLayer.gd")
@@ -1039,7 +1083,10 @@ func _relocate_sunspot() -> void:
 
 func _spawn_solar_flare() -> void:
 	var lvl = float(GameState.level)
-	flare_spawn_timer = randf_range(12.0 - lvl, 15.0 - lvl)
+	if active_weather == "eclipse":
+		flare_spawn_timer = randf_range(1.5, 3.0) # Spam shadow flares
+	else:
+		flare_spawn_timer = randf_range(12.0 - lvl, 15.0 - lvl)
 	var flare_root = Node3D.new()
 	
 	# Low-Poly Solar Mass Cluster (5 overlapping low-poly spheres matching CloudLayer style)
@@ -1059,7 +1106,15 @@ func _spawn_solar_flare() -> void:
 		sphere.radial_segments = 8
 		sphere.rings = 6
 		mesh_inst.mesh = sphere
-		mesh_inst.material_override = flare_mat
+		if active_weather == "eclipse":
+			var shadow_mat = StandardMaterial3D.new()
+			shadow_mat.albedo_color = Color(0.1, 0.0, 0.2)
+			shadow_mat.emission_enabled = true
+			shadow_mat.emission = Color(0.4, 0.0, 0.8)
+			shadow_mat.emission_energy_multiplier = 3.0
+			mesh_inst.material_override = shadow_mat
+		else:
+			mesh_inst.material_override = flare_mat
 		mesh_inst.position = offset
 		flare_root.add_child(mesh_inst)
 		
@@ -1067,7 +1122,10 @@ func _spawn_solar_flare() -> void:
 
 	# Fiery OmniLight Aura
 	var f_light = OmniLight3D.new()
-	f_light.light_color = Color(1.0, 0.55, 0.1)
+	if active_weather == "eclipse":
+		f_light.light_color = Color(0.5, 0.1, 1.0)
+	else:
+		f_light.light_color = Color(1.0, 0.55, 0.1)
 	f_light.light_energy = 3.5
 	f_light.omni_range = 8.0
 	flare_root.add_child(f_light)
@@ -1085,9 +1143,14 @@ func _spawn_solar_flare() -> void:
 	t_mesh.radius = 0.3
 	t_mesh.height = 0.6
 	var t_mesh_mat = StandardMaterial3D.new()
-	t_mesh_mat.albedo_color = Color(1.0, 0.5, 0.1)
-	t_mesh_mat.emission_enabled = true
-	t_mesh_mat.emission = Color(1.0, 0.6, 0.1)
+	if active_weather == "eclipse":
+		t_mesh_mat.albedo_color = Color(0.3, 0.0, 0.6)
+		t_mesh_mat.emission_enabled = true
+		t_mesh_mat.emission = Color(0.5, 0.1, 0.9)
+	else:
+		t_mesh_mat.albedo_color = Color(1.0, 0.5, 0.1)
+		t_mesh_mat.emission_enabled = true
+		t_mesh_mat.emission = Color(1.0, 0.6, 0.1)
 	t_mesh_mat.emission_energy_multiplier = 4.0
 	t_mesh.material = t_mesh_mat
 	trail.process_material = t_mat
@@ -1101,6 +1164,8 @@ func _spawn_solar_flare() -> void:
 	var start_pos = sun.global_position
 	var target_pos = Vector3(randf_range(-8.0, 8.0), -1.0, randf_range(1.0, 5.0))
 	var duration = randf_range(3.8, 4.4) # Comfortable 4-second readable flight duration
+	if active_weather == "eclipse":
+		duration = randf_range(1.8, 2.4) # Shadow flares move significantly faster!
 	
 	active_flares.append({
 		"node": flare_root,
@@ -1242,6 +1307,23 @@ func _process(delta: float) -> void:
 		_spawn_solar_flare()
 	_update_flares(delta)
 	
+	# Weather system logic
+	if active_weather == "none":
+		if weather_timer > 0.0 and timer_running:
+			weather_timer -= delta
+			if weather_timer <= 0.0:
+				_start_weather_event()
+	else:
+		if weather_duration > 0.0 and timer_running:
+			weather_duration -= delta
+			if weather_duration <= 0.0:
+				_end_weather_event()
+				
+	# Weather Mechanics
+	if active_weather == "rain":
+		temperature = max(0.0, temperature - 5.0 * delta)
+		water_tank = min(MAX_WATER, water_tank + 25.0 * delta)
+		
 	# Dynamic Wind Sway on tropical foliage
 	var wind_t = Time.get_ticks_msec() * 0.001
 	for f_prop in foliage_props:
@@ -1293,7 +1375,7 @@ func _process(delta: float) -> void:
 	_update_sun_face(ratio)
 	
 	# Heat Regeneration
-	if temperature < MAX_TEMP and not is_sun_frozen:
+	if temperature < MAX_TEMP and not is_sun_frozen and active_weather != "eclipse":
 		temperature += (heat_regen_base * (1.0 - GameState.heat_resistance)) * delta # Sun gets hotter over time
 		_update_sky(false)
 
@@ -1895,20 +1977,43 @@ func _update_sky(instant: bool) -> void:
 	if haze_mat:
 		haze_mat.set_shader_parameter("heat_ratio", ratio)
 		
-	# Static lighting (Removed dynamic heat darkening per user feedback)
-	if world_env and world_env.environment:
-		var env = world_env.environment
-		env.ambient_light_color = Color(0.75, 0.65, 0.6)
-		env.volumetric_fog_albedo = Color(0.9, 0.6, 0.3)
-		
-	if dir_light:
-		dir_light.light_color = Color(1.0, 0.75, 0.35)
+	# Weather Overrides
+	if active_weather == "rain":
+		if world_env and world_env.environment:
+			var env = world_env.environment
+			env.ambient_light_color = Color(0.4, 0.45, 0.6) # Cool, dark blue
+		if dir_light:
+			dir_light.light_color = Color(0.6, 0.65, 0.8)
+	elif active_weather == "eclipse":
+		if world_env and world_env.environment:
+			var env = world_env.environment
+			env.ambient_light_color = Color(0.3, 0.1, 0.4) # Moody twilight purple
+		if dir_light:
+			dir_light.light_color = Color(0.4, 0.1, 0.3)
+	else:
+		# Static lighting (Removed dynamic heat darkening per user feedback)
+		if world_env and world_env.environment:
+			var env = world_env.environment
+			env.ambient_light_color = Color(0.75, 0.65, 0.6)
+			env.volumetric_fog_albedo = Color(0.9, 0.6, 0.3)
+			
+		if dir_light:
+			dir_light.light_color = Color(1.0, 0.75, 0.35)
 
 	# Sun visual phases (Middle states)
-	if not is_sun_frozen:
+	if active_weather == "eclipse":
+		sun_mat.emission = Color(0.8, 0.7, 1.0) # Bright corona
+		sun_mat.albedo_color = Color(0.05, 0.05, 0.1) # Dark silhouette
+		if sun_ray_mat:
+			sun_ray_mat.emission = Color(0.6, 0.2, 0.8) # Deep purple rays
+			sun_ray_mat.albedo_color = Color(0.3, 0.0, 0.5)
+		sun_bob_speed = 0.2
+		sun_bob_amp = 0.2
+	elif not is_sun_frozen:
 		if temperature > 75.0:
 			# Scorching
 			sun_mat.emission = Color(1.0, 0.7, 0.2)
+			sun_mat.albedo_color = Color(1.0, 1.0, 1.0)
 			if sun_ray_mat:
 				sun_ray_mat.emission = Color(0.95, 0.35, 0.1)
 				sun_ray_mat.albedo_color = Color(0.95, 0.35, 0.1)
@@ -1985,6 +2090,7 @@ func _win() -> void:
 			level_timer = cfg.timer
 			timer_running = true
 			emit_signal("level_config_loaded", cfg.timer)
+			_reset_weather()
 			
 			GameState.ice_charges_remaining = cfg.ice_charges
 			if hud:
@@ -2400,3 +2506,37 @@ func _on_game_paused() -> void:
 func _on_game_resumed() -> void:
 	timer_running = true
 	shoot_loop_sfx.stream_paused = false
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Weather System
+# ─────────────────────────────────────────────────────────────────────────────
+func _reset_weather() -> void:
+	_end_weather_event()
+	var wave_len = GameState.LEVEL_CONFIG[GameState.level].timer if not GameState.is_survival_mode else 60.0
+	weather_timer = randf_range(wave_len * 0.4, wave_len * 0.8)
+
+func _start_weather_event() -> void:
+	if active_weather != "none": return
+	
+	# 50/50 chance for Rainstorm or Eclipse
+	if randf() > 0.5:
+		active_weather = "rain"
+		weather_duration = 10.0
+		weather_rain_particles.emitting = true
+		hud.show_toast("Weather Event", "Rainstorm! Water is endless.", "", Color(0.4, 0.8, 1.0))
+	else:
+		active_weather = "eclipse"
+		weather_duration = 10.0
+		hud.show_toast("Weather Event", "Solar Eclipse!", "", Color(0.8, 0.2, 0.2))
+	
+	_update_sky(false)
+
+func _end_weather_event() -> void:
+	if active_weather == "none": return
+	
+	if active_weather == "rain":
+		weather_rain_particles.emitting = false
+		
+	active_weather = "none"
+	_update_sky(false)
+
