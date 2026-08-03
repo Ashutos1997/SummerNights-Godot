@@ -13,6 +13,7 @@ var birds: Array[Dictionary] = []
 var body_mat: StandardMaterial3D
 var beak_mat: StandardMaterial3D
 var wingtip_mat: StandardMaterial3D
+var last_squawk_time: float = 0.0
 
 func _ready() -> void:
 	body_mat = StandardMaterial3D.new()
@@ -213,11 +214,14 @@ func scare_bird(b: Dictionary) -> void:
 		var node = b["node"] as Node3D
 		b["start_pos"] = node.position
 		
-		# Squawk!
-		var sfx = node.get_node_or_null("SquawkSfx")
-		if sfx:
-			sfx.pitch_scale = randf_range(0.9, 1.2) # Small natural pitch variation
-			sfx.play()
+		# Squawk with a 0.4 second global cooldown to prevent audio spam
+		var current_time = Time.get_ticks_msec() * 0.001
+		if current_time - last_squawk_time > 0.4:
+			var sfx = node.get_node_or_null("SquawkSfx")
+			if sfx:
+				sfx.pitch_scale = randf_range(0.9, 1.2) # Small natural pitch variation
+				sfx.play()
+				last_squawk_time = current_time
 			
 		# Feathers!
 		var feathers = node.get_node_or_null("Feathers")
