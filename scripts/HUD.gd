@@ -1207,14 +1207,19 @@ func show_toast(title: String, description: String, icon_path: String, color: Co
 	add_child(audio)
 	audio.play()
 	
+	# Calculate target right-aligned position and stacking Y position
+	var target_size = panel.get_minimum_size()
+	var target_x = toast_container.size.x - target_size.x
+	var target_y = (toast_container.get_child_count() - 1) * (target_size.y + 12)
+	
 	# Slide in animation
-	panel.position.x = 400
+	panel.position = Vector2(target_x + 400, target_y)
 	panel.modulate.a = 0.0
 	var tween = create_tween()
 	
 	# 1. Slide in
 	tween.set_parallel(true)
-	tween.tween_property(panel, "position:x", 0.0, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(panel, "position:x", target_x, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tween.tween_property(panel, "modulate:a", 1.0, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	
 	# 2. Wait
@@ -1222,7 +1227,7 @@ func show_toast(title: String, description: String, icon_path: String, color: Co
 	tween.tween_interval(3.5)
 	
 	# 3. Slide out
-	tween.tween_property(panel, "position:x", 400.0, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	tween.tween_property(panel, "position:x", target_x + 400.0, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
 	tween.set_parallel(true)
 	tween.tween_property(panel, "modulate:a", 0.0, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
 	
