@@ -1221,9 +1221,11 @@ func show_toast(title: String, description: String, icon_path: String, color: Co
 	tween.set_parallel(false)
 	tween.tween_interval(6.0)
 	
-	# 3. Slide out (parallel)
-	tween.set_parallel(true)
+	# 3. Slide out
+	# First out-property MUST be sequential to wait for the interval
 	tween.tween_property(panel, "position:x", 400.0, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	# Second out-property is parallel to the first
+	tween.set_parallel(true)
 	tween.tween_property(panel, "modulate:a", 0.0, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
 	
 	# 4. Cleanup (sequential)
