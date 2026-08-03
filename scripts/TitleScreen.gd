@@ -63,6 +63,10 @@ func _ready() -> void:
 				style_normal.border_width_top = 2
 				style_normal.border_width_left = 2
 				style_normal.border_width_right = 2
+				style_normal.content_margin_left = 16
+				style_normal.content_margin_right = 16
+				style_normal.content_margin_top = 8
+				style_normal.content_margin_bottom = 8
 				btn.add_theme_stylebox_override("normal", style_normal)
 				
 				var style_hover = style_normal.duplicate()
