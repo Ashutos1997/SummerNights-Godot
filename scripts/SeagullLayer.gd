@@ -218,7 +218,6 @@ func scare_bird(b: Dictionary) -> void:
 		if sfx:
 			sfx.pitch_scale = randf_range(0.9, 1.2) # Small natural pitch variation
 			sfx.play()
-			get_tree().create_timer(1.5).timeout.connect(sfx.stop)
 			
 		# Feathers!
 		var feathers = node.get_node_or_null("Feathers")
