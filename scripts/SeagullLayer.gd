@@ -2,12 +2,12 @@ extends Node3D
 
 class_name SeagullLayer
 
-@export var num_birds: int = 4
-@export var orbit_radius_min: float = 22.0
-@export var orbit_radius_max: float = 38.0
-@export var min_y: float = 18.0
-@export var max_y: float = 26.0
-@export var center_pos := Vector3(0, 0, -32)
+@export var num_birds: int = 5
+@export var orbit_radius_min: float = 12.0
+@export var orbit_radius_max: float = 28.0
+@export var min_y: float = 8.0
+@export var max_y: float = 16.0
+@export var center_pos := Vector3(0, 0, -18)
 
 var birds: Array[Dictionary] = []
 var body_mat: StandardMaterial3D
@@ -163,7 +163,7 @@ func _create_seagull_mesh() -> Node3D:
 	right_tip.position = Vector3(0.95, 0.0, 0.02)
 	right_pivot.add_child(right_tip)
 
-	bird_root.scale = Vector3(1.0, 1.0, 1.0)
+	bird_root.scale = Vector3(1.5, 1.5, 1.5)
 	
 	# Squawk SFX
 	var squawk_sfx = AudioStreamPlayer3D.new()
