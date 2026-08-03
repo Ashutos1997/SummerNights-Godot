@@ -167,8 +167,8 @@ func _create_seagull_mesh() -> Node3D:
 	
 	# Squawk SFX
 	var squawk_sfx = AudioStreamPlayer.new()
-	squawk_sfx.stream = load("res://assets/audio/sfx/hit_sun.ogg")
-	squawk_sfx.volume_db = -2.0 # Louder and non-spatial so it doesn't get lost
+	squawk_sfx.stream = load("res://assets/audio/sfx/seagull.wav")
+	squawk_sfx.volume_db = -4.0 # Slightly adjusted since it's a dedicated sound
 	squawk_sfx.name = "SquawkSfx"
 	bird_root.add_child(squawk_sfx)
 	
@@ -216,7 +216,7 @@ func scare_bird(b: Dictionary) -> void:
 		# Squawk!
 		var sfx = node.get_node_or_null("SquawkSfx")
 		if sfx:
-			sfx.pitch_scale = randf_range(3.0, 4.5) # Pitch up to sound like a squeak/squawk
+			sfx.pitch_scale = randf_range(0.9, 1.2) # Small natural pitch variation
 			sfx.play()
 			
 		# Feathers!
