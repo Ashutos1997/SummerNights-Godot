@@ -572,7 +572,7 @@ func _build_scene() -> void:
 	rain_mesh.size = Vector2(0.04, 1.2)
 	rain_mesh.material = rain_mat
 	
-	weather_rain_particles.mesh = rain_mesh
+	weather_rain_particles.draw_pass_1 = rain_mesh
 	weather_rain_particles.amount = 800
 	weather_rain_particles.lifetime = 1.0
 	weather_rain_particles.fixed_fps = 60
@@ -2539,4 +2539,3 @@ func _end_weather_event() -> void:
 		
 	active_weather = "none"
 	_update_sky(false)
-
