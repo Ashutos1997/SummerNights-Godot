@@ -145,15 +145,8 @@ func _ready() -> void:
 	var is_kr = GameState.language == "KR"
 	crosshair.pivot_offset = crosshair.size / 2.0
 	
-	# Create and assign shader material to water bar
 	if water_bar:
-		var water_mat = ShaderMaterial.new()
-		water_mat.shader = load("res://assets/ui_water_tank.gdshader")
-		water_mat.set_shader_parameter("fill_ratio", 1.0)
-		water_bar.material = water_mat
-		# We still want the bar to act visually like a full rect, the shader handles the "fill"
-		water_bar.value = 100 
-		water_bar.max_value = 100
+		water_bar.material = null
 		
 	# Connect to Global signals
 	win_screen.pivot_offset = get_viewport().get_visible_rect().size / 2.0
