@@ -49,6 +49,19 @@ func _ready() -> void:
 			subtitle_lbl.add_theme_constant_override("outline_size", 4)
 		_style_label(credit_lbl, 14 if is_kr else 12, Color(1.0, 1.0, 1.0, 0.7), font)
 		
+		# Best Time Display
+		if GameState.best_survival_time > 0.0:
+			var best_time_lbl = Label.new()
+			var m = int(GameState.best_survival_time) / 60
+			var s = int(GameState.best_survival_time) % 60
+			best_time_lbl.text = "최고 기록: %02d:%02d" % [m, s] if is_kr else "BEST ENDLESS TIME: %02d:%02d" % [m, s]
+			best_time_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			_style_label(best_time_lbl, 16 if is_kr else 14, Color(0.4, 0.9, 0.4, 1.0), font)
+			best_time_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
+			best_time_lbl.add_theme_constant_override("outline_size", 4)
+			$ColorRect/VBoxContainer.add_child(best_time_lbl)
+			$ColorRect/VBoxContainer.move_child(best_time_lbl, subtitle_lbl.get_index() + 1)
+			
 		# Style buttons
 		if normal_btn and survival_btn and dev_btn:
 			for btn in [normal_btn, survival_btn, dev_btn]:

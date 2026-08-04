@@ -144,6 +144,18 @@ func _ready() -> void:
 
 	var is_kr = GameState.language == "KR"
 	crosshair.pivot_offset = crosshair.size / 2.0
+	
+	# Create and assign shader material to water bar
+	if water_bar:
+		var water_mat = ShaderMaterial.new()
+		water_mat.shader = load("res://assets/ui_water_tank.gdshader")
+		water_mat.set_shader_parameter("fill_ratio", 1.0)
+		water_bar.material = water_mat
+		# We still want the bar to act visually like a full rect, the shader handles the "fill"
+		water_bar.value = 100 
+		water_bar.max_value = 100
+		
+	# Connect to Global signals
 	win_screen.pivot_offset = get_viewport().get_visible_rect().size / 2.0
 	
 	reduce_motion = GameState.reduce_motion
@@ -517,6 +529,7 @@ func _update_lang_toggle(is_kr: bool) -> void:
 
 func _on_language_toggle(lang: String) -> void:
 	GameState.language = lang
+	GameState.save_settings()
 	_apply_language(lang)
 
 func _apply_language(lang: String) -> void:
@@ -737,6 +750,7 @@ func _update_toggle_btn(btn: Button, enabled: bool) -> void:
 
 func _on_sfx_volume_changed(val: float) -> void:
 	GameState.sfx_volume = val
+	GameState.save_settings()
 	var db_val = linear_to_db(val)
 	var idx1 = AudioServer.get_bus_index("SFX_WEAPON")
 	if idx1 != -1: AudioServer.set_bus_volume_db(idx1, db_val)
@@ -747,16 +761,19 @@ func _on_sfx_volume_changed(val: float) -> void:
 
 func _on_sens_changed(val: float) -> void:
 	GameState.mouse_sensitivity = val
+	GameState.save_settings()
 	sensitivity_changed.emit(val)
 
 func _on_motion_toggled(enabled: bool) -> void:
 	GameState.reduce_motion = enabled
+	GameState.save_settings()
 	reduce_motion = enabled
 	reduce_motion_changed.emit(enabled)
 	_update_toggle_btn(motion_check, enabled)
 
 func _on_fullscreen_toggled(toggled: bool) -> void:
 	GameState.fullscreen = toggled
+	GameState.save_settings()
 	_update_toggle_btn(fullscreen_check, toggled)
 	if toggled:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
@@ -817,19 +834,24 @@ func _on_heat_changed(value: float, max_value: float) -> void:
 	else:
 		heat_bar.tint_progress = Color(0.4, 0.9, 0.4) # cool green
 
-func _on_water_changed(value: float, max_value: float) -> void:
-	water_bar.max_value = max_value
-	target_water = value
-	
-	var ratio = value / max_value
-	if ratio < 0.2:
-		if reduce_motion:
-			water_bar.tint_progress = Color(1.0, 0.2, 0.2, 1.0)
-			water_bar.modulate.a = 1.0
+func _on_water_changed(current: float, max_val: float) -> void:
+	if water_bar:
+		var ratio = current / max_val
+		if water_bar.material and water_bar.material is ShaderMaterial:
+			water_bar.material.set_shader_parameter("fill_ratio", ratio)
+		else:
+			water_bar.max_value = max_val
+			water_bar.value = current
+			
+		if current < max_val * 0.2:
+			water_bar.tint_progress = Color(1.0, 0.3, 0.3)
 		else:
 			water_bar.tint_progress = Color(0.3, 0.75, 1.0)
+			
+		if reduce_motion:
+			water_bar.modulate.a = 1.0
+		else:
 			if not is_instance_valid(water_tween) or not water_tween.is_running():
-				water_tween = create_tween()
 				water_tween.set_loops()
 				water_tween.tween_property(water_bar, "modulate:a", 0.4, 0.4)
 				water_tween.tween_property(water_bar, "modulate:a", 1.0, 0.4)
@@ -1106,7 +1128,11 @@ func show_lose_screen() -> void:
 				if GameState.language == "KR":
 					lose_wave_time_lbl.text = "생존 시간: %02d:%02d" % [m, s]
 				else:
-					lose_wave_time_lbl.text = "SURVIVED: %02d:%02d" % [m, s]
+					lose_wave_time_lbl.text = "SURVIVAL TIME: %02d:%02d" % [m, s]
+			
+			if GameState.survival_time > GameState.best_survival_time:
+				GameState.best_survival_time = GameState.survival_time
+				GameState.save_settings()
 		else:
 			lose_level_lbl.text = "%02d 단계 실패" % GameState.level if GameState.language == "KR" else "LEVEL %02d FAILED" % GameState.level
 			if lose_wave_time_lbl:

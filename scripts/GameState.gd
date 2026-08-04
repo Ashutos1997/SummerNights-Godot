@@ -111,6 +111,9 @@ var is_survival_mode: bool = false
 var is_dev_mode: bool = false
 var current_wave: int = 1
 var survival_time: float = 0.0
+var best_survival_time: float = 0.0
+
+const SETTINGS_FILE_PATH = "user://settings.cfg"
 
 # Shop Upgrades
 var max_water_mult: float = 1.0
@@ -128,3 +131,32 @@ func reset() -> void:
 	cooling_power_mult = 1.0
 	heat_resistance = 0.0
 	bonus_ice_charges = 0
+
+func _ready() -> void:
+	load_settings()
+
+func save_settings() -> void:
+	var config = ConfigFile.new()
+	config.set_value("Audio", "sfx_volume", sfx_volume)
+	config.set_value("Controls", "mouse_sensitivity", mouse_sensitivity)
+	config.set_value("Accessibility", "reduce_motion", reduce_motion)
+	config.set_value("Video", "fullscreen", fullscreen)
+	config.set_value("Localization", "language", language)
+	config.set_value("Stats", "best_survival_time", best_survival_time)
+	config.save(SETTINGS_FILE_PATH)
+
+func load_settings() -> void:
+	var config = ConfigFile.new()
+	if config.load(SETTINGS_FILE_PATH) == OK:
+		sfx_volume = config.get_value("Audio", "sfx_volume", 1.0)
+		mouse_sensitivity = config.get_value("Controls", "mouse_sensitivity", 1.0)
+		reduce_motion = config.get_value("Accessibility", "reduce_motion", false)
+		fullscreen = config.get_value("Video", "fullscreen", false)
+		language = config.get_value("Localization", "language", "EN")
+		best_survival_time = config.get_value("Stats", "best_survival_time", 0.0)
+		
+		# Apply loaded fullscreen state immediately
+		if fullscreen:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+		else:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)

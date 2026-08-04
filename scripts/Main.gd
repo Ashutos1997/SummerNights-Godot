@@ -164,7 +164,8 @@ var sky_mat:     ProceduralSkyMaterial
 var _sky_shader_mat: ShaderMaterial
 var haze_mat:    ShaderMaterial
 var steam_particles: GPUParticles3D
-var splash_particles: GPUParticles3D
+var splash_particles_pool: Array[GPUParticles3D] = []
+var splash_idx: int = 0
 var dir_light:   DirectionalLight3D
 var camera:      Camera3D
 var sun:         Node3D
@@ -810,31 +811,33 @@ func _build_scene() -> void:
 	steam_particles.lifetime = 1.2
 	sun.add_child(steam_particles)
 	
-	# Water splash particles
-	splash_particles = GPUParticles3D.new()
-	var sp_mat = ParticleProcessMaterial.new()
-	sp_mat.direction = Vector3(0, 1, 0)
-	sp_mat.spread = 70.0
-	sp_mat.initial_velocity_min = 4.0
-	sp_mat.initial_velocity_max = 8.0
-	sp_mat.gravity = Vector3(0, -12.0, 0)
-	sp_mat.scale_min = 0.1
-	sp_mat.scale_max = 0.3
-	var sp_mesh = SphereMesh.new()
-	sp_mesh.radius = 0.2
-	sp_mesh.height = 0.4
-	var sp_mesh_mat = StandardMaterial3D.new()
-	sp_mesh_mat.albedo_color = Color(0.2, 0.7, 1.0, 0.8)
-	sp_mesh_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	sp_mesh.material = sp_mesh_mat
-	splash_particles.process_material = sp_mat
-	splash_particles.draw_pass_1 = sp_mesh
-	splash_particles.emitting = false
-	splash_particles.one_shot = true
-	splash_particles.explosiveness = 0.95
-	splash_particles.amount = 25
-	splash_particles.lifetime = 0.6
-	add_child(splash_particles)
+	# Water splash particles pool
+	for i in range(10):
+		var splash = GPUParticles3D.new()
+		var sp_mat = ParticleProcessMaterial.new()
+		sp_mat.direction = Vector3(0, 1, 0)
+		sp_mat.spread = 70.0
+		sp_mat.initial_velocity_min = 4.0
+		sp_mat.initial_velocity_max = 8.0
+		sp_mat.gravity = Vector3(0, -12.0, 0)
+		sp_mat.scale_min = 0.1
+		sp_mat.scale_max = 0.3
+		var sp_mesh = SphereMesh.new()
+		sp_mesh.radius = 0.2
+		sp_mesh.height = 0.4
+		var sp_mesh_mat = StandardMaterial3D.new()
+		sp_mesh_mat.albedo_color = Color(0.2, 0.7, 1.0, 0.8)
+		sp_mesh_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		sp_mesh.material = sp_mesh_mat
+		splash.process_material = sp_mat
+		splash.draw_pass_1 = sp_mesh
+		splash.emitting = false
+		splash.one_shot = true
+		splash.explosiveness = 0.95
+		splash.amount = 25
+		splash.lifetime = 0.6
+		add_child(splash)
+		splash_particles_pool.append(splash)
  
 	# ── Gun ──────────────────────────────────────────────────────────────────
 	gun = Node3D.new()
@@ -1486,9 +1489,8 @@ func _process(delta: float) -> void:
 			if hit_pos.distance_to(sun.position) > 4.5:
 				_spawn_wet_mark(hit_pos, hit_normal)
 				wet_spawn_timer = 0.08
-				if splash_particles and randf() < 0.3:
-					splash_particles.global_position = hit_pos
-					splash_particles.restart()
+				if randf() < 0.3:
+					_spawn_splash(hit_pos)
 				
 		# Check Seagull Interception
 		if is_instance_valid(seagull_layer):
@@ -1525,9 +1527,8 @@ func _process(delta: float) -> void:
 						if steam_particles and randf() < 0.2:
 							steam_particles.global_position = flare_pos
 							steam_particles.restart()
-						if splash_particles and randf() < 0.2:
-							splash_particles.global_position = flare_pos
-							splash_particles.restart()
+						if randf() < 0.2:
+							_spawn_splash(flare_pos)
 							
 						if cur_hp <= 0.0:
 							intercepted_flares.append(flare)
@@ -1872,9 +1873,8 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 		particles.restart()
 	if not steam_particles.emitting:
 		steam_particles.restart()
-	if splash_particles and not splash_particles.emitting and randf() < 0.3:
-		splash_particles.global_position = sunspot_node.global_position
-		splash_particles.restart()
+	if randf() < 0.3:
+		_spawn_splash(sunspot_node.global_position)
 	
 
 		
@@ -2436,6 +2436,13 @@ func _spawn_damage_number(amount: float, is_crit: bool, pos: Vector3) -> void:
 	tw.tween_property(lbl, "global_position:y", lbl.global_position.y + 5.0, 0.7).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 	tw.tween_property(lbl, "modulate:a", 0.0, 0.6).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_EXPO)
 	tw.chain().tween_callback(lbl.queue_free)
+
+func _spawn_splash(pos: Vector3) -> void:
+	if splash_particles_pool.is_empty(): return
+	var splash = splash_particles_pool[splash_idx]
+	splash.global_position = pos
+	splash.restart()
+	splash_idx = (splash_idx + 1) % splash_particles_pool.size()
 
 func _spawn_flare_explosion(pos: Vector3) -> void:
 	var poof = GPUParticles3D.new()
