@@ -829,31 +829,25 @@ func _on_heat_changed(value: float, max_value: float) -> void:
 
 func _on_water_changed(current: float, max_val: float) -> void:
 	if water_bar:
-		var ratio = current / max_val
-		if water_bar.material and water_bar.material is ShaderMaterial:
-			water_bar.material.set_shader_parameter("fill_ratio", ratio)
-		else:
-			water_bar.max_value = max_val
-			water_bar.value = current
+		water_bar.max_value = max_val
+		target_water = current
 			
 		if current < max_val * 0.2:
-			water_bar.tint_progress = Color(1.0, 0.3, 0.3)
+			if reduce_motion:
+				water_bar.tint_progress = Color(1.0, 0.3, 0.3)
+				water_bar.modulate.a = 1.0
+			else:
+				water_bar.tint_progress = Color(1.0, 0.3, 0.3)
+				if not is_instance_valid(water_tween) or not water_tween.is_running():
+					water_tween = create_tween()
+					water_tween.set_loops()
+					water_tween.tween_property(water_bar, "modulate:a", 0.4, 0.4)
+					water_tween.tween_property(water_bar, "modulate:a", 1.0, 0.4)
 		else:
 			water_bar.tint_progress = Color(0.3, 0.75, 1.0)
-			
-		if reduce_motion:
+			if is_instance_valid(water_tween):
+				water_tween.kill()
 			water_bar.modulate.a = 1.0
-		else:
-			if not is_instance_valid(water_tween) or not water_tween.is_running():
-				water_tween = create_tween()
-				water_tween.set_loops()
-				water_tween.tween_property(water_bar, "modulate:a", 0.4, 0.4)
-				water_tween.tween_property(water_bar, "modulate:a", 1.0, 0.4)
-	else:
-		water_bar.tint_progress = Color(0.3, 0.75, 1.0)
-		if is_instance_valid(water_tween):
-			water_tween.kill()
-		water_bar.modulate.a = 1.0
 
 func _on_crosshair_moved(screen_pos: Vector2, is_behind: bool) -> void:
 	crosshair.visible = not is_behind
