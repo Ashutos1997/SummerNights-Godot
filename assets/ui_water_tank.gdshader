@@ -9,14 +9,16 @@ uniform vec4 bg_color : source_color = vec4(0.1, 0.1, 0.1, 0.5);
 void fragment() {
     vec2 uv = UV;
     
-    // Create a sine wave for the top surface of the liquid
-    // The y axis is inverted in 2D (0 is top, 1 is bottom)
-    // So liquid fill height is (1.0 - fill_ratio)
-    float wave = sin(uv.x * wave_freq + TIME * wave_speed) * wave_amp;
-    float threshold = 1.0 - fill_ratio + wave;
+    // Create a sine wave for the vertical surface of the liquid (right edge)
+    // The wave moves along the y axis
+    float wave = sin(uv.y * wave_freq + TIME * wave_speed) * wave_amp;
     
-    // If uv.y is below the threshold, it's empty (above the liquid line)
-    if (uv.y < threshold) {
+    // The fill threshold is along the x axis (0 is left, 1 is right)
+    // If fill_ratio is 1.0, threshold is 1.0 + wave
+    float threshold = fill_ratio + wave;
+    
+    // If uv.x is above the threshold, it's empty (to the right of the liquid line)
+    if (uv.x > threshold) {
         // Discard or draw background color
         COLOR = bg_color;
     } else {
