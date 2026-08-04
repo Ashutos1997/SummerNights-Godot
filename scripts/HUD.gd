@@ -852,6 +852,7 @@ func _on_water_changed(current: float, max_val: float) -> void:
 			water_bar.modulate.a = 1.0
 		else:
 			if not is_instance_valid(water_tween) or not water_tween.is_running():
+				water_tween = create_tween()
 				water_tween.set_loops()
 				water_tween.tween_property(water_bar, "modulate:a", 0.4, 0.4)
 				water_tween.tween_property(water_bar, "modulate:a", 1.0, 0.4)
