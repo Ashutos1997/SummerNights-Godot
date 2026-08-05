@@ -1846,8 +1846,12 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			if spot_dist < 2.5:
 				is_critical = true
 				
+		var damage_mult: float = 1.0
+		if GameState.is_survival_mode and GameState.current_wave >= 5:
+			damage_mult = 1.0 + (GameState.current_wave - 4) * 0.15 # +15% damage per wave past wave 4
+				
 		if is_critical:
-			temperature = max(0.0, temperature - current_weapon_power * current_weapon_crit * delta)
+			temperature = max(0.0, temperature - current_weapon_power * current_weapon_crit * damage_mult * delta)
 			if sizzle_sfx and not sizzle_sfx.playing:
 				sizzle_sfx.play()
 			if steam_particles:
@@ -1855,15 +1859,19 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				steam_particles.restart()
 			critical_hit.emit()
 		else:
-			temperature = max(0.0, temperature - current_weapon_power * delta)
+			temperature = max(0.0, temperature - current_weapon_power * damage_mult * delta)
 			projectile_hit.emit()
 			
 	if hit_cooldown <= 0.0:
 		hit_sfx.play()
 		hit_cooldown = HIT_COOLDOWN
 		
+		var damage_mult: float = 1.0
+		if GameState.is_survival_mode and GameState.current_wave >= 5:
+			damage_mult = 1.0 + (GameState.current_wave - 4) * 0.15
+			
 		# Spawn floating number (calculating DPS burst for the popup)
-		var dmg_val = current_weapon_power
+		var dmg_val = current_weapon_power * damage_mult
 		if is_critical: dmg_val *= current_weapon_crit
 		_spawn_damage_number(dmg_val, is_critical, target_pos)
 		
