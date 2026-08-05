@@ -2554,15 +2554,23 @@ func _start_weather_event(force_type: String = "") -> void:
 	if force_type == "rain": is_rain = true
 	elif force_type == "eclipse": is_rain = false
 	
+	var is_kr = GameState.language == "KR"
+	
 	if is_rain:
 		active_weather = "rain"
 		weather_duration = 10.0
 		weather_rain_particles.emitting = true
-		hud.show_toast("Weather Event", "Rainstorm! Water is endless.", "", Color(0.4, 0.8, 1.0))
+		if is_kr:
+			hud.show_toast("기상 이변", "폭우! 물이 무한입니다.", "", Color(0.4, 0.8, 1.0))
+		else:
+			hud.show_toast("Weather Event", "Rainstorm! Water is endless.", "", Color(0.4, 0.8, 1.0))
 	else:
 		active_weather = "eclipse"
 		weather_duration = 10.0
-		hud.show_toast("Weather Event", "Solar Eclipse!", "", Color(0.8, 0.2, 0.2))
+		if is_kr:
+			hud.show_toast("기상 이변", "일식!", "", Color(0.8, 0.2, 0.2))
+		else:
+			hud.show_toast("Weather Event", "Solar Eclipse!", "", Color(0.8, 0.2, 0.2))
 	
 	_update_sky(false)
 
