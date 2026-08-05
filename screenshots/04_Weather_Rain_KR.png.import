@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dt6s2sq6spw7d"
-path="res://.godot/imported/06_Upgrades_KR.png-3d11bafdb21b406c2011c14ccc1bd1b6.ctex"
+uid="uid://dm5urqjo3toep"
+path="res://.godot/imported/04_Weather_Rain_KR.png-0d72f06516ed22dfdd1aa55ba33c11d3.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://screenshots/06_Upgrades_KR.png"
-dest_files=["res://.godot/imported/06_Upgrades_KR.png-3d11bafdb21b406c2011c14ccc1bd1b6.ctex"]
+source_file="res://screenshots/04_Weather_Rain_KR.png"
+dest_files=["res://.godot/imported/04_Weather_Rain_KR.png-0d72f06516ed22dfdd1aa55ba33c11d3.ctex"]
 
 [params]
 
