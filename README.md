@@ -12,6 +12,19 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 
 ---
 
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/01_Title_Screen.png" width="48%">
+  <img src="screenshots/02_Core_Gameplay.png" width="48%">
+  <img src="screenshots/03_Weapon_Wheel.png" width="48%">
+  <img src="screenshots/04_Weather_Eclipse.png" width="48%">
+  <img src="screenshots/05_Weather_Solar_Wind.png" width="48%">
+  <img src="screenshots/06_Upgrades_Ice_Burst.png" width="48%">
+</p>
+
+---
+
 ## 🎮 Gameplay
 - **Defeat the Sun:** Water the sun to drop its temperature down to 0 before the timer expires! The sun gradually recovers heat over time.
 - **5-Level Difficulty:** Each level gets harder with shorter timers, aggressive sun movement (sway and figure-8 paths), and increased heat regeneration.

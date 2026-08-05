@@ -12,6 +12,19 @@ Godot 4로 제작된 3D 아케이드 슈터. 태양을 식히기 전에 열기�
 
 ---
 
+## 스크린샷
+
+<p align="center">
+  <img src="screenshots/01_Title_Screen.png" width="48%">
+  <img src="screenshots/02_Core_Gameplay.png" width="48%">
+  <img src="screenshots/03_Weapon_Wheel.png" width="48%">
+  <img src="screenshots/04_Weather_Eclipse.png" width="48%">
+  <img src="screenshots/05_Weather_Solar_Wind.png" width="48%">
+  <img src="screenshots/07_Localization_Korean.png" width="48%">
+</p>
+
+---
+
 ## 🎮 게임플레이
 - **태양 제압:** 타이머가 종료되기 전에 태양에 물을 뿌려 온도를 0으로 낮추세요! 태양은 시간이 지남에 따라 점차 열기를 회복합니다.
 - **5단계 난이도:** 레벨이 올라갈수록 타이머가 짧아지고, 태양의 움직임(좌우 흔들림 및 8자 패턴)이 공격적으로 변하며 열기 회복 속도가 증가합니다.
