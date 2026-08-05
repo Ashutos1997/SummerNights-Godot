@@ -2568,6 +2568,14 @@ func _end_weather_event() -> void:
 	_update_sky(false)
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_F12:
+			var img = get_viewport().get_texture().get_image()
+			var time_str = Time.get_datetime_string_from_system().replace(":", "-").replace("T", "_")
+			var path = OS.get_system_dir(OS.SYSTEM_DIR_DESKTOP) + "/SummerNights_" + time_str + ".png"
+			img.save_png(path)
+			print("Screenshot saved to: ", path)
+			
 	if GameState.is_dev_mode and event is InputEventKey and event.pressed and not event.echo:
 		match event.keycode:
 			KEY_R:
