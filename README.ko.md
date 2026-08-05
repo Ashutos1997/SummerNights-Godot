@@ -20,6 +20,7 @@ Godot 4로 제작된 3D 아케이드 슈터. 태양을 식히기 전에 열기�
   <img src="screenshots/03_Weapon_Wheel.png" width="48%">
   <img src="screenshots/04_Weather_Eclipse.png" width="48%">
   <img src="screenshots/05_Weather_Solar_Wind.png" width="48%">
+  <img src="screenshots/06_Upgrades_Ice_Burst.png" width="48%">
   <img src="screenshots/07_Localization_Korean.png" width="48%">
 </p>
 
