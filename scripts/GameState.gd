@@ -69,7 +69,7 @@ const WEAPONS = {
 		"model": "res://assets/blaster.glb",
 		"scale": Vector3(1, 1, 1),
 		"water_capacity": 100.0,
-		"water_drain": 1.0,
+		"water_drain": 3.5,
 		"cooling_power": 15.0,
 		"crit_multiplier": 2.0,
 		"recharge_rate": 18.0,
@@ -80,9 +80,9 @@ const WEAPONS = {
 		"model": "res://assets/blaster.glb",
 		"scale": Vector3(1.5, 1.5, 1.5),
 		"water_capacity": 200.0,
-		"water_drain": 1.8,
-		"cooling_power": 28.0,
-		"crit_multiplier": 1.1,
+		"water_drain": 7.5,
+		"cooling_power": 38.0,
+		"crit_multiplier": 1.0,
 		"recharge_rate": 12.0,
 		"unlock_level": 3
 	},
@@ -91,9 +91,9 @@ const WEAPONS = {
 		"model": "res://assets/blaster.glb",
 		"scale": Vector3(0.5, 0.5, 1.5),
 		"water_capacity": 60.0,
-		"water_drain": 0.7,
+		"water_drain": 2.0,
 		"cooling_power": 8.0,
-		"crit_multiplier": 4.5,
+		"crit_multiplier": 5.5,
 		"recharge_rate": 15.0,
 		"unlock_level": 2
 	}
