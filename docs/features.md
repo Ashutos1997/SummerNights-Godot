@@ -19,6 +19,7 @@ This document serves as the master record for all currently implemented features
     *   **Standard Blaster:** Balanced water usage and cooling power. (Unlocked Level 1)
     *   **Precision Stream:** Low capacity, fast drain, but massive critical hit multipliers. (Unlocked Level 2)
     *   **Heavy Cannon:** Huge capacity and high cooling power, but drains water rapidly. (Unlocked Level 3)
+    *   **Scatter Nozzle:** Wide spread, excellent for intercepting multiple solar flares at once, but lacks pinpoint cooling. (Unlocked Level 4)
 *   **Ice Charges (Secondary Fire):** Powerful, instant-cooling projectiles with limited charges. Earn charges over time or when defeating boss waves.
 *   **Catastrom Ultimate:** Fills up by continuously watering the sun. When at 100% (Level 4+), press [F] to physically grab the sun and violently drag it down into the ocean for an instant wave clear.
 
