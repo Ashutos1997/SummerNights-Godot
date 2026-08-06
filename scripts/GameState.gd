@@ -131,6 +131,7 @@ var max_water_mult: float = 1.0
 var cooling_power_mult: float = 1.0
 var heat_resistance: float = 0.0
 var bonus_ice_charges: int = 0
+var catastrom_charge: float = 0.0
 
 func reset() -> void:
 	level = 1
@@ -142,6 +143,7 @@ func reset() -> void:
 	cooling_power_mult = 1.0
 	heat_resistance = 0.0
 	bonus_ice_charges = 0
+	catastrom_charge = 0.0
 
 func _ready() -> void:
 	load_settings()

@@ -16,6 +16,12 @@ signal weapon_changed(weapon_id: String)
 @onready var ice_label = $HUD/resource_container/ice_row/Label
 @onready var ice_bar = $HUD/resource_container/ice_row/IceBarContainer/IceBar
 @onready var charge_dots = $HUD/resource_container/ice_row/IceBarContainer/ChargeDots
+
+@onready var catastrom_row = $HUD/resource_container/catastrom_row
+@onready var catastrom_label = $HUD/resource_container/catastrom_row/Label
+@onready var catastrom_bar = $HUD/resource_container/catastrom_row/CatastromBar
+@onready var grab_icon = $HUD/GrabIcon
+
 @onready var toast_container = $HUD/ToastContainer
 @onready var crosshair = $HUD/Crosshair
 @onready var win_screen = $HUD/WinScreen
@@ -104,6 +110,24 @@ func _process(delta: float) -> void:
 			water_bar.value = target_water
 		else:
 			water_bar.value = lerp(water_bar.value, target_water, 12.0 * delta)
+			
+	if catastrom_bar:
+		var target_catastrom = GameState.catastrom_charge
+		if catastrom_row.visible != (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 1)):
+			catastrom_row.visible = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 1))
+			
+		if reduce_motion:
+			catastrom_bar.value = target_catastrom
+		else:
+			catastrom_bar.value = lerp(catastrom_bar.value, float(target_catastrom), 12.0 * delta)
+			
+		if catastrom_bar.value >= 0.99:
+			if Engine.get_frames_drawn() % 30 == 0:
+				catastrom_bar.tint_progress = Color(0.8, 0.4, 1.0, 1.0)
+			elif Engine.get_frames_drawn() % 30 == 15:
+				catastrom_bar.tint_progress = Color(0.6, 0, 1, 1)
+		else:
+			catastrom_bar.tint_progress = Color(0.6, 0, 1, 1)
 			
 	# Update top right button hover colors in captured mode
 	if credits_btn and not credits_screen.visible:

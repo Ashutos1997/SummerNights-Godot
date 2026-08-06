@@ -202,6 +202,8 @@ var flare_mat: StandardMaterial3D
 var flare_intercept_sfx: AudioStreamPlayer
 
 # Weather system
+var is_dragging_sun: bool = false
+var catastrom_sfx: AudioStreamPlayer
 var active_weather: String = "none" # "none", "rain", "eclipse"
 var weather_timer: float = 0.0
 var weather_duration: float = 0.0
@@ -237,6 +239,11 @@ func _ready() -> void:
 	flare_intercept_sfx.pitch_scale = 0.6
 	flare_intercept_sfx.volume_db = -4.0
 	add_child(flare_intercept_sfx)
+	
+	catastrom_sfx = AudioStreamPlayer.new()
+	catastrom_sfx.stream = preload("res://assets/audio/sfx/catastrom_dunk.mp3")
+	catastrom_sfx.volume_db = 0.0
+	add_child(catastrom_sfx)
 	
 	ambient_sfx = AudioStreamPlayer.new()
 	var ocean_stream = load("res://assets/audio/sfx/ocean_waves.wav")
@@ -1347,23 +1354,24 @@ func _process(delta: float) -> void:
 		cooldown_timer += delta
 
 	# Sun bob and rotate
-	if sun_sway_amplitude > 0.0:
-		var spd_mult = 0.0 if is_sun_frozen else 1.0
-		sun_move_time += delta * spd_mult
-		var x_offset = sin(sun_move_time * sun_sway_speed) * sun_sway_amplitude
-		sun.position.x = sun_base_pos.x + x_offset
-		
-		if sun_figure8:
-			var y_offset = sin(sun_move_time * sun_sway_speed * 2.0) * (sun_sway_amplitude * 0.5)
-			sun.position.y = sun_base_pos.y + y_offset
-			sun.position.z = sun_base_pos.z
+	if not is_dragging_sun:
+		if sun_sway_amplitude > 0.0:
+			var spd_mult = 0.0 if is_sun_frozen else 1.0
+			sun_move_time += delta * spd_mult
+			var x_offset = sin(sun_move_time * sun_sway_speed) * sun_sway_amplitude
+			sun.position.x = sun_base_pos.x + x_offset
+			
+			if sun_figure8:
+				var y_offset = sin(sun_move_time * sun_sway_speed * 2.0) * (sun_sway_amplitude * 0.5)
+				sun.position.y = sun_base_pos.y + y_offset
+				sun.position.z = sun_base_pos.z
+			else:
+				sun.position.y = sun_base_pos.y + sin(sun_time * sun_bob_speed) * sun_bob_amp
+				sun.position.z = sun_base_pos.z
 		else:
+			sun.position.x = sun_base_pos.x
 			sun.position.y = sun_base_pos.y + sin(sun_time * sun_bob_speed) * sun_bob_amp
 			sun.position.z = sun_base_pos.z
-	else:
-		sun.position.x = sun_base_pos.x
-		sun.position.y = sun_base_pos.y + sin(sun_time * sun_bob_speed) * sun_bob_amp
-		sun.position.z = sun_base_pos.z
 
 	if sun_mesh:
 		var spd_mult = 0.0 if is_sun_frozen else 1.0
@@ -1606,10 +1614,40 @@ func _input(event: InputEvent) -> void:
 			_shoot_ice()
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if GameState.catastrom_charge >= 1.0 and event.pressed and not is_dragging_sun:
+			var space_state = get_world_3d().direct_space_state
+			var ray_origin = camera.project_ray_origin(virtual_mouse_pos)
+			var ray_dir = camera.project_ray_normal(virtual_mouse_pos)
+			var ray_params = PhysicsRayQueryParameters3D.create(ray_origin, ray_origin + ray_dir * 1000.0)
+			var result = space_state.intersect_ray(ray_params)
+			if result and result.collider:
+				var coll = result.collider as Node
+				var is_sun = false
+				while coll != null:
+					if coll == sun:
+						is_sun = true
+						break
+					coll = coll.get_parent()
+				if is_sun:
+					is_dragging_sun = true
+					is_shooting = false
+					if hud and hud.grab_icon:
+						hud.grab_icon.texture = preload("res://assets/ui/grab_closed.png")
+					return
+					
 		if Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE and event.pressed:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		else:
 			is_shooting = event.pressed
+			
+	if is_dragging_sun and event is InputEventMouseMotion:
+		# Map virtual_mouse_pos.y to sun.position.y
+		var viewport_size = get_viewport().get_visible_rect().size
+		var screen_ratio = virtual_mouse_pos.y / viewport_size.y
+		# From base_pos.y down to 0.0
+		sun.position.y = lerp(sun_base_pos.y, -2.0, screen_ratio)
+		if sun.position.y <= 0.0:
+			_trigger_catastrom_dunk()
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Sun Face Procedural Drawing
@@ -1908,6 +1946,15 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 	gun.position.z += 0.05 
 	gun.position.y += 0.02
 	
+	if hud and hud.grab_icon:
+		if GameState.catastrom_charge >= 1.0:
+			hud.grab_icon.visible = true
+			if not is_dragging_sun:
+				var pos = camera.unproject_position(sun.global_position)
+				hud.grab_icon.position = pos - hud.grab_icon.size / 2.0
+		else:
+			hud.grab_icon.visible = false
+			
 	# Game Feel: Hit Flashing (Sun flashes white/blue briefly)
 	if not is_sun_frozen:
 		sun_mat.emission = Color(1.5, 1.5, 2.0)
@@ -1921,6 +1968,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			if sun_defeated_sfx: sun_defeated_sfx.play()
 			GameState.current_wave += 1
 			GameState.ice_charges_remaining += 1
+			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + 0.5)
 			
 			# Boss wave reward
 			if (GameState.current_wave - 1) % 5 == 0:
@@ -2079,7 +2127,30 @@ func _update_sky(instant: bool) -> void:
 	sun_bob_amp = t_bob_amp
 	heat_changed.emit(temperature, MAX_TEMP)
 	
-
+func _trigger_catastrom_dunk() -> void:
+	if catastrom_sfx:
+		catastrom_sfx.play()
+	shake(1.5, 0.5)
+	
+	if sun_face:
+		sun_face.texture = _draw_face("dizzy")
+		
+	sun_mat.emission = Color(0.0, 0.2, 1.0)
+	sun_mat.albedo_color = Color(0.1, 0.5, 1.0)
+	
+	for i in range(5):
+		var splash_pos = sun.global_position + Vector3(randf_range(-6.0, 6.0), 0, randf_range(-6.0, 6.0))
+		splash_pos.y = 0.0
+		_spawn_splash(splash_pos)
+		
+	GameState.catastrom_charge = 0.0
+	is_dragging_sun = false
+	if hud and hud.grab_icon:
+		hud.grab_icon.texture = preload("res://assets/ui/grab_open.png")
+		
+	# Trigger wave cleared logic
+	temperature = 0.0
+	_on_hit(0.01, sun.global_position)
 func _win() -> void:
 	if defeat_triggered: return
 	defeat_triggered = true
@@ -2100,6 +2171,8 @@ func _win() -> void:
 	else:
 		GameState.level += 1
 		level = GameState.level
+		if level == 4:
+			GameState.catastrom_charge = 1.0
 		sun_defeated.emit(level)
 		
 		# Seamless reload
