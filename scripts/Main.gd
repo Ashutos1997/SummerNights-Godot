@@ -1389,6 +1389,11 @@ func _process(delta: float) -> void:
 	var pulse = 1.0 + sin(sun_time * 4.0) * 0.02
 	var ratio = temperature / MAX_TEMP
 	var target_scale = (0.4 + 0.6 * ratio) * pulse
+	
+	if is_dragging_sun:
+		var shrink_factor = max(0.1, sun.position.y / sun_base_pos.y)
+		target_scale *= shrink_factor
+		
 	sun.scale = Vector3(target_scale, target_scale, target_scale)
 	
 	_update_sun_face(ratio)
@@ -1398,6 +1403,15 @@ func _process(delta: float) -> void:
 		temperature += (heat_regen_base * (1.0 - GameState.heat_resistance)) * delta # Sun gets hotter over time
 		
 	_update_sky(false)
+	
+	if hud and hud.grab_icon:
+		if is_catastrom_active:
+			hud.grab_icon.visible = true
+			if not is_dragging_sun:
+				var pos = camera.unproject_position(sun.global_position)
+				hud.grab_icon.position = pos - hud.grab_icon.size / 2.0
+		else:
+			hud.grab_icon.visible = false
 
 	# Solar Wind hazard
 	if solar_wind_enabled and not is_title_screen:
@@ -1618,7 +1632,15 @@ func _input(event: InputEvent) -> void:
 
 	if game_over: return
 	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-		virtual_mouse_pos += event.relative * mouse_sensitivity
+		var move = event.relative
+		if is_dragging_sun:
+			move.x = 0.0 # Lock horizontal
+			if move.y > 0:
+				move.y *= 0.06 # Massive resistance dragging down (takes time)
+			elif move.y < 0:
+				move.y *= 0.2 # Some resistance pushing back up
+				
+		virtual_mouse_pos += move * mouse_sensitivity
 		var viewport_size = get_viewport().get_visible_rect().size
 		virtual_mouse_pos.x = clamp(virtual_mouse_pos.x, 0, viewport_size.x)
 		virtual_mouse_pos.y = clamp(virtual_mouse_pos.y, 0, viewport_size.y)
@@ -1955,15 +1977,6 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 	# Game Feel: Gun Recoil (Push gun back towards camera)
 	gun.position.z += 0.05 
 	gun.position.y += 0.02
-	
-	if hud and hud.grab_icon:
-		if is_catastrom_active:
-			hud.grab_icon.visible = true
-			if not is_dragging_sun:
-				var pos = camera.unproject_position(sun.global_position)
-				hud.grab_icon.position = pos - hud.grab_icon.size / 2.0
-		else:
-			hud.grab_icon.visible = false
 			
 	# Game Feel: Hit Flashing (Sun flashes white/blue briefly)
 	if not is_sun_frozen:
