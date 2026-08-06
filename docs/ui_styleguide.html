@@ -4,190 +4,349 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Summer Nights - UI Design System</title>
-    <!-- Using Orbitron as a placeholder for the futuristic/arcade Kenney Future font used in-game -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Modern clean font for doc text, and retro font for game UI samples -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             /* Primary Accents */
-            --primary-accent: rgb(255, 191, 38); /* 1.0, 0.75, 0.15 */
+            --primary-accent: #ffbf26;
             --primary-accent-hover: rgba(255, 191, 38, 0.2); 
-            --bright-accent: rgb(255, 216, 51); /* 1.0, 0.85, 0.2 */
+            --bright-accent: #ffd833;
             --bright-accent-border: rgba(255, 216, 51, 0.6);
-            --pale-gold: rgb(255, 242, 127); /* 1.0, 0.95, 0.5 */
+            --pale-gold: #fff280;
             
             /* Secondary Accents */
-            --cyan-accent: rgb(51, 204, 255); /* 0.2, 0.8, 1.0 */
+            --cyan-accent: #33ccff;
             --cyan-accent-pressed: rgba(51, 204, 255, 0.4);
-            --water-ui: rgb(25, 165, 242); /* 0.1, 0.65, 0.95 */
+            --water-ui: #1aa6f2;
             
             /* Backgrounds */
-            --dark-panel: rgba(12, 5, 25, 0.85); /* 0.05, 0.02, 0.1 */
+            --dark-panel: rgba(12, 5, 25, 0.65);
             --standard-bg: rgba(0, 0, 0, 0.4);
-            --pressed-bg: rgba(255, 204, 51, 0.4); /* 1.0, 0.8, 0.2 */
+            --pressed-bg: rgba(255, 204, 51, 0.4);
             
             /* Text */
-            --text-muted: rgba(255, 255, 255, 0.7);
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
             --text-shadow: rgba(0, 0, 0, 0.8);
         }
 
-        body {
-            background-color: #2c2f33; /* Dark neutral background to simulate game world */
-            background-image: radial-gradient(circle at 50% 0%, #4a5459 0%, #2c2f33 60%);
-            color: white;
-            font-family: 'Orbitron', sans-serif;
-            margin: 0;
-            padding: 40px;
-            min-height: 100vh;
+        * {
+            box-sizing: border-box;
         }
 
-        h1, h2, h3 {
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #1e293b);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 40px;
+        }
+
+        /* Glassmorphism Sidebar */
+        .sidebar {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            padding: 30px;
+            height: calc(100vh - 80px);
+            position: sticky;
+            top: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .sidebar h2 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--primary-accent);
+            font-size: 24px;
+            margin-top: 0;
+            margin-bottom: 30px;
             text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(255, 191, 38, 0.3);
+        }
+
+        .nav-link {
+            display: block;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            transform: translateX(5px);
+        }
+
+        .nav-link.active {
+            background: var(--primary-accent-hover);
+            color: var(--primary-accent);
+            border-left: 4px solid var(--primary-accent);
+        }
+
+        /* Content Area */
+        .content {
+            padding-bottom: 100px;
         }
 
         .section {
-            margin-bottom: 60px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
         }
 
         .section-title {
-            color: var(--text-muted);
-            font-size: 14px;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
+            font-family: 'Outfit', sans-serif;
+            color: #ffffff;
+            font-size: 28px;
+            margin-top: 0;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex-grow: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent);
         }
 
         /* Swatches */
-        .swatch-container {
-            display: flex;
+        .swatch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             gap: 20px;
-            flex-wrap: wrap;
         }
 
         .swatch {
-            width: 120px;
-            border-radius: 8px;
+            border-radius: 16px;
             overflow: hidden;
-            background: rgba(0,0,0,0.2);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .swatch:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
         }
 
         .swatch-color {
-            height: 80px;
+            height: 100px;
             width: 100%;
         }
 
         .swatch-info {
-            padding: 10px;
-            font-size: 12px;
+            padding: 15px;
+            font-size: 13px;
+        }
+
+        .swatch-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .swatch-hex {
+            color: var(--text-muted);
             font-family: monospace;
-            text-align: center;
         }
 
         /* Typography */
-        .type-title {
-            font-size: 72px;
-            color: var(--primary-accent);
-            -webkit-text-stroke: 8px black;
-            text-shadow: 4px 4px 0 var(--text-shadow), 0 0 12px rgba(0,0,0,0.8);
-            margin: 0 0 20px 0;
+        .game-text {
+            font-family: 'Outfit', sans-serif;
+            text-transform: uppercase;
+            /* Use text-shadow for a sharp, game-like outline without blurring the fill */
+            text-shadow: 
+                -2px -2px 0 #000,  
+                 2px -2px 0 #000,
+                -2px  2px 0 #000,
+                 2px  2px 0 #000,
+                 0px  4px 10px rgba(0,0,0,0.8);
         }
 
-        .type-subtitle-en {
-            font-size: 18px;
+        .type-title {
+            font-size: 64px;
             color: var(--primary-accent);
-            -webkit-text-stroke: 4px black;
-            margin: 0 0 10px 0;
+            margin: 0 0 20px 0;
+            letter-spacing: 2px;
         }
-        
-        .type-subtitle-kr {
-            font-size: 20px;
+
+        .type-subtitle {
+            font-size: 24px;
             color: var(--primary-accent);
-            -webkit-text-stroke: 4px black;
-            margin: 0 0 10px 0;
+            margin: 0 0 15px 0;
+            letter-spacing: 1px;
         }
 
         .type-prompt {
-            font-size: 18px;
+            font-size: 16px;
             color: white;
-            -webkit-text-stroke: 2px black;
-            animation: pulse 1.2s ease-in-out infinite alternate;
+            animation: pulse 1.5s ease-in-out infinite alternate;
         }
 
         @keyframes pulse {
-            0% { opacity: 0.7; }
-            100% { opacity: 1.0; }
+            0% { opacity: 0.4; }
+            100% { opacity: 1.0; text-shadow: 0 0 15px rgba(255,255,255,0.5); }
         }
 
         /* Buttons */
         .btn-container {
             display: flex;
             gap: 20px;
-            align-items: center;
+            flex-wrap: wrap;
         }
 
         .game-btn {
             background-color: var(--standard-bg);
             border: 2px solid var(--bright-accent-border);
             color: white;
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Outfit', sans-serif;
             font-size: 18px;
-            padding: 8px 16px;
+            font-weight: 700;
+            padding: 12px 24px;
             cursor: pointer;
-            border-radius: 0; /* Square corners */
-            -webkit-text-stroke: 2px black;
-            transition: background-color 0.2s, transform 0.1s;
+            border-radius: 4px;
             text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s;
         }
 
         .game-btn:hover {
             background-color: var(--primary-accent-hover);
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 20px rgba(255, 191, 38, 0.3);
+            transform: translateY(-2px);
         }
 
-        .game-btn:active {
+        .game-btn:hover::before {
+            transform: translateX(100%);
+        }
+
+        .game-btn:active, .game-btn.pressed {
             background-color: var(--pressed-bg);
-            transform: scale(0.95);
+            transform: translateY(1px);
+            box-shadow: none;
         }
 
-        .game-btn.endless:active {
+        .game-btn.endless.pressed {
             background-color: var(--cyan-accent-pressed);
+            border-color: var(--cyan-accent);
         }
 
         /* Panels */
         .game-panel {
             background-color: var(--dark-panel);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 2px solid var(--bright-accent);
-            border-radius: 16px; /* Sleek rounded corners */
-            padding: 8px 16px;
+            border-radius: 16px;
+            padding: 24px;
             color: white;
-            width: fit-content;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            margin-bottom: 20px;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 20px rgba(255, 191, 38, 0.1);
+        }
+
+        .game-panel h3 {
+            margin-top: 0;
+            color: var(--pale-gold);
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+        }
+
+        .game-panel p {
+            margin: 0;
+            color: var(--text-muted);
+            line-height: 1.6;
         }
 
         /* Toast */
-        .toast-notification {
-            background-color: var(--dark-panel);
-            border: 2px solid var(--bright-accent);
-            border-radius: 16px;
-            padding: 12px 24px;
+        .toast-wrapper {
+            height: 150px;
             display: flex;
             align-items: center;
-            gap: 15px;
-            color: var(--bright-accent);
-            font-size: 16px;
-            -webkit-text-stroke: 2px black;
-            width: fit-content;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            justify-content: center;
+            background: repeating-linear-gradient(45deg, rgba(0,0,0,0.1), rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.2) 10px, rgba(0,0,0,0.2) 20px);
+            border-radius: 16px;
+            overflow: hidden;
             position: relative;
-            animation: slideDown 3s ease-out;
         }
 
-        @keyframes slideDown {
-            0% { transform: translateY(-50px); opacity: 0; }
-            10% { transform: translateY(0); opacity: 1; }
-            90% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-50px); opacity: 0; }
+        .toast-notification {
+            background-color: var(--dark-panel);
+            backdrop-filter: blur(12px);
+            border: 2px solid var(--primary-accent);
+            border-radius: 16px;
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: var(--bright-accent);
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 20px rgba(255, 191, 38, 0.2);
+            position: absolute;
+            animation: slideInToast 4s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite;
+        }
+
+        @keyframes slideInToast {
+            0% { transform: translateY(-100px); opacity: 0; }
+            15% { transform: translateY(0); opacity: 1; }
+            85% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100px); opacity: 0; }
         }
 
         .toast-icon {
@@ -196,79 +355,137 @@
             background-color: var(--primary-accent);
             mask: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L15 8L22 9L17 14L18.5 21L12 17.5L5.5 21L7 14L2 9L9 8L12 2Z"/></svg>') no-repeat center / contain;
             -webkit-mask: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L15 8L22 9L17 14L18.5 21L12 17.5L5.5 21L7 14L2 9L9 8L12 2Z"/></svg>') no-repeat center / contain;
+            filter: drop-shadow(0 0 8px rgba(255, 191, 38, 0.8));
         }
+
     </style>
 </head>
 <body>
 
-    <h2 style="text-align: center; color: var(--primary-accent); -webkit-text-stroke: 2px black;">Summer Nights UI Styleguide</h2>
-    
-    <div class="section">
-        <div class="section-title">1. COLOR PALETTE</div>
-        <div class="swatch-container">
-            <div class="swatch">
-                <div class="swatch-color" style="background-color: var(--primary-accent);"></div>
-                <div class="swatch-info">Primary Accent<br>#FFBF26</div>
+    <div class="container">
+        <aside class="sidebar">
+            <h2>UI System</h2>
+            <nav>
+                <a href="#colors" class="nav-link active">Colors</a>
+                <a href="#typography" class="nav-link">Typography</a>
+                <a href="#buttons" class="nav-link">Buttons</a>
+                <a href="#panels" class="nav-link">Panels & Overlays</a>
+                <a href="#toast" class="nav-link">Toast Notifications</a>
+            </nav>
+        </aside>
+
+        <main class="content">
+            
+            <div id="colors" class="section">
+                <h3 class="section-title">Color Palette</h3>
+                <div class="swatch-grid">
+                    <div class="swatch">
+                        <div class="swatch-color" style="background-color: var(--primary-accent);"></div>
+                        <div class="swatch-info">
+                            <div class="swatch-name">Primary Accent</div>
+                            <div class="swatch-hex">#FFBF26</div>
+                        </div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-color" style="background-color: var(--bright-accent);"></div>
+                        <div class="swatch-info">
+                            <div class="swatch-name">Bright Accent</div>
+                            <div class="swatch-hex">#FFD833</div>
+                        </div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-color" style="background-color: var(--pale-gold);"></div>
+                        <div class="swatch-info">
+                            <div class="swatch-name">Pale Gold</div>
+                            <div class="swatch-hex">#FFF280</div>
+                        </div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-color" style="background-color: var(--cyan-accent);"></div>
+                        <div class="swatch-info">
+                            <div class="swatch-name">Cyan Accent</div>
+                            <div class="swatch-hex">#33CCFF</div>
+                        </div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-color" style="background-color: var(--water-ui);"></div>
+                        <div class="swatch-info">
+                            <div class="swatch-name">Water UI</div>
+                            <div class="swatch-hex">#1AA6F2</div>
+                        </div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-color" style="background-color: var(--dark-panel);"></div>
+                        <div class="swatch-info">
+                            <div class="swatch-name">Dark Panel</div>
+                            <div class="swatch-hex">#0C051A (65%)</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="swatch">
-                <div class="swatch-color" style="background-color: var(--bright-accent);"></div>
-                <div class="swatch-info">Bright Accent<br>#FFD833</div>
+
+            <div id="typography" class="section">
+                <h3 class="section-title">Typography</h3>
+                <p style="color: var(--text-muted); margin-bottom: 30px;">In-game typography utilizes heavy black drop-shadows (simulated here) instead of uniform webkit-strokes to ensure crisp readability.</p>
+                
+                <h1 class="game-text type-title">SUMMER NIGHTS</h1>
+                <h2 class="game-text type-subtitle">LEVEL 01 COMPLETE</h2>
+                <h2 class="game-text type-subtitle">레벨 01 완료 (KR)</h2>
+                <p class="game-text type-prompt">CLICK TO CONTINUE</p>
             </div>
-            <div class="swatch">
-                <div class="swatch-color" style="background-color: var(--pale-gold);"></div>
-                <div class="swatch-info">Pale Gold<br>#FFF280</div>
+
+            <div id="buttons" class="section">
+                <h3 class="section-title">Interactive Buttons</h3>
+                <div class="btn-container">
+                    <button class="game-btn">Normal State</button>
+                    <button class="game-btn" style="background-color: var(--primary-accent-hover); border-color: var(--primary-accent); box-shadow: 0 0 20px rgba(255, 191, 38, 0.3);">Hovered</button>
+                    <button class="game-btn pressed">Pressed State</button>
+                    <button class="game-btn endless pressed">Pressed (Endless)</button>
+                </div>
             </div>
-            <div class="swatch">
-                <div class="swatch-color" style="background-color: var(--cyan-accent);"></div>
-                <div class="swatch-info">Cyan Accent<br>#33CCFF</div>
+
+            <div id="panels" class="section">
+                <h3 class="section-title">Panels & Overlays</h3>
+                <div class="game-panel">
+                    <h3>WEAPON INFO</h3>
+                    <p>This panel uses a sleek 16px corner radius, a deeply tinted glassmorphic background, and a bright gold accent border.</p>
+                </div>
             </div>
-            <div class="swatch">
-                <div class="swatch-color" style="background-color: var(--water-ui);"></div>
-                <div class="swatch-info">Water UI<br>#1AA6F2</div>
+
+            <div id="toast" class="section">
+                <h3 class="section-title">Toast Notifications</h3>
+                <div class="toast-wrapper">
+                    <div class="toast-notification">
+                        <div class="toast-icon"></div>
+                        CATASTROM READY! [F]
+                    </div>
+                </div>
             </div>
-            <div class="swatch">
-                <div class="swatch-color" style="background-color: var(--dark-panel);"></div>
-                <div class="swatch-info">Dark Panel<br>#0C051A (85%)</div>
-            </div>
-        </div>
+
+        </main>
     </div>
 
-    <div class="section">
-        <div class="section-title">2. TYPOGRAPHY</div>
-        <h1 class="type-title">SUMMER NIGHTS</h1>
-        <h2 class="type-subtitle-en">LEVEL 01 COMPLETE</h2>
-        <h2 class="type-subtitle-kr">레벨 01 완료 (KR)</h2>
-        <p class="type-prompt">CLICK TO CONTINUE</p>
-    </div>
+    <script>
+        // Simple script to highlight active sidebar link on scroll
+        const sections = document.querySelectorAll('.section');
+        const navLinks = document.querySelectorAll('.nav-link');
 
-    <div class="section">
-        <div class="section-title">3. BUTTONS</div>
-        <div class="btn-container">
-            <button class="game-btn">Normal State</button>
-            <button class="game-btn" style="background-color: var(--primary-accent-hover);">Hover State</button>
-            <button class="game-btn" style="background-color: var(--pressed-bg); transform: scale(0.95);">Pressed State</button>
-            <button class="game-btn endless" style="background-color: var(--cyan-accent-pressed); transform: scale(0.95);">Pressed (Endless)</button>
-        </div>
-    </div>
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
 
-    <div class="section">
-        <div class="section-title">4. PANELS & OVERLAYS</div>
-        <div class="game-panel">
-            <h3 style="margin-top: 0; color: var(--pale-gold); -webkit-text-stroke: 1px black;">WEAPON INFO</h3>
-            <p style="margin: 0; color: var(--text-muted); font-size: 14px;">This panel uses the 16px corner radius and dark semi-transparent background.</p>
-        </div>
-    </div>
-
-    <div class="section">
-        <div class="section-title">5. TOAST NOTIFICATIONS</div>
-        <div style="height: 120px; overflow: hidden; position: relative;">
-            <div class="toast-notification">
-                <div class="toast-icon"></div>
-                CATASTROM READY! [F]
-            </div>
-        </div>
-        <p style="color: var(--text-muted); font-size: 12px; margin-top: 10px;">*Animation replays on page load.</p>
-    </div>
-
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
