@@ -29,10 +29,11 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 - **Solar Flares (Fireballs):** The sun periodically launches fiery solar flares towards you. You must intercept them mid-air by tracking them with the water stream for 0.33s. Destroying a flare rewards an instant **+30% Water Tank refill**.
 - **Ice Burst:** Starting in Level 3, unlock the powerful Ice Burst mechanic! Build up 3 charges over time and right-click (or press R) to fire a freezing shard at the sun, completely stopping all sun movement and heat regeneration for 3 seconds.
 - **Catastrom Ultimate:** In Level 4+, fill the Catastrom gauge by continuously watering the sun. When it hits 100%, press [F] to physically grab the sun and violently drag it down into the ocean to instantly clear the wave!
-- **3 Unlockable Weapons:** Hold TAB to slow time and open the weapon wheel. Unlock new water blasters as you progress:
+- **4 Unlockable Weapons:** Hold TAB to slow time and open the weapon wheel. Unlock new water blasters as you progress:
   - **Standard Blaster (Lvl 1):** Balanced cooling power and water drain.
   - **Precision Stream (Lvl 2):** Low power, but features a massive **4.0x Critical Hit multiplier** for perfect aim.
   - **Heavy Cannon (Lvl 3):** Extreme raw cooling power, but drains your water tank incredibly fast.
+  - **Scatter Nozzle (Lvl 4):** Wide spread, excellent for intercepting multiple solar flares at once, but lacks pinpoint cooling.
 - **Solar Wind (Level 4+):** Periodic gusts of solar wind push your aim sideways for 3 seconds, forcing you to fight the drift. A warning flashes before each gust — brace yourself! Particle streaks and a rising hum signal the incoming blast.
 ---
 
@@ -43,6 +44,7 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 | Move mouse | Aim the water cannon |
 | Left click (hold) | Fire water spray |
 | Right click / R | Fire Ice Burst (when charged) |
+| F | Activate Catastrom Ultimate (when 100% charged) |
 | Tab (hold) | Open Weapon Selection Wheel (Mouse to highlight, Left Click to confirm) |
 | ESC | Open Settings / Credits |
 
