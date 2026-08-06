@@ -1482,7 +1482,7 @@ func _process(delta: float) -> void:
 	var ray_params = PhysicsRayQueryParameters3D.create(aim_origin, aim_origin + aim_dir * 200.0)
 	var result = space.intersect_ray(ray_params)
 	
-	crosshair_moved.emit(virtual_mouse_pos, false)
+	crosshair_moved.emit(virtual_mouse_pos, is_catastrom_active)
 			
 	# Prevent sputtering when empty
 	if water_tank <= 0.0:
@@ -1636,9 +1636,9 @@ func _input(event: InputEvent) -> void:
 		if is_dragging_sun:
 			move.x = 0.0 # Lock horizontal
 			if move.y > 0:
-				move.y *= 0.06 # Massive resistance dragging down (takes time)
+				move.y *= 0.3 # Moderate resistance dragging down
 			elif move.y < 0:
-				move.y *= 0.2 # Some resistance pushing back up
+				move.y *= 0.4 # Some resistance pushing back up
 				
 		virtual_mouse_pos += move * mouse_sensitivity
 		var viewport_size = get_viewport().get_visible_rect().size
