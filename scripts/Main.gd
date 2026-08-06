@@ -2561,16 +2561,16 @@ func _start_weather_event(force_type: String = "") -> void:
 		weather_duration = 10.0
 		weather_rain_particles.emitting = true
 		if is_kr:
-			hud.show_toast("기상 이변", "폭우! 물이 무한입니다.", "", Color(0.4, 0.8, 1.0))
+			hud.show_toast("기상 이변", "폭우! 물이 무한입니다.", "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_white.png", Color(0.4, 0.8, 1.0))
 		else:
-			hud.show_toast("Weather Event", "Rainstorm! Water is endless.", "", Color(0.4, 0.8, 1.0))
+			hud.show_toast("Weather Event", "Rainstorm! Water is endless.", "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_white.png", Color(0.4, 0.8, 1.0))
 	else:
 		active_weather = "eclipse"
 		weather_duration = 10.0
 		if is_kr:
-			hud.show_toast("기상 이변", "일식!", "", Color(0.8, 0.2, 0.2))
+			hud.show_toast("기상 이변", "일식!", "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_red.png", Color(0.8, 0.2, 0.2))
 		else:
-			hud.show_toast("Weather Event", "Solar Eclipse!", "", Color(0.8, 0.2, 0.2))
+			hud.show_toast("Weather Event", "Solar Eclipse!", "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_red.png", Color(0.8, 0.2, 0.2))
 	
 	_update_sky(false)
 
