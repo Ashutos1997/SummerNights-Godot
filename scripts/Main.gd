@@ -2092,7 +2092,10 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			is_catastrom_active = false
 			var viewport_size = get_viewport().get_visible_rect().size
 			virtual_mouse_pos = viewport_size * 0.5
-			if gun: gun.visible = true
+			if gun:
+				gun.visible = true
+				gun.position = gun_base_pos
+				gun.rotation = Vector3.ZERO
 		else:
 			_win()
 
@@ -2243,7 +2246,10 @@ func _win() -> void:
 			is_catastrom_active = false
 			var viewport_size = get_viewport().get_visible_rect().size
 			virtual_mouse_pos = viewport_size * 0.5
-			if gun: gun.visible = true
+			if gun:
+				gun.visible = true
+				gun.position = gun_base_pos
+				gun.rotation = Vector3.ZERO
 			
 			current_config = GameState.LEVEL_CONFIG[GameState.level]
 			var cfg = current_config
@@ -2262,6 +2268,11 @@ func _win() -> void:
 			wind_strength = 0.0
 			wind_elapsed = 0.0
 			wind_level_mult = 1.3 if GameState.level >= 5 else 1.0
+			if wind_warn_label:
+				wind_warn_label.visible = false
+				wind_warn_label.modulate.a = 0.0
+			if wind_particles: wind_particles.emitting = false
+			if wind_sfx: wind_sfx.stop()
 			
 			level_timer = cfg.timer
 			timer_running = true
