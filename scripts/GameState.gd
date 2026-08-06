@@ -96,6 +96,17 @@ const WEAPONS = {
 		"crit_multiplier": 5.5,
 		"recharge_rate": 15.0,
 		"unlock_level": 2
+	},
+	"scatter": {
+		"name": "Scatter Nozzle",
+		"model": "res://assets/blaster.glb",
+		"scale": Vector3(1, 1, 1),
+		"water_capacity": 150.0,
+		"water_drain": 9.0,
+		"cooling_power": 45.0,
+		"crit_multiplier": 1.0,
+		"recharge_rate": 10.0,
+		"unlock_level": 4
 	}
 }
 
