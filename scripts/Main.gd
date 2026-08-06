@@ -687,6 +687,7 @@ func _build_scene() -> void:
 		"annoyed": _draw_face("annoyed"),
 		"neutral": _draw_face("neutral"),
 		"happy":   _draw_face("happy"),
+		"dizzy":   _draw_face("dizzy"),
 	}
 	sun_face.texture = face_textures["angry"]
 	
@@ -1626,6 +1627,7 @@ func _draw_face(expression: String) -> ImageTexture:
 		"annoyed": _draw_annoyed(img, cx, cy)
 		"neutral": _draw_neutral(img, cx, cy)
 		"happy": _draw_happy(img, cx, cy)
+		"dizzy": _draw_dizzy(img, cx, cy)
 		
 	# Add the dark orange outer stroke procedurally
 	_add_outline_to_image(img, 4, Color(0.6, 0.2, 0.0, 1.0))
@@ -1738,6 +1740,19 @@ func _draw_happy(img: Image, cx: int, cy: int):
 	_draw_circle_on_image(img, cx - 36, cy + 8, 8, Color(1.0, 0.4, 0.4, 0.8))
 	_draw_circle_on_image(img, cx + 36, cy + 8, 8, Color(1.0, 0.4, 0.4, 0.8))
 
+func _draw_dizzy(img: Image, cx: int, cy: int):
+	# X eyes (left)
+	_draw_line_on_image(img, cx - 34, cy - 18, cx - 14, cy + 2, 6, FACE_COLOR)
+	_draw_line_on_image(img, cx - 34, cy + 2, cx - 14, cy - 18, 6, FACE_COLOR)
+	# X eyes (right)
+	_draw_line_on_image(img, cx + 14, cy - 18, cx + 34, cy + 2, 6, FACE_COLOR)
+	_draw_line_on_image(img, cx + 14, cy + 2, cx + 34, cy - 18, 6, FACE_COLOR)
+	# Squiggly mouth (Zig-zag)
+	_draw_line_on_image(img, cx - 16, cy + 24, cx - 8, cy + 16, 6, FACE_COLOR)
+	_draw_line_on_image(img, cx - 8, cy + 16, cx, cy + 24, 6, FACE_COLOR)
+	_draw_line_on_image(img, cx, cy + 24, cx + 8, cy + 16, 6, FACE_COLOR)
+	_draw_line_on_image(img, cx + 8, cy + 16, cx + 16, cy + 24, 6, FACE_COLOR)
+
 func _update_sun_face(ratio: float) -> void:
 	if not is_instance_valid(sun_face): return
 	var expression: String
@@ -1754,6 +1769,9 @@ func _update_sun_face(ratio: float) -> void:
 		
 	target_color = Color(2.0, 2.0, 2.0, 0.7) # Bright glowing white face (semi-transparent to blend with sun)
 	
+	if is_sun_frozen:
+		expression = "dizzy"
+
 	if sun_face.texture != face_textures.get(expression):
 		sun_face.texture = face_textures.get(expression)
 	
@@ -2518,7 +2536,15 @@ func freeze_sun() -> void:
 	is_sun_frozen = true
 	sun_freeze_timer = 3.0
 	ice_hit_sfx.play()
-	shake(0.4, 0.06)
+	
+	# Hit-Stop (Juice): Microscopic pause to sell the heavy impact
+	Engine.time_scale = 0.05
+	var hitstop_timer = get_tree().create_timer(0.08, true, false, true)
+	hitstop_timer.timeout.connect(func():
+		Engine.time_scale = 1.0
+		shake(0.5, 0.1) # Bigger shake when time resumes
+	)
+	
 	_spawn_ice_nova()
 	if frost_aura:
 		frost_aura.emitting = true
