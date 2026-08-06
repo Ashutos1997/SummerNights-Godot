@@ -28,6 +28,7 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 - **Strategic Heat Vents:** The sun has a white-hot critical vent on its surface. Hitting this spot directly cools the sun **2.4x faster**.
 - **Solar Flares (Fireballs):** The sun periodically launches fiery solar flares towards you. You must intercept them mid-air by tracking them with the water stream for 0.33s. Destroying a flare rewards an instant **+30% Water Tank refill**.
 - **Ice Burst:** Starting in Level 3, unlock the powerful Ice Burst mechanic! Build up 3 charges over time and right-click (or press R) to fire a freezing shard at the sun, completely stopping all sun movement and heat regeneration for 3 seconds.
+- **Catastrom Ultimate:** In Level 4+, fill the Catastrom gauge by continuously watering the sun. When it hits 100%, press [F] to physically grab the sun and violently drag it down into the ocean to instantly clear the wave!
 - **3 Unlockable Weapons:** Hold TAB to slow time and open the weapon wheel. Unlock new water blasters as you progress:
   - **Standard Blaster (Lvl 1):** Balanced cooling power and water drain.
   - **Precision Stream (Lvl 2):** Low power, but features a massive **4.0x Critical Hit multiplier** for perfect aim.
