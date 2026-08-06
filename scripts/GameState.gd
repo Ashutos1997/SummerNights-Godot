@@ -99,7 +99,7 @@ const WEAPONS = {
 	},
 	"scatter": {
 		"name": "Scatter Nozzle",
-		"model": "res://assets/blaster.glb",
+		"model": "res://assets/blaster_scatter.glb",
 		"scale": Vector3(1, 1, 1),
 		"water_capacity": 150.0,
 		"water_drain": 4.5,
