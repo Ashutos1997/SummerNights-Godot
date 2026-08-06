@@ -19,7 +19,8 @@ This document serves as the master record for all currently implemented features
     *   **Standard Blaster:** Balanced water usage and cooling power. (Unlocked Level 1)
     *   **Precision Stream:** Low capacity, fast drain, but massive critical hit multipliers. (Unlocked Level 2)
     *   **Heavy Cannon:** Huge capacity and high cooling power, but drains water rapidly. (Unlocked Level 3)
-*   **Ice Charges (Secondary Fire):** Powerful, instant-cooling projectiles with limited charges. Recharged upon defeating boss waves.
+*   **Ice Charges (Secondary Fire):** Powerful, instant-cooling projectiles with limited charges. Earn charges over time or when defeating boss waves.
+*   **Catastrom Ultimate:** Fills up by continuously watering the sun. When at 100% (Level 4+), press [F] to physically grab the sun and violently drag it down into the ocean for an instant wave clear.
 
 ## 3. Sun Mechanics & Threats
 *   **Dynamic Movement:** The Sun sways horizontally. On higher waves, it begins to weave in a "Figure-8" pattern.
@@ -37,25 +38,26 @@ Weather events can randomly trigger mid-wave, forcing the player to adapt:
 *   **Sun Expressions:** The 2D face on the Sun reacts to events (getting angry, taking damage, critical states).
 *   **Heat Distortion:** A screen-space shader applies heat shimmer/refraction over the environment, which intensifies as the Sun gets hotter.
 *   **Seagull Interactions:** Shooting the background seagulls with water causes them to squawk (pitch-shifted SFX), drop a burst of feathers, and rapidly flee higher into the sky.
+*   **Decorative Layers:**
+    *   **Cloud Layer:** Stylized 3D clouds that float across the sky.
+    *   **Seagull Layer:** Flocks of seagulls that fly in the distance.
+*   **Particle Effects:** Splashes for water hitting the sun, shattered chunks for the Catastrom dunk, shattered ice particles for ice blasts, and steam plumes.
 
 ## 6. Testing / Dev Mode
 Clicking `[DEV]` on the Title Screen starts the game in Developer Mode (starts at Wave 5). The following hotkeys become available:
 *   `[R]` - Instantly trigger a Rainstorm
 *   `[E]` - Instantly trigger a Solar Eclipse
 *   `[W]` - Skip current wave
-*   **Decorative Layers:**
-    *   **Cloud Layer:** Stylized 3D clouds that float across the sky.
-    *   **Seagull Layer:** Flocks of seagulls that fly in the distance.
-*   **Particle Effects:** Splashes for water hitting the sun, shattered ice particles for ice blasts, and steam plumes.
 
-## 5. UI, Juice, & Game Feel
+## 7. UI, Juice, & Game Feel
 *   **Custom Crosshair:** A dynamic cursor that scales up on hits.
-*   **Screen Shake:** The camera violently shakes during critical moments (e.g., Phase 2 transitions, high heat, solar flare impacts).
+*   **Screen Shake:** The camera violently shakes during critical moments (e.g., Phase 2 transitions, high heat, solar flare impacts, Catastrom dunks).
 *   **Hit Feedback:** The crosshair flashes and scales upon successful hits (`projectile_hit` events) and critical hits.
 *   **Dynamic UI Elements:**
     *   Temperature/Heat Bar (Sun Heat).
     *   Water Tank Bar.
     *   Ice Charge indicators.
+    *   Catastrom Ultimate notification toasts.
     *   Wave Timer.
 *   **Accessibility & Settings:**
     *   Reduce Motion toggle (disables screen shake and intensive UI flashing).
@@ -63,11 +65,12 @@ Clicking `[DEV]` on the Title Screen starts the game in Developer Mode (starts a
     *   Fullscreen toggle.
     *   Language selection (English and Korean).
 
-## 6. Audio
+## 8. Audio
 *   **Synthesized UI Sounds:** Programmatically generated sine-wave "ticks" and "whooshes" for UI navigation and the weapon wheel.
 *   **Gameplay SFX:** 
     *   Continuous water shooting loop.
     *   Solar flare interception sound.
+    *   Catastrom voice-over and massive water dunk splash.
     *   Critical warnings.
 
 ---
