@@ -101,11 +101,11 @@ const WEAPONS = {
 		"name": "Scatter Nozzle",
 		"model": "res://assets/blaster_scatter.glb",
 		"scale": Vector3(1, 1, 1),
-		"water_capacity": 150.0,
-		"water_drain": 4.5,
-		"cooling_power": 45.0,
+		"water_capacity": 100.0,
+		"water_drain": 6.5,
+		"cooling_power": 22.0,
 		"crit_multiplier": 1.0,
-		"recharge_rate": 14.0,
+		"recharge_rate": 10.0,
 		"unlock_level": 4
 	}
 }
