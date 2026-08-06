@@ -677,23 +677,24 @@ func _build_scene() -> void:
 	
 	sun_shatter_particles = GPUParticles3D.new()
 	sun_shatter_particles.emitting = false
-	sun_shatter_particles.amount = 80
-	sun_shatter_particles.lifetime = 1.5
+	sun_shatter_particles.amount = 120
+	sun_shatter_particles.lifetime = 2.0
+	sun_shatter_particles.visibility_aabb = AABB(Vector3(-50, -50, -50), Vector3(100, 100, 100))
 	
 	var shatter_mat = ParticleProcessMaterial.new()
 	shatter_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
-	shatter_mat.emission_sphere_radius = 2.5
+	shatter_mat.emission_sphere_radius = 5.0
 	shatter_mat.direction = Vector3(0, 1, 0)
 	shatter_mat.spread = 180.0
-	shatter_mat.initial_velocity_min = 8.0
-	shatter_mat.initial_velocity_max = 16.0
-	shatter_mat.gravity = Vector3(0, 12.0, 0) # chunks fly upwards as sun sinks
-	shatter_mat.scale_min = 0.3
-	shatter_mat.scale_max = 0.8
+	shatter_mat.initial_velocity_min = 15.0
+	shatter_mat.initial_velocity_max = 30.0
+	shatter_mat.gravity = Vector3(0, 8.0, 0) # chunks float up slightly then fall or fly out
+	shatter_mat.scale_min = 0.5
+	shatter_mat.scale_max = 2.0
 	sun_shatter_particles.process_material = shatter_mat
 	
 	var chunk_mesh = BoxMesh.new()
-	chunk_mesh.size = Vector3(0.4, 0.4, 0.4)
+	chunk_mesh.size = Vector3(1.5, 1.5, 1.5)
 	sun_shatter_particles.draw_pass_1 = chunk_mesh
 	sun_shatter_particles.material_override = sun_ray_mat
 	add_child(sun_shatter_particles)
