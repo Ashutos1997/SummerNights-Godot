@@ -147,3 +147,4 @@ SummerNights-Godot/
 | Weapon Wheel UI | Procedural GDScript draw API | - |
 | Synthesized UI Audio (Ticks/Whoosh) | Procedural AudioStreamGenerator | - |
 | VFX & Audio - Solar Wind Hazard | Procedural Particles & AudioStreamGenerator | - |
+| UI Icon - Catastrom Powerup | pandora0226 (DeviantArt) | CC BY-NC-ND 3.0 (Used for fun) |

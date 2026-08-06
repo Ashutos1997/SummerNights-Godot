@@ -148,3 +148,4 @@ SummerNights-Godot/
 | 무기 선택 휠 (Weapon Wheel UI) | 절차적 GDScript draw API | - |
 | 합성 UI 오디오 (틱/휘리릭) | 절차적 AudioStreamGenerator | - |
 | VFX 및 오디오 - 태양풍 (Solar Wind) | 절차적 파티클 및 AudioStreamGenerator | - |
+| UI 아이콘 - 카타스트롬(Catastrom) | pandora0226 (DeviantArt) | CC BY-NC-ND 3.0 (팬심으로 사용) |
