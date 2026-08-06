@@ -182,7 +182,7 @@ var seagull_layer: Node3D = null
 var virtual_mouse_pos: Vector2
 var blasts:      Node3D
 var particles:   GPUParticles3D
-
+var sun_shatter_particles: GPUParticles3D
 signal critical_hit
 var sunspot_node: MeshInstance3D
 var sunspot_timer: float = 0.0
@@ -674,6 +674,30 @@ func _build_scene() -> void:
 	corona_node.material_override = sun_ray_mat
 	corona_node.rotation.x = PI / 2.0 # Face camera
 	sun.add_child(corona_node)
+	
+	sun_shatter_particles = GPUParticles3D.new()
+	sun_shatter_particles.emitting = false
+	sun_shatter_particles.amount = 80
+	sun_shatter_particles.lifetime = 1.5
+	
+	var shatter_mat = ParticleProcessMaterial.new()
+	shatter_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	shatter_mat.emission_sphere_radius = 2.5
+	shatter_mat.direction = Vector3(0, 1, 0)
+	shatter_mat.spread = 180.0
+	shatter_mat.initial_velocity_min = 8.0
+	shatter_mat.initial_velocity_max = 16.0
+	shatter_mat.gravity = Vector3(0, 12.0, 0) # chunks fly upwards as sun sinks
+	shatter_mat.scale_min = 0.3
+	shatter_mat.scale_max = 0.8
+	sun_shatter_particles.process_material = shatter_mat
+	
+	var chunk_mesh = BoxMesh.new()
+	chunk_mesh.size = Vector3(0.4, 0.4, 0.4)
+	sun_shatter_particles.draw_pass_1 = chunk_mesh
+	sun_shatter_particles.material_override = sun_ray_mat
+	sun.add_child(sun_shatter_particles)
+
  
 	var sun_light = OmniLight3D.new()
 	sun_light.light_color = Color(1.0, 0.7, 0.3)
@@ -1394,7 +1418,12 @@ func _process(delta: float) -> void:
 	if is_dragging_sun:
 		var shrink_factor = clamp(sun.position.y / sun_base_pos.y, 0.1, 1.0)
 		target_scale *= shrink_factor
-		
+		if sun_shatter_particles and not sun_shatter_particles.emitting:
+			sun_shatter_particles.emitting = true
+	else:
+		if sun_shatter_particles and sun_shatter_particles.emitting:
+			sun_shatter_particles.emitting = false
+			
 	sun.scale = Vector3(target_scale, target_scale, target_scale)
 	
 	_update_sun_face(ratio)
