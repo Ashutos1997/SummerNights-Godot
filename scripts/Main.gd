@@ -1616,7 +1616,7 @@ func _process(delta: float) -> void:
 				var is_kr = GameState.language == "KR"
 				var title = "카타스트롬 준비됨" if is_kr else "CATASTROM READY"
 				var desc = "태양을 바다로 끌어내리세요 [F]" if is_kr else "DRAG THE SUN DOWN [F]"
-				hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_red.png", Color(0.8, 0.4, 1.0, 1.0))
+				hud.show_toast(title, desc, "res://assets/ui/Catastrom.png", Color(0.8, 0.4, 1.0, 1.0))
 	else:
 		was_catastrom_charged = false
 

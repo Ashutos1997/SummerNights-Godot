@@ -197,13 +197,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 12
 
-[node name="Icon" type="TextureRect" parent="HUD/resource_container/catastrom_row"]
-custom_minimum_size = Vector2(24, 24)
-layout_mode = 2
-texture = ExtResource("10_catastrom")
-expand_mode = 1
-stretch_mode = 5
-
 [node name="Label" type="Label" parent="HUD/resource_container/catastrom_row"]
 custom_minimum_size = Vector2(76, 0)
 layout_mode = 2
