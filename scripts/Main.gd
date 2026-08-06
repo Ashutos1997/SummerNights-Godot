@@ -1358,7 +1358,8 @@ func _process(delta: float) -> void:
 	# Sun bob and rotate
 	if not is_dragging_sun:
 		if is_catastrom_active:
-			sun.position = sun.position.lerp(sun_base_pos, 5.0 * delta)
+			var high_pos = sun_base_pos + Vector3(0, 10.0, 0)
+			sun.position = sun.position.lerp(high_pos, 3.0 * delta)
 		elif sun_sway_amplitude > 0.0:
 			var spd_mult = 0.0 if is_sun_frozen else 1.0
 			sun_move_time += delta * spd_mult
@@ -1391,7 +1392,7 @@ func _process(delta: float) -> void:
 	var target_scale = (0.4 + 0.6 * ratio) * pulse
 	
 	if is_dragging_sun:
-		var shrink_factor = max(0.1, sun.position.y / sun_base_pos.y)
+		var shrink_factor = clamp(sun.position.y / sun_base_pos.y, 0.1, 1.0)
 		target_scale *= shrink_factor
 		
 	sun.scale = Vector3(target_scale, target_scale, target_scale)
@@ -1631,18 +1632,11 @@ func _input(event: InputEvent) -> void:
 
 	if game_over: return
 	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-		var move = event.relative
-		if is_dragging_sun:
-			move.x = 0.0 # Lock horizontal
-			if move.y > 0:
-				move.y *= 0.3 # Moderate resistance dragging down
-			elif move.y < 0:
-				move.y *= 0.4 # Some resistance pushing back up
-				
-		virtual_mouse_pos += move * mouse_sensitivity
-		var viewport_size = get_viewport().get_visible_rect().size
-		virtual_mouse_pos.x = clamp(virtual_mouse_pos.x, 0, viewport_size.x)
-		virtual_mouse_pos.y = clamp(virtual_mouse_pos.y, 0, viewport_size.y)
+		if not is_dragging_sun:
+			virtual_mouse_pos += event.relative * mouse_sensitivity
+			var viewport_size = get_viewport().get_visible_rect().size
+			virtual_mouse_pos.x = clamp(virtual_mouse_pos.x, 0, viewport_size.x)
+			virtual_mouse_pos.y = clamp(virtual_mouse_pos.y, 0, viewport_size.y)
 		
 	if (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed) or \
 	   (event is InputEventKey and event.keycode == KEY_R and event.pressed):
@@ -1672,11 +1666,15 @@ func _input(event: InputEvent) -> void:
 			is_shooting = event.pressed
 			
 	if is_dragging_sun and event is InputEventMouseMotion:
-		# Map virtual_mouse_pos.y to sun.position.y
-		var viewport_size = get_viewport().get_visible_rect().size
-		var screen_ratio = virtual_mouse_pos.y / viewport_size.y
-		# From base_pos.y down to 0.0
-		sun.position.y = lerp(sun_base_pos.y, -2.0, screen_ratio)
+		# Directly modify sun position based on mouse motion
+		# Mouse moving down = positive relative.y
+		if event.relative.y > 0:
+			sun.position.y -= event.relative.y * 0.015
+		elif event.relative.y < 0:
+			sun.position.y -= event.relative.y * 0.005 # Slight resistance when pushing up
+			
+		sun.position.y = clamp(sun.position.y, -2.0, sun_base_pos.y + 15.0)
+		
 		if sun.position.y <= 0.0:
 			_trigger_catastrom_dunk()
 
