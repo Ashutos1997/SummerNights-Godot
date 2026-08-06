@@ -1407,9 +1407,8 @@ func _process(delta: float) -> void:
 	if hud and hud.grab_icon:
 		if is_catastrom_active:
 			hud.grab_icon.visible = true
-			if not is_dragging_sun:
-				var pos = camera.unproject_position(sun.global_position)
-				hud.grab_icon.position = pos - hud.grab_icon.size / 2.0
+			var pos = camera.unproject_position(sun.global_position)
+			hud.grab_icon.position = pos - hud.grab_icon.size / 2.0
 		else:
 			hud.grab_icon.visible = false
 
