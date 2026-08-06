@@ -119,7 +119,7 @@ func _load_weapon_model() -> void:
 	var base_drain = 8.75
 	if current_config.has("water_drain"):
 		base_drain = current_config.water_drain
-	WATER_DRAIN_RATE = base_drain * w_cfg.water_drain
+	WATER_DRAIN_RATE = base_drain + w_cfg.water_drain
 	
 	if shoot_loop_sfx:
 		if GameState.current_weapon_id == "heavy":
@@ -278,7 +278,7 @@ func _ready() -> void:
 
 	current_config = GameState.LEVEL_CONFIG[GameState.level]
 	var cfg = current_config
-	WATER_DRAIN_RATE = cfg.water_drain
+	WATER_DRAIN_RATE = cfg.water_drain + GameState.WEAPONS[GameState.current_weapon_id].water_drain
 	heat_regen_base = cfg.heat_regen_base
 	sun_sway_amplitude = cfg.sun_sway_amplitude
 	sun_sway_speed = cfg.sun_sway_speed
@@ -2114,7 +2114,7 @@ func _win() -> void:
 			
 			current_config = GameState.LEVEL_CONFIG[GameState.level]
 			var cfg = current_config
-			WATER_DRAIN_RATE = cfg.water_drain
+			WATER_DRAIN_RATE = cfg.water_drain + GameState.WEAPONS[GameState.current_weapon_id].water_drain
 			heat_regen_base = cfg.heat_regen_base
 			sun_sway_amplitude = cfg.sun_sway_amplitude
 			sun_sway_speed = cfg.sun_sway_speed
