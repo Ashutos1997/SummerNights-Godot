@@ -204,6 +204,7 @@ var flare_intercept_sfx: AudioStreamPlayer
 # Weather system
 var is_dragging_sun: bool = false
 var is_catastrom_active: bool = false
+var was_catastrom_charged: bool = false
 var catastrom_sfx: AudioStreamPlayer
 var active_weather: String = "none" # "none", "rain", "eclipse"
 var weather_timer: float = 0.0
@@ -1595,6 +1596,17 @@ func _process(delta: float) -> void:
 	if water_mat and water_mat is StandardMaterial3D:
 		water_mat.uv1_offset += Vector3(0.02 * delta, 0.02 * delta, 0) # Scrolling ripples
 
+	if GameState.catastrom_charge >= 1.0:
+		if not was_catastrom_charged:
+			was_catastrom_charged = true
+			if hud and hud.has_method("show_toast"):
+				var is_kr = GameState.language == "KR"
+				var title = "카타스트롬 준비됨" if is_kr else "CATASTROM READY"
+				var desc = "태양을 바다로 끌어내리세요 [F]" if is_kr else "DRAG THE SUN DOWN [F]"
+				hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_red.png", Color(0.8, 0.4, 1.0, 1.0))
+	else:
+		was_catastrom_charged = false
+
 func _input(event: InputEvent) -> void:
 	if is_title_screen:
 		return
@@ -2035,6 +2047,8 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			temperature = MAX_TEMP
 			level_timer = min(120.0, 60.0 + (level_timer * 0.5)) # Bank 50% of remaining time
 			wave_timer = 0.0
+			is_catastrom_active = false
+			if gun: gun.visible = true
 		else:
 			_win()
 

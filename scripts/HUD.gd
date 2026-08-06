@@ -21,7 +21,6 @@ signal weapon_changed(weapon_id: String)
 @onready var catastrom_label = $HUD/resource_container/catastrom_row/Label
 @onready var catastrom_bar = $HUD/resource_container/catastrom_row/CatastromBar
 @onready var grab_icon = $HUD/GrabIcon
-@onready var catastrom_prompt = $HUD/CatastromPrompt
 
 @onready var toast_container = $HUD/ToastContainer
 @onready var crosshair = $HUD/Crosshair
@@ -129,13 +128,6 @@ func _process(delta: float) -> void:
 				catastrom_bar.tint_progress = Color(0.6, 0, 1, 1)
 		else:
 			catastrom_bar.tint_progress = Color(0.6, 0, 1, 1)
-			
-		if catastrom_prompt:
-			var main = get_tree().current_scene
-			var is_active = false
-			if main and "is_catastrom_active" in main:
-				is_active = main.is_catastrom_active
-			catastrom_prompt.visible = (target_catastrom >= 1.0) and not is_active
 			
 	# Update top right button hover colors in captured mode
 	if credits_btn and not credits_screen.visible:
@@ -579,11 +571,6 @@ func _apply_language(lang: String) -> void:
 		catastrom_label.text = "카타스트롬" if is_kr else "CATASTROM"
 		if font: catastrom_label.add_theme_font_override("font", font)
 		catastrom_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
-
-	if catastrom_prompt:
-		catastrom_prompt.text = "[F] 카타스트롬 준비됨" if is_kr else "[F] CATASTROM READY"
-		if font: catastrom_prompt.add_theme_font_override("font", font)
-		catastrom_prompt.add_theme_font_size_override("font_size", 26 if is_kr else 22)
 
 	if level_label:
 		if GameState.is_survival_mode:
