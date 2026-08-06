@@ -696,7 +696,7 @@ func _build_scene() -> void:
 	chunk_mesh.size = Vector3(0.4, 0.4, 0.4)
 	sun_shatter_particles.draw_pass_1 = chunk_mesh
 	sun_shatter_particles.material_override = sun_ray_mat
-	sun.add_child(sun_shatter_particles)
+	add_child(sun_shatter_particles)
 
  
 	var sun_light = OmniLight3D.new()
@@ -1418,8 +1418,10 @@ func _process(delta: float) -> void:
 	if is_dragging_sun:
 		var shrink_factor = clamp(sun.position.y / sun_base_pos.y, 0.1, 1.0)
 		target_scale *= shrink_factor
-		if sun_shatter_particles and not sun_shatter_particles.emitting:
-			sun_shatter_particles.emitting = true
+		if sun_shatter_particles:
+			sun_shatter_particles.global_position = sun.global_position
+			if not sun_shatter_particles.emitting:
+				sun_shatter_particles.emitting = true
 	else:
 		if sun_shatter_particles and sun_shatter_particles.emitting:
 			sun_shatter_particles.emitting = false
