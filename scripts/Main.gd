@@ -2060,6 +2060,8 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			level_timer = min(120.0, 60.0 + (level_timer * 0.5)) # Bank 50% of remaining time
 			wave_timer = 0.0
 			is_catastrom_active = false
+			var viewport_size = get_viewport().get_visible_rect().size
+			virtual_mouse_pos = viewport_size * 0.5
 			if gun: gun.visible = true
 		else:
 			_win()
@@ -2209,6 +2211,8 @@ func _win() -> void:
 			water_refill_count = 0
 			is_measuring = true
 			is_catastrom_active = false
+			var viewport_size = get_viewport().get_visible_rect().size
+			virtual_mouse_pos = viewport_size * 0.5
 			if gun: gun.visible = true
 			
 			current_config = GameState.LEVEL_CONFIG[GameState.level]
