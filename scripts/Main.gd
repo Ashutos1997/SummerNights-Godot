@@ -203,6 +203,7 @@ var flare_intercept_sfx: AudioStreamPlayer
 
 # Weather system
 var is_dragging_sun: bool = false
+var is_catastrom_active: bool = false
 var catastrom_sfx: AudioStreamPlayer
 var active_weather: String = "none" # "none", "rain", "eclipse"
 var weather_timer: float = 0.0
@@ -1355,7 +1356,9 @@ func _process(delta: float) -> void:
 
 	# Sun bob and rotate
 	if not is_dragging_sun:
-		if sun_sway_amplitude > 0.0:
+		if is_catastrom_active:
+			sun.position = sun.position.lerp(sun_base_pos, 5.0 * delta)
+		elif sun_sway_amplitude > 0.0:
 			var spd_mult = 0.0 if is_sun_frozen else 1.0
 			sun_move_time += delta * spd_mult
 			var x_offset = sin(sun_move_time * sun_sway_speed) * sun_sway_amplitude
@@ -1613,10 +1616,19 @@ func _input(event: InputEvent) -> void:
 		if GameState.ice_charges_remaining > 0:
 			_shoot_ice()
 
+	if event is InputEventKey and event.keycode == KEY_F and event.pressed and not event.echo:
+		if GameState.catastrom_charge >= 1.0 and not is_catastrom_active:
+			is_catastrom_active = true
+			is_shooting = false
+			if gun: gun.visible = false
+			return
+
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if GameState.catastrom_charge >= 1.0 and event.pressed and not is_dragging_sun:
+		if is_catastrom_active and event.pressed and not is_dragging_sun:
 			is_dragging_sun = true
 			is_shooting = false
+			if catastrom_sfx:
+				catastrom_sfx.play()
 			if hud and hud.grab_icon:
 				hud.grab_icon.texture = preload("res://assets/ui/grab_closed.png")
 			return
@@ -1933,7 +1945,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 	gun.position.y += 0.02
 	
 	if hud and hud.grab_icon:
-		if GameState.catastrom_charge >= 1.0:
+		if is_catastrom_active:
 			hud.grab_icon.visible = true
 			if not is_dragging_sun:
 				var pos = camera.unproject_position(sun.global_position)
@@ -2114,8 +2126,6 @@ func _update_sky(instant: bool) -> void:
 	heat_changed.emit(temperature, MAX_TEMP)
 	
 func _trigger_catastrom_dunk() -> void:
-	if catastrom_sfx:
-		catastrom_sfx.play()
 	shake(1.5, 0.5)
 	
 	if sun_face:
@@ -2170,6 +2180,8 @@ func _win() -> void:
 			cooldown_timer = 0.0
 			water_refill_count = 0
 			is_measuring = true
+			is_catastrom_active = false
+			if gun: gun.visible = true
 			
 			current_config = GameState.LEVEL_CONFIG[GameState.level]
 			var cfg = current_config
