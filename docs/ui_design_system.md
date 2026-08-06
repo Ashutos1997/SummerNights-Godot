@@ -87,6 +87,15 @@ Panels like the Weapon Wheel info box use a distinct, rounded "sleek" aesthetic.
 *   **Corner Radius:** `16px` (All corners)
 *   **Content/Expand Margins:** `Left/Right: 16px`, `Top/Bottom: 8px`
 
+### Toast Notifications (Catastrom Popup)
+
+Transient popups that slide in from the top of the screen to notify the player of critical events (e.g., Catastrom Ultimate ready).
+
+*   **Background & Borders:** Inherits the "Panels & Overlays" style.
+*   **Icon:** Includes a `32x32` pixel icon (e.g., Catastrom logo).
+*   **Text & Accent:** Uses the Bright Accent `Color(1.0, 0.85, 0.2, 1.0)`.
+*   **Animation:** Uses a Sine ease-out tween to slide the `position.y` onto the screen and hold for 3 seconds before sliding back up.
+
 ### Screen Overlays (Blur / Dim)
 
 When a menu or overlay is shown (e.g., Pause, Weapon Wheel), the screen behind it is blurred and dimmed using a custom screen-reading shader.
