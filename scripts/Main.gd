@@ -2156,10 +2156,10 @@ func _trigger_catastrom_dunk() -> void:
 	GameState.catastrom_charge = 0.0
 	is_dragging_sun = false
 	if hud and hud.grab_icon:
-		hud.grab_icon.texture = preload("res://assets/ui/grab_open.png")
+		hud.grab_icon.visible = false
 		
 	# Trigger wave cleared logic
-	temperature = 0.0
+	temperature = -100.0
 	_on_hit(0.01, sun.global_position)
 func _win() -> void:
 	if defeat_triggered: return
