@@ -184,6 +184,7 @@ func _ready() -> void:
 	_style_lbl(heat_label, 22, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
 	_style_lbl(water_label, 22, Color(0.4, 0.9, 1.0, 1.0), 3, Color.BLACK, font)
 	_style_lbl(ice_label, 22, Color(0.5, 0.85, 1.0, 1.0), 3, Color.BLACK, font)
+	_style_lbl(catastrom_label, 22, Color(0.8, 0.4, 1.0, 1.0), 3, Color.BLACK, font)
 
 	_style_lbl(level_label, 22, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
 	
@@ -566,6 +567,10 @@ func _apply_language(lang: String) -> void:
 		ice_label.text = "얼음 폭발" if is_kr else "ICE BURST"
 		if font: ice_label.add_theme_font_override("font", font)
 		ice_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
+	if catastrom_label:
+		catastrom_label.text = "카타스트롬" if is_kr else "CATASTROM"
+		if font: catastrom_label.add_theme_font_override("font", font)
+		catastrom_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
 
 	if level_label:
 		if GameState.is_survival_mode:

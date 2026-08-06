@@ -1615,25 +1615,11 @@ func _input(event: InputEvent) -> void:
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if GameState.catastrom_charge >= 1.0 and event.pressed and not is_dragging_sun:
-			var space_state = get_world_3d().direct_space_state
-			var ray_origin = camera.project_ray_origin(virtual_mouse_pos)
-			var ray_dir = camera.project_ray_normal(virtual_mouse_pos)
-			var ray_params = PhysicsRayQueryParameters3D.create(ray_origin, ray_origin + ray_dir * 1000.0)
-			var result = space_state.intersect_ray(ray_params)
-			if result and result.collider:
-				var coll = result.collider as Node
-				var is_sun = false
-				while coll != null:
-					if coll == sun:
-						is_sun = true
-						break
-					coll = coll.get_parent()
-				if is_sun:
-					is_dragging_sun = true
-					is_shooting = false
-					if hud and hud.grab_icon:
-						hud.grab_icon.texture = preload("res://assets/ui/grab_closed.png")
-					return
+			is_dragging_sun = true
+			is_shooting = false
+			if hud and hud.grab_icon:
+				hud.grab_icon.texture = preload("res://assets/ui/grab_closed.png")
+			return
 					
 		if Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE and event.pressed:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
