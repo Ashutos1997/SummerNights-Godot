@@ -1937,7 +1937,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			if hud:
 				hud.update_ice_charges(GameState.ice_charges_remaining, max_survival_ice_charges + GameState.bonus_ice_charges)
 				
-				if GameState.current_wave == 2 or GameState.current_wave == 3:
+				if GameState.current_wave == 2 or GameState.current_wave == 3 or GameState.current_wave == 4:
 					hud.show_weapon_unlock()
 				if GameState.current_wave == 2:
 					hud.show_ice_unlock()
@@ -2143,6 +2143,8 @@ func _win() -> void:
 				if GameState.level == 3:
 					hud.show_weapon_unlock()
 					hud.show_ice_unlock()
+				if GameState.level == 4:
+					hud.show_weapon_unlock()
 			
 			if sun_mat:
 				sun_mat.albedo_color = Color(1.0, 1.0, 1.0)
