@@ -147,7 +147,7 @@ SummerNights-Godot/
 | SFX - Ice Hit | antonsoederberg (Freesound) | CC0 |
 | SFX - Seagull Ambiance | Half-Life | Mod Asset |
 | VFX - Ice Blast Projectile & Particles | Procedural Godot Primitives | - |
-| VFX - Physical Magma Debris | Procedural Godot Primitives & RigidBody3D | - |
+| VFX - Physical Magma Debris | Quaternius Rock Models & Godot RigidBody3D | - |
 | Procedural Clouds and Seagulls | Hand-crafted GDScript | - |
 | Sun Face Expressions | Procedural Godot Image draw API | - |
 | Weapon Wheel UI | Procedural GDScript draw API | - |
