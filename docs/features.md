@@ -8,6 +8,7 @@ This document serves as the master record for all currently implemented features
 *   **Objective:** Cool the Sun to prevent it from reaching 100% heat before the wave timer runs out.
 *   **Heat Mechanics:** The Sun passively generates heat. If heat reaches 100%, the player loses.
 *   **Water Management:** The player has a limited water tank that drains when shooting. It recharges automatically when not firing.
+*   **Water Stream Combo:** Continuously tracking the Sun with water builds a combo multiplier that scales up to 3.0x, significantly boosting Catastrom Ultimate charging speed.
 *   **Wave Progression:** The game progresses through increasingly difficult waves (longer timers, faster heat generation, more aggressive sun movement). Boss waves occur every 5 waves (e.g., Wave 5).
 *   **Game Modes:**
     *   **Normal Mode:** Standard level progression.
@@ -25,7 +26,7 @@ This document serves as the master record for all currently implemented features
 
 ## 3. Sun Mechanics & Threats
 *   **Dynamic Movement:** The Sun sways horizontally. On higher waves, it begins to weave in a "Figure-8" pattern.
-*   **Solar Flares:** The Sun periodically spits fiery projectiles towards the screen. The player must intercept them with the water stream before they hit; otherwise, they cause a massive heat spike.
+*   **Solar Flares:** The Sun periodically spits fiery projectiles towards the screen. The player must intercept them with the water stream before they hit; otherwise, they cause a massive heat spike. Intercepting a flare spawns physical Magma Debris that crashes onto the beach, scaring away seagulls and persisting until the player evaporates it with their water gun.
 *   **Solar Wind:** A physical force emitted by the Sun that pushes the player's crosshair away, requiring them to actively fight the mouse to maintain aim.
 *   **Two-Phase Bosses:** Boss waves (e.g., Wave 5) have two phases. Depleting the timer triggers Phase 2, which resets the timer and immediately spikes the heat to a critical level (e.g., 60%).
 
