@@ -1643,6 +1643,31 @@ func _process(delta: float) -> void:
 				f_node.queue_free()
 				active_flares.erase(flare)
 
+		# Check Magma Rock Interception (Cleaning up debris)
+		var rocks_to_free = []
+		for rock in active_magma_rocks:
+			if is_instance_valid(rock):
+				var r_pos = rock.global_position
+				var vec_to_rock = r_pos - ray_origin
+				var proj_t = vec_to_rock.dot(ray_normal)
+				if proj_t > 0.0:
+					var closest_pt = ray_origin + ray_normal * proj_t
+					var dist_to_ray = r_pos.distance_to(closest_pt)
+					if dist_to_ray < 2.0: # Generous hitbox for rocks
+						# Rock hit by water! Evaporate it visually
+						rock.scale -= Vector3(1.0, 1.0, 1.0) * delta * 1.5
+						if steam_particles and randf() < 0.2:
+							steam_particles.global_position = r_pos
+							steam_particles.restart()
+						if rock.scale.x <= 0.05:
+							rocks_to_free.append(rock)
+		for rock in rocks_to_free:
+			if is_instance_valid(rock):
+				if sizzle_sfx:
+					sizzle_sfx.play()
+				rock.queue_free()
+				active_magma_rocks.erase(rock)
+
 		# Check hit
 		var aim_dist = target_pos.distance_to(sun.position)
 		if aim_dist < 5.0: # Close enough to hit the larger sun
@@ -2735,10 +2760,11 @@ func _spawn_flare_explosion(pos: Vector3) -> void:
 		rock.apply_central_impulse(Vector3(imp_x, imp_y, imp_z))
 		rock.apply_torque_impulse(Vector3(randf_range(-10, 10), randf_range(-10, 10), randf_range(-10, 10)))
 		
-		var tw_rock = create_tween()
-		tw_rock.tween_interval(5.0)
-		tw_rock.tween_property(rock_mesh_node, "scale", Vector3.ZERO, 0.5)
-		tw_rock.tween_callback(rock.queue_free)
+		# Allow rocks to persist on the beach indefinitely until shot, but cap at 20 max rocks
+		if active_magma_rocks.size() > 20:
+			var oldest = active_magma_rocks.pop_front()
+			if is_instance_valid(oldest):
+				oldest.queue_free()
 
 func _spawn_ice_nova() -> void:
 	if not sun: return
