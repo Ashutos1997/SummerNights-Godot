@@ -1119,6 +1119,16 @@ func _on_timer_tick(seconds: float) -> void:
 	
 	timer_label.text = "%d:%02d" % [mins, secs]
 
+	if seconds <= 10.0:
+		timer_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.2, 1.0))
+		if not timer_pulse_active:
+			timer_pulse_active = true
+			var tw = create_tween().set_loops()
+			tw.tween_property(timer_label, "modulate:a", 0.3, 0.4)
+			tw.tween_property(timer_label, "modulate:a", 1.0, 0.4)
+	else:
+		timer_label.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 1.0))
+
 func show_combo(active: bool) -> void:
 	if not combo_label: return
 	
@@ -1135,16 +1145,6 @@ func show_combo(active: bool) -> void:
 			var tw = create_tween()
 			tw.tween_property(combo_label, "modulate:a", 0.0, 0.2)
 			tw.tween_callback(func(): combo_label.visible = false)
-			
-	if seconds <= 10.0:
-		timer_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.2, 1.0))
-		if not timer_pulse_active:
-			timer_pulse_active = true
-			var tw = create_tween().set_loops()
-			tw.tween_property(timer_label, "modulate:a", 0.3, 0.4)
-			tw.tween_property(timer_label, "modulate:a", 1.0, 0.4)
-	else:
-		timer_label.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 1.0))
 
 func _on_timer_expired() -> void:
 	show_lose_screen()
