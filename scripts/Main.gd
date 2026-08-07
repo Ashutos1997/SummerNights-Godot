@@ -224,6 +224,7 @@ var magma_rock_prefabs: Array[PackedScene] = [
 	preload("res://ultimate-stylized-nature/prefabs/rock_4.tscn"),
 	preload("res://ultimate-stylized-nature/prefabs/rock_5.tscn")
 ]
+var active_magma_rocks: Array[RigidBody3D] = []
 
 var water_mat:   Material
 
@@ -1464,6 +1465,21 @@ func _process(delta: float) -> void:
 		if wind_particles and wind_particles.emitting:
 			wind_particles.emitting = false
 
+	_update_sun_movement(delta)
+	
+	if seagull_layer:
+		# Check if magma rocks hit seagulls
+		var valid_rocks: Array[RigidBody3D] = []
+		for r in active_magma_rocks:
+			if is_instance_valid(r):
+				valid_rocks.append(r)
+				# 4.0 radius gives a nice generous scare zone
+				seagull_layer.check_scare_at(r.global_position, 4.0)
+		active_magma_rocks = valid_rocks
+		
+	if is_game_started and not is_title_screen and not game_over:
+		pass # Any other game started logic
+
 	# Aim gun (apply wind drift to virtual mouse position)
 	var mouse_pos = virtual_mouse_pos
 	if wind_state == 2 and wind_strength > 0.0:
@@ -2703,6 +2719,7 @@ func _spawn_flare_explosion(pos: Vector3) -> void:
 		rock.add_child(col)
 		rock.position = pos + Vector3(randf_range(-0.5, 0.5), randf_range(-0.5, 0.5), randf_range(-0.5, 0.5))
 		add_child(rock)
+		active_magma_rocks.append(rock)
 		
 		var push_dir = Vector3(randf_range(-0.8, 0.8), randf_range(0.2, 1.2), randf_range(0.2, 1.0)).normalized()
 		rock.apply_central_impulse(push_dir * randf_range(10.0, 18.0))

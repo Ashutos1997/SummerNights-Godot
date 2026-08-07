@@ -240,6 +240,14 @@ func scare_bird(b: Dictionary) -> void:
 		b["ctrl_pos"] = Vector3(mid.x, max(target.y + 8.0, 30.0), mid.z) # Fly up higher and faster
 		b["anim_t"] = 0.0
 
+func check_scare_at(pos: Vector3, radius: float) -> void:
+	for b in birds:
+		var state = b.get("state")
+		if state == "sitting" or state == "landing":
+			var node = b["node"] as Node3D
+			if node and node.global_position.distance_to(pos) <= radius:
+				scare_bird(b)
+
 func _process(delta: float) -> void:
 	var time = Time.get_ticks_msec() * 0.001
 	for b in birds:
