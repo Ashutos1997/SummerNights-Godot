@@ -201,6 +201,15 @@ var flare_spawn_timer: float = 8.0
 var flare_mat: StandardMaterial3D
 var flare_intercept_sfx: AudioStreamPlayer
 
+# Heat Shield system
+var is_shield_active: bool = false
+var shield_cooldown: float = 30.0
+var shield_pivot: Node3D
+var shield_mesh_node: MeshInstance3D
+var active_shield_orbs: Array[Dictionary] = []
+var shield_hum_sfx: AudioStreamPlayer
+var orb_mat: StandardMaterial3D
+
 # Weather system
 var is_dragging_sun: bool = false
 var is_catastrom_active: bool = false
@@ -246,6 +255,13 @@ func _ready() -> void:
 	catastrom_sfx.stream = preload("res://assets/audio/sfx/catastrom_dunk.mp3")
 	catastrom_sfx.volume_db = 0.0
 	add_child(catastrom_sfx)
+	
+	shield_hum_sfx = AudioStreamPlayer.new()
+	var hum_gen = AudioStreamGenerator.new()
+	hum_gen.mix_rate = 44100
+	shield_hum_sfx.stream = hum_gen
+	shield_hum_sfx.volume_db = -10.0
+	add_child(shield_hum_sfx)
 	
 	ambient_sfx = AudioStreamPlayer.new()
 	var ocean_stream = load("res://assets/audio/sfx/ocean_waves.wav")
@@ -393,6 +409,37 @@ func _ready() -> void:
 	frost_aura.emitting = false
 	if sun:
 		sun.add_child(frost_aura)
+		
+	# Setup Heat Shield nodes
+	shield_pivot = Node3D.new()
+	if sun:
+		sun.add_child(shield_pivot)
+	
+	shield_mesh_node = MeshInstance3D.new()
+	var s_mesh = SphereMesh.new()
+	s_mesh.radius = 4.2  # Slightly larger than sun
+	s_mesh.height = 8.4
+	shield_mesh_node.mesh = s_mesh
+	
+	var s_mat = StandardMaterial3D.new()
+	s_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	s_mat.albedo_color = Color(1.0, 0.4, 0.0, 0.15)
+	s_mat.emission_enabled = true
+	s_mat.emission = Color(1.0, 0.3, 0.0)
+	s_mat.emission_energy_multiplier = 0.5
+	s_mat.rim_enabled = true
+	s_mat.rim = 1.0
+	s_mat.rim_tint = 1.0
+	shield_mesh_node.set_surface_override_material(0, s_mat)
+	shield_mesh_node.visible = false
+	shield_pivot.add_child(shield_mesh_node)
+	
+	orb_mat = StandardMaterial3D.new()
+	orb_mat.albedo_color = Color(1.0, 0.8, 0.2)
+	orb_mat.emission_enabled = true
+	orb_mat.emission = Color(1.0, 0.6, 0.0)
+	orb_mat.emission_energy_multiplier = 3.0
+
 	
 	_load_weapon_model()
 
@@ -1360,6 +1407,22 @@ func _process(delta: float) -> void:
 			if weather_duration <= 0.0:
 				_end_weather_event()
 				
+	# Heat Shield logic
+	if GameState.is_survival_mode and GameState.current_wave >= 6 and timer_running and not is_sun_frozen and not is_catastrom_active:
+		if not is_shield_active:
+			shield_cooldown -= delta
+			if shield_cooldown <= 0.0:
+				_activate_heat_shield()
+		else:
+			if is_instance_valid(shield_pivot):
+				shield_pivot.rotation.y += 2.0 * delta
+				shield_pivot.rotation.z += 1.0 * delta
+				
+			if not shield_hum_sfx.playing:
+				shield_hum_sfx.play()
+	elif is_shield_active and (is_sun_frozen or is_catastrom_active):
+		_deactivate_heat_shield()
+				
 	# Weather Mechanics
 	if active_weather == "rain":
 		temperature = max(0.0, temperature - 5.0 * delta)
@@ -1618,6 +1681,45 @@ func _process(delta: float) -> void:
 					
 				f_node.queue_free()
 				active_flares.erase(flare)
+
+		# Check Heat Shield Orbs
+		if is_shield_active:
+			var destroyed_orbs = []
+			for orb in active_shield_orbs:
+				var o_node = orb["node"] as Node3D
+				if is_instance_valid(o_node):
+					var orb_pos = o_node.global_position
+					var vec_to_orb = orb_pos - ray_origin
+					var proj_t = vec_to_orb.dot(ray_normal)
+					if proj_t > 0.0:
+						var closest_pt = ray_origin + ray_normal * proj_t
+						if orb_pos.distance_to(closest_pt) < 1.5:
+							orb["hp"] -= current_weapon_power * delta
+							var cur_hp = clamp(orb["hp"] / 4.0, 0.0, 1.0) # 4.0 Max HP per orb
+							o_node.scale = Vector3(cur_hp, cur_hp, cur_hp)
+							
+							if steam_particles and randf() < 0.2:
+								steam_particles.global_position = orb_pos
+								steam_particles.restart()
+							if randf() < 0.2:
+								_spawn_splash(orb_pos)
+								
+							if orb["hp"] <= 0.0:
+								destroyed_orbs.append(orb)
+								
+			for orb in destroyed_orbs:
+				var o_node = orb["node"] as Node3D
+				if is_instance_valid(o_node):
+					var orb_pos = o_node.global_position
+					_spawn_flare_explosion(orb_pos)
+					if flare_intercept_sfx:
+						flare_intercept_sfx.play()
+					shake(0.2, 0.03)
+					o_node.queue_free()
+				active_shield_orbs.erase(orb)
+				
+			if active_shield_orbs.size() == 0:
+				_deactivate_heat_shield()
 
 		# Check hit
 		var aim_dist = target_pos.distance_to(sun.position)
@@ -1970,6 +2072,8 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				
 		if is_critical:
 			var dmg = current_weapon_power * current_weapon_crit * damage_mult * delta
+			if is_shield_active:
+				dmg *= 0.1 # 90% damage reduction
 			temperature = max(0.0, temperature - dmg)
 			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg / 1200.0))
 			if sizzle_sfx and not sizzle_sfx.playing:
@@ -1980,6 +2084,8 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			critical_hit.emit()
 		else:
 			var dmg = current_weapon_power * damage_mult * delta
+			if is_shield_active:
+				dmg *= 0.1 # 90% damage reduction
 			temperature = max(0.0, temperature - dmg)
 			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg / 1200.0))
 			projectile_hit.emit()
@@ -2683,6 +2789,11 @@ func _spawn_ice_nova() -> void:
 	get_tree().create_timer(1.0).timeout.connect(nova.queue_free)
 
 func freeze_sun() -> void:
+	if is_shield_active:
+		_deactivate_heat_shield()
+		shake(0.6, 0.05)
+		return # Shatters shield instead of freezing the sun
+		
 	is_sun_frozen = true
 	sun_freeze_timer = 3.0
 	ice_hit_sfx.play()
@@ -2706,6 +2817,76 @@ func freeze_sun() -> void:
 	if sun_ray_mat:
 		var tw2 = create_tween()
 		tw2.tween_property(sun_ray_mat, "emission", Color(0.2, 0.6, 1.0), 0.3)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Heat Shield
+# ─────────────────────────────────────────────────────────────────────────────
+func _activate_heat_shield() -> void:
+	is_shield_active = true
+	shield_mesh_node.visible = true
+	shield_mesh_node.scale = Vector3.ZERO
+	var tw = create_tween()
+	tw.tween_property(shield_mesh_node, "scale", Vector3.ONE, 0.5).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	
+	active_shield_orbs.clear()
+	for child in shield_pivot.get_children():
+		if child != shield_mesh_node:
+			child.queue_free()
+			
+	var num_orbs = 3
+	if GameState.current_wave >= 10: num_orbs = 5
+	elif GameState.current_wave >= 8: num_orbs = 4
+	
+	var angle_step = PI * 2.0 / num_orbs
+	for i in range(num_orbs):
+		var orb_mesh = MeshInstance3D.new()
+		var m = SphereMesh.new()
+		m.radius = 0.4
+		m.height = 0.8
+		orb_mesh.mesh = m
+		orb_mesh.set_surface_override_material(0, orb_mat)
+		
+		var orb_node = Node3D.new()
+		shield_pivot.add_child(orb_node)
+		orb_node.add_child(orb_mesh)
+		
+		var x = cos(i * angle_step) * 3.0
+		var y = sin(i * angle_step) * 3.0
+		orb_node.position = Vector3(x, y, 0)
+		
+		active_shield_orbs.append({"node": orb_node, "hp": 4.0})
+		
+	if hud and hud.has_method("show_toast"):
+		hud.show_toast("Warning", "Heat Shield Active!", "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_red.png", Color(1.0, 0.3, 0.0))
+
+func _deactivate_heat_shield() -> void:
+	if not is_shield_active: return
+	is_shield_active = false
+	shield_cooldown = 40.0
+	
+	if shield_hum_sfx.playing:
+		shield_hum_sfx.stop()
+		
+	if ice_hit_sfx:
+		ice_hit_sfx.play()
+		
+	var tw = create_tween()
+	tw.tween_property(shield_mesh_node, "scale", Vector3.ONE * 1.5, 0.2)
+	var s_mat = shield_mesh_node.get_surface_override_material(0)
+	if s_mat:
+		tw.parallel().tween_property(s_mat, "albedo_color:a", 0.0, 0.2)
+	tw.tween_callback(func():
+		shield_mesh_node.visible = false
+		shield_mesh_node.scale = Vector3.ONE
+		if s_mat: s_mat.albedo_color.a = 0.15
+	)
+	
+	for orb in active_shield_orbs:
+		var o_node = orb["node"] as Node3D
+		if is_instance_valid(o_node):
+			_spawn_flare_explosion(o_node.global_position)
+			o_node.queue_free()
+	active_shield_orbs.clear()
 
 func _on_game_paused() -> void:
 	timer_running = false
