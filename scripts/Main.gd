@@ -203,7 +203,7 @@ var flare_intercept_sfx: AudioStreamPlayer
 
 # Heat Shield system
 var is_shield_active: bool = false
-var shield_cooldown: float = 30.0
+var shield_cooldown: float = 3.0
 var shield_pivot: Node3D
 var shield_mesh_node: MeshInstance3D
 var active_shield_orbs: Array[Dictionary] = []
@@ -384,58 +384,7 @@ func _ready() -> void:
 	if hud and hud.has_method("_on_critical_hit"):
 		critical_hit.connect(hud._on_critical_hit)
 
-	flare_mat = StandardMaterial3D.new()
-	flare_mat.albedo_color = Color(1.0, 0.35, 0.05)
-	flare_mat.emission_enabled = true
-	flare_mat.emission = Color(1.0, 0.45, 0.05)
-	flare_mat.emission_energy_multiplier = 4.0
-	
-	frost_aura = GPUParticles3D.new()
-	var fa_mat = ParticleProcessMaterial.new()
-	fa_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
-	fa_mat.emission_sphere_radius = 6.0
-	fa_mat.gravity = Vector3(0, -1.0, 0)
-	fa_mat.scale_min = 0.2
-	fa_mat.scale_max = 0.6
-	var fa_mesh = BoxMesh.new()
-	var fa_mmat = StandardMaterial3D.new()
-	fa_mmat.albedo_color = Color(0.8, 0.9, 1.0, 0.5)
-	fa_mmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	fa_mesh.material = fa_mmat
-	frost_aura.process_material = fa_mat
-	frost_aura.draw_pass_1 = fa_mesh
-	frost_aura.amount = 50
-	frost_aura.lifetime = 2.0
-	frost_aura.emitting = false
-		
-	# Setup Heat Shield nodes
-	shield_pivot = Node3D.new()
-	
-	shield_mesh_node = MeshInstance3D.new()
-	var s_mesh = SphereMesh.new()
-	s_mesh.radius = 4.2  # Slightly larger than sun
-	s_mesh.height = 8.4
-	shield_mesh_node.mesh = s_mesh
-	
-	var s_mat = StandardMaterial3D.new()
-	s_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	s_mat.albedo_color = Color(1.0, 0.4, 0.0, 0.15)
-	s_mat.emission_enabled = true
-	s_mat.emission = Color(1.0, 0.3, 0.0)
-	s_mat.emission_energy_multiplier = 0.5
-	s_mat.rim_enabled = true
-	s_mat.rim = 1.0
-	s_mat.rim_tint = 1.0
-	shield_mesh_node.set_surface_override_material(0, s_mat)
-	shield_mesh_node.visible = false
-	shield_pivot.add_child(shield_mesh_node)
-	
-	orb_mat = StandardMaterial3D.new()
-	orb_mat.albedo_color = Color(1.0, 0.8, 0.2)
-	orb_mat.emission_enabled = true
-	orb_mat.emission = Color(1.0, 0.6, 0.0)
-	orb_mat.emission_energy_multiplier = 3.0
-
+	# Initialization moved to _build_scene()
 	
 	_load_weapon_model()
 
@@ -718,7 +667,59 @@ func _build_scene() -> void:
 	corona_node.rotation.x = PI / 2.0 # Face camera
 	sun.add_child(corona_node)
 	
-	# Attach components built in _ready to the sun
+	flare_mat = StandardMaterial3D.new()
+	flare_mat.albedo_color = Color(1.0, 0.35, 0.05)
+	flare_mat.emission_enabled = true
+	flare_mat.emission = Color(1.0, 0.45, 0.05)
+	flare_mat.emission_energy_multiplier = 4.0
+	
+	frost_aura = GPUParticles3D.new()
+	var fa_mat = ParticleProcessMaterial.new()
+	fa_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	fa_mat.emission_sphere_radius = 6.0
+	fa_mat.gravity = Vector3(0, -1.0, 0)
+	fa_mat.scale_min = 0.2
+	fa_mat.scale_max = 0.6
+	var fa_mesh = BoxMesh.new()
+	var fa_mmat = StandardMaterial3D.new()
+	fa_mmat.albedo_color = Color(0.8, 0.9, 1.0, 0.5)
+	fa_mmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	fa_mesh.material = fa_mmat
+	frost_aura.process_material = fa_mat
+	frost_aura.draw_pass_1 = fa_mesh
+	frost_aura.amount = 50
+	frost_aura.lifetime = 2.0
+	frost_aura.emitting = false
+		
+	# Setup Heat Shield nodes
+	shield_pivot = Node3D.new()
+	
+	shield_mesh_node = MeshInstance3D.new()
+	var s_mesh = SphereMesh.new()
+	s_mesh.radius = 4.2  # Slightly larger than sun
+	s_mesh.height = 8.4
+	shield_mesh_node.mesh = s_mesh
+	
+	var s_mat = StandardMaterial3D.new()
+	s_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	s_mat.albedo_color = Color(1.0, 0.4, 0.0, 0.15)
+	s_mat.emission_enabled = true
+	s_mat.emission = Color(1.0, 0.3, 0.0)
+	s_mat.emission_energy_multiplier = 0.5
+	s_mat.rim_enabled = true
+	s_mat.rim = 1.0
+	s_mat.rim_tint = 1.0
+	shield_mesh_node.set_surface_override_material(0, s_mat)
+	shield_mesh_node.visible = false
+	shield_pivot.add_child(shield_mesh_node)
+	
+	orb_mat = StandardMaterial3D.new()
+	orb_mat.albedo_color = Color(1.0, 0.8, 0.2)
+	orb_mat.emission_enabled = true
+	orb_mat.emission = Color(1.0, 0.6, 0.0)
+	orb_mat.emission_energy_multiplier = 3.0
+
+	# Attach components to the sun
 	sun.add_child(frost_aura)
 	sun.add_child(shield_pivot)
 	
