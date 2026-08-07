@@ -4,6 +4,9 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ## [v1.1.0] (WIP)
 
+### Added
+- **Catastrom Ultimate:** Chargeable ultimate ability to physically grab the sun and instantly dunk it into the ocean to end the wave. Includes custom UI, voice-over, and massive dunk splash.
+
 ### Improved
 - **Combo System:** Combo multiplier now dynamically scales up to 3.0x over time for continuous tracking, massively boosting Catastrom charging.
 - **Combo UI:** The combo multiplier UI text dynamically reflects the exact decimal multiplier, making the tracking reward much clearer.
@@ -19,7 +22,6 @@ All notable changes to the Summer Nights project will be documented in this file
 - **Weapon System:** Weapon wheel featuring 4 distinct water blasters (Standard Blaster, Precision Stream, Heavy Cannon, Scatter Nozzle).
 - **Abilities:** 
   - **Ice Burst:** Secondary fire that freezes the sun's movement and heat regeneration.
-  - **Catastrom Ultimate:** Chargeable ultimate ability to physically grab the sun and instantly dunk it into the ocean to end the wave.
 - **Hazards & Enemies:**
   - **Solar Flares:** Interceptable fireballs that cause massive heat spikes.
   - **Solar Wind:** Periodic gusts that physically push the player's aim sideways.
@@ -41,6 +43,9 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ## [v1.1.0] (WIP)
 
+### 추가됨 (Added)
+- **카타스트롬 궁극기:** 게이지를 충전하여 태양을 직접 붙잡고 바다로 처박아 즉시 웨이브를 끝내는 궁극기. 커스텀 UI, 보이스오버, 거대한 물보라 효과가 포함됩니다.
+
 ### 개선됨 (Improved)
 - **콤보 시스템:** 물줄기로 태양을 지속적으로 추적할 때 콤보 배율이 시간이 지남에 따라 최대 3.0배까지 증가하여 카타스트롬 충전 속도를 대폭 높여줍니다.
 - **콤보 UI:** 콤보 배율 UI 텍스트가 정확한 소수점 배율을 반영하도록 변경되어 추적 보상을 더욱 명확하게 보여줍니다.
@@ -56,7 +61,6 @@ All notable changes to the Summer Nights project will be documented in this file
 - **무기 시스템:** 4가지 고유한 물총(표준 블래스터, 정밀 스트림, 헤비 캐논, 스캐터 노즐)을 제공하는 무기 휠 기능.
 - **특수 능력:** 
   - **얼음 폭발 (Ice Burst):** 태양의 움직임과 열기 회복을 얼려버리는 보조 발사.
-  - **카타스트롬 궁극기:** 게이지를 충전하여 태양을 직접 붙잡고 바다로 처박아 즉시 웨이브를 끝내는 궁극기.
 - **위협 및 적:**
   - **태양 플레어:** 요격하지 않으면 엄청난 열기 상승을 유발하는 불덩이.
   - **태양풍:** 주기적으로 플레이어의 조준을 옆으로 밀어내는 돌풍.
