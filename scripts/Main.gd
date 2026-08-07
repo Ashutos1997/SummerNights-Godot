@@ -1465,7 +1465,6 @@ func _process(delta: float) -> void:
 		if wind_particles and wind_particles.emitting:
 			wind_particles.emitting = false
 
-	_update_sun_movement(delta)
 	
 	if seagull_layer:
 		# Check if magma rocks hit seagulls
