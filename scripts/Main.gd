@@ -2706,6 +2706,7 @@ func _spawn_flare_explosion(pos: Vector3) -> void:
 		phys_mat.friction = 1.0
 		rock.physics_material_override = phys_mat
 		rock.mass = 5.0
+		rock.gravity_scale = 3.5 # Extra gravity so they fall fast and don't hang in the air
 		
 		var rock_mesh_node = magma_rock_prefabs.pick_random().instantiate()
 		rock_mesh_node.scale = Vector3(0.5, 0.5, 0.5)
@@ -2725,10 +2726,10 @@ func _spawn_flare_explosion(pos: Vector3) -> void:
 		add_child(rock)
 		active_magma_rocks.append(rock)
 		
-		# Launch them strongly forward and upward so they arc dramatically toward the beach
-		var push_dir = Vector3(randf_range(-1.2, 1.2), randf_range(1.5, 3.0), randf_range(2.0, 4.0)).normalized()
-		rock.apply_central_impulse(push_dir * randf_range(65.0, 95.0))
-		rock.apply_torque_impulse(Vector3(randf_range(-15, 15), randf_range(-15, 15), randf_range(-15, 15)))
+		# Launch them strongly forward with less Y so high gravity pulls them down punchily
+		var push_dir = Vector3(randf_range(-1.2, 1.2), randf_range(1.0, 2.0), randf_range(3.0, 5.0)).normalized()
+		rock.apply_central_impulse(push_dir * randf_range(80.0, 120.0))
+		rock.apply_torque_impulse(Vector3(randf_range(-25, 25), randf_range(-25, 25), randf_range(-25, 25)))
 		
 		var tw_rock = create_tween()
 		tw_rock.tween_interval(4.5)
