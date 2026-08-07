@@ -1,0 +1,67 @@
+# Summer Nights: HUD UI Layout
+
+This document serves as a visual map and architectural breakdown of the `HUD.tscn` scene during live gameplay. It is intended to help developers understand where UI elements are anchored and how they interact.
+
+---
+
+## 1. Core Gameplay HUD Layout
+
+The live gameplay HUD is designed to minimize clutter while keeping critical survival information strictly in the player's peripheral vision.
+
+### Top-Left
+*   **`LevelLabel`:** Displays the current game stage (e.g., `LVL 01` for Normal mode, `WAVE 01` for Survival mode).
+
+### Top-Center
+*   **`SunHeatBar`:** The most critical UI element. Displays the current temperature of the sun. If this bar fills completely (100%), the player loses.
+*   **`Phase2Label`:** A centered warning text that flashes when a boss transitions into Phase 2.
+
+### Top-Right
+*   **`TimerLabel`:** Displays the time remaining in the current wave (e.g., `TIME: 0:45`).
+*   **`ScoreLabel`:** Located directly beneath the Timer. Displays the live arcade score (e.g., `SCORE: 1,500`). When points are scored, this label scales up and snaps back smoothly, pivoting from the right edge to avoid extending off-screen.
+
+### Center
+*   **`Crosshair`:** The aiming reticle. It dynamically scales up slightly when successfully landing water hits on the sun.
+*   **`ComboLabel`:** Positioned slightly offset to the right of the crosshair. Appears when a water stream is held on the sun, displaying the active combo multiplier (e.g., `1.15x COMBO!`). It scales up to 3.0x and fades out when the stream is broken.
+
+### Bottom-Right
+*   **`resource_container`:** A vertical box container managing player resources:
+    *   **Water Bar:** Shows current water tank capacity. Recharges when not shooting.
+    *   **Ice Charges:** Displays pip-style dots indicating how many Ice Bursts the player has stored.
+    *   **Catastrom Bar:** Shows the ultimate gauge, which fills rapidly via the Combo System.
+
+### Bottom-Left
+*   **`UnlockPrompts`:** A vertical container that slides in notifications when the player unlocks a new weapon or mechanic between waves.
+
+---
+
+## 2. Screen Overlays
+
+These elements sit on top of the Core Gameplay HUD and blur/dim the background when active.
+
+### Pause Screen (`pause_screen`)
+*   Activated by pressing `ESC`.
+*   Blurs the background and pauses the `get_tree().paused` state.
+*   Contains the `SettingsScreen` (Volume, Sensitivity, Reduce Motion, Fullscreen, Language toggles) and the `CreditsScreen`.
+    *   The **CreditsScreen** uses a vertically scrolling `ScrollContainer` with a cinematic auto-scroll effect that can be overridden by manual mouse scrolling.
+
+### Weapon Wheel (`WeaponWheel`)
+*   Activated by holding `TAB`.
+*   Slows time (`Engine.time_scale = 0.1`) instead of fully pausing.
+*   Draws procedural wedges using the `_draw()` API based on the number of unlocked weapons. Renders live 3D thumbnails of the weapons into viewports mapped to 2D textures.
+
+### Toast Notifications (`ToastContainer`)
+*   Transient popups that slide down from the top-center edge of the screen (e.g., "Catastrom Ready!").
+*   Uses a Sine ease-out animation to slide into view, hold for 3 seconds, and slide back out.
+
+### End State Screens
+*   **`WinScreen`:** Shown upon completing a wave. Displays level stats and loading text.
+*   **`EndScreen`:** Shown upon beating the entire game.
+*   **`LoseScreen`:** Shown if the Sun hits 100% heat. Displays failure stats and offers Retry/Menu buttons.
+
+---
+
+## 3. Localization Support
+
+All labels within the HUD are dynamically localized in `HUD.gd` via the `_apply_language(lang: String)` function.
+*   **English (EN):** Uses `Kenney Future.ttf`
+*   **Korean (KR):** Uses `Galmuri11.ttf`. Font sizes are manually boosted (e.g., from 22px to 26px) to match the visual weight of the English pixel font.

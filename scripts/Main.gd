@@ -1633,6 +1633,8 @@ func _process(delta: float) -> void:
 				# Reward: Instantly refill +40% Water Tank & +2% Catastrom Charge!
 				water_tank = min(MAX_WATER, water_tank + MAX_WATER * 0.40)
 				GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + 0.02)
+				var c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2)) if combo_active else 1.0
+				GameState.add_score(int(500.0 * c_mult))
 				water_refill_count += 1
 				water_changed.emit(water_tank, MAX_WATER)
 
@@ -1665,6 +1667,8 @@ func _process(delta: float) -> void:
 			if is_instance_valid(rock):
 				if sizzle_sfx:
 					sizzle_sfx.play()
+				var c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2)) if combo_active else 1.0
+				GameState.add_score(int(150.0 * c_mult))
 				rock.queue_free()
 				active_magma_rocks.erase(rock)
 
@@ -2043,6 +2047,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			if combo_active:
 				c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
 			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult / 1200.0))
+			GameState.add_score(int(dmg * 10.0 * c_mult))
 			if sizzle_sfx and not sizzle_sfx.playing:
 				sizzle_sfx.play()
 			if steam_particles:
@@ -2052,8 +2057,11 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 		else:
 			var dmg = current_weapon_power * damage_mult * delta
 			temperature = max(0.0, temperature - dmg)
-			var c_mult = 1.15 if combo_active else 1.0
+			var c_mult = 1.0
+			if combo_active:
+				c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
 			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult / 1200.0))
+			GameState.add_score(int(dmg * 5.0 * c_mult))
 			projectile_hit.emit()
 			
 	if hit_cooldown <= 0.0:

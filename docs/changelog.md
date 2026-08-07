@@ -6,10 +6,12 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### Added
 - **Catastrom Ultimate:** Chargeable ultimate ability to physically grab the sun and instantly dunk it into the ocean to end the wave. Includes custom UI, voice-over, and massive dunk splash.
+- **Scoring System:** Dynamic Arcade scoring system that heavily rewards continuous cooling, flare interceptions, and debris evaporation, aggressively scaled by your active Combo multiplier. High scores are persistently saved.
 
 ### Improved
 - **Combo System:** Combo multiplier now dynamically scales up to 3.0x over time for continuous tracking, massively boosting Catastrom charging.
 - **Combo UI:** The combo multiplier UI text dynamically reflects the exact decimal multiplier, making the tracking reward much clearer.
+- **Credits Screen:** Converted the static multi-column layout into a sleek, vertically scrollable list with a cinematic auto-scroll effect.
 - **Magma Debris Physics:** Overhauled the physics for magma debris. Rocks now explode outward realistically and crash heavily onto the beach instead of instantly rocketing away.
 - **Magma Debris Persistence:** Magma rocks now remain permanently on the beach where they land, and can be actively evaporated by shooting them with the water gun.
 
@@ -45,10 +47,12 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### 추가됨 (Added)
 - **카타스트롬 궁극기:** 게이지를 충전하여 태양을 직접 붙잡고 바다로 처박아 즉시 웨이브를 끝내는 궁극기. 커스텀 UI, 보이스오버, 거대한 물보라 효과가 포함됩니다.
+- **점수 시스템:** 활성화된 콤보 배율에 따라 점수가 크게 증가하는 아케이드 스타일의 동적 점수 시스템으로, 지속적인 냉각, 플레어 요격, 파편 증발 시 점수를 부여합니다. 최고 점수는 영구적으로 저장됩니다.
 
 ### 개선됨 (Improved)
 - **콤보 시스템:** 물줄기로 태양을 지속적으로 추적할 때 콤보 배율이 시간이 지남에 따라 최대 3.0배까지 증가하여 카타스트롬 충전 속도를 대폭 높여줍니다.
 - **콤보 UI:** 콤보 배율 UI 텍스트가 정확한 소수점 배율을 반영하도록 변경되어 추적 보상을 더욱 명확하게 보여줍니다.
+- **크레딧 화면:** 화면 공간을 많이 차지하던 정적인 다중 열 레이아웃을 영화처럼 자동으로 스크롤되는 매끄러운 단일 세로 스크롤 목록으로 변경했습니다.
 - **마그마 파편 물리 효과:** 마그마 파편의 물리 엔진을 전면 개편했습니다. 바위가 즉시 날아가는 대신 현실적으로 바깥쪽으로 폭발하며 해변에 무겁게 떨어집니다.
 - **마그마 파편 영구 보존:** 이제 마그마 바위는 해변에 떨어지면 영구적으로 남아있으며, 플레이어가 물총을 쏘아 직접 증발시킬 수 있습니다.
 

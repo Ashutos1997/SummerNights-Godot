@@ -37,6 +37,7 @@ signal weapon_changed(weapon_id: String)
 @onready var end_prompt_lbl    = $HUD/EndScreen/ColorRect/VBoxContainer/RestartPrompt
 
 @onready var timer_label       = $HUD/TimerLabel
+@onready var score_label       = $HUD/ScoreLabel
 @onready var phase2_label      = $HUD/Phase2Label
 @onready var combo_label       = $HUD/ComboLabel
 @onready var lose_screen       = $HUD/LoseScreen
@@ -99,6 +100,11 @@ var target_water: float = 100.0
 
 var ui_tick_player: AudioStreamPlayer = null
 
+var display_score: int = 0
+var score_tween: Tween
+
+var credits_scroll_acc: float = 0.0
+
 func _process(delta: float) -> void:	
 	if heat_bar:
 		if reduce_motion:
@@ -130,11 +136,23 @@ func _process(delta: float) -> void:
 		else:
 			catastrom_bar.tint_progress = Color(0.6, 0, 1, 1)
 			
-	# Update top right button hover colors in captured mode
 	if credits_btn and not credits_screen.visible:
 		var btn_rect = credits_btn.get_global_rect()
 		var is_hovered = btn_rect.has_point(cursor_screen_pos)
 		_on_credits_btn_hover(is_hovered)
+		
+		var target_col = Color(1.0, 0.88, 0.3, 0.95) if is_hovered else Color(1.0, 1.0, 1.0, 0.6)
+		credits_btn.add_theme_color_override("font_color", credits_btn.get_theme_color("font_color").lerp(target_col, 10.0 * delta))
+
+		
+	if credits_screen and credits_screen.visible:
+		var scroll_area = credits_vbox.get_node_or_null("ScrollArea") if credits_vbox else null
+		if scroll_area:
+			credits_scroll_acc += 25.0 * delta
+			if credits_scroll_acc >= 1.0:
+				var amt = int(credits_scroll_acc)
+				scroll_area.scroll_vertical += amt
+				credits_scroll_acc -= amt
 		
 	if settings_btn and not settings_screen.visible:
 		var s_rect = settings_btn.get_global_rect()
@@ -146,6 +164,9 @@ func _ready() -> void:
 	phase2_label.visible = false
 	combo_label.visible = false
 	timer_label.text = ""
+	
+	GameState.score_updated.connect(_on_score_updated)
+	_on_score_updated(GameState.current_score)
 	
 	# Hide all screens initially except for crosshair and HUD elements
 	win_screen.visible = false
@@ -194,6 +215,8 @@ func _ready() -> void:
 
 	# New elements
 	_style_lbl(timer_label, 22, Color(1.0, 0.8, 0.2, 1.0), 2, Color.BLACK, font)
+	if score_label:
+		_style_lbl(score_label, 26, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
 	_style_lbl(phase2_label, 48, Color(1.0, 0.4, 0.1, 1.0), 3, Color.BLACK, font)
 	
 	_style_lbl(lose_title_lbl, 64, Color(1.0, 0.4, 0.1, 1.0), 3, Color.BLACK, font)
@@ -584,6 +607,10 @@ func _apply_language(lang: String) -> void:
 	if timer_label:
 		if font: timer_label.add_theme_font_override("font", font)
 		timer_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
+	if score_label:
+		if font: score_label.add_theme_font_override("font", font)
+		score_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
+		_update_score_display(display_score)
 
 	# ── Top-right labels (in HBoxContainer, sizes scaled to match visually) ──
 	# (These buttons were moved to the pause menu, styled in _ready and translated below)
@@ -652,12 +679,12 @@ func _apply_language(lang: String) -> void:
 		if sep:
 			sep.add_theme_stylebox_override("separator", sep_style)
 
-	# Style the 2-column credits content dynamically with clear text hierarchy and sizing
-	var col_container = credits_vbox.get_node_or_null("ColContainer")
-	if col_container:
-		for col in [col_container.get_node_or_null("ColLeft"), col_container.get_node_or_null("ColRight")]:
-			if col:
-				for child in col.get_children():
+	# Style the credits content dynamically with clear text hierarchy and sizing
+	var scroll_area = credits_vbox.get_node_or_null("ScrollArea")
+	if scroll_area:
+		var credits_list = scroll_area.get_node_or_null("CreditsList")
+		if credits_list:
+			for child in credits_list.get_children():
 					if child is Label:
 						if font: child.add_theme_font_override("font", font)
 						var is_header = child.name.begins_with("Hdr")
@@ -1085,6 +1112,12 @@ func _open_credits() -> void:
 	if settings_screen: settings_screen.visible = false
 	credits_screen.visible = true
 	credits_screen.modulate.a = 0.0
+	
+	var scroll_area = credits_vbox.get_node_or_null("ScrollArea") if credits_vbox else null
+	if scroll_area:
+		scroll_area.scroll_vertical = 0
+		credits_scroll_acc = 0.0
+		
 	var tw = create_tween()
 	tw.set_ease(Tween.EASE_OUT)
 	tw.tween_property(credits_screen, "modulate:a", 1.0, 0.25)
@@ -1117,7 +1150,8 @@ func _on_timer_tick(seconds: float) -> void:
 	var mins = secs / 60
 	secs = secs % 60
 	
-	timer_label.text = "%d:%02d" % [mins, secs]
+	var prefix = "시간: " if GameState.language == "KR" else "TIME: "
+	timer_label.text = prefix + ("%d:%02d" % [mins, secs])
 
 	if seconds <= 10.0:
 		timer_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.2, 1.0))
@@ -1135,7 +1169,7 @@ func show_combo(active: bool) -> void:
 	if active:
 		combo_label.visible = true
 		combo_label.modulate = Color(1, 1, 1, 0)
-		combo_label.scale = Vector2(1.5, 1.5)
+		combo_label.scale = Vector2.ONE
 		var tw = create_tween()
 		tw.set_parallel(true)
 		tw.tween_property(combo_label, "modulate:a", 1.0, 0.2)
@@ -1415,3 +1449,33 @@ func _update_weapon_hud(w_id: String) -> void:
 	var tex = hud_weapon_icons.get(w_id)
 	if tex:
 		hud_weapon_container.texture = tex
+
+func _on_score_updated(new_score: int) -> void:
+	if not score_label: return
+	if is_instance_valid(score_tween):
+		score_tween.kill()
+	
+	score_tween = create_tween()
+	score_tween.set_parallel(true)
+	score_tween.tween_method(_update_score_display, display_score, new_score, 0.2)
+	
+	score_label.pivot_offset = Vector2(score_label.size.x, score_label.size.y / 2.0)
+	score_label.scale = Vector2(1.2, 1.2)
+	score_tween.tween_property(score_label, "scale", Vector2.ONE, 0.2).set_delay(0.0)
+
+func _update_score_display(val: int) -> void:
+	display_score = val
+	var prefix = "점수: " if GameState.language == "KR" else "SCORE: "
+	
+	# Format with commas
+	var s = str(val)
+	var formatted = ""
+	var count = 0
+	for i in range(s.length() - 1, -1, -1):
+		formatted = s[i] + formatted
+		count += 1
+		if count % 3 == 0 and i != 0:
+			formatted = "," + formatted
+			
+	if score_label:
+		score_label.text = prefix + formatted

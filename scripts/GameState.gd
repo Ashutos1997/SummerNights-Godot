@@ -1,5 +1,7 @@
 extends Node
 
+signal score_updated(new_score: int)
+
 const LEVEL_CONFIG = {
 	1: {
 		"timer": 45.0,
@@ -123,6 +125,8 @@ var is_dev_mode: bool = false
 var current_wave: int = 1
 var survival_time: float = 0.0
 var best_survival_time: float = 0.0
+var current_score: int = 0
+var high_score: int = 0
 
 const SETTINGS_FILE_PATH = "user://settings.cfg"
 
@@ -138,6 +142,7 @@ func reset() -> void:
 	ice_charges_remaining = 0
 	current_wave = 1
 	survival_time = 0.0
+	current_score = 0
 	
 	max_water_mult = 1.0
 	cooling_power_mult = 1.0
@@ -156,6 +161,7 @@ func save_settings() -> void:
 	config.set_value("Video", "fullscreen", fullscreen)
 	config.set_value("Localization", "language", language)
 	config.set_value("Stats", "best_survival_time", best_survival_time)
+	config.set_value("Stats", "high_score", high_score)
 	config.save(SETTINGS_FILE_PATH)
 
 func load_settings() -> void:
@@ -167,9 +173,17 @@ func load_settings() -> void:
 		fullscreen = config.get_value("Video", "fullscreen", false)
 		language = config.get_value("Localization", "language", "EN")
 		best_survival_time = config.get_value("Stats", "best_survival_time", 0.0)
+		high_score = config.get_value("Stats", "high_score", 0)
 		
 		# Apply loaded fullscreen state immediately
 		if fullscreen:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 		else:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+
+func add_score(amount: int) -> void:
+	if amount <= 0: return
+	current_score += amount
+	if current_score > high_score:
+		high_score = current_score
+	emit_signal("score_updated", current_score)

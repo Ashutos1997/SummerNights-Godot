@@ -57,6 +57,7 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 - Solar flare projectiles in parabolic arcs, interceptable for water refills
 - Physical magma rock debris that crashes onto the beach, scaring away seagulls and persisting until evaporated by the water gun
 - Water stream combo system that scales your combo multiplier up to 3.0x for continuous tracking, boosting Catastrom ultimate charging
+- Dynamic Scoring System intertwined with the combo multiplier, rewarding continuous cooling, flare interceptions, and debris evaporation, while saving your high score persistently
 - Solar wind gusts that push your aim sideways with GPU particle streak visuals
 - Procedural drifting 3D low-poly clouds (CloudLayer.gd)
 - Fully animated low-poly seagulls with curved Bezier flight paths, landing logic, and water interactions (SeagullLayer.gd)

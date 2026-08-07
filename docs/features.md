@@ -8,7 +8,8 @@ This document serves as the master record for all currently implemented features
 *   **Objective:** Cool the Sun to prevent it from reaching 100% heat before the wave timer runs out.
 *   **Heat Mechanics:** The Sun passively generates heat. If heat reaches 100%, the player loses.
 *   **Water Management:** The player has a limited water tank that drains when shooting. It recharges automatically when not firing.
-*   **Water Stream Combo:** Continuously tracking the Sun with water builds a combo multiplier that scales up to 3.0x, significantly boosting Catastrom Ultimate charging speed.
+*   **Water Stream Combo & Scoring:** Continuously tracking the Sun with water builds a combo multiplier that scales up to 3.0x, significantly boosting Catastrom Ultimate charging speed.
+*   **Scoring System:** Points are dynamically awarded for continuous hits, intercepting Solar Flares (500 base points), and evaporating Magma Debris (150 base points). All points are heavily multiplied by the active Combo meter, making long, accurate streams extremely lucrative. Your High Score is persistently saved between sessions.
 *   **Wave Progression:** The game progresses through increasingly difficult waves (longer timers, faster heat generation, more aggressive sun movement). Boss waves occur every 5 waves (e.g., Wave 5).
 *   **Game Modes:**
     *   **Normal Mode:** Standard level progression.
@@ -60,7 +61,7 @@ Clicking `[DEV]` on the Title Screen starts the game in Developer Mode (starts a
     *   Water Tank Bar.
     *   Ice Charge indicators.
     *   Catastrom Ultimate notification toasts.
-    *   Wave Timer.
+    *   Wave Timer and live Score counter (which formats and scales dynamically for juice).
 *   **Accessibility & Settings:**
     *   Reduce Motion toggle (disables screen shake and intensive UI flashing).
     *   Mouse Sensitivity slider.
