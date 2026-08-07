@@ -1606,8 +1606,9 @@ func _process(delta: float) -> void:
 				
 				_spawn_flare_explosion(flare_pos)
 				
-				# Reward: Instantly refill +40% Water Tank!
+				# Reward: Instantly refill +40% Water Tank & +2% Catastrom Charge!
 				water_tank = min(MAX_WATER, water_tank + MAX_WATER * 0.40)
+				GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + 0.02)
 				water_refill_count += 1
 				water_changed.emit(water_tank, MAX_WATER)
 
@@ -1968,7 +1969,9 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			damage_mult = 1.0 + (GameState.current_wave - 4) * 0.15 # +15% damage per wave past wave 4
 				
 		if is_critical:
-			temperature = max(0.0, temperature - current_weapon_power * current_weapon_crit * damage_mult * delta)
+			var dmg = current_weapon_power * current_weapon_crit * damage_mult * delta
+			temperature = max(0.0, temperature - dmg)
+			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg / 1200.0))
 			if sizzle_sfx and not sizzle_sfx.playing:
 				sizzle_sfx.play()
 			if steam_particles:
@@ -1976,7 +1979,9 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				steam_particles.restart()
 			critical_hit.emit()
 		else:
-			temperature = max(0.0, temperature - current_weapon_power * damage_mult * delta)
+			var dmg = current_weapon_power * damage_mult * delta
+			temperature = max(0.0, temperature - dmg)
+			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg / 1200.0))
 			projectile_hit.emit()
 			
 	if hit_cooldown <= 0.0:
@@ -2020,7 +2025,6 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			if sun_defeated_sfx: sun_defeated_sfx.play()
 			GameState.current_wave += 1
 			GameState.ice_charges_remaining += 1
-			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + 0.5)
 			
 			# Boss wave reward
 			if (GameState.current_wave - 1) % 5 == 0:
