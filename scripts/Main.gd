@@ -1476,8 +1476,6 @@ func _process(delta: float) -> void:
 				seagull_layer.check_scare_at(r.global_position, 4.0)
 		active_magma_rocks = valid_rocks
 		
-	if is_game_started and not is_title_screen and not game_over:
-		pass # Any other game started logic
 
 	# Aim gun (apply wind drift to virtual mouse position)
 	var mouse_pos = virtual_mouse_pos
