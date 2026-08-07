@@ -2725,12 +2725,13 @@ func _spawn_flare_explosion(pos: Vector3) -> void:
 		add_child(rock)
 		active_magma_rocks.append(rock)
 		
-		var push_dir = Vector3(randf_range(-0.8, 0.8), randf_range(0.2, 1.2), randf_range(0.2, 1.0)).normalized()
-		rock.apply_central_impulse(push_dir * randf_range(10.0, 18.0))
-		rock.apply_torque_impulse(Vector3(randf_range(-5, 5), randf_range(-5, 5), randf_range(-5, 5)))
+		# Launch them strongly forward and upward so they arc dramatically toward the beach
+		var push_dir = Vector3(randf_range(-1.2, 1.2), randf_range(1.5, 3.0), randf_range(2.0, 4.0)).normalized()
+		rock.apply_central_impulse(push_dir * randf_range(65.0, 95.0))
+		rock.apply_torque_impulse(Vector3(randf_range(-15, 15), randf_range(-15, 15), randf_range(-15, 15)))
 		
 		var tw_rock = create_tween()
-		tw_rock.tween_interval(3.0)
+		tw_rock.tween_interval(4.5)
 		tw_rock.tween_property(rock_mesh_node, "scale", Vector3.ZERO, 0.5)
 		tw_rock.tween_callback(rock.queue_free)
 
