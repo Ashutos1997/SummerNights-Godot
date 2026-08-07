@@ -2706,7 +2706,7 @@ func _spawn_flare_explosion(pos: Vector3) -> void:
 		phys_mat.friction = 1.0
 		rock.physics_material_override = phys_mat
 		rock.mass = 5.0
-		rock.gravity_scale = 3.5 # Extra gravity so they fall fast and don't hang in the air
+		rock.gravity_scale = 1.2 # Slightly heavy, but realistic
 		
 		var rock_mesh_node = magma_rock_prefabs.pick_random().instantiate()
 		rock_mesh_node.scale = Vector3(0.5, 0.5, 0.5)
@@ -2720,19 +2720,23 @@ func _spawn_flare_explosion(pos: Vector3) -> void:
 		col_shape.radius = 0.5
 		col.shape = col_shape
 		
+		var offset = Vector3(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0), randf_range(-1.0, 1.0))
 		rock.add_child(rock_mesh_node)
 		rock.add_child(col)
-		rock.position = pos + Vector3(randf_range(-0.5, 0.5), randf_range(-0.5, 0.5), randf_range(-0.5, 0.5))
+		rock.position = pos + offset
 		add_child(rock)
 		active_magma_rocks.append(rock)
 		
-		# Launch them strongly forward with less Y so high gravity pulls them down punchily
-		var push_dir = Vector3(randf_range(-1.2, 1.2), randf_range(1.0, 2.0), randf_range(3.0, 5.0)).normalized()
-		rock.apply_central_impulse(push_dir * randf_range(80.0, 120.0))
-		rock.apply_torque_impulse(Vector3(randf_range(-25, 25), randf_range(-25, 25), randf_range(-25, 25)))
+		# Craft impulse specifically to create a realistic arc from the sun to the beach
+		var imp_x = offset.x * randf_range(5.0, 15.0) # Spread out sideways
+		var imp_y = randf_range(20.0, 45.0) # Pop upwards
+		var imp_z = randf_range(45.0, 65.0) # Strong forward throw to cover the 24m distance
+		
+		rock.apply_central_impulse(Vector3(imp_x, imp_y, imp_z))
+		rock.apply_torque_impulse(Vector3(randf_range(-10, 10), randf_range(-10, 10), randf_range(-10, 10)))
 		
 		var tw_rock = create_tween()
-		tw_rock.tween_interval(4.5)
+		tw_rock.tween_interval(5.0)
 		tw_rock.tween_property(rock_mesh_node, "scale", Vector3.ZERO, 0.5)
 		tw_rock.tween_callback(rock.queue_free)
 
