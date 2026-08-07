@@ -407,13 +407,9 @@ func _ready() -> void:
 	frost_aura.amount = 50
 	frost_aura.lifetime = 2.0
 	frost_aura.emitting = false
-	if sun:
-		sun.add_child(frost_aura)
 		
 	# Setup Heat Shield nodes
 	shield_pivot = Node3D.new()
-	if sun:
-		sun.add_child(shield_pivot)
 	
 	shield_mesh_node = MeshInstance3D.new()
 	var s_mesh = SphereMesh.new()
@@ -721,6 +717,10 @@ func _build_scene() -> void:
 	corona_node.material_override = sun_ray_mat
 	corona_node.rotation.x = PI / 2.0 # Face camera
 	sun.add_child(corona_node)
+	
+	# Attach components built in _ready to the sun
+	sun.add_child(frost_aura)
+	sun.add_child(shield_pivot)
 	
 	sun_shatter_particles = GPUParticles3D.new()
 	sun_shatter_particles.emitting = false
