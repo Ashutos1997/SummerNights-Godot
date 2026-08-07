@@ -1146,6 +1146,10 @@ func show_combo(active: bool) -> void:
 			tw.tween_property(combo_label, "modulate:a", 0.0, 0.2)
 			tw.tween_callback(func(): combo_label.visible = false)
 
+func update_combo_text(mult: float) -> void:
+	if not combo_label: return
+	combo_label.text = "%.2fx COMBO!" % mult
+
 func _on_timer_expired() -> void:
 	show_lose_screen()
 

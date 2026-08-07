@@ -1648,9 +1648,14 @@ func _process(delta: float) -> void:
 		if aim_dist < 5.0: # Close enough to hit the larger sun
 			_on_hit(delta, target_pos)
 			combo_timer += delta
-			if combo_timer >= 1.5 and not combo_active:
-				combo_active = true
-				if hud and hud.has_method("show_combo"): hud.show_combo(true)
+			if combo_timer >= 1.5:
+				if not combo_active:
+					combo_active = true
+					if hud and hud.has_method("show_combo"): hud.show_combo(true)
+				
+				var current_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
+				if hud and hud.has_method("update_combo_text"):
+					hud.update_combo_text(current_mult)
 		else:
 			combo_timer = 0.0
 			if combo_active:
@@ -2009,7 +2014,9 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 		if is_critical:
 			var dmg = current_weapon_power * current_weapon_crit * damage_mult * delta
 			temperature = max(0.0, temperature - dmg)
-			var c_mult = 1.15 if combo_active else 1.0
+			var c_mult = 1.0
+			if combo_active:
+				c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
 			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult / 1200.0))
 			if sizzle_sfx and not sizzle_sfx.playing:
 				sizzle_sfx.play()
