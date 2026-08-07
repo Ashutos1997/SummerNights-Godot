@@ -695,21 +695,21 @@ func _build_scene() -> void:
 	shield_pivot = Node3D.new()
 	
 	shield_mesh_node = MeshInstance3D.new()
-	var s_mesh = SphereMesh.new()
-	s_mesh.radius = 4.2  # Slightly larger than sun
-	s_mesh.height = 8.4
-	shield_mesh_node.mesh = s_mesh
+	var shield_mesh = SphereMesh.new()
+	shield_mesh.radius = 4.2  # Slightly larger than sun
+	shield_mesh.height = 8.4
+	shield_mesh_node.mesh = shield_mesh
 	
-	var s_mat = StandardMaterial3D.new()
-	s_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	s_mat.albedo_color = Color(1.0, 0.4, 0.0, 0.15)
-	s_mat.emission_enabled = true
-	s_mat.emission = Color(1.0, 0.3, 0.0)
-	s_mat.emission_energy_multiplier = 0.5
-	s_mat.rim_enabled = true
-	s_mat.rim = 1.0
-	s_mat.rim_tint = 1.0
-	shield_mesh_node.set_surface_override_material(0, s_mat)
+	var shield_mat = StandardMaterial3D.new()
+	shield_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	shield_mat.albedo_color = Color(1.0, 0.4, 0.0, 0.15)
+	shield_mat.emission_enabled = true
+	shield_mat.emission = Color(1.0, 0.3, 0.0)
+	shield_mat.emission_energy_multiplier = 0.5
+	shield_mat.rim_enabled = true
+	shield_mat.rim = 1.0
+	shield_mat.rim_tint = 1.0
+	shield_mesh_node.set_surface_override_material(0, shield_mat)
 	shield_mesh_node.visible = false
 	shield_pivot.add_child(shield_mesh_node)
 	
