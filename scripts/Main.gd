@@ -217,6 +217,14 @@ var foliage_props: Array[Node3D] = []
 var combo_timer: float = 0.0
 var combo_active: bool = false
 
+var magma_rock_prefabs: Array[PackedScene] = [
+	preload("res://ultimate-stylized-nature/prefabs/rock_1.tscn"),
+	preload("res://ultimate-stylized-nature/prefabs/rock_2.tscn"),
+	preload("res://ultimate-stylized-nature/prefabs/rock_3.tscn"),
+	preload("res://ultimate-stylized-nature/prefabs/rock_4.tscn"),
+	preload("res://ultimate-stylized-nature/prefabs/rock_5.tscn")
+]
+
 var water_mat:   Material
 
 var sun_time:    float = 0.0
@@ -2679,19 +2687,16 @@ func _spawn_flare_explosion(pos: Vector3) -> void:
 		rock.physics_material_override = phys_mat
 		rock.mass = 5.0
 		
-		var rock_mesh_node = MeshInstance3D.new()
-		var r_mesh = SphereMesh.new()
-		r_mesh.radius = randf_range(0.2, 0.4)
-		r_mesh.height = r_mesh.radius * 2.0
-		r_mesh.radial_segments = 8
-		r_mesh.rings = 4
-		rock_mesh_node.mesh = r_mesh
-		rock_mesh_node.material_override = flare_mat
+		var rock_mesh_node = magma_rock_prefabs.pick_random().instantiate()
+		rock_mesh_node.scale = Vector3(0.5, 0.5, 0.5)
+		for c in rock_mesh_node.get_children():
+			if c is MeshInstance3D:
+				c.material_override = flare_mat
 		rock_mesh_node.rotation = Vector3(randf() * TAU, randf() * TAU, randf() * TAU)
 		
 		var col = CollisionShape3D.new()
 		var col_shape = SphereShape3D.new()
-		col_shape.radius = r_mesh.radius
+		col_shape.radius = 0.5
 		col.shape = col_shape
 		
 		rock.add_child(rock_mesh_node)
