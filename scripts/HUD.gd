@@ -38,6 +38,7 @@ signal weapon_changed(weapon_id: String)
 
 @onready var timer_label       = $HUD/TimerLabel
 @onready var phase2_label      = $HUD/Phase2Label
+@onready var combo_label       = $HUD/ComboLabel
 @onready var lose_screen       = $HUD/LoseScreen
 @onready var lose_title_lbl    = $HUD/LoseScreen/ColorRect/VBoxContainer/Title
 @onready var lose_title2_lbl   = $HUD/LoseScreen/ColorRect/VBoxContainer/Title2
@@ -143,6 +144,7 @@ func _process(delta: float) -> void:
 func _ready() -> void:
 	heat_label.scale = Vector2(1.0, 1.0)
 	phase2_label.visible = false
+	combo_label.visible = false
 	timer_label.text = ""
 	
 	# Hide all screens initially except for crosshair and HUD elements
@@ -1112,9 +1114,28 @@ var timer_pulse_active: bool = false
 func _on_timer_tick(seconds: float) -> void:
 	if not timer_label: return
 	var secs = max(0, int(seconds))
+	var mins = secs / 60
+	secs = secs % 60
 	
-	timer_label.text = "%02d" % secs
+	timer_label.text = "%d:%02d" % [mins, secs]
+
+func show_combo(active: bool) -> void:
+	if not combo_label: return
 	
+	if active:
+		combo_label.visible = true
+		combo_label.modulate = Color(1, 1, 1, 0)
+		combo_label.scale = Vector2(1.5, 1.5)
+		var tw = create_tween()
+		tw.set_parallel(true)
+		tw.tween_property(combo_label, "modulate:a", 1.0, 0.2)
+		tw.tween_property(combo_label, "scale", Vector2(1.0, 1.0), 0.3).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	else:
+		if combo_label.visible:
+			var tw = create_tween()
+			tw.tween_property(combo_label, "modulate:a", 0.0, 0.2)
+			tw.tween_callback(func(): combo_label.visible = false)
+			
 	if seconds <= 10.0:
 		timer_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.2, 1.0))
 		if not timer_pulse_active:

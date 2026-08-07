@@ -214,6 +214,9 @@ var weather_blend: float = 0.0
 
 var foliage_props: Array[Node3D] = []
 
+var combo_timer: float = 0.0
+var combo_active: bool = false
+
 var water_mat:   Material
 
 var sun_time:    float = 0.0
@@ -1623,7 +1626,21 @@ func _process(delta: float) -> void:
 		var aim_dist = target_pos.distance_to(sun.position)
 		if aim_dist < 5.0: # Close enough to hit the larger sun
 			_on_hit(delta, target_pos)
+			combo_timer += delta
+			if combo_timer >= 1.5 and not combo_active:
+				combo_active = true
+				if hud and hud.has_method("show_combo"): hud.show_combo(true)
+		else:
+			combo_timer = 0.0
+			if combo_active:
+				combo_active = false
+				if hud and hud.has_method("show_combo"): hud.show_combo(false)
 	else:
+		combo_timer = max(0.0, combo_timer - delta)
+		if combo_timer <= 0.0 and combo_active:
+			combo_active = false
+			if hud and hud.has_method("show_combo"): hud.show_combo(false)
+			
 		gun_spray.emitting = false
 		water_tank = min(MAX_WATER, water_tank + current_weapon_recharge * delta)
 			
@@ -1971,7 +1988,8 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 		if is_critical:
 			var dmg = current_weapon_power * current_weapon_crit * damage_mult * delta
 			temperature = max(0.0, temperature - dmg)
-			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg / 1200.0))
+			var c_mult = 1.15 if combo_active else 1.0
+			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult / 1200.0))
 			if sizzle_sfx and not sizzle_sfx.playing:
 				sizzle_sfx.play()
 			if steam_particles:
@@ -1981,7 +1999,8 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 		else:
 			var dmg = current_weapon_power * damage_mult * delta
 			temperature = max(0.0, temperature - dmg)
-			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg / 1200.0))
+			var c_mult = 1.15 if combo_active else 1.0
+			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult / 1200.0))
 			projectile_hit.emit()
 			
 	if hit_cooldown <= 0.0:
@@ -2649,6 +2668,45 @@ func _spawn_flare_explosion(pos: Vector3) -> void:
 	
 	add_child(poof)
 	get_tree().create_timer(1.0).timeout.connect(poof.queue_free)
+	
+	# Spawn 3-5 magma rock debris
+	var num_rocks = randi_range(3, 5)
+	for i in range(num_rocks):
+		var rock = RigidBody3D.new()
+		var phys_mat = PhysicsMaterial.new()
+		phys_mat.bounce = 0.0 # Heavy rock, no bounce on sand
+		phys_mat.friction = 1.0
+		rock.physics_material_override = phys_mat
+		rock.mass = 5.0
+		
+		var rock_mesh_node = MeshInstance3D.new()
+		var r_mesh = SphereMesh.new()
+		r_mesh.radius = randf_range(0.2, 0.4)
+		r_mesh.height = r_mesh.radius * 2.0
+		r_mesh.radial_segments = 8
+		r_mesh.rings = 4
+		rock_mesh_node.mesh = r_mesh
+		rock_mesh_node.material_override = flare_mat
+		rock_mesh_node.rotation = Vector3(randf() * TAU, randf() * TAU, randf() * TAU)
+		
+		var col = CollisionShape3D.new()
+		var col_shape = SphereShape3D.new()
+		col_shape.radius = r_mesh.radius
+		col.shape = col_shape
+		
+		rock.add_child(rock_mesh_node)
+		rock.add_child(col)
+		rock.position = pos + Vector3(randf_range(-0.5, 0.5), randf_range(-0.5, 0.5), randf_range(-0.5, 0.5))
+		add_child(rock)
+		
+		var push_dir = Vector3(randf_range(-0.8, 0.8), randf_range(0.2, 1.2), randf_range(0.2, 1.0)).normalized()
+		rock.apply_central_impulse(push_dir * randf_range(10.0, 18.0))
+		rock.apply_torque_impulse(Vector3(randf_range(-5, 5), randf_range(-5, 5), randf_range(-5, 5)))
+		
+		var tw_rock = create_tween()
+		tw_rock.tween_interval(3.0)
+		tw_rock.tween_property(rock_mesh_node, "scale", Vector3.ZERO, 0.5)
+		tw_rock.tween_callback(rock.queue_free)
 
 func _spawn_ice_nova() -> void:
 	if not sun: return
