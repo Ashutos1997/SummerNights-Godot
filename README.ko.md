@@ -63,6 +63,8 @@ Godot 4로 제작된 3D 아케이드 슈터. 태양을 식히기 전에 열기�
 - WCAG 2.1 AA/AAA 준수 UI — 전체 키보드 탐색, 고대비 모드, 모션 감소, 감도 조절 지원
 - `AudioStreamGenerator`를 사용한 코드 합성 절차적 UI 오디오 (호버 틱, 무기 교체음)
 - macOS (인텔 + 애플 실리콘 Universal Binary) 및 Windows .exe 출시
+- 요격된 태양 플레어에서 스폰되는 물리적 마그마 바위 파편
+- 지속적인 타격 시 궁극기가 더 빨리 충전되는 물줄기 콤보 시스템
 
 ---
 
@@ -146,10 +148,12 @@ SummerNights-Godot/
 | SFX - 얼음 피격음 | antonsoederberg (Freesound) | CC0 |
 | SFX - 갈매기 앰비언스 (Seagull Ambiance) | Half-Life | 모드 에셋 (Mod Asset) |
 | VFX - 얼음 폭발 발사체 및 입자 효과 | 절차적 고도(Godot) 기본 도형 | - |
+| VFX - 물리적 마그마 파편 (Physical Magma Debris) | 절차적 Godot 기본 도형 및 RigidBody3D | - |
 | 절차적 구름 및 갈매기 | 수작업 GDScript | - |
 | 태양 표정 (Sun Face) | 절차적 Godot Image draw API | - |
-| 무기 선택 휠 (Weapon Wheel UI) | 절차적 GDScript draw API | - |
-| 합성 UI 오디오 (틱/휘리릭) | 절차적 AudioStreamGenerator | - |
+| 무기 선택 휠 UI | 절차적 GDScript draw API | - |
+| 물줄기 콤보 UI 및 로직 (Stream Combo UI) | 절차적 GDScript 및 Tween | - |
+| 합성 UI 오디오 (틱/스와이프 소리) | 절차적 AudioStreamGenerator | - |
 | VFX 및 오디오 - 태양풍 (Solar Wind) | 절차적 파티클 및 AudioStreamGenerator | - |
 | UI 아이콘 - 카타스트롬(Catastrom) | pandora0226 (DeviantArt) | CC BY-NC-ND 3.0 (팬심으로 사용) |
 | SFX - 카타스트롬 덩크 (Catastrom Dunk) | Dual Mare Capsem Sound | 공정 이용 (팬 프로젝트) |

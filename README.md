@@ -55,6 +55,8 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 - Water tank resource management with drain and recharge cycle
 - Solar heat vents with critical cooling and steam geyser effects
 - Solar flare projectiles in parabolic arcs, interceptable for water refills
+- Physical magma rock debris that spawns from intercepted solar flares
+- Water stream combo system that rewards continuous tracking with faster ultimate charging
 - Solar wind gusts that push your aim sideways with GPU particle streak visuals
 - Procedural drifting 3D low-poly clouds (CloudLayer.gd)
 - Fully animated low-poly seagulls with curved Bezier flight paths, landing logic, and water interactions (SeagullLayer.gd)
@@ -145,9 +147,11 @@ SummerNights-Godot/
 | SFX - Ice Hit | antonsoederberg (Freesound) | CC0 |
 | SFX - Seagull Ambiance | Half-Life | Mod Asset |
 | VFX - Ice Blast Projectile & Particles | Procedural Godot Primitives | - |
+| VFX - Physical Magma Debris | Procedural Godot Primitives & RigidBody3D | - |
 | Procedural Clouds and Seagulls | Hand-crafted GDScript | - |
 | Sun Face Expressions | Procedural Godot Image draw API | - |
 | Weapon Wheel UI | Procedural GDScript draw API | - |
+| Stream Combo UI & Logic | Procedural GDScript & Tweens | - |
 | Synthesized UI Audio (Ticks/Whoosh) | Procedural AudioStreamGenerator | - |
 | VFX & Audio - Solar Wind Hazard | Procedural Particles & AudioStreamGenerator | - |
 | UI Icon - Catastrom Powerup | pandora0226 (DeviantArt) | CC BY-NC-ND 3.0 (Used for fun) |
