@@ -7,6 +7,7 @@ extends Control
 @onready var normal_btn = $ColorRect/VBoxContainer/ButtonsBox/NormalBtn
 @onready var survival_btn = $ColorRect/VBoxContainer/ButtonsBox/SurvivalBtn
 @onready var dev_btn = $ColorRect/VBoxContainer/ButtonsBox/DevBtn
+@onready var lang_btn = $LangBtn
 @onready var high_score_lbl = $ColorRect/VBoxContainer/HighScoreLabel
 @onready var credit_lbl = $CreditLine
 
@@ -16,6 +17,12 @@ var is_starting: bool = false
 
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	_update_language()
+
+	if lang_btn:
+		lang_btn.pressed.connect(_on_lang_btn_pressed)
+
+func _update_language() -> void:
 
 	var is_kr = GameState.language == "KR"
 	var font_path = "res://assets/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
@@ -27,6 +34,7 @@ func _ready() -> void:
 	if normal_btn: normal_btn.text = "일반 모드" if is_kr else "NORMAL MODE"
 	if survival_btn: survival_btn.text = "무한 모드" if is_kr else "ENDLESS MODE"
 	if dev_btn: dev_btn.text = "DEV"
+	if lang_btn: lang_btn.text = "EN / KR"
 	
 	if font:
 		var title_color = Color(1.0, 0.75, 0.15, 1.0)
@@ -83,7 +91,7 @@ func _ready() -> void:
 			
 		# Style buttons
 		if normal_btn and survival_btn and dev_btn:
-			for btn in [normal_btn, survival_btn, dev_btn]:
+			for btn in [normal_btn, survival_btn, dev_btn, lang_btn]:
 				if not btn: continue
 				btn.add_theme_font_override("font", font)
 				btn.add_theme_font_size_override("font_size", 20 if is_kr else 18)
@@ -114,6 +122,8 @@ func _ready() -> void:
 					style_pressed.bg_color = Color(0.2, 0.8, 1.0, 0.4)
 				elif btn == dev_btn:
 					style_pressed.bg_color = Color(0.8, 0.2, 1.0, 0.4)
+				elif btn == lang_btn:
+					style_pressed.bg_color = Color(1.0, 1.0, 1.0, 0.4)
 				btn.add_theme_stylebox_override("pressed", style_pressed)
 				btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 
@@ -161,3 +171,16 @@ func _start_game(is_survival: bool, is_dev: bool = false) -> void:
 	var tw = create_tween()
 	tw.tween_property(color_rect, "modulate:a", 0.0, 0.5)
 	tw.tween_callback(func(): start_game.emit(is_survival))
+
+func _on_lang_btn_pressed() -> void:
+	if is_starting: return
+	
+	var audio = AudioStreamPlayer.new()
+	audio.stream = load("res://assets/sfx/ui_tick.wav")
+	audio.bus = "SFX"
+	add_child(audio)
+	audio.play()
+	
+	GameState.language = "KR" if GameState.language == "EN" else "EN"
+	GameState.save_settings()
+	_update_language()
