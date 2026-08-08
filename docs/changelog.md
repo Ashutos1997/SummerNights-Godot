@@ -7,6 +7,7 @@ All notable changes to the Summer Nights project will be documented in this file
 ### Added
 - **Catastrom Ultimate:** Chargeable ultimate ability to physically grab the sun and instantly dunk it into the ocean to end the wave. Includes custom UI, voice-over, and massive dunk splash.
 - **Scoring System:** Dynamic Arcade scoring system that heavily rewards continuous cooling, flare interceptions, and debris evaporation, aggressively scaled by your active Combo multiplier. High scores are persistently saved.
+- **Title Screen High Score:** The main menu now natively displays your all-time high score beneath the title.
 
 ### Improved
 - **Combo System:** Combo multiplier now dynamically scales up to 3.0x over time for continuous tracking, massively boosting Catastrom charging.
@@ -48,6 +49,7 @@ All notable changes to the Summer Nights project will be documented in this file
 ### 추가됨 (Added)
 - **카타스트롬 궁극기:** 게이지를 충전하여 태양을 직접 붙잡고 바다로 처박아 즉시 웨이브를 끝내는 궁극기. 커스텀 UI, 보이스오버, 거대한 물보라 효과가 포함됩니다.
 - **점수 시스템:** 활성화된 콤보 배율에 따라 점수가 크게 증가하는 아케이드 스타일의 동적 점수 시스템으로, 지속적인 냉각, 플레어 요격, 파편 증발 시 점수를 부여합니다. 최고 점수는 영구적으로 저장됩니다.
+- **타이틀 화면 최고 점수:** 이제 메인 메뉴 타이틀 아래에 기록된 최고 점수가 기본적으로 표시됩니다.
 
 ### 개선됨 (Improved)
 - **콤보 시스템:** 물줄기로 태양을 지속적으로 추적할 때 콤보 배율이 시간이 지남에 따라 최대 3.0배까지 증가하여 카타스트롬 충전 속도를 대폭 높여줍니다.

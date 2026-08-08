@@ -67,6 +67,15 @@ layout_mode = 2
 text = "COOL DOWN THE SUN"
 horizontal_alignment = 1
 
+[node name="HighScoreLabel" type="Label" parent="ColorRect/VBoxContainer"]
+layout_mode = 2
+text = "HIGH SCORE: 0"
+horizontal_alignment = 1
+
+[node name="SpacerHS" type="Control" parent="ColorRect/VBoxContainer"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+
 [node name="Spacer2" type="Control" parent="ColorRect/VBoxContainer"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2

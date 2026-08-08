@@ -7,6 +7,7 @@ extends Control
 @onready var normal_btn = $ColorRect/VBoxContainer/ButtonsBox/NormalBtn
 @onready var survival_btn = $ColorRect/VBoxContainer/ButtonsBox/SurvivalBtn
 @onready var dev_btn = $ColorRect/VBoxContainer/ButtonsBox/DevBtn
+@onready var high_score_lbl = $ColorRect/VBoxContainer/HighScoreLabel
 @onready var credit_lbl = $CreditLine
 
 signal start_game(is_survival: bool)
@@ -61,6 +62,24 @@ func _ready() -> void:
 			best_time_lbl.add_theme_constant_override("outline_size", 4)
 			$ColorRect/VBoxContainer.add_child(best_time_lbl)
 			$ColorRect/VBoxContainer.move_child(best_time_lbl, subtitle_lbl.get_index() + 1)
+			
+		# High Score Display
+		if high_score_lbl:
+			if GameState.high_score > 0:
+				# Format with commas (e.g., 1,500)
+				var score_str = str(GameState.high_score)
+				var formatted_score = ""
+				for i in range(score_str.length()):
+					if i > 0 and i % 3 == 0:
+						formatted_score = "," + formatted_score
+					formatted_score = score_str[score_str.length() - 1 - i] + formatted_score
+				
+				high_score_lbl.text = "최고 점수: %s" % formatted_score if is_kr else "HIGH SCORE: %s" % formatted_score
+				_style_label(high_score_lbl, 18 if is_kr else 16, Color(0.4, 0.9, 0.4, 1.0), font)
+				high_score_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
+				high_score_lbl.add_theme_constant_override("outline_size", 4)
+			else:
+				high_score_lbl.visible = false
 			
 		# Style buttons
 		if normal_btn and survival_btn and dev_btn:
