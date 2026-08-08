@@ -4,6 +4,10 @@
 
 A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhelms you.
 
+---
+
+## Gameplay Video
+
 [![Summer Nights v1.1.0 Gameplay](https://img.youtube.com/vi/4C11YScAKKY/maxresdefault.jpg)](https://www.youtube.com/watch?v=4C11YScAKKY)
 
 ---
