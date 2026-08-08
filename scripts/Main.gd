@@ -1466,6 +1466,26 @@ func _process(delta: float) -> void:
 		else:
 			hud.grab_icon.visible = false
 
+	# Heat Mirage Event
+	if timer_running and GameState.current_wave >= 3 and not is_sun_frozen and not is_catastrom_active:
+		if active_mirages.size() == 0:
+			mirage_cooldown -= delta
+			if temperature > 75.0 and mirage_cooldown <= 0.0 and randf() < 0.02:
+				_start_mirage()
+		else:
+			mirage_duration -= delta
+			if mirage_duration <= 0.0:
+				_end_mirage()
+			else:
+				# Move mirages
+				for m in active_mirages:
+					var node = m["node"] as Node3D
+					if is_instance_valid(node):
+						m["current_offset"] = lerp(m["current_offset"], m["offset_target"], delta * 1.5)
+						node.position.x = sun.position.x + m["current_offset"]
+						node.position.y = sun.position.y + sin(sun_time * sun_bob_speed * 1.2) * 2.0
+						node.position.z = sun.position.z + 2.0 # Slightly in front
+
 	# Solar Wind hazard
 	if solar_wind_enabled and not is_title_screen:
 		_process_solar_wind(delta)
