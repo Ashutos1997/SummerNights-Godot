@@ -37,6 +37,8 @@ signal weapon_changed(weapon_id: String)
 @onready var end_prompt_lbl    = $HUD/EndScreen/ColorRect/VBoxContainer/RestartPrompt
 
 @onready var timer_label       = $HUD/TimerLabel
+@onready var weather_icon_container = $HUD/WeatherIconContainer
+@onready var weather_icon       = $HUD/WeatherIconContainer/Icon
 @onready var score_label       = $HUD/ScoreLabel
 @onready var phase2_label      = $HUD/Phase2Label
 @onready var combo_label       = $HUD/ComboLabel
@@ -105,6 +107,37 @@ var score_tween: Tween
 
 var credits_scroll_acc: float = 0.0
 
+
+var _weather_pulse_tween: Tween
+
+func update_weather_icon(weather_type: String) -> void:
+	if not weather_icon_container or not weather_icon: return
+	
+	weather_icon_container.visible = true
+	
+	if weather_type == "none":
+		weather_icon.texture = load("res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png")
+		if _weather_pulse_tween:
+			_weather_pulse_tween.kill()
+		weather_icon_container.scale = Vector2(1, 1)
+		return
+		
+	if weather_type == "rain":
+		weather_icon.texture = load("res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_white.png")
+	elif weather_type == "eclipse":
+		weather_icon.texture = load("res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_red.png")
+		
+	if _weather_pulse_tween:
+		_weather_pulse_tween.kill()
+		
+	# Reset scale
+	weather_icon_container.scale = Vector2(1, 1)
+	weather_icon_container.pivot_offset = weather_icon_container.size / 2.0
+	
+	_weather_pulse_tween = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_weather_pulse_tween.tween_property(weather_icon_container, "scale", Vector2(1.1, 1.1), 0.6)
+	_weather_pulse_tween.tween_property(weather_icon_container, "scale", Vector2(1.0, 1.0), 0.6)
+
 func _process(delta: float) -> void:	
 	if heat_bar:
 		if reduce_motion:
@@ -164,6 +197,26 @@ func _ready() -> void:
 	phase2_label.visible = false
 	combo_label.visible = false
 	timer_label.text = ""
+	
+	if weather_icon_container:
+		var w_style = StyleBoxFlat.new()
+		w_style.bg_color = Color(0.0, 0.0, 0.0, 0.4)
+		w_style.border_color = Color(1.0, 0.85, 0.2, 0.6)
+		w_style.border_width_bottom = 2
+		w_style.border_width_top = 2
+		w_style.border_width_left = 2
+		w_style.border_width_right = 2
+		w_style.corner_radius_bottom_left = 8
+		w_style.corner_radius_bottom_right = 8
+		w_style.corner_radius_top_left = 8
+		w_style.corner_radius_top_right = 8
+		w_style.content_margin_left = 6.0
+		w_style.content_margin_right = 6.0
+		w_style.content_margin_top = 6.0
+		w_style.content_margin_bottom = 6.0
+		weather_icon_container.add_theme_stylebox_override("panel", w_style)
+		
+	update_weather_icon("none")
 	
 	GameState.score_updated.connect(_on_score_updated)
 	_on_score_updated(GameState.current_score)

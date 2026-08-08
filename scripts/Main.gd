@@ -2885,6 +2885,7 @@ func _start_weather_event(force_type: String = "") -> void:
 	if is_rain:
 		active_weather = "rain"
 		weather_duration = 10.0
+		hud.update_weather_icon("rain")
 		weather_rain_particles.emitting = true
 		if is_kr:
 			hud.show_toast("기상 이변", "폭우! 물이 무한입니다.", "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_white.png", Color(0.4, 0.8, 1.0))
@@ -2893,6 +2894,7 @@ func _start_weather_event(force_type: String = "") -> void:
 	else:
 		active_weather = "eclipse"
 		weather_duration = 10.0
+		hud.update_weather_icon("eclipse")
 		if is_kr:
 			hud.show_toast("기상 이변", "일식!", "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_red.png", Color(0.8, 0.2, 0.2))
 		else:
@@ -2907,6 +2909,7 @@ func _end_weather_event() -> void:
 		weather_rain_particles.emitting = false
 		
 	active_weather = "none"
+	hud.update_weather_icon("none")
 	_update_sky(false)
 
 func _unhandled_input(event: InputEvent) -> void:
