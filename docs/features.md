@@ -46,13 +46,7 @@ Weather events can randomly trigger mid-wave, forcing the player to adapt:
     *   **Seagull Layer:** Flocks of seagulls that fly in the distance.
 *   **Particle Effects:** Splashes for water hitting the sun, shattered chunks for the Catastrom dunk, shattered ice particles for ice blasts, and steam plumes.
 
-## 6. Testing / Dev Mode
-Clicking `[DEV]` on the Title Screen starts the game in Developer Mode (starts at Wave 5). The following hotkeys become available:
-*   `[R]` - Instantly trigger a Rainstorm
-*   `[E]` - Instantly trigger a Solar Eclipse
-*   `[W]` - Skip current wave
-
-## 7. UI, Juice, & Game Feel
+## 6. UI, Juice, & Game Feel
 *   **Custom Crosshair:** A dynamic cursor that scales up on hits.
 *   **Screen Shake:** The camera violently shakes during critical moments (e.g., Phase 2 transitions, high heat, solar flare impacts, Catastrom dunks).
 *   **Hit Feedback:** The crosshair flashes and scales upon successful hits (`projectile_hit` events) and critical hits.
@@ -68,7 +62,7 @@ Clicking `[DEV]` on the Title Screen starts the game in Developer Mode (starts a
     *   Fullscreen toggle.
     *   Language selection (English and Korean).
 
-## 8. Audio
+## 7. Audio
 *   **Synthesized UI Sounds:** Programmatically generated sine-wave "ticks" and "whooshes" for UI navigation and the weapon wheel.
 *   **Gameplay SFX:** 
     *   Continuous water shooting loop.

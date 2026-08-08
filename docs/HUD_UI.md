@@ -18,6 +18,7 @@ The live gameplay HUD is designed to minimize clutter while keeping critical sur
 ### Top-Right
 *   **`TimerLabel`:** Displays the time remaining in the current wave (e.g., `TIME: 0:45`).
 *   **`ScoreLabel`:** Located directly beneath the Timer. Displays the live arcade score (e.g., `SCORE: 1,500`). When points are scored, this label scales up and snaps back smoothly, pivoting from the right edge to avoid extending off-screen.
+*   **`ToastContainer`:** Displays transient slide-down notifications (e.g., "Weapon Unlocked") from the top-right corner.
 
 ### Center
 *   **`Crosshair`:** The aiming reticle. It dynamically scales up slightly when successfully landing water hits on the sun.
@@ -30,7 +31,7 @@ The live gameplay HUD is designed to minimize clutter while keeping critical sur
     *   **Catastrom Bar:** Shows the ultimate gauge, which fills rapidly via the Combo System.
 
 ### Bottom-Left
-*   **`UnlockPrompts`:** A vertical container that slides in notifications when the player unlocks a new weapon or mechanic between waves.
+*   **`UnlockPrompts`:** A square container anchored here. It primarily displays the **Active Weapon Icon** (currently selected gun) during gameplay, injected dynamically via `_setup_weapon_hud`.
 
 ---
 
@@ -48,10 +49,6 @@ These elements sit on top of the Core Gameplay HUD and blur/dim the background w
 *   Activated by holding `TAB`.
 *   Slows time (`Engine.time_scale = 0.1`) instead of fully pausing.
 *   Draws procedural wedges using the `_draw()` API based on the number of unlocked weapons. Renders live 3D thumbnails of the weapons into viewports mapped to 2D textures.
-
-### Toast Notifications (`ToastContainer`)
-*   Transient popups that slide down from the top-center edge of the screen (e.g., "Catastrom Ready!").
-*   Uses a Sine ease-out animation to slide into view, hold for 3 seconds, and slide back out.
 
 ### End State Screens
 *   **`WinScreen`:** Shown upon completing a wave. Displays level stats and loading text.
