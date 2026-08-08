@@ -1453,6 +1453,9 @@ func _process(delta: float) -> void:
 			sun_shatter_particles.emitting = false
 			
 	sun.scale = Vector3(target_scale, target_scale, target_scale)
+	for m in active_mirages:
+		if is_instance_valid(m["node"]):
+			m["node"].scale = sun.scale
 	
 	_update_sun_face(ratio)
 	
