@@ -161,5 +161,6 @@ SummerNights-Godot/
 | VFX & Audio - Solar Wind Hazard | Procedural Particles & AudioStreamGenerator | - |
 | UI Icon - Catastrom Powerup | pandora0226 (DeviantArt) | CC BY-NC-ND 3.0 (Used for fun) |
 | SFX - Catastrom Dunk | Dual Mare Capsem Sound | Fair Use (Fan Project) |
+| Heat Mirage Mechanic | Procedural Translucent Materials & Tweens | - |
 
 *Disclaimer: Kamen Rider and related characters (including Kamen Rider Zeztz) are the property of Toei Company, Ltd. and Ishimori Productions. This game is a non-profit, unofficial fan work and is not affiliated with or endorsed by Toei Company.*

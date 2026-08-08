@@ -1208,6 +1208,14 @@ theme_override_font_sizes/font_size = 12
 text = "Heat Haze screen distortion  ·  MinionsArt  ·  CC0"
 horizontal_alignment = 1
 
+[node name="ItmMirage" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "Heat Mirage Mechanic  ·  Procedural Translucent Materials  ·  -"
+horizontal_alignment = 1
+
 [node name="Spacer5" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
