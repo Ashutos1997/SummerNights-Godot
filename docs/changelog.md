@@ -2,7 +2,7 @@
 
 All notable changes to the Summer Nights project will be documented in this file.
 
-## [v1.1.0] (WIP)
+## [v1.1.0] - 2026-08-08
 
 ### Added
 - **Catastrom Ultimate:** Chargeable ultimate ability to physically grab the sun and instantly dunk it into the ocean to end the wave. Includes custom UI, voice-over, and massive dunk splash.
@@ -50,7 +50,7 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ---
 
-## [v1.1.0] (WIP)
+## [v1.1.0] - 2026-08-08
 
 ### 추가됨 (Added)
 - **카타스트롬 궁극기:** 게이지를 충전하여 태양을 직접 붙잡고 바다로 처박아 즉시 웨이브를 끝내는 궁극기. 커스텀 UI, 보이스오버, 거대한 물보라 효과가 포함됩니다.
