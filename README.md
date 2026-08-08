@@ -8,7 +8,6 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 
 ## Screenshots
 
-<p align="center">
   <img src="screenshots/01_Title_Screen.png" width="48%">
   <img src="screenshots/02_Core_Gameplay.png" width="48%">
   <img src="screenshots/03_Weapon_Wheel.png" width="48%">
@@ -16,6 +15,9 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
   <img src="screenshots/05_Weather_Solar_Wind.png" width="48%">
   <img src="screenshots/06_Upgrades_Ice_Burst.png" width="48%">
   <img src="screenshots/07_Settings_Menu.png" width="48%">
+  <img src="screenshots/08_Catastrom.png" width="48%">
+  <img src="screenshots/09_Mirage.png" width="48%">
+  <img src="screenshots/10_Weather.png" width="48%">
 </p>
 
 ---
