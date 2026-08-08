@@ -1560,14 +1560,18 @@ func _process(delta: float) -> void:
 	
 	# Dynamic FOV
 	var target_fov = 75.0
-	if is_shooting and can_shoot:
+	if is_shooting and can_shoot and not reduce_motion:
 		if GameState.current_weapon_id == "heavy":
 			target_fov = 83.0 # Wide, powerful pushback
 		elif GameState.current_weapon_id == "precision":
 			target_fov = 70.0 # Slight zoom-in for sniping focus
 		else:
 			target_fov = 77.0 # Slight push
-	camera.fov = lerp(camera.fov, target_fov, 8.0 * delta)
+	
+	if reduce_motion:
+		camera.fov = 75.0
+	else:
+		camera.fov = lerp(camera.fov, target_fov, 8.0 * delta)
 	
 	
 		

@@ -134,9 +134,10 @@ func update_weather_icon(weather_type: String) -> void:
 	weather_icon_container.scale = Vector2(1, 1)
 	weather_icon_container.pivot_offset = weather_icon_container.size / 2.0
 	
-	_weather_pulse_tween = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	_weather_pulse_tween.tween_property(weather_icon_container, "scale", Vector2(1.1, 1.1), 0.6)
-	_weather_pulse_tween.tween_property(weather_icon_container, "scale", Vector2(1.0, 1.0), 0.6)
+	if not reduce_motion:
+		_weather_pulse_tween = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		_weather_pulse_tween.tween_property(weather_icon_container, "scale", Vector2(1.1, 1.1), 0.6)
+		_weather_pulse_tween.tween_property(weather_icon_container, "scale", Vector2(1.0, 1.0), 0.6)
 
 func _process(delta: float) -> void:	
 	if heat_bar:
@@ -1514,9 +1515,10 @@ func _on_score_updated(new_score: int) -> void:
 	score_tween.set_parallel(true)
 	score_tween.tween_method(_update_score_display, display_score, new_score, 0.2)
 	
-	score_label.pivot_offset = Vector2(score_label.size.x, score_label.size.y / 2.0)
-	score_label.scale = Vector2(1.2, 1.2)
-	score_tween.tween_property(score_label, "scale", Vector2.ONE, 0.2).set_delay(0.0)
+	if not reduce_motion:
+		score_label.pivot_offset = Vector2(score_label.size.x, score_label.size.y / 2.0)
+		score_label.scale = Vector2(1.2, 1.2)
+		score_tween.tween_property(score_label, "scale", Vector2.ONE, 0.2).set_delay(0.0)
 
 func _update_score_display(val: int) -> void:
 	display_score = val
