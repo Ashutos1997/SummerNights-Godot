@@ -201,7 +201,6 @@ var flare_spawn_timer: float = 8.0
 var flare_mat: StandardMaterial3D
 var flare_intercept_sfx: AudioStreamPlayer
 
-# Heat Shield system
 
 # Weather system
 var is_dragging_sun: bool = false
@@ -412,11 +411,6 @@ func _ready() -> void:
 		sun.add_child(frost_aura)
 		
 
-	orb_mat = StandardMaterial3D.new()
-	orb_mat.albedo_color = Color(1.0, 0.8, 0.2)
-	orb_mat.emission_enabled = true
-	orb_mat.emission = Color(1.0, 0.6, 0.0)
-	orb_mat.emission_energy_multiplier = 3.0
 
 	
 	_load_weapon_model()
@@ -2841,7 +2835,6 @@ func freeze_sun() -> void:
 		tw2.tween_property(sun_ray_mat, "emission", Color(0.2, 0.6, 1.0), 0.3)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Heat Shield
 # ─────────────────────────────────────────────────────────────────────────────
 
 func _on_game_paused() -> void:
