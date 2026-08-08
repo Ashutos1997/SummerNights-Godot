@@ -2850,10 +2850,36 @@ func _reset_weather() -> void:
 func _start_weather_event(force_type: String = "") -> void:
 	if active_weather != "none": return
 	
-	var is_rain = randf() > 0.5
-	if force_type == "rain": is_rain = true
-	elif force_type == "eclipse": is_rain = false
+	var is_rain = true
 	
+	if force_type == "rain":
+		is_rain = true
+	elif force_type == "eclipse":
+		is_rain = false
+	else:
+		var weights = GameState.LEVEL_CONFIG[GameState.level].get("weather_weights", {"none": 50, "rain": 50, "eclipse": 0})
+		
+		# Survival Mode dynamic scaling
+		if GameState.is_survival_mode:
+			var minutes_survived = GameState.survival_time / 60.0
+			# Eclipse chance increases by 10 per minute, none chance decreases
+			weights = weights.duplicate()
+			weights["eclipse"] += int(minutes_survived * 15)
+			weights["none"] = max(0, weights["none"] - int(minutes_survived * 10))
+			
+		var total_weight = weights["none"] + weights["rain"] + weights["eclipse"]
+		if total_weight <= 0:
+			return # Failsafe
+			
+		var roll = randi() % total_weight
+		
+		if roll < weights["none"]:
+			return # No weather event this time!
+		elif roll < weights["none"] + weights["rain"]:
+			is_rain = true
+		else:
+			is_rain = false
+
 	var is_kr = GameState.language == "KR"
 	
 	if is_rain:

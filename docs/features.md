@@ -27,12 +27,14 @@ This document serves as the master record for all currently implemented features
 
 ## 3. Sun Mechanics & Threats
 *   **Dynamic Movement:** The Sun sways horizontally. On higher waves, it begins to weave in a "Figure-8" pattern.
+*   **Sunspots (Critical Heat Vents):** Periodically, a glowing white-hot sunspot will appear on the Sun's surface. Hitting this specific point with the water stream (especially with the Precision Stream) grants massive critical cooling bonuses and huge score multipliers.
 *   **Solar Flares:** The Sun periodically spits fiery projectiles towards the screen. The player must intercept them with the water stream before they hit; otherwise, they cause a massive heat spike. Intercepting a flare spawns physical Magma Debris that crashes onto the beach, scaring away seagulls and persisting until the player evaporates it with their water gun.
 *   **Solar Wind:** A physical force emitted by the Sun that pushes the player's crosshair away, requiring them to actively fight the mouse to maintain aim.
 *   **Two-Phase Bosses:** Boss waves (e.g., Wave 5) have two phases. Depleting the timer triggers Phase 2, which resets the timer and immediately spikes the heat to a critical level (e.g., 60%).
 
 ## 4. Dynamic Weather Events
-Weather events can randomly trigger mid-wave, forcing the player to adapt:
+Weather events trigger based on a dynamic probability system tied to the current wave (configured via `GameState.LEVEL_CONFIG`'s `weather_weights`). Level 1 favors Rain or no weather, while Boss waves almost guarantee an Eclipse. In Endless/Survival Mode, the weights dynamically shift over time to make Eclipses increasingly common.
+
 *   **Rainstorms:** A massive downpour begins. Ambient lighting cools, and the Sun's heat begins to slowly drop. The player's water tank rapidly refills, allowing for infinite firing during the storm.
 *   **Solar Eclipses:** The sky drops into a moody twilight and the Sun becomes a dark silhouette with a bright corona. The Sun stops passively generating heat, but it begins rapidly firing high-speed, dark purple "Shadow Flares" that must be intercepted.
 

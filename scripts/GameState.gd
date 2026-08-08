@@ -14,6 +14,7 @@ const LEVEL_CONFIG = {
 		"phase2_heat": 0.0,
 		"ice_charges": 0,
 		"solar_wind": false,
+		"weather_weights": {"none": 60, "rain": 40, "eclipse": 0},
 	},
 	2: {
 		"timer": 45.0,
@@ -26,6 +27,7 @@ const LEVEL_CONFIG = {
 		"phase2_heat": 0.0,
 		"ice_charges": 0,
 		"solar_wind": false,
+		"weather_weights": {"none": 30, "rain": 50, "eclipse": 20},
 	},
 	3: {
 		"timer": 45.0,
@@ -38,6 +40,7 @@ const LEVEL_CONFIG = {
 		"phase2_heat": 0.0,
 		"ice_charges": 3,
 		"solar_wind": false,
+		"weather_weights": {"none": 30, "rain": 50, "eclipse": 20},
 	},
 	4: {
 		"timer": 45.0,
@@ -50,6 +53,7 @@ const LEVEL_CONFIG = {
 		"phase2_heat": 0.0,
 		"ice_charges": 3,
 		"solar_wind": true,
+		"weather_weights": {"none": 20, "rain": 40, "eclipse": 40},
 	},
 	5: {
 		"timer": 90.0,
@@ -62,6 +66,7 @@ const LEVEL_CONFIG = {
 		"phase2_heat": 70.0,
 		"ice_charges": 5,
 		"solar_wind": true,
+		"weather_weights": {"none": 0, "rain": 20, "eclipse": 80},
 	},
 }
 

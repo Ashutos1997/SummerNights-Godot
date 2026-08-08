@@ -10,6 +10,8 @@ All notable changes to the Summer Nights project will be documented in this file
 - **Title Screen High Score:** The main menu now natively displays your all-time high score beneath the title.
 
 ### Improved
+- **Weather System Revamp:** Converted the hardcoded 50/50 weather event logic into a data-driven probability system. Level 1 now eases players in with Rainstorms (or no weather), while Boss Waves almost guarantee chaotic Solar Eclipses.
+- **Endless Mode Dynamic Scaling:** In Survival Mode, the weather probability weights now dynamically shift based on your survival time, gradually making Solar Eclipses more frequent the longer you survive.
 - **Combo System:** Combo multiplier now dynamically scales up to 3.0x over time for continuous tracking, massively boosting Catastrom charging.
 - **Combo UI:** The combo multiplier UI text dynamically reflects the exact decimal multiplier, making the tracking reward much clearer.
 - **Language Toggle:** Added an instant `[EN / KR]` language toggle button directly to the Title Screen for better accessibility.
@@ -53,6 +55,8 @@ All notable changes to the Summer Nights project will be documented in this file
 - **타이틀 화면 최고 점수:** 이제 메인 메뉴 타이틀 아래에 기록된 최고 점수가 기본적으로 표시됩니다.
 
 ### 개선됨 (Improved)
+- **날씨 시스템 개편:** 하드코딩된 50/50 날씨 이벤트 로직을 데이터 기반 확률 시스템으로 변환했습니다. 레벨 1에서는 폭우(또는 날씨 없음)로 플레이어를 편안하게 안내하는 반면, 보스 웨이브에서는 혼란스러운 일식이 거의 확실하게 발생합니다.
+- **무한 모드 동적 난이도 조절:** 무한 모드(생존 모드)에서 날씨 확률 가중치가 생존 시간에 따라 동적으로 변하여, 오래 살아남을수록 일식이 점진적으로 더 자주 발생하게 됩니다.
 - **콤보 시스템:** 물줄기로 태양을 지속적으로 추적할 때 콤보 배율이 시간이 지남에 따라 최대 3.0배까지 증가하여 카타스트롬 충전 속도를 대폭 높여줍니다.
 - **콤보 UI:** 콤보 배율 UI 텍스트가 정확한 소수점 배율을 반영하도록 변경되어 추적 보상을 더욱 명확하게 보여줍니다.
 - **언어 변경 버튼:** 타이틀 화면 우측 상단에 `[EN / KR]` 언어 변경 버튼을 추가하여 접근성을 개선했습니다.
