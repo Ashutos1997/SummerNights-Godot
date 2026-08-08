@@ -10,6 +10,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - **Scoring System:** Dynamic Arcade scoring system that heavily rewards continuous cooling, flare interceptions, and debris evaporation, aggressively scaled by your active Combo multiplier. High scores are persistently saved.
 - **Title Screen High Score:** The main menu now natively displays your all-time high score beneath the title.
 - **Persistent HUD Weather Icon:** A stylized, dynamic icon under the Score counter that visually indicates the current weather state (Normal/Rain/Eclipse).
+- **Heat Mirage Mechanic:** In Survival Mode (Wave 6+), high heat triggers a "shell game" where the Sun spawns two angry, ghost-like mirages and dynamically shuffles positions to confuse the player. Shooting mirages instantly breaks the combo meter.
 
 ### Improved
 - **Weather System Revamp:** Converted the hardcoded 50/50 weather event logic into a data-driven probability system. Level 1 now eases players in with Rainstorms (or no weather), while Boss Waves almost guarantee chaotic Solar Eclipses.
@@ -57,6 +58,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - **점수 시스템:** 활성화된 콤보 배율에 따라 점수가 크게 증가하는 아케이드 스타일의 동적 점수 시스템으로, 지속적인 냉각, 플레어 요격, 파편 증발 시 점수를 부여합니다. 최고 점수는 영구적으로 저장됩니다.
 - **타이틀 화면 최고 점수:** 이제 메인 메뉴 타이틀 아래에 기록된 최고 점수가 기본적으로 표시됩니다.
 - **HUD 날씨 아이콘:** 현재 날씨 상태(맑음/폭우/일식)를 시각적으로 명확히 보여주는 아이콘을 점수 카운터 아래에 추가했습니다.
+- **열기 신기루 (Heat Mirage) 기믹:** 생존 모드 (웨이브 6 이상)에서 열기가 높아지면 태양이 2개의 유령 같은 신기루를 생성하고 서로의 위치를 무작위로 섞어 플레이어를 혼란에 빠뜨립니다. 신기루를 쏘면 콤보 미터가 즉시 초기화됩니다.
 
 ### 개선됨 (Improved)
 - **날씨 시스템 개편:** 하드코딩된 50/50 날씨 이벤트 로직을 데이터 기반 확률 시스템으로 변환했습니다. 레벨 1에서는 폭우(또는 날씨 없음)로 플레이어를 편안하게 안내하는 반면, 보스 웨이브에서는 혼란스러운 일식이 거의 확실하게 발생합니다.

@@ -31,6 +31,7 @@ This document serves as the master record for all currently implemented features
 *   **Solar Flares:** The Sun periodically spits fiery projectiles towards the screen. The player must intercept them with the water stream before they hit; otherwise, they cause a massive heat spike. Intercepting a flare spawns physical Magma Debris that crashes onto the beach, scaring away seagulls and persisting until the player evaporates it with their water gun.
 *   **Solar Wind:** A physical force emitted by the Sun that pushes the player's crosshair away, requiring them to actively fight the mouse to maintain aim.
 *   **Two-Phase Bosses:** Boss waves (e.g., Wave 5) have two phases. Depleting the timer triggers Phase 2, which resets the timer and immediately spikes the heat to a critical level (e.g., 60%).
+*   **Heat Mirage (Endless Mode):** On Wave 6 or later, if the Sun reaches 75% heat, it has a chance to spawn two translucent 'mirage' copies of itself that orbit and shuffle positions with the real Sun. Shooting a mirage wastes water and breaks your combo multiplier.
 
 ## 4. Dynamic Weather Events
 Weather events trigger based on a dynamic probability system tied to the current wave (configured via `GameState.LEVEL_CONFIG`'s `weather_weights`). Level 1 favors Rain or no weather, while Boss waves almost guarantee an Eclipse. In Endless/Survival Mode, the weights dynamically shift over time to make Eclipses increasingly common.
@@ -76,6 +77,4 @@ Weather events trigger based on a dynamic probability system tied to the current
 
 *(Note: The Shop System was temporarily removed in a previous iteration and is currently disabled.)*
 
-## Heat Mirage
-*   **The Mechanic:** On Wave 6 or later, if the Sun reaches 75% heat, it has a chance to spawn two translucent 'mirage' copies of itself.
-*   **The Threat:** The mirages orbit the real Sun and mimic its swaying. If the player shoots a mirage, it wastes water, plays a sizzle effect, and instantly breaks the combo meter, doing 0 cooling.
+
