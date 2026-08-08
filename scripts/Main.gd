@@ -239,6 +239,8 @@ var sun_bob_amp := 0.8
 var active_mirages: Array = []
 var mirage_cooldown: float = 5.0
 var mirage_duration: float = 0.0
+var sun_mirage_offset: float = 0.0
+var sun_mirage_target: float = 0.0
 
 var gun_spray:   GPUParticles3D
 var wet_spawn_timer: float = 0.0
@@ -1410,7 +1412,8 @@ func _process(delta: float) -> void:
 			var spd_mult = 0.0 if is_sun_frozen else 1.0
 			sun_move_time += delta * spd_mult
 			var x_offset = sin(sun_move_time * sun_sway_speed) * sun_sway_amplitude
-			sun.position.x = sun_base_pos.x + x_offset
+			sun_mirage_offset = lerp(sun_mirage_offset, sun_mirage_target, delta * 1.5)
+			sun.position.x = sun_base_pos.x + x_offset + sun_mirage_offset
 			
 			if sun_figure8:
 				var y_offset = sin(sun_move_time * sun_sway_speed * 2.0) * (sun_sway_amplitude * 0.5)
@@ -1420,7 +1423,8 @@ func _process(delta: float) -> void:
 				sun.position.y = sun_base_pos.y + sin(sun_time * sun_bob_speed) * sun_bob_amp
 				sun.position.z = sun_base_pos.z
 		else:
-			sun.position.x = sun_base_pos.x
+			sun_mirage_offset = lerp(sun_mirage_offset, sun_mirage_target, delta * 1.5)
+			sun.position.x = sun_base_pos.x + sun_mirage_offset
 			sun.position.y = sun_base_pos.y + sin(sun_time * sun_bob_speed) * sun_bob_amp
 			sun.position.z = sun_base_pos.z
 
@@ -1482,7 +1486,11 @@ func _process(delta: float) -> void:
 					var node = m["node"] as Node3D
 					if is_instance_valid(node):
 						m["current_offset"] = lerp(m["current_offset"], m["offset_target"], delta * 1.5)
-						node.position.x = sun.position.x + m["current_offset"]
+						# Calculate base x_offset of the sun without mirage offset
+						var base_x_offset = 0.0
+						if sun_sway_amplitude > 0.0:
+							base_x_offset = sin(sun_move_time * sun_sway_speed) * sun_sway_amplitude
+						node.position.x = sun_base_pos.x + base_x_offset + m["current_offset"]
 						node.position.y = sun.position.y + sin(sun_time * sun_bob_speed * 1.2) * 2.0
 						node.position.z = sun.position.z + 2.0 # Slightly in front
 
@@ -2901,6 +2909,10 @@ func _start_mirage() -> void:
 	mirage_cooldown = randf_range(10.0, 15.0)
 	mirage_duration = 20.0
 	
+	var positions = [-12.0, 0.0, 12.0]
+	positions.shuffle()
+	sun_mirage_target = positions[0]
+	
 	for i in range(2):
 		var m_sun = Node3D.new()
 		m_sun.position = sun.position
@@ -2925,7 +2937,7 @@ func _start_mirage() -> void:
 			m_mat.emission_energy_multiplier = 1.2
 			m_mesh.set_surface_override_material(0, m_mat)
 			
-		active_mirages.append({"node": m_sun, "offset_target": 12.0 if i == 0 else -12.0, "current_offset": 0.0})
+		active_mirages.append({"node": m_sun, "offset_target": positions[i + 1], "current_offset": 0.0})
 
 func _end_mirage() -> void:
 	for m in active_mirages:
@@ -2944,6 +2956,7 @@ func _end_mirage() -> void:
 					tw.tween_property(m_mat, "albedo_color:a", 0.0, 1.0)
 			tw.tween_callback(node.queue_free)
 	active_mirages.clear()
+	sun_mirage_target = 0.0
 
 func _on_game_paused() -> void:
 	timer_running = false
