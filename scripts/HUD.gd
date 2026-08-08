@@ -193,6 +193,8 @@ func _process(delta: float) -> void:
 		_on_settings_btn_hover(s_hovered)
 
 func _ready() -> void:
+
+
 	heat_label.scale = Vector2(1.0, 1.0)
 	phase2_label.visible = false
 	combo_label.visible = false
@@ -1532,3 +1534,5 @@ func _update_score_display(val: int) -> void:
 			
 	if score_label:
 		score_label.text = prefix + formatted
+
+

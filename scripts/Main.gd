@@ -201,6 +201,8 @@ var flare_spawn_timer: float = 8.0
 var flare_mat: StandardMaterial3D
 var flare_intercept_sfx: AudioStreamPlayer
 
+# Heat Shield system
+
 # Weather system
 var is_dragging_sun: bool = false
 var is_catastrom_active: bool = false
@@ -258,6 +260,9 @@ func _ready() -> void:
 	catastrom_sfx.stream = preload("res://assets/audio/sfx/catastrom_dunk.mp3")
 	catastrom_sfx.volume_db = 0.0
 	add_child(catastrom_sfx)
+	
+	var hum_gen = AudioStreamGenerator.new()
+	hum_gen.mix_rate = 44100
 	
 	ambient_sfx = AudioStreamPlayer.new()
 	var ocean_stream = load("res://assets/audio/sfx/ocean_waves.wav")
@@ -405,6 +410,14 @@ func _ready() -> void:
 	frost_aura.emitting = false
 	if sun:
 		sun.add_child(frost_aura)
+		
+
+	orb_mat = StandardMaterial3D.new()
+	orb_mat.albedo_color = Color(1.0, 0.8, 0.2)
+	orb_mat.emission_enabled = true
+	orb_mat.emission = Color(1.0, 0.6, 0.0)
+	orb_mat.emission_energy_multiplier = 3.0
+
 	
 	_load_weapon_model()
 
@@ -926,9 +939,6 @@ func _build_scene() -> void:
 	gun.add_child(gun_spray)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Procedural Environment
-# ─────────────────────────────────────────────────────────────────────────────
 func _find_mesh(node: Node) -> MeshInstance3D:
 	if node is MeshInstance3D:
 		return node
@@ -1671,7 +1681,6 @@ func _process(delta: float) -> void:
 				GameState.add_score(int(150.0 * c_mult))
 				rock.queue_free()
 				active_magma_rocks.erase(rock)
-
 		# Check hit
 		var aim_dist = target_pos.distance_to(sun.position)
 		if aim_dist < 5.0: # Close enough to hit the larger sun
@@ -1989,7 +1998,7 @@ func _adjust_gun_materials(node: Node) -> void:
 			if not mat and node.mesh:
 				mat = node.mesh.surface_get_material(i)
 			if mat is StandardMaterial3D:
-				var new_mat = mat.duplicate()
+				var new_mat = mat.duplicate() as StandardMaterial3D
 				if new_mat.metallic > 0.1:
 					new_mat.metallic = 0.0
 				node.set_surface_override_material(i, new_mat)
@@ -2002,7 +2011,7 @@ func _setup_sun_mesh_and_material(node: Node) -> MeshInstance3D:
 		first_mesh = node
 		var mat = node.mesh.surface_get_material(0) if node.mesh else null
 		if mat:
-			sun_mat = mat.duplicate()
+			sun_mat = mat.duplicate() as StandardMaterial3D
 		else:
 			sun_mat = StandardMaterial3D.new()
 		sun_mat.emission_enabled = true
@@ -2830,6 +2839,10 @@ func freeze_sun() -> void:
 	if sun_ray_mat:
 		var tw2 = create_tween()
 		tw2.tween_property(sun_ray_mat, "emission", Color(0.2, 0.6, 1.0), 0.3)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Heat Shield
+# ─────────────────────────────────────────────────────────────────────────────
 
 func _on_game_paused() -> void:
 	timer_running = false
