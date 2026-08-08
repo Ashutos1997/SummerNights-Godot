@@ -1537,7 +1537,7 @@ func _process(delta: float) -> void:
 	if is_shooting:
 		var aim_target = target_pos
 		# Constrain aim target so gun doesn't fly off screen
-		aim_target.x = clamp(aim_target.x, -20.0, 20.0)
+		aim_target.x = clamp(aim_target.x, -30.0, 30.0)
 		aim_target.y = clamp(aim_target.y, -2.0, 20.0) # Restrict downward movement
 	
 	gun.look_at(target_pos, Vector3.UP)
@@ -2909,7 +2909,7 @@ func _start_mirage() -> void:
 	mirage_cooldown = randf_range(10.0, 15.0)
 	mirage_duration = 20.0
 	
-	var positions = [-12.0, 0.0, 12.0]
+	var positions = [-22.0, 0.0, 22.0]
 	positions.shuffle()
 	sun_mirage_target = positions[0]
 	
