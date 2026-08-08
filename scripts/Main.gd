@@ -235,6 +235,11 @@ var gun_base_pos := Vector3(0, -1.0, 2.8) # Raised to match crosshair better
 var sun_bob_speed := 1.5
 var sun_bob_amp := 0.8
 
+# Heat Mirage
+var active_mirages: Array = []
+var mirage_cooldown: float = 20.0
+var mirage_duration: float = 0.0
+
 var gun_spray:   GPUParticles3D
 var wet_spawn_timer: float = 0.0
 
@@ -1675,9 +1680,30 @@ func _process(delta: float) -> void:
 				GameState.add_score(int(150.0 * c_mult))
 				rock.queue_free()
 				active_magma_rocks.erase(rock)
-		# Check hit
+		# Check Heat Mirage Hits
+		var hit_mirage: bool = false
+		var closest_mirage_dist = 999.0
+		var closest_mirage_pos = Vector3.ZERO
+		for m in active_mirages:
+			var node = m["node"] as Node3D
+			if is_instance_valid(node):
+				var m_dist = target_pos.distance_to(node.position)
+				if m_dist < 5.0 and m_dist < closest_mirage_dist:
+					closest_mirage_dist = m_dist
+					closest_mirage_pos = node.position
+					hit_mirage = true
+					
+		# Check real sun hit
 		var aim_dist = target_pos.distance_to(sun.position)
-		if aim_dist < 5.0: # Close enough to hit the larger sun
+		if hit_mirage and closest_mirage_dist < aim_dist:
+			# Hit a mirage instead of the real sun!
+			if steam_particles and randf() < 0.2:
+				steam_particles.global_position = target_pos
+				steam_particles.restart()
+			if sizzle_sfx and not sizzle_sfx.playing and randf() < 0.3:
+				sizzle_sfx.play()
+			combo_timer = 0.0 # Breaks combo
+		elif aim_dist < 5.0: # Close enough to hit the larger sun
 			_on_hit(delta, target_pos)
 			combo_timer += delta
 			if combo_timer >= 1.5:
@@ -2177,6 +2203,8 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			level_timer = min(120.0, 60.0 + (level_timer * 0.5)) # Bank 50% of remaining time
 			wave_timer = 0.0
 			is_catastrom_active = false
+			_end_mirage()
+			active_mirages.clear()
 			var viewport_size = get_viewport().get_visible_rect().size
 			virtual_mouse_pos = viewport_size * 0.5
 			if gun:
@@ -2290,6 +2318,8 @@ func _trigger_catastrom_dunk() -> void:
 	GameState.catastrom_charge = 0.0
 	is_dragging_sun = false
 	is_catastrom_active = false
+	_end_mirage()
+	active_mirages.clear()
 	if hud and hud.grab_icon:
 		hud.grab_icon.texture = preload("res://assets/ui/grab_open.png")
 		hud.grab_icon.visible = false
@@ -2300,6 +2330,8 @@ func _trigger_catastrom_dunk() -> void:
 func _win() -> void:
 	if defeat_triggered: return
 	defeat_triggered = true
+	_end_mirage()
+	active_mirages.clear()
 	game_over = true
 	is_shooting = false # Reset shooting state to prevent auto-firing on next level
 	gun_spray.emitting = false # Fix water getting stuck on when winning
@@ -2331,6 +2363,8 @@ func _win() -> void:
 			water_refill_count = 0
 			is_measuring = true
 			is_catastrom_active = false
+			_end_mirage()
+			active_mirages.clear()
 			var viewport_size = get_viewport().get_visible_rect().size
 			virtual_mouse_pos = viewport_size * 0.5
 			if gun:
@@ -2836,6 +2870,60 @@ func freeze_sun() -> void:
 
 # ─────────────────────────────────────────────────────────────────────────────
 # ─────────────────────────────────────────────────────────────────────────────
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Heat Mirage Mechanic
+# ─────────────────────────────────────────────────────────────────────────────
+func _start_mirage() -> void:
+	if active_mirages.size() > 0: return
+	
+	mirage_cooldown = randf_range(25.0, 35.0)
+	mirage_duration = 10.0
+	
+	for i in range(2):
+		var m_sun = Node3D.new()
+		m_sun.position = sun.position
+		add_child(m_sun)
+		
+		var m_model = load("res://assets/models/sun_lowpoly.glb").instantiate()
+		m_model.scale = Vector3(0.32, 0.32, 0.32)
+		m_sun.add_child(m_model)
+		
+		var m_mesh = null
+		for child in m_model.get_children():
+			if child is MeshInstance3D:
+				m_mesh = child
+				break
+				
+		if m_mesh:
+			var m_mat = StandardMaterial3D.new()
+			m_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			m_mat.albedo_color = Color(1.0, 0.5, 0.1, 0.45) # Slightly translucent
+			m_mat.emission_enabled = true
+			m_mat.emission = Color(1.0, 0.4, 0.0)
+			m_mat.emission_energy_multiplier = 1.2
+			m_mesh.set_surface_override_material(0, m_mat)
+			
+		active_mirages.append({"node": m_sun, "offset_target": 12.0 if i == 0 else -12.0, "current_offset": 0.0})
+
+func _end_mirage() -> void:
+	for m in active_mirages:
+		var node = m["node"] as Node3D
+		if is_instance_valid(node):
+			var tw = create_tween()
+			var m_mesh = null
+			if node.get_child_count() > 0:
+				for c in node.get_child(0).get_children():
+					if c is MeshInstance3D:
+						m_mesh = c
+						break
+			if m_mesh:
+				var m_mat = m_mesh.get_surface_override_material(0)
+				if m_mat:
+					tw.tween_property(m_mat, "albedo_color:a", 0.0, 1.0)
+			tw.tween_callback(node.queue_free)
+	active_mirages.clear()
 
 func _on_game_paused() -> void:
 	timer_running = false
