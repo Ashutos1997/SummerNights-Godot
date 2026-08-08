@@ -2941,10 +2941,11 @@ func _start_mirage() -> void:
 			m_mesh.set_surface_override_material(0, m_mat)
 			
 		var m_face = Sprite3D.new()
-		m_face.texture = load("res://assets/ui/sun_angry.png")
-		m_face.pixel_size = 0.015
-		m_face.position.z = 2.1
-		m_face.position.y = 0.2
+		m_face.texture = face_textures["angry"] if face_textures.has("angry") else null
+		m_face.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		m_face.pixel_size = 0.08
+		m_face.position = Vector3(0, 0, 3.4)
+		m_face.no_depth_test = true
 		m_face.modulate = Color(1.0, 1.0, 1.0, 0.8) # Slightly faded face
 		m_sun.add_child(m_face)
 			
