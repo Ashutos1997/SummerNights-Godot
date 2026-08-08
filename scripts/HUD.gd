@@ -1534,5 +1534,3 @@ func _update_score_display(val: int) -> void:
 			
 	if score_label:
 		score_label.text = prefix + formatted
-
-
