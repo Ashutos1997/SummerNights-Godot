@@ -9,16 +9,17 @@ Godot 4로 제작된 3D 아케이드 슈터. 태양을 식히기 전에 열기�
 ## 스크린샷
 
 <p align="center">
-  <img src="screenshots/01_Title_Screen.png" width="48%">
-  <img src="screenshots/02_Core_Gameplay.png" width="48%">
-  <img src="screenshots/03_Weapon_Wheel.png" width="48%">
-  <img src="screenshots/04_Weather_Eclipse.png" width="48%">
-  <img src="screenshots/05_Weather_Solar_Wind.png" width="48%">
-  <img src="screenshots/06_Upgrades_Ice_Burst.png" width="48%">
-  <img src="screenshots/07_Settings_Menu.png" width="48%">
+  <img src="screenshots/01_Title_Screen_KR.png" width="48%">
+  <img src="screenshots/02_Core_Gameplay_KR.png" width="48%">
+  <br>
+  <img src="screenshots/03_Weapon_Wheel_KR.png" width="48%">
   <img src="screenshots/08_Catastrom.png" width="48%">
+  <br>
   <img src="screenshots/09_Mirage.png" width="48%">
   <img src="screenshots/10_Weather.png" width="48%">
+  <br>
+  <img src="screenshots/05_Weather_Solar_Wind_KR.png" width="48%">
+  <img src="screenshots/07_Localization_Korean.png" width="48%">
 </p>
 
 ---
