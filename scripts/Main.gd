@@ -2934,11 +2934,19 @@ func _start_mirage() -> void:
 		if m_mesh:
 			var m_mat = StandardMaterial3D.new()
 			m_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-			m_mat.albedo_color = Color(1.0, 0.5, 0.1, 0.45) # Slightly translucent
+			m_mat.albedo_color = Color(1.0, 0.9, 0.7, 0.85) # Much closer to the real sun, higher opacity
 			m_mat.emission_enabled = true
-			m_mat.emission = Color(1.0, 0.4, 0.0)
-			m_mat.emission_energy_multiplier = 1.2
+			m_mat.emission = Color(1.0, 0.65, 0.15)
+			m_mat.emission_energy_multiplier = 1.6
 			m_mesh.set_surface_override_material(0, m_mat)
+			
+		var m_face = Sprite3D.new()
+		m_face.texture = load("res://assets/ui/sun_angry.png")
+		m_face.pixel_size = 0.015
+		m_face.position.z = 2.1
+		m_face.position.y = 0.2
+		m_face.modulate = Color(1.0, 1.0, 1.0, 0.8) # Slightly faded face
+		m_sun.add_child(m_face)
 			
 		active_mirages.append({"node": m_sun, "offset_target": positions[i + 1], "current_offset": 0.0})
 
