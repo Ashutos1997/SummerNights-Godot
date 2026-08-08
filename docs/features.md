@@ -75,3 +75,7 @@ Weather events trigger based on a dynamic probability system tied to the current
 ---
 
 *(Note: The Shop System was temporarily removed in a previous iteration and is currently disabled.)*
+
+## Heat Mirage
+*   **The Mechanic:** On Wave 6 or later, if the Sun reaches 75% heat, it has a chance to spawn two translucent 'mirage' copies of itself.
+*   **The Threat:** The mirages orbit the real Sun and mimic its swaying. If the player shoots a mirage, it wastes water, plays a sizzle effect, and instantly breaks the combo meter, doing 0 cooling.

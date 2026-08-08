@@ -1474,7 +1474,7 @@ func _process(delta: float) -> void:
 			hud.grab_icon.visible = false
 
 	# Heat Mirage Event
-	if timer_running and GameState.current_wave >= 3 and not is_sun_frozen and not is_catastrom_active:
+	if timer_running and GameState.current_wave >= 6 and not is_sun_frozen and not is_catastrom_active:
 		if active_mirages.size() == 0:
 			mirage_cooldown -= delta
 			if temperature > 75.0 and mirage_cooldown <= 0.0 and randf() < 0.05:
