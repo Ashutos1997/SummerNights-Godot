@@ -237,7 +237,7 @@ var sun_bob_amp := 0.8
 
 # Heat Mirage
 var active_mirages: Array = []
-var mirage_cooldown: float = 20.0
+var mirage_cooldown: float = 5.0
 var mirage_duration: float = 0.0
 
 var gun_spray:   GPUParticles3D
@@ -1470,7 +1470,7 @@ func _process(delta: float) -> void:
 	if timer_running and GameState.current_wave >= 3 and not is_sun_frozen and not is_catastrom_active:
 		if active_mirages.size() == 0:
 			mirage_cooldown -= delta
-			if temperature > 75.0 and mirage_cooldown <= 0.0 and randf() < 0.02:
+			if temperature > 75.0 and mirage_cooldown <= 0.0 and randf() < 0.05:
 				_start_mirage()
 		else:
 			mirage_duration -= delta
@@ -2898,8 +2898,8 @@ func freeze_sun() -> void:
 func _start_mirage() -> void:
 	if active_mirages.size() > 0: return
 	
-	mirage_cooldown = randf_range(25.0, 35.0)
-	mirage_duration = 10.0
+	mirage_cooldown = randf_range(10.0, 15.0)
+	mirage_duration = 20.0
 	
 	for i in range(2):
 		var m_sun = Node3D.new()
