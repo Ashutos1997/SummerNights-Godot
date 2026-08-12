@@ -138,7 +138,13 @@ SummerNights-Godot/
 
 ## Credits
 
-0% GenAI. All assets are hand-crafted, CC0 open-source, or procedural GDScript.
+0% Generative AI. All assets are hand-crafted, CC0 open-source, or procedural GDScript.
+
+### Core Team
+*   **Ashutos1997** - Game Design, Programming, Audio & VFX
+*   **Ivy** - Lead UI Artist & Visual Designer
+
+### Third-Party Assets
 
 | Asset | Author | License |
 |---|---|---|
