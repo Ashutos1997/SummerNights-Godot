@@ -140,6 +140,11 @@ SummerNights-Godot/
 
 0% GenAI. All assets are hand-crafted, CC0 open-source, or procedural GDScript.
 
+### Core Team
+*   **Ashutos1997** - Game Design, Programming, Audio & VFX
+*   **Ivy** - UI & Visual Designer
+
+### Third-Party Assets
 | Asset | Author | License |
 |---|---|---|
 | 3D Sun Model - PS1 Style Low Poly Sun | albert_buscio (Sketchfab) | CC0 |
