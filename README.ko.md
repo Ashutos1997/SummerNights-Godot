@@ -144,8 +144,8 @@ SummerNights-Godot/
 0% 생성형 AI. 모든 에셋은 수작업, CC0 오픈소스, 또는 절차적 GDScript로 제작되었습니다.
 
 ### 주요 팀원 (Core Team)
-*   **Ashutos1997** - 게임 기획, 프로그래밍, 오디오 및 VFX
-*   **Ivy** - UI 및 시각 디자인
+*   **Ashutos1997** - Product Design & Direction
+*   **Ivy** - UI & Visual Designer
 
 ### 서드파티 에셋
 | 에셋 | 제작자 | 라이선스 |
