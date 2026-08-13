@@ -200,7 +200,7 @@ func _start_game(is_survival: bool, is_dev: bool = false) -> void:
 		GameState.current_wave = 11
 		
 	var tw = create_tween()
-	tw.tween_property(color_rect, "modulate:a", 0.0, 0.5)
+	tw.tween_property(self, "modulate:a", 0.0, 0.5)
 	tw.tween_callback(func(): start_game.emit(is_survival))
 
 func _on_lang_btn_pressed() -> void:
