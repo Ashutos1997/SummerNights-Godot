@@ -8,6 +8,9 @@ extends Control
 @onready var survival_btn = $ColorRect/VBoxContainer/ButtonsBox/SurvivalBtn
 @onready var dev_btn = $ColorRect/VBoxContainer/ButtonsBox/DevBtn
 @onready var lang_btn = $LangBtn
+@onready var lang_highlight = $LangBtn/ToggleHighlight
+@onready var en_label = $LangBtn/Labels/ENLabel
+@onready var kr_label = $LangBtn/Labels/KRLabel
 @onready var high_score_lbl = $ColorRect/VBoxContainer/HighScoreLabel
 @onready var credit_lbl = $CreditLine
 
@@ -35,7 +38,6 @@ func _update_language() -> void:
 	if normal_btn: normal_btn.text = "일반 모드" if is_kr else "NORMAL MODE"
 	if survival_btn: survival_btn.text = "무한 모드" if is_kr else "ENDLESS MODE"
 	if dev_btn: dev_btn.text = "DEV"
-	if lang_btn: lang_btn.text = "EN / KR"
 	
 	if font:
 		var title_color = Color(1.0, 0.75, 0.15, 1.0)
@@ -58,6 +60,33 @@ func _update_language() -> void:
 			subtitle_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
 			subtitle_lbl.add_theme_constant_override("outline_size", 4)
 		_style_label(credit_lbl, 14 if is_kr else 12, Color(1.0, 1.0, 1.0, 0.7), font)
+		
+		# Best Time Display
+		if GameState.best_survival_time > 0.0:
+		
+		var en_font = load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+		if en_label:
+			en_label.add_theme_font_override("font", en_font)
+			en_label.add_theme_font_size_override("font_size", 18)
+		if kr_label:
+			kr_label.add_theme_font_override("font", en_font)
+			kr_label.add_theme_font_size_override("font_size", 18)
+		
+		# Animate the language toggle
+		if lang_highlight and en_label and kr_label:
+			var tw = create_tween()
+			tw.set_ease(Tween.EASE_OUT)
+			tw.set_trans(Tween.TRANS_SINE)
+			tw.set_parallel(true)
+			
+			if is_kr:
+				tw.tween_property(lang_highlight, "position:x", 48.0, 0.25)
+				tw.tween_property(en_label, "theme_override_colors/font_color", Color(1.0, 0.85, 0.2, 1.0), 0.25)
+				tw.tween_property(kr_label, "theme_override_colors/font_color", Color(0.0, 0.0, 0.0, 1.0), 0.25)
+			else:
+				tw.tween_property(lang_highlight, "position:x", 0.0, 0.25)
+				tw.tween_property(en_label, "theme_override_colors/font_color", Color(0.0, 0.0, 0.0, 1.0), 0.25)
+				tw.tween_property(kr_label, "theme_override_colors/font_color", Color(1.0, 0.85, 0.2, 1.0), 0.25)
 		
 		# Best Time Display
 		if GameState.best_survival_time > 0.0:
