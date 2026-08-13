@@ -2,6 +2,22 @@
 
 All notable changes to the Summer Nights project will be documented in this file.
 
+## [v1.2.0] - WIP
+
+### Added
+- **Level 6 (Normal Mode):** Added a grueling final level to Normal Mode featuring constant Eclipse weather and the Heat Mirage hazard.
+- **Critical Heat Warning:** The UI heat bar now aggressively flashes red when the sun exceeds 90 percent temperature.
+- **Catastrom Notification:** Added a distinct purple Toast popup when the Catastrom ultimate is fully charged.
+
+### Improved
+- **Catastrom Weather Clear:** Firing the Catastrom in Endless Mode now forcefully clears active Rain or Eclipse events.
+- **Boss Scaling:** Boss health now dynamically scales higher with each encounter in Endless Mode.
+- **Combo Reward:** Maintaining a combo multiplier above 2.0x now actively regenerates water faster.
+- **Level Transitions:** Added a cinematic 2.5 second breather delay between level completions.
+- **Ice Burst Cap:** Capped maximum held Ice Burst charges at 10 to prevent endless hoarding.
+
+---
+
 ## [v1.1.0] - 2026-08-08
 
 ### Added
@@ -47,6 +63,22 @@ All notable changes to the Summer Nights project will be documented in this file
 - **Audio:** 
   - Procedural UI synthesizer for sci-fi interface ticks and whooshes.
   - Immersive sound effects for water spraying, sizzling, bird calls, and wind.
+
+---
+
+## [v1.2.0] - WIP
+
+### 추가됨 (Added)
+- **레벨 6 (일반 모드):** 지속적인 일식 날씨와 열기 신기루 기믹이 등장하는 극한의 최종 레벨을 일반 모드에 추가했습니다.
+- **위험 열기 경고:** 태양 온도가 90퍼센트를 초과하면 UI 열기 게이지가 붉은색으로 강하게 깜빡입니다.
+- **카타스트롬 준비 알림:** 카타스트롬 궁극기가 완전히 충전되면 눈에 띄는 보라색 팝업 알림이 표시됩니다.
+
+### 개선됨 (Improved)
+- **카타스트롬 날씨 정화:** 생존 모드에서 카타스트롬을 발사하면 활성화된 폭우나 일식 이벤트가 즉시 정화됩니다.
+- **보스 체력 스케일링:** 생존 모드에서 보스와 조우할 때마다 보스의 체력이 동적으로 더 높게 조정됩니다.
+- **콤보 보상:** 2.0배 이상의 콤보 배율을 유지하면 물이 더 빠르게 회복됩니다.
+- **레벨 전환:** 레벨 클리어 시 2.5초간의 시네마틱 휴식 대기 시간을 추가했습니다.
+- **얼음 폭발 제한:** 무한정 모이는 것을 방지하기 위해 최대 소지 가능한 얼음 폭발 횟수를 10회로 제한했습니다.
 
 ---
 
