@@ -61,9 +61,7 @@ func _update_language() -> void:
 			subtitle_lbl.add_theme_constant_override("outline_size", 4)
 		_style_label(credit_lbl, 14 if is_kr else 12, Color(1.0, 1.0, 1.0, 0.7), font)
 		
-		# Best Time Display
-		if GameState.best_survival_time > 0.0:
-		
+
 		var en_font = load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
 		if en_label:
 			en_label.add_theme_font_override("font", en_font)
