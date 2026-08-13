@@ -60,6 +60,7 @@ Weather events trigger based on a dynamic probability system tied to the current
     *   Ice Charge indicators.
     *   Catastrom Ultimate notification toasts.
     *   Wave Timer and live Score counter (which formats and scales dynamically for juice).
+*   **Global Overlays:** Full-screen menus (Title, Pause, Settings, Credits) are unified by a sleek golden border and an ultra-dark background dimming effect to eliminate visual clutter.
 *   **Accessibility & Settings:**
     *   Reduce Motion toggle (disables screen shake and intensive UI flashing).
     *   Mouse Sensitivity slider.
