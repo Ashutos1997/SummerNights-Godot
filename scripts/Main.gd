@@ -320,6 +320,9 @@ func _ready() -> void:
 	is_two_phase = cfg.two_phase
 	phase2_heat = cfg.phase2_heat
 	phase2_triggered = false
+	if GameState.is_survival_mode and GameState.current_wave % 5 == 0:
+		is_two_phase = true
+		phase2_heat = min(150.0, 80.0 + (GameState.current_wave * 5.0))
 	
 	solar_wind_enabled = cfg.get("solar_wind", false)
 	wind_state = 0
@@ -1734,13 +1737,37 @@ func _process(delta: float) -> void:
 		# Check real sun hit
 		var aim_dist = target_pos.distance_to(sun.position)
 		if hit_mirage and closest_mirage_dist < aim_dist:
-			# Hit a mirage instead of the real sun!
+			# Hit a mirage! Deal damage to the mirage shield
 			if steam_particles and randf() < 0.2:
 				steam_particles.global_position = target_pos
 				steam_particles.restart()
 			if sizzle_sfx and not sizzle_sfx.playing and randf() < 0.3:
 				sizzle_sfx.play()
-			combo_timer = 0.0 # Breaks combo
+				
+			var damage_mult: float = 1.0
+			if GameState.is_survival_mode and GameState.current_wave >= 5:
+				damage_mult = 1.0 + (GameState.current_wave - 4) * 0.15
+				
+			var dmg = current_weapon_power * current_weapon_crit * damage_mult * delta
+			if mirage_hp > 0.0:
+				mirage_hp -= dmg
+				if hud and hud.has_method("update_mirage_hp"):
+					hud.update_mirage_hp(mirage_hp, max_mirage_hp)
+				if mirage_hp <= 0.0:
+					_end_mirage()
+					active_mirages.clear()
+					if hud and hud.has_method("update_mirage_hp"):
+						hud.update_mirage_hp(0, 100)
+						
+			combo_timer += delta
+			if combo_timer >= 1.5:
+				if not combo_active:
+					combo_active = true
+					if hud and hud.has_method("show_combo"): hud.show_combo(true)
+				var current_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
+				if hud and hud.has_method("update_combo_text"):
+					hud.update_combo_text(current_mult)
+					
 		elif aim_dist < 5.0: # Close enough to hit the larger sun
 			_on_hit(delta, target_pos)
 			combo_timer += delta
@@ -2198,7 +2225,8 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			_trigger_phase2()
 		elif GameState.is_survival_mode:
 			if sun_defeated_sfx: sun_defeated_sfx.play()
-			GameState.current_wave += 1
+			if not GameState.is_dev_mode:
+				GameState.current_wave += 1
 			GameState.ice_charges_remaining = min(10, GameState.ice_charges_remaining + 1)
 			
 			# Boss wave reward
