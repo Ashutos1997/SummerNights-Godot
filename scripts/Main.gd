@@ -1505,10 +1505,10 @@ func _process(delta: float) -> void:
 						
 						# Dynamically shrink based on HP ratio
 						var hp_ratio = max(0.0, mirage_hp / max_mirage_hp) if max_mirage_hp > 0.0 else 0.0
-						var target_scale = lerp(0.15, 0.32, hp_ratio)
+						var m_target_scale = lerp(0.15, 0.32, hp_ratio)
 						if node.get_child_count() > 0:
 							var m_model = node.get_child(0)
-							m_model.scale = m_model.scale.lerp(Vector3(target_scale, target_scale, target_scale), 12.0 * delta)
+							m_model.scale = m_model.scale.lerp(Vector3(m_target_scale, m_target_scale, m_target_scale), 12.0 * delta)
 
 	# Solar Wind hazard
 	if solar_wind_enabled and not is_title_screen:
