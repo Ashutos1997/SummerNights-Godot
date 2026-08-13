@@ -80,18 +80,19 @@ layout_mode = 2
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 
-[node name="ButtonsBox" type="HBoxContainer" parent="ColorRect/VBoxContainer"]
+[node name="ButtonsBox" type="VBoxContainer" parent="ColorRect/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 24
+size_flags_horizontal = 4
+theme_override_constants/separation = 16
 alignment = 1
 
 [node name="NormalBtn" type="Button" parent="ColorRect/VBoxContainer/ButtonsBox"]
-custom_minimum_size = Vector2(180, 48)
+custom_minimum_size = Vector2(220, 48)
 layout_mode = 2
 text = "NORMAL MODE"
 
 [node name="SurvivalBtn" type="Button" parent="ColorRect/VBoxContainer/ButtonsBox"]
-custom_minimum_size = Vector2(180, 48)
+custom_minimum_size = Vector2(220, 48)
 layout_mode = 2
 text = "ENDLESS MODE"
 
