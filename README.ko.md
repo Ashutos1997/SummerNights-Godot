@@ -8,7 +8,7 @@ Godot 4로 제작된 3D 아케이드 슈터. 태양을 식히기 전에 열기�
 
 ## 게임플레이 영상
 
-[![썸머 나이츠 v1.1.0 게임플레이](https://img.youtube.com/vi/4C11YScAKKY/maxresdefault.jpg)](https://www.youtube.com/watch?v=4C11YScAKKY)
+[![썸머 나이츠 v1.2.0 게임플레이](https://img.youtube.com/vi/6cGw4Eap5QM/maxresdefault.jpg)](https://www.youtube.com/watch?v=6cGw4Eap5QM)
 
 ---
 
