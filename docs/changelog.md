@@ -2,7 +2,7 @@
 
 All notable changes to the Summer Nights project will be documented in this file.
 
-## [v1.2.0] - WIP
+## [v1.2.0] - 2026-08-14
 
 ### Added
 - **Sliding Language Toggle:** Upgraded the Title Screen language button to a sleek, animated sliding toggle.
@@ -27,6 +27,8 @@ All notable changes to the Summer Nights project will be documented in this file
 - Fixed an issue where the ambient ocean audio would fail to loop and stop playing on the title screen.
 - Fixed a bug where the level timer would silently tick down and trigger a Game Over during the cinematic win transition.
 - Fixed an issue where the End Screen incorrectly stated "1 LEVELS COMPLETED" instead of the actual number of completed levels.
+- Fixed an issue where the Mirage Overshield HP bar would instantly pop in at full health when respawning instead of playing its visual charge-up animation.
+- Fixed missing Korean localization for the Scatter Nozzle weapon in the Weapon Wheel.
 
 ---
 
@@ -78,7 +80,7 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ---
 
-## [v1.2.0] - WIP
+## [v1.2.0] - 2026-08-14
 
 ### 추가됨 (Added)
 - **슬라이딩 언어 토글:** 타이틀 화면의 언어 버튼을 매끄러운 애니메이션이 적용된 슬라이딩 토글 방식으로 업그레이드했습니다.
@@ -103,6 +105,8 @@ All notable changes to the Summer Nights project will be documented in this file
 - 타이틀 화면에서 재생되는 배경 파도 소리가 한 번 재생된 후 반복되지 않고 끊기는 현상을 수정했습니다.
 - 시네마틱 레벨 클리어 전환 중에 레벨 타이머가 뒤에서 조용히 감소하여 게임 오버를 유발하던 버그를 수정했습니다.
 - 엔딩 화면에서 완료한 레벨 수가 실제 개수 대신 항상 "1 레벨 완료"로 잘못 표시되던 문제를 수정했습니다.
+- 열기 신기루의 오버실드 HP 바가 생성될 때 시각적으로 충전되는 애니메이션이 재생되지 않고 즉시 가득 찬 상태로 나타나던 문제를 수정했습니다.
+- 무기 휠에서 스캐터 노즐 무기의 한국어 번역이 누락되어 있던 문제를 수정했습니다.
 
 ---
 
