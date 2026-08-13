@@ -2253,6 +2253,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				tw.tween_callback(flash.queue_free)
 				
 			sun_figure8 = GameState.current_wave >= 3
+			var prev_solar_wind = solar_wind_enabled
 			solar_wind_enabled = GameState.current_wave >= 4
 			flare_spawn_timer = min(flare_spawn_timer, max(2.5, 8.0 - (GameState.current_wave * 0.5)))
 			
@@ -2268,10 +2269,10 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				is_two_phase = false
 				phase2_triggered = false
 			
-			if solar_wind_enabled:
+			wind_level_mult = min(2.5, 1.0 + (GameState.current_wave - 4) * 0.15)
+			if solar_wind_enabled and not prev_solar_wind:
 				wind_state = 0
 				wind_timer = randf_range(4.0, 7.0)
-				wind_level_mult = min(2.5, 1.0 + (GameState.current_wave - 4) * 0.15)
 				wind_strength = 0.0
 				if wind_warn_label:
 					wind_warn_label.visible = false
@@ -2468,22 +2469,24 @@ func _win() -> void:
 			phase2_heat = cfg.phase2_heat
 			phase2_triggered = false
 			
+			var prev_solar_wind = solar_wind_enabled
 			solar_wind_enabled = cfg.get("solar_wind", false)
-			wind_state = 0
-			wind_timer = randf_range(WIND_IDLE_MIN, WIND_IDLE_MAX)
-			wind_strength = 0.0
-			wind_elapsed = 0.0
 			wind_level_mult = 1.3 if GameState.level >= 5 else 1.0
-			if wind_warn_label:
-				wind_warn_label.visible = false
-				wind_warn_label.modulate.a = 0.0
-			if wind_particles: wind_particles.emitting = false
-			if wind_sfx: wind_sfx.stop()
+			
+			if solar_wind_enabled and not prev_solar_wind:
+				wind_state = 0
+				wind_timer = randf_range(WIND_IDLE_MIN, WIND_IDLE_MAX)
+				wind_strength = 0.0
+				wind_elapsed = 0.0
+				if wind_warn_label:
+					wind_warn_label.visible = false
+					wind_warn_label.modulate.a = 0.0
+				if wind_particles: wind_particles.emitting = false
+				if wind_sfx: wind_sfx.stop()
 			
 			level_timer = cfg.timer
 			timer_running = true
 			emit_signal("level_config_loaded", cfg.timer)
-			_reset_weather()
 			
 			GameState.ice_charges_remaining = cfg.ice_charges
 			if hud:
