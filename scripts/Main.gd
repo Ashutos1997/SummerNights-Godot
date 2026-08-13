@@ -1356,7 +1356,7 @@ func _process(delta: float) -> void:
 			if wave_timer < 10.0:
 				heat_regen_base = 2.0 # The Release
 			else:
-				heat_regen_base = 2.5 + (GameState.current_wave * 1.5) # The Tension
+				heat_regen_base = min(25.0, 2.5 + (GameState.current_wave * 1.5)) # The Tension (Capped at Wave 15 max)
 			
 			if is_two_phase and phase2_triggered:
 				heat_regen_base *= 1.2 # The Boss Phase is aggressive but beatable with base gun
