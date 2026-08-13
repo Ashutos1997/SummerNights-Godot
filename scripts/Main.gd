@@ -2140,7 +2140,18 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			critical_hit.emit()
 		else:
 			var dmg = current_weapon_power * damage_mult * delta
-			temperature = max(0.0, temperature - dmg)
+			if active_mirages.size() > 0 and mirage_hp > 0.0:
+				mirage_hp -= dmg
+				if hud and hud.has_method("update_mirage_hp"):
+					hud.update_mirage_hp(mirage_hp, max_mirage_hp)
+				if mirage_hp <= 0.0:
+					_end_mirage()
+					active_mirages.clear()
+					if hud and hud.has_method("update_mirage_hp"):
+						hud.update_mirage_hp(0, 100)
+			else:
+				temperature = max(0.0, temperature - dmg)
+				
 			var c_mult = 1.0
 			if combo_active:
 				c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
@@ -2940,7 +2951,7 @@ func _start_mirage() -> void:
 	mirage_cooldown = randf_range(10.0, 15.0)
 	mirage_duration = 20.0
 	
-	max_mirage_hp = 300.0 if not GameState.is_survival_mode else 200.0 + (GameState.current_wave * 20.0)
+	max_mirage_hp = 50.0 if not GameState.is_survival_mode else 30.0 + (GameState.current_wave * 5.0)
 	mirage_hp = max_mirage_hp
 	if hud and hud.has_method("update_mirage_hp"):
 		hud.update_mirage_hp(mirage_hp, max_mirage_hp)
