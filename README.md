@@ -25,7 +25,7 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
   <img src="screenshots/10_Weather.png" width="48%">
   <br>
   <img src="screenshots/05_Weather_Solar_Wind.png" width="48%">
-  <img src="screenshots/07_Settings_Menu.png" width="48%">
+  <img src="screenshots/06_Pause_Screen_EN.png" width="48%">
 </p>
 
 ---

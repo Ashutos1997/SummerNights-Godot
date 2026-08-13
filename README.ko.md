@@ -25,7 +25,7 @@ Godot 4로 제작된 3D 아케이드 슈터. 태양을 식히기 전에 열기�
   <img src="screenshots/10_Weather.png" width="48%">
   <br>
   <img src="screenshots/05_Weather_Solar_Wind.png" width="48%">
-  <img src="screenshots/07_Settings_Menu.png" width="48%">
+  <img src="screenshots/06_Pause_Screen_KR.png" width="48%">
 </p>
 
 ---
