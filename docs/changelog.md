@@ -18,9 +18,11 @@ All notable changes to the Summer Nights project will be documented in this file
 - **Combo Reward:** Maintaining a combo multiplier above 2.0x now actively regenerates water faster.
 - **Level Transitions:** Added a cinematic 2.5 second breather delay between level completions.
 - **Weather Persistence:** Weather events (Rain, Eclipse) and Solar Wind gusts now seamlessly persist across wave/level transitions instead of abruptly resetting.
+- **Title Screen Layout:** Restructured the main menu buttons from a horizontal row into a clean vertical stack to unify with the game-wide UI design language.
 - **Ice Burst Cap:** Capped maximum held Ice Burst charges at 10 to prevent endless hoarding.
 
 ### Fixed
+- Fixed an issue where the ambient ocean audio would fail to loop and stop playing on the title screen.
 - Fixed a bug where the level timer would silently tick down and trigger a Game Over during the cinematic win transition.
 - Fixed an issue where the End Screen incorrectly stated "1 LEVELS COMPLETED" instead of the actual number of completed levels.
 
@@ -90,9 +92,11 @@ All notable changes to the Summer Nights project will be documented in this file
 - **콤보 보상:** 2.0배 이상의 콤보 배율을 유지하면 물이 더 빠르게 회복됩니다.
 - **레벨 전환:** 레벨 클리어 시 2.5초간의 시네마틱 휴식 대기 시간을 추가했습니다.
 - **날씨 유지:** 날씨 이벤트(폭우, 일식)와 태양풍이 웨이브나 레벨 전환 시 갑자기 초기화되지 않고 매끄럽게 유지되도록 개선했습니다.
+- **타이틀 화면 레이아웃:** 메인 메뉴 버튼들을 가로 배열에서 세로 배열로 재구성하여 게임 전체의 UI 디자인 언어와 통일했습니다.
 - **얼음 폭발 제한:** 무한정 모이는 것을 방지하기 위해 최대 소지 가능한 얼음 폭발 횟수를 10회로 제한했습니다.
 
 ### 수정됨 (Fixed)
+- 타이틀 화면에서 재생되는 배경 파도 소리가 한 번 재생된 후 반복되지 않고 끊기는 현상을 수정했습니다.
 - 시네마틱 레벨 클리어 전환 중에 레벨 타이머가 뒤에서 조용히 감소하여 게임 오버를 유발하던 버그를 수정했습니다.
 - 엔딩 화면에서 완료한 레벨 수가 실제 개수 대신 항상 "1 레벨 완료"로 잘못 표시되던 문제를 수정했습니다.
 
