@@ -1474,7 +1474,8 @@ func _process(delta: float) -> void:
 			hud.grab_icon.visible = false
 
 	# Heat Mirage Event
-	if timer_running and GameState.current_wave >= 6 and not is_sun_frozen and not is_catastrom_active:
+	var can_mirage = current_config.get("has_mirage", false) or (GameState.is_survival_mode and GameState.current_wave >= 6)
+	if timer_running and can_mirage and not is_sun_frozen and not is_catastrom_active:
 		if active_mirages.size() == 0:
 			mirage_cooldown -= delta
 			if temperature > 75.0 and mirage_cooldown <= 0.0 and randf() < 0.05:
@@ -2379,7 +2380,7 @@ func _win() -> void:
 	tween.tween_property(sun_mat, "albedo_color", Color(0.1, 0.5, 1.0), 1.0)
 	tween.parallel().tween_property(sun_mat, "emission", Color(0.0, 0.2, 1.0), 1.0)
 	
-	if GameState.level >= 5:
+	if GameState.level >= 6:
 		game_complete.emit()
 	else:
 		GameState.level += 1
