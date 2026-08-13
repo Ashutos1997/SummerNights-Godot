@@ -2146,7 +2146,8 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				
 		if is_critical:
 			var dmg = current_weapon_power * current_weapon_crit * damage_mult * delta
-			temperature = max(0.0, temperature - dmg)
+			if active_mirages.size() == 0:
+				temperature = max(0.0, temperature - dmg)
 				
 			var c_mult = 1.0
 			if combo_active:
@@ -2161,7 +2162,8 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			critical_hit.emit()
 		else:
 			var dmg = current_weapon_power * damage_mult * delta
-			temperature = max(0.0, temperature - dmg)
+			if active_mirages.size() == 0:
+				temperature = max(0.0, temperature - dmg)
 				
 			var c_mult = 1.0
 			if combo_active:
