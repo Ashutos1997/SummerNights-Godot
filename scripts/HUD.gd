@@ -152,7 +152,7 @@ func _process(delta: float) -> void:
 		if reduce_motion:
 			mirage_bar.value = target_mirage_hp
 		else:
-			mirage_bar.value = lerp(mirage_bar.value, target_mirage_hp, 12.0 * delta)
+			mirage_bar.value = lerp(mirage_bar.value, target_mirage_hp, 4.0 * delta)
 			
 	if water_bar:
 		if reduce_motion:
@@ -970,6 +970,8 @@ func update_mirage_hp(current: float, max_val: float) -> void:
 		if current <= 0.0 or max_val <= 0.0:
 			mirage_bar.visible = false
 		else:
+			if not mirage_bar.visible:
+				mirage_bar.value = 0.0 # Force visual fill-up over time
 			mirage_bar.visible = true
 			mirage_bar.max_value = max_val
 			target_mirage_hp = current

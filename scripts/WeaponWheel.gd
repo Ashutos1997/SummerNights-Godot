@@ -287,6 +287,7 @@ func _process(delta: float) -> void:
 				"standard": w_name = "표준 블래스터"
 				"heavy": w_name = "헤비 캐논"
 				"precision": w_name = "정밀 스트림"
+				"scatter": w_name = "스캐터 노즐"
 		name_label.text = w_name
 		
 		if is_locked:
