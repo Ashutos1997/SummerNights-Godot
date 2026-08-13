@@ -936,11 +936,14 @@ func _on_heat_changed(value: float, max_value: float) -> void:
 	var ratio = value / max_value
 	if ratio > 0.90:
 		heat_bar.tint_progress = Color(1.0, 0.0, 0.0) # critical red
-		if not is_instance_valid(heat_tween) or not heat_tween.is_running():
-			heat_tween = create_tween()
-			heat_tween.set_loops()
-			heat_tween.tween_property(heat_bar, "modulate:a", 0.4, 0.2)
-			heat_tween.tween_property(heat_bar, "modulate:a", 1.0, 0.2)
+		if reduce_motion:
+			heat_bar.modulate.a = 1.0
+		else:
+			if not is_instance_valid(heat_tween) or not heat_tween.is_running():
+				heat_tween = create_tween()
+				heat_tween.set_loops()
+				heat_tween.tween_property(heat_bar, "modulate:a", 0.7, 0.8)
+				heat_tween.tween_property(heat_bar, "modulate:a", 1.0, 0.8)
 	else:
 		if is_instance_valid(heat_tween):
 			heat_tween.kill()
