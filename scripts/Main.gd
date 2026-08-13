@@ -1762,7 +1762,12 @@ func _process(delta: float) -> void:
 			if hud and hud.has_method("show_combo"): hud.show_combo(false)
 			
 		gun_spray.emitting = false
-		water_tank = min(MAX_WATER, water_tank + current_weapon_recharge * delta)
+		var combo_regen_bonus = 0.0
+		if combo_active:
+			var c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
+			if c_mult >= 2.0:
+				combo_regen_bonus = 6.0
+		water_tank = min(MAX_WATER, water_tank + (current_weapon_recharge + combo_regen_bonus) * delta)
 			
 	# Audio loop timer — stop loop layer after 0.12s of no firing
 	if is_firing:
@@ -2169,7 +2174,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 		elif GameState.is_survival_mode:
 			if sun_defeated_sfx: sun_defeated_sfx.play()
 			GameState.current_wave += 1
-			GameState.ice_charges_remaining += 1
+			GameState.ice_charges_remaining = min(10, GameState.ice_charges_remaining + 1)
 			
 			# Boss wave reward
 			if (GameState.current_wave - 1) % 5 == 0:
@@ -2219,7 +2224,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			if GameState.current_wave % 5 == 0:
 				is_two_phase = true
 				phase2_triggered = false
-				phase2_heat = 100.0 # Boss always starts Phase 2 at full heat (MAX_TEMP)
+				phase2_heat = min(150.0, 80.0 + (GameState.current_wave * 5.0))
 			else:
 				is_two_phase = false
 				phase2_triggered = false
@@ -2354,6 +2359,10 @@ func _trigger_catastrom_dunk() -> void:
 	GameState.catastrom_charge = 0.0
 	is_dragging_sun = false
 	is_catastrom_active = false
+	if GameState.is_survival_mode and active_weather != "none":
+		_reset_weather()
+		if hud:
+			hud.show_toast("Weather Cleared" if GameState.language != "KR" else "날씨 정화됨", "Catastrom dispelled the anomaly!" if GameState.language != "KR" else "카타스트롬이 이상 기후를 소멸시켰습니다!", "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_jewel.png", Color(0.8, 0.4, 1.0))
 	_end_mirage()
 	active_mirages.clear()
 	if hud and hud.grab_icon:
@@ -2457,7 +2466,7 @@ func _win() -> void:
 			if hud and hud.has_method("hide_win_screen"):
 				hud.hide_win_screen()
 			
-		await get_tree().create_timer(1.8).timeout
+		await get_tree().create_timer(2.5).timeout
 		reload.call()
 
 

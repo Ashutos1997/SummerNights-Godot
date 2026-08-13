@@ -934,12 +934,23 @@ func _on_heat_changed(value: float, max_value: float) -> void:
 	target_heat = value
 	
 	var ratio = value / max_value
-	if ratio > 0.66:
-		heat_bar.tint_progress = Color(1.0, 0.3, 0.1) # hot red-orange
-	elif ratio > 0.33:
-		heat_bar.tint_progress = Color(1.0, 0.65, 0.1) # amber
+	if ratio > 0.90:
+		heat_bar.tint_progress = Color(1.0, 0.0, 0.0) # critical red
+		if not is_instance_valid(heat_tween) or not heat_tween.is_running():
+			heat_tween = create_tween()
+			heat_tween.set_loops()
+			heat_tween.tween_property(heat_bar, "modulate:a", 0.4, 0.2)
+			heat_tween.tween_property(heat_bar, "modulate:a", 1.0, 0.2)
 	else:
-		heat_bar.tint_progress = Color(0.4, 0.9, 0.4) # cool green
+		if is_instance_valid(heat_tween):
+			heat_tween.kill()
+		heat_bar.modulate.a = 1.0
+		if ratio > 0.66:
+			heat_bar.tint_progress = Color(1.0, 0.3, 0.1) # hot red-orange
+		elif ratio > 0.33:
+			heat_bar.tint_progress = Color(1.0, 0.65, 0.1) # amber
+		else:
+			heat_bar.tint_progress = Color(0.4, 0.9, 0.4) # cool green
 
 func _on_water_changed(current: float, max_val: float) -> void:
 	if water_bar:
