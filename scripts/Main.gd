@@ -239,6 +239,8 @@ var sun_bob_amp := 0.8
 var active_mirages: Array = []
 var mirage_cooldown: float = 5.0
 var mirage_duration: float = 0.0
+var max_mirage_hp: float = 0.0
+var mirage_hp: float = 0.0
 var sun_mirage_offset: float = 0.0
 var sun_mirage_target: float = 0.0
 
@@ -1474,7 +1476,7 @@ func _process(delta: float) -> void:
 			hud.grab_icon.visible = false
 
 	# Heat Mirage Event
-	var can_mirage = current_config.get("has_mirage", false) or (GameState.is_survival_mode and GameState.current_wave >= 6)
+	var can_mirage = current_config.get("has_mirage", false) or (GameState.is_survival_mode and GameState.current_wave % 5 == 0)
 	if timer_running and can_mirage and not is_sun_frozen and not is_catastrom_active:
 		if active_mirages.size() == 0:
 			mirage_cooldown -= delta
@@ -2112,7 +2114,19 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				
 		if is_critical:
 			var dmg = current_weapon_power * current_weapon_crit * damage_mult * delta
-			temperature = max(0.0, temperature - dmg)
+			
+			if active_mirages.size() > 0 and mirage_hp > 0.0:
+				mirage_hp -= dmg
+				if hud and hud.has_method("update_mirage_hp"):
+					hud.update_mirage_hp(mirage_hp, max_mirage_hp)
+				if mirage_hp <= 0.0:
+					_end_mirage()
+					active_mirages.clear()
+					if hud and hud.has_method("update_mirage_hp"):
+						hud.update_mirage_hp(0, 100)
+			else:
+				temperature = max(0.0, temperature - dmg)
+				
 			var c_mult = 1.0
 			if combo_active:
 				c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
@@ -2926,6 +2940,11 @@ func _start_mirage() -> void:
 	mirage_cooldown = randf_range(10.0, 15.0)
 	mirage_duration = 20.0
 	
+	max_mirage_hp = 300.0 if not GameState.is_survival_mode else 200.0 + (GameState.current_wave * 20.0)
+	mirage_hp = max_mirage_hp
+	if hud and hud.has_method("update_mirage_hp"):
+		hud.update_mirage_hp(mirage_hp, max_mirage_hp)
+	
 	var positions = [-22.0, 0.0, 22.0]
 	positions.shuffle()
 	sun_mirage_target = positions[0]
@@ -2966,6 +2985,8 @@ func _start_mirage() -> void:
 		active_mirages.append({"node": m_sun, "offset_target": positions[i + 1], "current_offset": 0.0})
 
 func _end_mirage() -> void:
+	if hud and hud.has_method("update_mirage_hp"):
+		hud.update_mirage_hp(0, 100)
 	for m in active_mirages:
 		var node = m["node"] as Node3D
 		if is_instance_valid(node):

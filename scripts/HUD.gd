@@ -7,6 +7,7 @@ signal weapon_changed(weapon_id: String)
 
 @onready var weapon_wheel = $HUD/WeaponWheel
 @onready var heat_bar = $HUD/SunHeatBar/HeatBar
+@onready var mirage_bar = $HUD/SunHeatBar/MirageBar
 @onready var heat_label = $HUD/SunHeatBar/Label
 @onready var water_bar_container = $HUD/resource_container/water_row
 @onready var water_bar = $HUD/resource_container/water_row/WaterBar
@@ -98,6 +99,7 @@ var hud_weapon_container: TextureRect
 var reduce_motion: bool = false
 var cursor_screen_pos: Vector2 = Vector2.ZERO  # Tracks virtual mouse for captured mode
 var target_heat: float = 100.0
+var target_mirage_hp: float = 100.0
 var target_water: float = 100.0
 
 var ui_tick_player: AudioStreamPlayer = null
@@ -145,6 +147,12 @@ func _process(delta: float) -> void:
 			heat_bar.value = target_heat
 		else:
 			heat_bar.value = lerp(heat_bar.value, target_heat, 12.0 * delta)
+			
+	if mirage_bar and mirage_bar.visible:
+		if reduce_motion:
+			mirage_bar.value = target_mirage_hp
+		else:
+			mirage_bar.value = lerp(mirage_bar.value, target_mirage_hp, 12.0 * delta)
 			
 	if water_bar:
 		if reduce_motion:
@@ -231,6 +239,8 @@ func _ready() -> void:
 	settings_screen.visible = false
 	credits_screen.visible = false
 	end_screen.visible = false
+	if mirage_bar:
+		mirage_bar.visible = false
 	
 
 		
@@ -954,6 +964,15 @@ func _on_heat_changed(value: float, max_value: float) -> void:
 			heat_bar.tint_progress = Color(1.0, 0.65, 0.1) # amber
 		else:
 			heat_bar.tint_progress = Color(0.4, 0.9, 0.4) # cool green
+
+func update_mirage_hp(current: float, max_val: float) -> void:
+	if mirage_bar:
+		if current <= 0.0 or max_val <= 0.0:
+			mirage_bar.visible = false
+		else:
+			mirage_bar.visible = true
+			mirage_bar.max_value = max_val
+			target_mirage_hp = current
 
 func _on_water_changed(current: float, max_val: float) -> void:
 	if water_bar:
