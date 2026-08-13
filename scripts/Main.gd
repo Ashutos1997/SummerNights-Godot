@@ -2418,6 +2418,7 @@ func _win() -> void:
 	active_mirages.clear()
 	game_over = true
 	is_shooting = false # Reset shooting state to prevent auto-firing on next level
+	timer_running = false # Stop the timer so we don't accidentally lose during the win transition
 	gun_spray.emitting = false # Fix water getting stuck on when winning
 
 	if is_measuring:

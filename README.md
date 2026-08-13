@@ -45,6 +45,7 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
   - **Heavy Cannon (Lvl 3):** Extreme raw cooling power, but drains your water tank incredibly fast.
   - **Scatter Nozzle (Lvl 4):** Wide spread, excellent for intercepting multiple solar flares at once, but lacks pinpoint cooling.
 - **Solar Wind (Level 4+):** Periodic gusts of solar wind push your aim sideways for 3 seconds, forcing you to fight the drift. A warning flashes before each gust — brace yourself! Particle streaks and a rising hum signal the incoming blast.
+- **Heat Mirage Overshield (Endless Mode):** Every 5th wave in Endless mode, the sun spawns two decoy mirages that scramble positions. The mirages project a collective golden Overshield protecting the main sun from all damage. You must shoot down the mirages to shatter the shield before you can resume cooling the main sun!
 ---
 
 ## Controls
