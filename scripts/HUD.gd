@@ -1066,6 +1066,10 @@ func show_end_screen() -> void:
 	if credits_screen: credits_screen.visible = false
 	if settings_screen: settings_screen.visible = false
 	if lose_screen: lose_screen.visible = false
+	
+	if end_level_lbl:
+		end_level_lbl.text = "%d 레벨 완료" % GameState.level if GameState.language == "KR" else "%d LEVELS COMPLETED" % GameState.level
+		
 	end_screen.visible = true
 	end_screen.modulate.a = 0.0
 	var tw = create_tween()
