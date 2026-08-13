@@ -96,6 +96,15 @@ Transient popups that slide in from the top of the screen to notify the player o
 *   **Text & Accent:** Uses the Bright Accent `Color(1.0, 0.85, 0.2, 1.0)`.
 *   **Animation:** Uses a Sine ease-out tween to slide the `position.y` onto the screen and hold for 3 seconds before sliding back up.
 
+### Sliding Toggle Pill
+
+A sleek, modern binary toggle used for premium settings like the Language switch (EN/KR).
+
+*   **Container:** Uses a flat `ColorRect` background `Color(0, 0, 0, 0.4)` and a `ReferenceRect` golden border `Color(1.0, 0.85, 0.2, 0.6)` with `2px` width.
+*   **Labels:** Uses an `HBoxContainer` spanning the entire rect, containing two labels with equal size flags. Text is completely borderless.
+*   **Highlight Block:** A solid `ColorRect` using the Bright Accent `Color(1.0, 0.85, 0.2, 1.0)` that covers exactly half the toggle.
+*   **Animation:** When clicked, a parallel Tween smoothly interpolates the Highlight Block's `position.x` to the opposite side over `0.25s` with `TRANS_SINE` easing, while simultaneously tweening the font color of the active label to black `Color(0, 0, 0, 1.0)` and the inactive label to gold `Color(1.0, 0.85, 0.2, 1.0)` for high contrast.
+
 ### Screen Overlays (Blur / Dim)
 
 When a menu or overlay is shown (e.g., Pause, Weapon Wheel), the screen behind it is blurred and dimmed using a custom screen-reading shader.
