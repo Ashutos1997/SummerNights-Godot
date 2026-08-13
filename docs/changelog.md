@@ -13,6 +13,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - **Multi-Flare:** Deep runs in Endless Mode (Wave 10+) now introduce multiple simultaneous solar flares in a shotgun spread pattern.
 
 ### Improved
+- **Menu Overlays:** Standardized the visual design of all full-screen menus (Title, Pause, Settings, Credits) by applying a consistent golden border and a unified, ultra-dark 96% opacity background dim.
 - **Endless Scaling Cap:** Capped the maximum possible heat regeneration in Endless mode at Wave 15. The sun will no longer scale infinitely to the point of being mathematically impossible to cool, preserving the mechanical skill challenge.
 - **Catastrom Weather Clear:** Firing the Catastrom in Endless Mode now forcefully clears active Rain or Eclipse events.
 - **Boss Scaling:** Boss health now dynamically scales higher with each encounter in Endless Mode.
@@ -88,6 +89,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - **다중 플레어:** 무한 모드 후반부(웨이브 10 이상)에서 태양이 샷건처럼 여러 개의 플레어를 동시에 넓게 흩뿌립니다.
 
 ### 개선됨 (Improved)
+- **메뉴 오버레이:** 모든 전체 화면 메뉴(타이틀, 일시정지, 설정, 크레딧)의 시각적 디자인을 표준화하여 일관된 황금색 테두리와 96% 불투명도의 매우 어두운 배경 밝기 감소 효과를 통일했습니다.
 - **무한 모드 스케일링 제한:** 무한 모드에서 발생할 수 있는 최대 열기 회복량을 웨이브 15 수준으로 제한했습니다. 태양이 물리적으로 냉각 불가능한 수준까지 무한정 강해지지 않으며, 순수한 컨트롤 실력 싸움으로 유지되도록 개선했습니다.
 - **카타스트롬 날씨 정화:** 생존 모드에서 카타스트롬을 발사하면 활성화된 폭우나 일식 이벤트가 즉시 정화됩니다.
 - **보스 체력 스케일링:** 생존 모드에서 보스와 조우할 때마다 보스의 체력이 동적으로 더 높게 조정됩니다.

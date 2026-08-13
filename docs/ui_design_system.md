@@ -14,6 +14,7 @@ This document outlines the UI design system, color palette, typography guideline
 - **Water UI Bars:** `Color(0.1, 0.65, 0.95, 1.0)`
 
 ### Backgrounds & Panels
+- **Global Menu Background:** `Color(0.02, 0.01, 0.05, 0.96)` (Extremely dark, almost solid black for full-screen pause/settings menus)
 - **Dark Panel Background:** `Color(0.05, 0.02, 0.1, 0.85)` (Very dark, slightly purple-tinted black for UI panels)
 - **Standard UI Background:** `Color(0.0, 0.0, 0.0, 0.4)` (Semi-transparent black)
 
@@ -56,6 +57,14 @@ To ensure legibility against the bright, 3D sun background, heavy outlines and d
 ---
 
 ## 4. UI Component Styles
+
+### Global Menu Borders
+All full-screen menus (Title Screen, Pause Screen, Settings, Credits, etc.) are unified by a consistent golden border overlay to tie the visual language together:
+*   **Padding / Offset:** 24px from all screen edges
+*   **Border Width:** 2px (All sides)
+*   **Border Color:** `Color(1.0, 0.85, 0.2, 0.4)`
+*   **Corner Radius:** 8px
+*   **Fade Animation:** Menus tween the entire screen node (`self.modulate:a`) seamlessly over 0.5s rather than fading individual components out-of-sync.
 
 ### Buttons (StyleBoxFlat)
 
