@@ -8,6 +8,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - **Level 6 (Normal Mode):** Added a grueling final level to Normal Mode featuring constant Eclipse weather and the Heat Mirage hazard.
 - **Critical Heat Warning:** The UI heat bar now aggressively flashes red when the sun exceeds 90 percent temperature.
 - **Catastrom Notification:** Added a distinct purple Toast popup when the Catastrom ultimate is fully charged.
+- **Mirage Overshield:** Heat Mirages now act as a formidable boss mechanic on every fifth wave in Endless Mode. They deploy a collective golden Overshield that blocks damage to the main sun and must be completely destroyed.
 
 ### Improved
 - **Catastrom Weather Clear:** Firing the Catastrom in Endless Mode now forcefully clears active Rain or Eclipse events.
@@ -72,6 +73,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - **레벨 6 (일반 모드):** 지속적인 일식 날씨와 열기 신기루 기믹이 등장하는 극한의 최종 레벨을 일반 모드에 추가했습니다.
 - **위험 열기 경고:** 태양 온도가 90퍼센트를 초과하면 UI 열기 게이지가 붉은색으로 강하게 깜빡입니다.
 - **카타스트롬 준비 알림:** 카타스트롬 궁극기가 완전히 충전되면 눈에 띄는 보라색 팝업 알림이 표시됩니다.
+- **신기루 오버실드:** 생존 모드의 매 5번째 웨이브마다 열기 신기루가 강력한 보스 기믹으로 등장합니다. 이들은 본체 태양에 가해지는 피해를 막아내는 황금색 오버실드를 공유하며, 본체를 공격하기 전에 반드시 파괴해야 합니다.
 
 ### 개선됨 (Improved)
 - **카타스트롬 날씨 정화:** 생존 모드에서 카타스트롬을 발사하면 활성화된 폭우나 일식 이벤트가 즉시 정화됩니다.
