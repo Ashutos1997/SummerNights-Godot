@@ -188,7 +188,7 @@ func _on_survival_pressed() -> void:
 
 func _on_dev_pressed() -> void:
 	if is_starting: return
-	_start_game(false, true)
+	_start_game(true, true)
 
 func _start_game(is_survival: bool, is_dev: bool = false) -> void:
 	is_starting = true
@@ -197,6 +197,7 @@ func _start_game(is_survival: bool, is_dev: bool = false) -> void:
 	
 	if is_dev:
 		GameState.is_dev_mode = true
+		GameState.current_wave = 11
 		
 	var tw = create_tween()
 	tw.tween_property(color_rect, "modulate:a", 0.0, 0.5)

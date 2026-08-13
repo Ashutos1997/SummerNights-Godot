@@ -10,6 +10,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - **Critical Heat Warning:** The UI heat bar now aggressively flashes red when the sun exceeds 90 percent temperature.
 - **Catastrom Notification:** Added a distinct purple Toast popup when the Catastrom ultimate is fully charged.
 - **Mirage Overshield:** Heat Mirages now act as a formidable boss mechanic on every fifth wave in Endless Mode. They deploy a collective golden Overshield that blocks damage to the main sun and must be completely destroyed.
+- **Multi-Flare:** Deep runs in Endless Mode (Wave 10+) now introduce multiple simultaneous solar flares in a shotgun spread pattern.
 
 ### Improved
 - **Endless Scaling Cap:** Capped the maximum possible heat regeneration in Endless mode at Wave 15. The sun will no longer scale infinitely to the point of being mathematically impossible to cool, preserving the mechanical skill challenge.
@@ -84,6 +85,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - **위험 열기 경고:** 태양 온도가 90퍼센트를 초과하면 UI 열기 게이지가 붉은색으로 강하게 깜빡입니다.
 - **카타스트롬 준비 알림:** 카타스트롬 궁극기가 완전히 충전되면 눈에 띄는 보라색 팝업 알림이 표시됩니다.
 - **신기루 오버실드:** 생존 모드의 매 5번째 웨이브마다 열기 신기루가 강력한 보스 기믹으로 등장합니다. 이들은 본체 태양에 가해지는 피해를 막아내는 황금색 오버실드를 공유하며, 본체를 공격하기 전에 반드시 파괴해야 합니다.
+- **다중 플레어:** 무한 모드 후반부(웨이브 10 이상)에서 태양이 샷건처럼 여러 개의 플레어를 동시에 넓게 흩뿌립니다.
 
 ### 개선됨 (Improved)
 - **무한 모드 스케일링 제한:** 무한 모드에서 발생할 수 있는 최대 열기 회복량을 웨이브 15 수준으로 제한했습니다. 태양이 물리적으로 냉각 불가능한 수준까지 무한정 강해지지 않으며, 순수한 컨트롤 실력 싸움으로 유지되도록 개선했습니다.

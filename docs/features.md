@@ -32,6 +32,7 @@ This document serves as the master record for all currently implemented features
 *   **Solar Wind:** A physical force emitted by the Sun that pushes the player's crosshair away, requiring them to actively fight the mouse to maintain aim.
 *   **Two-Phase Bosses:** Boss waves (e.g., Wave 5) have two phases. Depleting the timer triggers Phase 2, which resets the timer and immediately spikes the heat to a critical level (e.g., 60%).
 *   **Heat Mirage Overshield (Endless Mode):** Every 5th wave in Endless mode, the sun spawns two decoy mirages that scramble positions. The mirages project a collective golden Overshield protecting the main sun from all damage. You must shoot down the mirages (shrinking them with water) to shatter the shield before you can resume cooling the main sun!
+*   **Multi-Flare Shotgun (Endless Mode Wave 10+):** Deep into Endless mode, the sun will begin spitting multiple flares simultaneously in a shotgun spread pattern (2 flares starting at Wave 10, 3 flares starting at Wave 15). This forces the player to rapidly switch targets or strategically use the Scatter Nozzle/Ice Burst.
 
 ## 4. Dynamic Weather Events
 Weather events trigger based on a dynamic probability system tied to the current wave (configured via `GameState.LEVEL_CONFIG`'s `weather_weights`). Level 1 favors Rain or no weather, while Boss waves almost guarantee an Eclipse. In Endless/Survival Mode, the weights dynamically shift over time to make Eclipses increasingly common.

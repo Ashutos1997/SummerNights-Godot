@@ -97,7 +97,6 @@ layout_mode = 2
 text = "ENDLESS MODE"
 
 [node name="DevBtn" type="Button" parent="ColorRect/VBoxContainer/ButtonsBox"]
-visible = false
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 text = "[DEV]"

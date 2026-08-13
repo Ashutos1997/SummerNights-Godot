@@ -474,6 +474,19 @@ func _on_title_start_game(is_survival: bool) -> void:
 	cam_tw.tween_property(camera, "position", Vector3(0, 0, 5), 0.6).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
 	cam_tw.tween_property(camera, "rotation", Vector3.ZERO, 0.6).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
 	
+	if GameState.is_survival_mode and GameState.current_wave > 1:
+		heat_regen_base = min(25.0, 2.5 + (GameState.current_wave * 1.5))
+		sun_figure8 = GameState.current_wave >= 3
+		solar_wind_enabled = GameState.current_wave >= 4
+		flare_spawn_timer = min(flare_spawn_timer, max(2.5, 8.0 - (GameState.current_wave * 0.5)))
+		sun_sway_amplitude = min(8.0, GameState.current_wave * 1.5)
+		sun_sway_speed = min(2.0, 0.5 + GameState.current_wave * 0.2)
+		wind_level_mult = min(2.5, 1.0 + (GameState.current_wave - 4) * 0.15)
+		if GameState.current_wave % 5 == 0:
+			is_two_phase = true
+			phase2_heat = min(150.0, 80.0 + (GameState.current_wave * 5.0))
+		hud.level_label.text = ("웨이브 %02d" if GameState.language == "KR" else "WAVE %02d") % GameState.current_wave
+	
 	timer_running = true
 	virtual_mouse_pos = get_viewport().get_visible_rect().size / 2.0
 
@@ -1155,96 +1168,102 @@ func _spawn_solar_flare() -> void:
 		flare_spawn_timer = randf_range(1.5, 3.0) # Spam shadow flares
 	else:
 		flare_spawn_timer = randf_range(12.0 - lvl, 15.0 - lvl)
-	var flare_root = Node3D.new()
-	
-	# Low-Poly Solar Mass Cluster (5 overlapping low-poly spheres matching CloudLayer style)
-	var puff_offsets = [
-		Vector3(0, 0, 0),
-		Vector3(0.6, 0.2, 0.1),
-		Vector3(-0.5, -0.2, -0.1),
-		Vector3(0.2, 0.4, -0.2),
-		Vector3(-0.3, -0.3, 0.2)
-	]
-	
-	for offset in puff_offsets:
-		var mesh_inst = MeshInstance3D.new()
-		var sphere = SphereMesh.new()
-		sphere.radius = randf_range(0.6, 1.0)
-		sphere.height = sphere.radius * 2.0
-		sphere.radial_segments = 8
-		sphere.rings = 6
-		mesh_inst.mesh = sphere
-		if active_weather == "eclipse":
-			var shadow_mat = StandardMaterial3D.new()
-			shadow_mat.albedo_color = Color(0.1, 0.0, 0.2)
-			shadow_mat.emission_enabled = true
-			shadow_mat.emission = Color(0.4, 0.0, 0.8)
-			shadow_mat.emission_energy_multiplier = 3.0
-			mesh_inst.material_override = shadow_mat
-		else:
-			mesh_inst.material_override = flare_mat
-		mesh_inst.position = offset
-		flare_root.add_child(mesh_inst)
 		
-	var flare_spin_speed = Vector3(randf_range(-2.0, 2.0), randf_range(1.0, 3.0), randf_range(-2.0, 2.0))
-
-	# Fiery OmniLight Aura
-	var f_light = OmniLight3D.new()
-	if active_weather == "eclipse":
-		f_light.light_color = Color(0.5, 0.1, 1.0)
-	else:
-		f_light.light_color = Color(1.0, 0.55, 0.1)
-	f_light.light_energy = 3.5
-	f_light.omni_range = 8.0
-	flare_root.add_child(f_light)
-
-	# Embers trail
-	var trail = GPUParticles3D.new()
-	var t_mat = ParticleProcessMaterial.new()
-	t_mat.direction = Vector3(0, 0, 1)
-	t_mat.spread = 40.0
-	t_mat.initial_velocity_min = 2.0
-	t_mat.initial_velocity_max = 6.0
-	t_mat.scale_min = 0.3
-	t_mat.scale_max = 0.9
-	var t_mesh = SphereMesh.new()
-	t_mesh.radius = 0.3
-	t_mesh.height = 0.6
-	var t_mesh_mat = StandardMaterial3D.new()
-	if active_weather == "eclipse":
-		t_mesh_mat.albedo_color = Color(0.3, 0.0, 0.6)
-		t_mesh_mat.emission_enabled = true
-		t_mesh_mat.emission = Color(0.5, 0.1, 0.9)
-	else:
-		t_mesh_mat.albedo_color = Color(1.0, 0.5, 0.1)
-		t_mesh_mat.emission_enabled = true
-		t_mesh_mat.emission = Color(1.0, 0.6, 0.1)
-	t_mesh_mat.emission_energy_multiplier = 4.0
-	t_mesh.material = t_mesh_mat
-	trail.process_material = t_mat
-	trail.draw_pass_1 = t_mesh
-	trail.amount = 16
-	flare_root.add_child(trail)
+	var flare_count = 1
+	if GameState.is_survival_mode and GameState.current_wave >= 10:
+		flare_count = 2 if GameState.current_wave < 15 else 3
+		
+	for i in range(flare_count):
+		var flare_root = Node3D.new()
+		
+		# Low-Poly Solar Mass Cluster (5 overlapping low-poly spheres matching CloudLayer style)
+		var puff_offsets = [
+			Vector3(0, 0, 0),
+			Vector3(0.6, 0.2, 0.1),
+			Vector3(-0.5, -0.2, -0.1),
+			Vector3(0.2, 0.4, -0.2),
+			Vector3(-0.3, -0.3, 0.2)
+		]
+		
+		for offset in puff_offsets:
+			var mesh_inst = MeshInstance3D.new()
+			var sphere = SphereMesh.new()
+			sphere.radius = randf_range(0.6, 1.0)
+			sphere.height = sphere.radius * 2.0
+			sphere.radial_segments = 8
+			sphere.rings = 6
+			mesh_inst.mesh = sphere
+			if active_weather == "eclipse":
+				var shadow_mat = StandardMaterial3D.new()
+				shadow_mat.albedo_color = Color(0.1, 0.0, 0.2)
+				shadow_mat.emission_enabled = true
+				shadow_mat.emission = Color(0.4, 0.0, 0.8)
+				shadow_mat.emission_energy_multiplier = 3.0
+				mesh_inst.material_override = shadow_mat
+			else:
+				mesh_inst.material_override = flare_mat
+			mesh_inst.position = offset
+			flare_root.add_child(mesh_inst)
+			
+		var flare_spin_speed = Vector3(randf_range(-2.0, 2.0), randf_range(1.0, 3.0), randf_range(-2.0, 2.0))
 	
-	add_child(flare_root)
-	flare_root.global_position = sun.global_position
+		# Fiery OmniLight Aura
+		var f_light = OmniLight3D.new()
+		if active_weather == "eclipse":
+			f_light.light_color = Color(0.5, 0.1, 1.0)
+		else:
+			f_light.light_color = Color(1.0, 0.55, 0.1)
+		f_light.light_energy = 3.5
+		f_light.omni_range = 8.0
+		flare_root.add_child(f_light)
 	
-	var start_pos = sun.global_position
-	var target_pos = Vector3(randf_range(-8.0, 8.0), -1.0, randf_range(1.0, 5.0))
-	var duration = randf_range(3.8, 4.4) # Comfortable 4-second readable flight duration
-	if active_weather == "eclipse":
-		duration = randf_range(1.8, 2.4) # Shadow flares move significantly faster!
-	
-	active_flares.append({
-		"node": flare_root,
-		"start_pos": start_pos,
-		"target_pos": target_pos,
-		"progress": 0.0,
-		"duration": duration,
-		"spin": flare_spin_speed,
-		"hp": 1.0
-	})
-	
+		# Embers trail
+		var trail = GPUParticles3D.new()
+		var t_mat = ParticleProcessMaterial.new()
+		t_mat.direction = Vector3(0, 0, 1)
+		t_mat.spread = 40.0
+		t_mat.initial_velocity_min = 2.0
+		t_mat.initial_velocity_max = 6.0
+		t_mat.scale_min = 0.3
+		t_mat.scale_max = 0.9
+		var t_mesh = SphereMesh.new()
+		t_mesh.radius = 0.3
+		t_mesh.height = 0.6
+		var t_mesh_mat = StandardMaterial3D.new()
+		if active_weather == "eclipse":
+			t_mesh_mat.albedo_color = Color(0.3, 0.0, 0.6)
+			t_mesh_mat.emission_enabled = true
+			t_mesh_mat.emission = Color(0.5, 0.1, 0.9)
+		else:
+			t_mesh_mat.albedo_color = Color(1.0, 0.5, 0.1)
+			t_mesh_mat.emission_enabled = true
+			t_mesh_mat.emission = Color(1.0, 0.6, 0.1)
+		t_mesh_mat.emission_energy_multiplier = 4.0
+		t_mesh.material = t_mesh_mat
+		trail.process_material = t_mat
+		trail.draw_pass_1 = t_mesh
+		trail.amount = 16
+		flare_root.add_child(trail)
+		
+		add_child(flare_root)
+		flare_root.global_position = sun.global_position
+		
+		var start_pos = sun.global_position
+		var target_pos = Vector3(randf_range(-8.0, 8.0), -1.0, randf_range(1.0, 5.0))
+		var duration = randf_range(3.8, 4.4) # Comfortable 4-second readable flight duration
+		if active_weather == "eclipse":
+			duration = randf_range(1.8, 2.4) # Shadow flares move significantly faster!
+		
+		active_flares.append({
+			"node": flare_root,
+			"start_pos": start_pos,
+			"target_pos": target_pos,
+			"progress": 0.0,
+			"duration": duration,
+			"spin": flare_spin_speed,
+			"hp": 1.0
+		})
+		
 	if sizzle_sfx and not sizzle_sfx.playing:
 		sizzle_sfx.play()
 
