@@ -123,7 +123,11 @@ text = "☀ HEAT"
 horizontal_alignment = 1
 uppercase = true
 
-[node name="HeatBar" type="TextureProgressBar" parent="HUD/SunHeatBar"]
+[node name="BarContainer" type="MarginContainer" parent="HUD/SunHeatBar"]
+layout_mode = 2
+custom_minimum_size = Vector2(300, 24)
+
+[node name="HeatBar" type="TextureProgressBar" parent="HUD/SunHeatBar/BarContainer"]
 custom_minimum_size = Vector2(300, 24)
 layout_mode = 2
 value = 50.0
@@ -135,8 +139,8 @@ stretch_margin_bottom = 10
 texture_under = ExtResource("4_prog_bg")
 texture_progress = ExtResource("7_prog_red")
 
-[node name="MirageBar" type="TextureProgressBar" parent="HUD/SunHeatBar"]
-custom_minimum_size = Vector2(300, 14)
+[node name="MirageBar" type="TextureProgressBar" parent="HUD/SunHeatBar/BarContainer"]
+custom_minimum_size = Vector2(300, 24)
 layout_mode = 2
 value = 100.0
 nine_patch_stretch = true
@@ -144,7 +148,6 @@ stretch_margin_left = 10
 stretch_margin_top = 10
 stretch_margin_right = 10
 stretch_margin_bottom = 10
-texture_under = ExtResource("4_prog_bg")
 texture_progress = ExtResource("7_prog_red")
 tint_progress = Color(1, 0.85, 0.2, 1)
 

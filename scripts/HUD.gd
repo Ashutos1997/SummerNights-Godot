@@ -6,8 +6,8 @@ signal weapon_changed(weapon_id: String)
 
 
 @onready var weapon_wheel = $HUD/WeaponWheel
-@onready var heat_bar = $HUD/SunHeatBar/HeatBar
-@onready var mirage_bar = $HUD/SunHeatBar/MirageBar
+@onready var heat_bar = $HUD/SunHeatBar/BarContainer/HeatBar
+@onready var mirage_bar = $HUD/SunHeatBar/BarContainer/MirageBar
 @onready var heat_label = $HUD/SunHeatBar/Label
 @onready var water_bar_container = $HUD/resource_container/water_row
 @onready var water_bar = $HUD/resource_container/water_row/WaterBar
