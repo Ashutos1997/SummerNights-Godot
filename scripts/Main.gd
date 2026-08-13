@@ -1502,6 +1502,13 @@ func _process(delta: float) -> void:
 						node.position.x = sun_base_pos.x + base_x_offset + m["current_offset"]
 						node.position.y = sun.position.y + sin(sun_time * sun_bob_speed * 1.2) * 2.0
 						node.position.z = sun.position.z + 2.0 # Slightly in front
+						
+						# Dynamically shrink based on HP ratio
+						var hp_ratio = max(0.0, mirage_hp / max_mirage_hp) if max_mirage_hp > 0.0 else 0.0
+						var target_scale = lerp(0.15, 0.32, hp_ratio)
+						if node.get_child_count() > 0:
+							var m_model = node.get_child(0)
+							m_model.scale = m_model.scale.lerp(Vector3(target_scale, target_scale, target_scale), 12.0 * delta)
 
 	# Solar Wind hazard
 	if solar_wind_enabled and not is_title_screen:
@@ -3039,7 +3046,9 @@ func _end_mirage() -> void:
 			if m_mesh:
 				var m_mat = m_mesh.get_surface_override_material(0)
 				if m_mat:
-					tw.tween_property(m_mat, "albedo_color:a", 0.0, 1.0)
+					tw.tween_property(m_mat, "albedo_color:a", 0.0, 0.4)
+			if node.get_child_count() > 0:
+				tw.parallel().tween_property(node.get_child(0), "scale", Vector3.ZERO, 0.3)
 			tw.tween_callback(node.queue_free)
 	active_mirages.clear()
 	sun_mirage_target = 0.0
