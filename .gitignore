@@ -11,3 +11,6 @@ builds/
 # OS metadata
 .DS_Store
 *.tmp
+
+# Local agent notes
+local_notes/
