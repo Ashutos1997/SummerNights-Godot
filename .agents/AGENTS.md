@@ -8,5 +8,7 @@ Always refer to the 4 core documentation files in the `docs/` directory when wor
 
 Read these files to understand existing patterns before proposing new changes. Furthermore, **whenever you make changes to the game's codebase, mechanics, or UI, you MUST automatically update these 4 documentation files if applicable** to ensure they remain the single source of truth.
 
+**CRITICAL CHANGELOG RULE:** When updating `docs/changelog.md`, you MUST always add the changes to BOTH the English section and the Korean (한국어) section. Never update just the English version.
+
 ## Art Asset Handling Guidelines
 **CRITICAL RULE:** Never feed the UI artist's work or any provided assets into AI image generation or modification tools. The user strictly prohibits using AI on these assets. You must only implement the assets into the engine exactly as provided.
