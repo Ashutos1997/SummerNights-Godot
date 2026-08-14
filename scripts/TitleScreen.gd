@@ -336,4 +336,4 @@ func _on_lang_btn_pressed() -> void:
 	
 	GameState.language = "KR" if GameState.language == "EN" else "EN"
 	GameState.save_settings()
-	_update_language()
+	get_tree().reload_current_scene()
