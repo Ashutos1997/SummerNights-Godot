@@ -165,19 +165,12 @@ func _update_language() -> void:
 	# --- STARTUP ANIMATION PROTOTYPE ---
 	var vbox = $ColorRect/VBoxContainer
 	
-	# Initial Hidden State
-	var orig_vbox_y = vbox.position.y
-	var orig_lang_y = lang_btn.position.y if lang_btn else 0
-	var orig_credit_y = credit_lbl.position.y if credit_lbl else 0
-	
-	vbox.position.y += 50
+	# Hide immediately to prevent flashing, but DO NOT touch position yet!
+	# The layout engine needs a frame to compute anchored positions correctly.
 	vbox.modulate.a = 0.0
-	
 	if lang_btn:
-		lang_btn.position.y += 50
 		lang_btn.modulate.a = 0.0
 	if credit_lbl:
-		credit_lbl.position.y += 50
 		credit_lbl.modulate.a = 0.0
 		
 	# Spawn temporary audio
@@ -188,10 +181,20 @@ func _update_language() -> void:
 	add_child(startup_audio)
 	startup_audio.play()
 	
-	# Wait for drop
+	# Wait for drop (and for the UI layout to fully compute)
 	await get_tree().create_timer(2.5).timeout
 	
-	# Slide-in Animation
+	# Now the anchors have resolved correctly, so we can grab the true Y positions
+	var orig_vbox_y = vbox.position.y
+	var orig_lang_y = lang_btn.position.y if lang_btn else 0
+	var orig_credit_y = credit_lbl.position.y if credit_lbl else 0
+	
+	# Instantly drop them down by 50px
+	vbox.position.y += 50
+	if lang_btn: lang_btn.position.y += 50
+	if credit_lbl: credit_lbl.position.y += 50
+	
+	# Slide-in Animation back to the original layout positions
 	var slide_tw = create_tween()
 	slide_tw.set_parallel(true)
 	slide_tw.set_ease(Tween.EASE_OUT)
