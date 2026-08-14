@@ -180,8 +180,50 @@ func _update_language() -> void:
 	add_child(startup_audio)
 	startup_audio.play(1.5)
 	
+	# --- Fake Retro Loading Bar ---
+	var loading_container = VBoxContainer.new()
+	$ColorRect.add_child(loading_container)
+	loading_container.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
+	loading_container.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	loading_container.offset_bottom = -100
+	
+	var loading_lbl = Label.new()
+	loading_lbl.text = "INITIALIZING BIOS..."
+	loading_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var font = load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+	if font: loading_lbl.add_theme_font_override("font", font)
+	loading_lbl.add_theme_font_size_override("font_size", 14)
+	loading_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+	
+	var progress = ProgressBar.new()
+	progress.custom_minimum_size = Vector2(300, 10)
+	progress.show_percentage = false
+	var bg_style = StyleBoxFlat.new()
+	bg_style.bg_color = Color(0,0,0,0.5)
+	bg_style.border_width_left = 1
+	bg_style.border_width_right = 1
+	bg_style.border_width_top = 1
+	bg_style.border_width_bottom = 1
+	bg_style.border_color = Color(1.0, 0.85, 0.2, 0.5)
+	
+	var fill_style = StyleBoxFlat.new()
+	fill_style.bg_color = Color(1.0, 0.85, 0.2, 1.0)
+	
+	progress.add_theme_stylebox_override("background", bg_style)
+	progress.add_theme_stylebox_override("fill", fill_style)
+	
+	loading_container.add_child(loading_lbl)
+	loading_container.add_child(progress)
+	
+	var load_tw = create_tween()
+	load_tw.tween_property(progress, "value", 100.0, 4.0).set_trans(Tween.TRANS_LINEAR)
+	# ------------------------------
+	
 	# Wait 4.0s for the audio swell to hit its peak
 	await get_tree().create_timer(4.0).timeout
+	
+	if is_instance_valid(loading_container):
+		loading_container.queue_free()
 	
 	# Now the anchors have resolved correctly, so we can grab the true Y positions
 	var orig_vbox_y = vbox.position.y
