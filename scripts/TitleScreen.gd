@@ -176,12 +176,12 @@ func _update_language() -> void:
 	# Play the custom PS1 startup audio
 	var startup_audio = AudioStreamPlayer.new()
 	startup_audio.stream = load("res://assets/audio/sfx/ps1_startup.wav")
-	# If the start is too quiet, you can skip ahead by changing 0.0 below:
+	# Skip the first 1.5s of silence/low noise so the swell begins immediately
 	add_child(startup_audio)
-	startup_audio.play(0.0)
+	startup_audio.play(1.5)
 	
-	# Wait for drop (and for the UI layout to fully compute)
-	await get_tree().create_timer(2.5).timeout
+	# Wait 4.0s for the audio swell to hit its peak
+	await get_tree().create_timer(4.0).timeout
 	
 	# Now the anchors have resolved correctly, so we can grab the true Y positions
 	var orig_vbox_y = vbox.position.y
