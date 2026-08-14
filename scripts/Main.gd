@@ -280,9 +280,9 @@ func _ready() -> void:
 	add_child(ambient_sfx)
 	ambient_sfx.play()
 	ambient_sfx.finished.connect(func(): ambient_sfx.play())
-	# Fade in ocean ambient over 2s on title screen
+	# Fade in ocean ambient on title screen, delayed to not clash with PS1 startup sound
 	var ocean_tw = create_tween()
-	ocean_tw.tween_property(ambient_sfx, "volume_db", -8.0, 2.0).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+	ocean_tw.tween_property(ambient_sfx, "volume_db", -8.0, 3.0).set_delay(2.5).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 
 	# Heat Haze screen distortion overlay (drawn under HUD text)
 	var haze_layer = CanvasLayer.new()
