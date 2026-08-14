@@ -24,44 +24,59 @@ var border_progress: float = -1.0:
 		border_progress = value
 		queue_redraw()
 
+func generate_rounded_rect_points(rect: Rect2, radius: float, resolution: int = 8) -> PackedVector2Array:
+	var pts = PackedVector2Array()
+	# Top-Left corner
+	for i in range(resolution + 1):
+		var angle = PI + (PI / 2.0) * (float(i) / resolution)
+		pts.append(Vector2(rect.position.x + radius + cos(angle) * radius, rect.position.y + radius + sin(angle) * radius))
+	# Top-Right corner
+	for i in range(resolution + 1):
+		var angle = PI * 1.5 + (PI / 2.0) * (float(i) / resolution)
+		pts.append(Vector2(rect.position.x + rect.size.x - radius + cos(angle) * radius, rect.position.y + radius + sin(angle) * radius))
+	# Bottom-Right corner
+	for i in range(resolution + 1):
+		var angle = 0.0 + (PI / 2.0) * (float(i) / resolution)
+		pts.append(Vector2(rect.position.x + rect.size.x - radius + cos(angle) * radius, rect.position.y + rect.size.y - radius + sin(angle) * radius))
+	# Bottom-Left corner
+	for i in range(resolution + 1):
+		var angle = PI / 2.0 + (PI / 2.0) * (float(i) / resolution)
+		pts.append(Vector2(rect.position.x + radius + cos(angle) * radius, rect.position.y + rect.size.y - radius + sin(angle) * radius))
+	
+	pts.append(pts[0]) # Close loop
+	return pts
+
 func _draw() -> void:
 	if border_progress >= 0.0 and border_progress < 1.0:
 		var rect = Rect2(24, 24, size.x - 48, size.y - 48)
-		var w = rect.size.x
-		var h = rect.size.y
-		var total_len = w * 2 + h * 2
-		var draw_len = total_len * border_progress
+		# Match the HUD's border thickness (2.0) and corner radius (8.0)
+		var pts = generate_rounded_rect_points(rect, 8.0, 8)
 		
-		var pts = PackedVector2Array()
-		pts.append(Vector2(rect.position.x, rect.position.y)) # Top-Left
+		var total_len = 0.0
+		var segment_lens = []
+		for i in range(pts.size() - 1):
+			var dist = pts[i].distance_to(pts[i+1])
+			segment_lens.append(dist)
+			total_len += dist
+			
+		var draw_len = total_len * border_progress
+		var draw_pts = PackedVector2Array()
+		draw_pts.append(pts[0])
 		
 		var current_len = 0.0
-		# Top Edge (left to right)
-		if draw_len > w:
-			pts.append(Vector2(rect.position.x + w, rect.position.y))
-			current_len += w
-			# Right Edge (top to bottom)
-			if draw_len > w + h:
-				pts.append(Vector2(rect.position.x + w, rect.position.y + h))
-				current_len += h
-				# Bottom Edge (right to left)
-				if draw_len > w + h + w:
-					pts.append(Vector2(rect.position.x, rect.position.y + h))
-					current_len += w
-					# Left Edge (bottom to top)
-					var remain = draw_len - current_len
-					pts.append(Vector2(rect.position.x, rect.position.y + h - remain))
-				else:
-					var remain = draw_len - current_len
-					pts.append(Vector2(rect.position.x + w - remain, rect.position.y + h))
+		for i in range(pts.size() - 1):
+			if current_len + segment_lens[i] <= draw_len:
+				draw_pts.append(pts[i+1])
+				current_len += segment_lens[i]
 			else:
 				var remain = draw_len - current_len
-				pts.append(Vector2(rect.position.x + w, rect.position.y + remain))
-		else:
-			pts.append(Vector2(rect.position.x + draw_len, rect.position.y))
-			
-		for i in range(pts.size() - 1):
-			draw_line(pts[i], pts[i+1], Color(1.0, 0.85, 0.2, 0.6), 2.0)
+				var dir = (pts[i+1] - pts[i]).normalized()
+				draw_pts.append(pts[i] + dir * remain)
+				break
+				
+		if draw_pts.size() >= 2:
+			# Match exact color and thickness of SubResource("StyleBoxFlat_border")
+			draw_polyline(draw_pts, Color(1.0, 0.85, 0.2, 0.4), 2.0, true)
 
 
 func _ready() -> void:
