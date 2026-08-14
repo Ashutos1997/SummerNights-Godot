@@ -60,6 +60,7 @@ Weather events trigger based on a dynamic probability system tied to the current
     *   Ice Charge indicators.
     *   Catastrom Ultimate notification toasts.
     *   Wave Timer and live Score counter (which formats and scales dynamically for juice).
+*   **Startup Sequence:** The Title Screen features a dynamic "tech demo" boot sequence. It plays a custom synth audio that swells over 4 seconds, while a golden border procedurally draws itself around the perimeter. At the peak of the audio swell, the UI aggressively bounces up into place and the audio smoothly fades out while the ambient ocean fades in.
 *   **Global Overlays:** Full-screen menus (Title, Pause, Settings, Credits) are unified by a sleek golden border and an ultra-dark background dimming effect to eliminate visual clutter.
 *   **Accessibility & Settings:**
     *   Reduce Motion toggle (disables screen shake and intensive UI flashing).

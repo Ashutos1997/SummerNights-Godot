@@ -65,6 +65,7 @@ All full-screen menus (Title Screen, Pause Screen, Settings, Credits, etc.) are 
 *   **Border Color:** `Color(1.0, 0.85, 0.2, 0.4)`
 *   **Corner Radius:** 8px
 *   **Fade Animation:** Menus tween the entire screen node (`self.modulate:a`) seamlessly over 0.5s rather than fading individual components out-of-sync.
+*   **Startup Animation:** The Title Screen border features a custom `_draw()` sequence that procedurally traces the 8px rounded rectangle perimeter over 4.0 seconds to sync with the boot audio, perfectly matching the final `StyleBoxFlat`.
 
 ### Buttons (StyleBoxFlat)
 

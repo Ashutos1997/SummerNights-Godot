@@ -51,6 +51,11 @@ These elements sit on top of the Core Gameplay HUD and blur/dim the background w
 *   Slows time (`Engine.time_scale = 0.1`) instead of fully pausing.
 *   Draws procedural wedges using the `_draw()` API based on the number of unlocked weapons. Renders live 3D thumbnails of the weapons into viewports mapped to 2D textures.
 
+### Title Screen (`TitleScreen`)
+*   Serves as the main menu and boot sequence.
+*   Features a custom 4-second boot animation where a golden line traces the 8px rounded perimeter of the screen while a PS1 synth swells, hiding the static `BorderPanel` until completion.
+*   Upon completion, the main UI layout aggressively bounces up from the bottom of the screen.
+
 ### End State Screens
 *   **`WinScreen`:** Shown upon completing a wave. Displays level stats and loading text.
 *   **`EndScreen`:** Shown upon beating the entire game.

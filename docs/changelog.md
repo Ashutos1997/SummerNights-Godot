@@ -11,6 +11,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - **Catastrom Notification:** Added a distinct purple Toast popup when the Catastrom ultimate is fully charged.
 - **Mirage Overshield:** Heat Mirages now act as a formidable boss mechanic on every fifth wave in Endless Mode. They deploy a collective golden Overshield that blocks damage to the main sun and must be completely destroyed.
 - **Multi-Flare:** Deep runs in Endless Mode (Wave 10+) now introduce multiple simultaneous solar flares in a shotgun spread pattern.
+- **Startup Boot Sequence:** The Title Screen now features a 4-second boot-up sequence syncing a swelling PS1-style synth pad with a procedurally animated golden border that draws itself around the screen.
 
 ### Improved
 - **Menu Overlays:** Standardized the visual design of all full-screen menus (Title, Pause, Settings, Credits) by applying a consistent golden border and a unified, ultra-dark 96% opacity background dim.
@@ -21,10 +22,12 @@ All notable changes to the Summer Nights project will be documented in this file
 - **Level Transitions:** Added a cinematic 2.5 second breather delay between level completions.
 - **Weather Persistence:** Weather events (Rain, Eclipse) and Solar Wind gusts now seamlessly persist across wave/level transitions instead of abruptly resetting.
 - **Title Screen Layout:** Restructured the main menu buttons from a horizontal row into a clean vertical stack to unify with the game-wide UI design language.
+- **Border Consistency:** Unified the custom animated startup border to mathematically trace the exact 8-pixel corner radius used by the static panels across the rest of the game's UI for a seamless transition.
 - **Ice Burst Cap:** Capped maximum held Ice Burst charges at 10 to prevent endless hoarding.
 
 ### Fixed
 - Fixed an issue where the ambient ocean audio would fail to loop and stop playing on the title screen.
+- Fixed an issue where the ambient ocean audio aggressively played at the start of the title screen, clashing with the startup synth. The ocean now smoothly fades in *after* the boot sequence completes.
 - Fixed a bug where the level timer would silently tick down and trigger a Game Over during the cinematic win transition.
 - Fixed an issue where the End Screen incorrectly stated "1 LEVELS COMPLETED" instead of the actual number of completed levels.
 - Fixed an issue where the Mirage Overshield HP bar would instantly pop in at full health when respawning instead of playing its visual charge-up animation.
