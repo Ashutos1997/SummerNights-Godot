@@ -934,20 +934,29 @@ func _build_scene() -> void:
 	gun_spray = GPUParticles3D.new()
 	var g_mat = ParticleProcessMaterial.new()
 	g_mat.direction = Vector3(0, 0, -1)
-	g_mat.spread = 5.0
-	g_mat.initial_velocity_min = 25.0
-	g_mat.initial_velocity_max = 35.0
+	g_mat.spread = 8.0
+	g_mat.initial_velocity_min = 20.0
+	g_mat.initial_velocity_max = 30.0
 	g_mat.gravity = Vector3(0, -5.0, 0)
 	# Tumbling behavior
 	g_mat.angle_min = 0.0
 	g_mat.angle_max = 360.0
+	
+	# Scale animation curve for juicy pop-and-shrink effect
+	var scale_curve = Curve.new()
+	scale_curve.add_point(Vector2(0, 0.5))
+	scale_curve.add_point(Vector2(0.2, 1.2))
+	scale_curve.add_point(Vector2(1.0, 0.0))
+	var scale_tex = CurveTexture.new()
+	scale_tex.curve = scale_curve
+	g_mat.scale_curve = scale_tex
 	
 	# Low-poly tumbling cubes for water
 	var g_mesh = BoxMesh.new()
 	g_mesh.size = Vector3(0.15, 0.15, 0.15)
 	
 	var g_mesh_mat = StandardMaterial3D.new()
-	g_mesh_mat.albedo_color = Color(0.0, 0.8, 1.0, 0.8) # 10% Accent: Vibrant Cyan Water
+	g_mesh_mat.albedo_color = Color(0.2, 0.9, 1.0, 0.8) # 10% Accent: Brighter Vibrant Cyan Water
 	g_mesh_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	g_mesh.material = g_mesh_mat
 	gun_spray.process_material = g_mat
@@ -2446,6 +2455,12 @@ func _win() -> void:
 		is_measuring = false
 	
 	sun_defeated_sfx.play()
+	
+	# Bring up ocean ambient during the breather
+	if ambient_sfx:
+		var amb_tw = create_tween()
+		amb_tw.tween_property(ambient_sfx, "volume_db", -5.0, 1.0).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
+		
 	var tween = create_tween()
 	tween.tween_property(sun_mat, "albedo_color", Color(0.1, 0.5, 1.0), 1.0)
 	tween.parallel().tween_property(sun_mat, "emission", Color(0.0, 0.2, 1.0), 1.0)
@@ -2507,6 +2522,11 @@ func _win() -> void:
 			level_timer = cfg.timer
 			timer_running = true
 			emit_signal("level_config_loaded", cfg.timer)
+			
+			# Duck ocean ambient back down
+			if ambient_sfx:
+				var amb_tw = create_tween()
+				amb_tw.tween_property(ambient_sfx, "volume_db", -20.0, 1.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 			
 			GameState.ice_charges_remaining = cfg.ice_charges
 			if hud:
