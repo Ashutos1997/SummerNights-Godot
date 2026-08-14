@@ -190,8 +190,8 @@ func _update_language() -> void:
 	var loading_lbl = Label.new()
 	loading_lbl.text = "INITIALIZING BIOS..."
 	loading_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	var font = load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
-	if font: loading_lbl.add_theme_font_override("font", font)
+	var loading_font = load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+	if loading_font: loading_lbl.add_theme_font_override("font", loading_font)
 	loading_lbl.add_theme_font_size_override("font_size", 14)
 	loading_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
 	
