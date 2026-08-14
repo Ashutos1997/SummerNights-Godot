@@ -173,13 +173,33 @@ func _update_language() -> void:
 	if credit_lbl:
 		credit_lbl.modulate.a = 0.0
 		
-	# Spawn temporary audio
+	# --- Procedural PS1 Synth Generation ---
+	var bus_name = "StartupSynth"
+	var bus_idx = AudioServer.get_bus_index(bus_name)
+	if bus_idx == -1:
+		AudioServer.add_bus()
+		bus_idx = AudioServer.get_bus_count() - 1
+		AudioServer.set_bus_name(bus_idx, bus_name)
+		
+		var reverb = AudioEffectReverb.new()
+		reverb.room_size = 0.9
+		reverb.damping = 0.1
+		reverb.spread = 1.0
+		reverb.wet = 0.8
+		AudioServer.add_bus_effect(bus_idx, reverb)
+		
+		var lpf = AudioEffectLowPassFilter.new()
+		lpf.cutoff_hz = 1000.0
+		AudioServer.add_bus_effect(bus_idx, lpf)
+		
 	var startup_audio = AudioStreamPlayer.new()
 	startup_audio.stream = load("res://assets/audio/sfx/sun_defeated.ogg")
-	startup_audio.pitch_scale = 0.2
-	startup_audio.volume_db = 10.0
+	startup_audio.pitch_scale = 0.15
+	startup_audio.volume_db = 15.0
+	startup_audio.bus = bus_name
 	add_child(startup_audio)
 	startup_audio.play()
+	# ---------------------------------------
 	
 	# Wait for drop (and for the UI layout to fully compute)
 	await get_tree().create_timer(2.5).timeout
