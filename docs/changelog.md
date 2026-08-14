@@ -2,6 +2,19 @@
 
 All notable changes to the Summer Nights project will be documented in this file.
 
+## [v2.0.0] - WIP
+
+### Added
+- **Startup Boot Sequence:** The Title Screen now features a 4-second boot-up sequence syncing a swelling PS1-style synth pad with a procedurally animated golden border that draws itself around the screen.
+
+### Improved
+- **Border Consistency:** Unified the custom animated startup border to mathematically trace the exact 8-pixel corner radius used by the static panels across the rest of the game's UI for a seamless transition.
+
+### Fixed
+- Fixed an issue where the ambient ocean audio aggressively played at the start of the title screen, clashing with the startup synth. The ocean now smoothly fades in *after* the boot sequence completes.
+
+---
+
 ## [v1.2.0] - 2026-08-14
 
 ### Added
@@ -11,7 +24,6 @@ All notable changes to the Summer Nights project will be documented in this file
 - **Catastrom Notification:** Added a distinct purple Toast popup when the Catastrom ultimate is fully charged.
 - **Mirage Overshield:** Heat Mirages now act as a formidable boss mechanic on every fifth wave in Endless Mode. They deploy a collective golden Overshield that blocks damage to the main sun and must be completely destroyed.
 - **Multi-Flare:** Deep runs in Endless Mode (Wave 10+) now introduce multiple simultaneous solar flares in a shotgun spread pattern.
-- **Startup Boot Sequence:** The Title Screen now features a 4-second boot-up sequence syncing a swelling PS1-style synth pad with a procedurally animated golden border that draws itself around the screen.
 
 ### Improved
 - **Menu Overlays:** Standardized the visual design of all full-screen menus (Title, Pause, Settings, Credits) by applying a consistent golden border and a unified, ultra-dark 96% opacity background dim.
@@ -22,12 +34,10 @@ All notable changes to the Summer Nights project will be documented in this file
 - **Level Transitions:** Added a cinematic 2.5 second breather delay between level completions.
 - **Weather Persistence:** Weather events (Rain, Eclipse) and Solar Wind gusts now seamlessly persist across wave/level transitions instead of abruptly resetting.
 - **Title Screen Layout:** Restructured the main menu buttons from a horizontal row into a clean vertical stack to unify with the game-wide UI design language.
-- **Border Consistency:** Unified the custom animated startup border to mathematically trace the exact 8-pixel corner radius used by the static panels across the rest of the game's UI for a seamless transition.
 - **Ice Burst Cap:** Capped maximum held Ice Burst charges at 10 to prevent endless hoarding.
 
 ### Fixed
 - Fixed an issue where the ambient ocean audio would fail to loop and stop playing on the title screen.
-- Fixed an issue where the ambient ocean audio aggressively played at the start of the title screen, clashing with the startup synth. The ocean now smoothly fades in *after* the boot sequence completes.
 - Fixed a bug where the level timer would silently tick down and trigger a Game Over during the cinematic win transition.
 - Fixed an issue where the End Screen incorrectly stated "1 LEVELS COMPLETED" instead of the actual number of completed levels.
 - Fixed an issue where the Mirage Overshield HP bar would instantly pop in at full health when respawning instead of playing its visual charge-up animation.
@@ -83,6 +93,19 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ---
 
+## [v2.0.0] - WIP
+
+### 추가됨 (Added)
+- **부팅 시퀀스 추가:** 타이틀 화면에 4초간 진행되는 부팅 시퀀스를 추가했습니다. PS1 스타일의 신스 패드 사운드와 함께 화면 가장자리를 따라 그려지는 황금색 테두리 애니메이션이 연출됩니다.
+
+### 개선됨 (Improved)
+- **테두리 일관성:** 시작 화면의 커스텀 테두리 드로잉 애니메이션이 게임 내 다른 UI 패널들과 동일한 8픽셀의 둥근 모서리를 가지도록 수학적으로 정확하게 일치시켜 자연스러운 전환을 구현했습니다.
+
+### 수정됨 (Fixed)
+- 타이틀 화면 시작 시 배경 파도 소리가 부팅 시퀀스의 신스 사운드와 겹쳐서 재생되던 문제를 수정했습니다. 이제 파도 소리는 부팅 시퀀스가 완료된 후 부드럽게 페이드인 됩니다.
+
+---
+
 ## [v1.2.0] - 2026-08-14
 
 ### 추가됨 (Added)
@@ -92,7 +115,6 @@ All notable changes to the Summer Nights project will be documented in this file
 - **카타스트롬 준비 알림:** 카타스트롬 궁극기가 완전히 충전되면 눈에 띄는 보라색 팝업 알림이 표시됩니다.
 - **신기루 오버실드:** 생존 모드의 매 5번째 웨이브마다 열기 신기루가 강력한 보스 기믹으로 등장합니다. 이들은 본체 태양에 가해지는 피해를 막아내는 황금색 오버실드를 공유하며, 본체를 공격하기 전에 반드시 파괴해야 합니다.
 - **다중 플레어:** 무한 모드 후반부(웨이브 10 이상)에서 태양이 샷건처럼 여러 개의 플레어를 동시에 넓게 흩뿌립니다.
-- **부팅 시퀀스 추가:** 타이틀 화면에 4초간 진행되는 부팅 시퀀스를 추가했습니다. PS1 스타일의 신스 패드 사운드와 함께 화면 가장자리를 따라 그려지는 황금색 테두리 애니메이션이 연출됩니다.
 
 ### 개선됨 (Improved)
 - **메뉴 오버레이:** 모든 전체 화면 메뉴(타이틀, 일시정지, 설정, 크레딧)의 시각적 디자인을 표준화하여 일관된 황금색 테두리와 96% 불투명도의 매우 어두운 배경 밝기 감소 효과를 통일했습니다.
@@ -103,12 +125,10 @@ All notable changes to the Summer Nights project will be documented in this file
 - **레벨 전환:** 레벨 클리어 시 2.5초간의 시네마틱 휴식 대기 시간을 추가했습니다.
 - **날씨 유지:** 날씨 이벤트(폭우, 일식)와 태양풍이 웨이브나 레벨 전환 시 갑자기 초기화되지 않고 매끄럽게 유지되도록 개선했습니다.
 - **타이틀 화면 레이아웃:** 메인 메뉴 버튼들을 가로 배열에서 세로 배열로 재구성하여 게임 전체의 UI 디자인 언어와 통일했습니다.
-- **테두리 일관성:** 시작 화면의 커스텀 테두리 드로잉 애니메이션이 게임 내 다른 UI 패널들과 동일한 8픽셀의 둥근 모서리를 가지도록 수학적으로 정확하게 일치시켜 자연스러운 전환을 구현했습니다.
 - **얼음 폭발 제한:** 무한정 모이는 것을 방지하기 위해 최대 소지 가능한 얼음 폭발 횟수를 10회로 제한했습니다.
 
 ### 수정됨 (Fixed)
 - 타이틀 화면에서 재생되는 배경 파도 소리가 한 번 재생된 후 반복되지 않고 끊기는 현상을 수정했습니다.
-- 타이틀 화면 시작 시 배경 파도 소리가 부팅 시퀀스의 신스 사운드와 겹쳐서 재생되던 문제를 수정했습니다. 이제 파도 소리는 부팅 시퀀스가 완료된 후 부드럽게 페이드인 됩니다.
 - 시네마틱 레벨 클리어 전환 중에 레벨 타이머가 뒤에서 조용히 감소하여 게임 오버를 유발하던 버그를 수정했습니다.
 - 엔딩 화면에서 완료한 레벨 수가 실제 개수 대신 항상 "1 레벨 완료"로 잘못 표시되던 문제를 수정했습니다.
 - 열기 신기루의 오버실드 HP 바가 생성될 때 시각적으로 충전되는 애니메이션이 재생되지 않고 즉시 가득 찬 상태로 나타나던 문제를 수정했습니다.
