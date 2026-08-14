@@ -135,23 +135,23 @@ func _load_weapon_model() -> void:
 		var g_mat = g_mesh.material as StandardMaterial3D
 		if GameState.current_weapon_id == "heavy":
 			gun_spray.amount = 200
-			p_mat.spread = 12.0
+			p_mat.spread = 15.0 # Bumped from 12.0 for more splash
 			g_mesh.size = Vector3(0.3, 0.3, 0.3)
-			g_mat.albedo_color = Color(0.0, 0.4, 0.9, 0.9) # Deep heavy blue
+			g_mat.albedo_color = Color(0.1, 0.6, 1.0, 0.9) # Brighter heavy blue
 		elif GameState.current_weapon_id == "precision":
 			gun_spray.amount = 60
-			p_mat.spread = 0.5
+			p_mat.spread = 1.0 # Bumped from 0.5
 			g_mesh.size = Vector3(0.05, 0.05, 0.5)
-			g_mat.albedo_color = Color(0.8, 0.9, 1.0, 0.8) # Laser blue
-			p_mat.initial_velocity_min = 40.0
-			p_mat.initial_velocity_max = 50.0
-		else:
+			g_mat.albedo_color = Color(0.8, 0.95, 1.0, 0.8) # Brighter laser blue
+			p_mat.initial_velocity_min = 35.0
+			p_mat.initial_velocity_max = 45.0
+		else: # Standard / Scatter
 			gun_spray.amount = 100
-			p_mat.spread = 5.0
+			p_mat.spread = 8.0 # Preserving new splashy spread
 			g_mesh.size = Vector3(0.15, 0.15, 0.15)
-			g_mat.albedo_color = Color(0.0, 0.8, 1.0, 0.8) # Cyan
-			p_mat.initial_velocity_min = 25.0
-			p_mat.initial_velocity_max = 35.0
+			g_mat.albedo_color = Color(0.2, 0.9, 1.0, 0.8) # Preserving new vibrant cyan
+			p_mat.initial_velocity_min = 20.0
+			p_mat.initial_velocity_max = 30.0
 	
 	water_changed.emit(water_tank, MAX_WATER)
 
