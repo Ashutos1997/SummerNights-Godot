@@ -164,6 +164,7 @@ SummerNights-Godot/
 | SFX - Ice Shoot | urupin (Freesound) | CC0 |
 | SFX - Ice Hit | antonsoederberg (Freesound) | CC0 |
 | SFX - Seagull Ambiance | Half-Life | Mod Asset |
+| SFX - PS1 Style Synth Boot Audio | nihilanth217 (SampleFocus) | Standard License |
 | VFX - Ice Blast Projectile & Particles | Procedural Godot Primitives | - |
 | VFX - Physical Magma Debris | Quaternius Rock Models & Godot RigidBody3D | - |
 | Procedural Clouds and Seagulls | Hand-crafted GDScript | - |
