@@ -173,33 +173,12 @@ func _update_language() -> void:
 	if credit_lbl:
 		credit_lbl.modulate.a = 0.0
 		
-	# --- Procedural PS1 Synth Generation ---
-	var bus_name = "StartupSynth"
-	var bus_idx = AudioServer.get_bus_index(bus_name)
-	if bus_idx == -1:
-		AudioServer.add_bus()
-		bus_idx = AudioServer.get_bus_count() - 1
-		AudioServer.set_bus_name(bus_idx, bus_name)
-		
-		var reverb = AudioEffectReverb.new()
-		reverb.room_size = 0.9
-		reverb.damping = 0.1
-		reverb.spread = 1.0
-		reverb.wet = 0.8
-		AudioServer.add_bus_effect(bus_idx, reverb)
-		
-		var lpf = AudioEffectLowPassFilter.new()
-		lpf.cutoff_hz = 1000.0
-		AudioServer.add_bus_effect(bus_idx, lpf)
-		
+	# Play the custom PS1 startup audio
 	var startup_audio = AudioStreamPlayer.new()
-	startup_audio.stream = load("res://assets/audio/sfx/sun_defeated.ogg")
-	startup_audio.pitch_scale = 0.15
-	startup_audio.volume_db = 15.0
-	startup_audio.bus = bus_name
+	startup_audio.stream = load("res://assets/audio/sfx/ps1_startup.wav")
+	# If the start is too quiet, you can skip ahead by changing 0.0 below:
 	add_child(startup_audio)
-	startup_audio.play()
-	# ---------------------------------------
+	startup_audio.play(0.0)
 	
 	# Wait for drop (and for the UI layout to fully compute)
 	await get_tree().create_timer(2.5).timeout
@@ -222,6 +201,9 @@ func _update_language() -> void:
 	
 	slide_tw.tween_property(vbox, "position:y", orig_vbox_y, 0.8)
 	slide_tw.tween_property(vbox, "modulate:a", 1.0, 0.6)
+	
+	# Smoothly fade the audio out over 3 seconds so it cuts cleanly
+	slide_tw.tween_property(startup_audio, "volume_db", -80.0, 3.0)
 	
 	if lang_btn:
 		slide_tw.tween_property(lang_btn, "position:y", orig_lang_y, 0.8)
