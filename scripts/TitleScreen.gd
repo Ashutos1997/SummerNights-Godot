@@ -162,6 +162,52 @@ func _update_language() -> void:
 	tw.set_ease(Tween.EASE_OUT)
 	tw.tween_property(color_rect, "modulate:a", 1.0, 0.5)
 
+	# --- STARTUP ANIMATION PROTOTYPE ---
+	var vbox = $ColorRect/VBoxContainer
+	
+	# Initial Hidden State
+	var orig_vbox_y = vbox.position.y
+	var orig_lang_y = lang_btn.position.y if lang_btn else 0
+	var orig_credit_y = credit_lbl.position.y if credit_lbl else 0
+	
+	vbox.position.y += 50
+	vbox.modulate.a = 0.0
+	
+	if lang_btn:
+		lang_btn.position.y += 50
+		lang_btn.modulate.a = 0.0
+	if credit_lbl:
+		credit_lbl.position.y += 50
+		credit_lbl.modulate.a = 0.0
+		
+	# Spawn temporary audio
+	var startup_audio = AudioStreamPlayer.new()
+	startup_audio.stream = load("res://assets/audio/sfx/sun_defeated.ogg")
+	startup_audio.pitch_scale = 0.2
+	startup_audio.volume_db = 10.0
+	add_child(startup_audio)
+	startup_audio.play()
+	
+	# Wait for drop
+	await get_tree().create_timer(2.5).timeout
+	
+	# Slide-in Animation
+	var slide_tw = create_tween()
+	slide_tw.set_parallel(true)
+	slide_tw.set_ease(Tween.EASE_OUT)
+	slide_tw.set_trans(Tween.TRANS_BACK)
+	
+	slide_tw.tween_property(vbox, "position:y", orig_vbox_y, 0.8)
+	slide_tw.tween_property(vbox, "modulate:a", 1.0, 0.6)
+	
+	if lang_btn:
+		slide_tw.tween_property(lang_btn, "position:y", orig_lang_y, 0.8)
+		slide_tw.tween_property(lang_btn, "modulate:a", 1.0, 0.6)
+	if credit_lbl:
+		slide_tw.tween_property(credit_lbl, "position:y", orig_credit_y, 0.8)
+		slide_tw.tween_property(credit_lbl, "modulate:a", 1.0, 0.6)
+	# --- END STARTUP ANIMATION PROTOTYPE ---
+
 	if normal_btn:
 		normal_btn.pressed.connect(_on_normal_pressed)
 	if survival_btn:
