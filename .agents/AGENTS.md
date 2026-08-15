@@ -12,3 +12,6 @@ Read these files to understand existing patterns before proposing new changes. F
 
 ## Art Asset Handling Guidelines
 **CRITICAL RULE:** Never feed the UI artist's work or any provided assets into AI image generation or modification tools. The user strictly prohibits using AI on these assets. You must only implement the assets into the engine exactly as provided.
+
+## Repository Management
+**CRITICAL README RULE:** The project contains both an English `README.md` and a Korean `README.ko.md`. Whenever making updates to the README structure, layout, or content, you MUST ensure that both files are updated synchronously to keep their contents, image counts, and structures completely identical (accounting for language translations).
