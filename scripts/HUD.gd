@@ -1459,6 +1459,9 @@ func _on_phase2_started() -> void:
 	p_tw.tween_callback(func(): phase2_label.visible = false)
 
 func _on_retry_pressed() -> void:
+	GameState.level = 1
+	GameState.current_wave = 1
+	GameState.is_retrying = true
 	get_tree().reload_current_scene()
 
 func _on_menu_pressed() -> void:

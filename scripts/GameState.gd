@@ -63,6 +63,7 @@ const ACHIEVEMENTS: Dictionary = {
 }
 
 var unlocked_achievements: Array[String] = []
+var is_retrying: bool = false
 
 const LEVEL_CONFIG = {
 	1: {

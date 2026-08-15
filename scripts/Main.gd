@@ -464,9 +464,13 @@ func _ready() -> void:
 	
 	_load_weapon_model()
 
-	title_screen_ui = load("res://scenes/TitleScreen.tscn").instantiate()
-	add_child(title_screen_ui)
-	title_screen_ui.start_game.connect(_on_title_start_game)
+	if not GameState.is_retrying:
+		title_screen_ui = load("res://scenes/TitleScreen.tscn").instantiate()
+		add_child(title_screen_ui)
+		title_screen_ui.start_game.connect(_on_title_start_game)
+	else:
+		GameState.is_retrying = false
+		_on_title_start_game(GameState.is_survival_mode)
 
 	# Handshake with persistent LoadingScreen on root viewport
 	var persistent_loader = get_tree().root.get_node_or_null("LoadingScreen")
