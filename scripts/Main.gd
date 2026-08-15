@@ -3186,6 +3186,9 @@ func _on_game_resumed() -> void:
 # ─────────────────────────────────────────────────────────────────────────────
 func _reset_weather() -> void:
 	_end_weather_event()
+	screen_wetness = 0.0
+	if droplets_mat:
+		droplets_mat.set_shader_parameter("wetness", 0.0)
 	var wave_len = GameState.LEVEL_CONFIG[GameState.level].timer if not GameState.is_survival_mode else 60.0
 	weather_timer = randf_range(wave_len * 0.4, wave_len * 0.8)
 
