@@ -1460,10 +1460,22 @@ func _process(delta: float) -> void:
 		
 	# Dynamic Wind Sway on tropical foliage
 	var wind_t = Time.get_ticks_msec() * 0.001
+	var hazard_bend = 0.0
+	if solar_wind_enabled and wind_state == 2:
+		# wind_direction is -1 or 1, wind_strength maxes around WIND_DRIFT_SPEED
+		var intensity = clamp(wind_strength / 280.0, 0.0, 1.0)
+		hazard_bend = intensity * wind_direction * -0.22 # Aggressive bend opposite to drift direction for visual weight
+		
 	for f_prop in foliage_props:
 		if is_instance_valid(f_prop):
+			# Gentle ambient sway
 			var sway_z = sin(wind_t * 1.6 + f_prop.position.x * 0.1) * 0.035
 			var sway_x = cos(wind_t * 1.2 + f_prop.position.z * 0.1) * 0.02
+			
+			# Add violent hazard bend + jitter
+			if hazard_bend != 0.0:
+				sway_z += hazard_bend + (sin(wind_t * 18.0 + f_prop.position.x) * 0.02 * abs(hazard_bend))
+				
 			f_prop.rotation.z = sway_z
 			f_prop.rotation.x = sway_x
 		
