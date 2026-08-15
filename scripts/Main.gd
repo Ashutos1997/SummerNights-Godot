@@ -329,12 +329,14 @@ func _ready() -> void:
 			if ground_mat:
 				var t = create_tween()
 				var hit_delay = 1.5 if is_high_tide else 2.5 # Time for wave to travel to shore
-				# Fade to wet (darker, lower roughness)
-				t.tween_property(ground_mat, "albedo_color", Color(0.60, 0.35, 0.20), 0.8).set_delay(hit_delay)
+				# Fade to wet (darker, lower roughness, slight metallic for specular highlights)
+				t.tween_property(ground_mat, "albedo_color", Color(0.55, 0.35, 0.20), 0.8).set_delay(hit_delay)
 				t.parallel().tween_property(ground_mat, "roughness", 0.15, 0.8).set_delay(hit_delay)
+				t.parallel().tween_property(ground_mat, "metallic", 0.3, 0.8).set_delay(hit_delay)
 				# Stay wet briefly, then fade back to dry
-				t.tween_property(ground_mat, "albedo_color", Color(0.85, 0.55, 0.35), 8.0).set_delay(1.0)
-				t.parallel().tween_property(ground_mat, "roughness", 0.88, 8.0).set_delay(1.0)
+				t.tween_property(ground_mat, "albedo_color", Color(0.85, 0.55, 0.35), 8.0).set_delay(1.5)
+				t.parallel().tween_property(ground_mat, "roughness", 0.88, 8.0).set_delay(1.5)
+				t.parallel().tween_property(ground_mat, "metallic", 0.0, 8.0).set_delay(1.5)
 	)
 	add_child(wave_timer)
 
@@ -1065,7 +1067,7 @@ func _build_environment() -> void:
 	
 	# Detail texture layer for subtle sand color variation
 	ground_mat.detail_enabled = true
-	ground_mat.detail_blend_mode = 0 # MIX / MUL blend mode
+	ground_mat.detail_blend_mode = 3 # BaseMaterial3D.DETAIL_BLEND_MODE_MUL
 	ground_mat.detail_uv_layer = 0   # UV1
 	ground_mat.detail_albedo = g_tex
 	
