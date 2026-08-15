@@ -1237,6 +1237,14 @@ theme_override_font_sizes/font_size = 12
 text = "Galmuri11  ·  quiple  ·  SIL OFL"
 horizontal_alignment = 1
 
+[node name="ItmUI3b" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "Inter Font  ·  Rasmus Andersson  ·  SIL OFL"
+horizontal_alignment = 1
+
 [node name="ItmUI4" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
 layout_mode = 2
 mouse_filter = 2

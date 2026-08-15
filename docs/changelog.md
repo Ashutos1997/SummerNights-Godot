@@ -12,6 +12,7 @@ All notable changes to the Summer Nights project will be documented in this file
 ### Improved
 - **In-Game Achievements:** The Achievements menu is now fully accessible from the in-game Pause Menu, allowing players to check their progress without returning to the Title Screen.
 - **Border Consistency:** Unified the custom animated startup border to mathematically trace the exact 8-pixel corner radius used by the static panels across the rest of the game's UI for a seamless transition.
+- **Typography Readability:** English body text (achievement descriptions, credits) now uses the Inter Medium font for improved legibility, while titles and headers retain the stylized Kenney Future typeface.
 
 ### Fixed
 - Fixed an issue where the ambient ocean audio aggressively played at the start of the title screen, clashing with the startup synth. The ocean now smoothly fades in *after* the boot sequence completes.
@@ -110,6 +111,7 @@ All notable changes to the Summer Nights project will be documented in this file
 ### 개선됨 (Improved)
 - **게임 내 업적 확인:** 이제 게임 내 일시정지 메뉴에서도 업적 갤러리에 접근할 수 있어, 타이틀 화면으로 돌아가지 않고도 달성 진행도를 즉시 확인할 수 있습니다.
 - **테두리 일관성:** 시작 화면의 커스텀 테두리 드로잉 애니메이션이 게임 내 다른 UI 패널들과 동일한 8픽셀의 둥근 모서리를 가지도록 수학적으로 정확하게 일치시켜 자연스러운 전환을 구현했습니다.
+- **타이포그래피 가독성:** 영어 본문 텍스트(업적 설명, 크레딧)에 Inter Medium 폰트를 적용하여 가독성을 개선했습니다. 제목과 헤더에는 스타일리쉬한 Kenney Future 서체가 유지됩니다.
 
 ### 수정됨 (Fixed)
 - 타이틀 화면 시작 시 배경 파도 소리가 부팅 시퀀스의 신스 사운드와 겹쳐서 재생되던 문제를 수정했습니다. 이제 파도 소리는 부팅 시퀀스가 완료된 후 부드럽게 페이드인 됩니다.

@@ -674,6 +674,7 @@ func _on_language_toggle(lang: String) -> void:
 func _apply_language(lang: String) -> void:
 	var is_kr := lang == "KR"
 	var font: Font = galmuri_font if is_kr else kenney_font
+	var body_font: Font = galmuri_font if is_kr else load("res://assets/fonts/Inter-Medium.ttf")
 
 	# ── Gameplay HUD (Galmuri11 is small, so we scale it up in KR to visually match EN) ──
 	if heat_label:
@@ -782,8 +783,11 @@ func _apply_language(lang: String) -> void:
 		if credits_list:
 			for child in credits_list.get_children():
 					if child is Label:
-						if font: child.add_theme_font_override("font", font)
 						var is_header = child.name.begins_with("Hdr")
+						if is_header:
+							if font: child.add_theme_font_override("font", font)
+						else:
+							if body_font: child.add_theme_font_override("font", body_font)
 						child.add_theme_font_size_override("font_size", 20 if is_header else 15)
 						# Outline and colors
 						child.add_theme_constant_override("outline_size", 3 if is_header else 2)
