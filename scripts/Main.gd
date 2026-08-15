@@ -330,11 +330,11 @@ func _ready() -> void:
 				var t = create_tween()
 				var hit_delay = 1.5 if is_high_tide else 2.5 # Time for wave to travel to shore
 				# Fade to wet (darker, lower roughness, slight metallic for specular highlights)
-				t.tween_property(ground_mat, "albedo_color", Color(0.55, 0.35, 0.20), 0.8).set_delay(hit_delay)
+				t.tween_property(ground_mat, "albedo_color", Color(0.5, 0.5, 0.5), 0.8).set_delay(hit_delay)
 				t.parallel().tween_property(ground_mat, "roughness", 0.15, 0.8).set_delay(hit_delay)
 				t.parallel().tween_property(ground_mat, "metallic", 0.3, 0.8).set_delay(hit_delay)
 				# Stay wet briefly, then fade back to dry
-				t.tween_property(ground_mat, "albedo_color", Color(0.85, 0.55, 0.35), 8.0).set_delay(1.5)
+				t.tween_property(ground_mat, "albedo_color", Color(0.85, 0.85, 0.85), 8.0).set_delay(1.5)
 				t.parallel().tween_property(ground_mat, "roughness", 0.88, 8.0).set_delay(1.5)
 				t.parallel().tween_property(ground_mat, "metallic", 0.0, 8.0).set_delay(1.5)
 	)
@@ -1054,7 +1054,7 @@ func _build_environment() -> void:
 	g_normal_tex.bump_strength = 3.0
 	
 	ground_mat = StandardMaterial3D.new()
-	ground_mat.albedo_color = Color(0.85, 0.55, 0.35) # Warm tropical sand tone
+	ground_mat.albedo_color = Color(0.85, 0.85, 0.85) # Pasty white/grey sand tone
 	ground_mat.albedo_texture = g_tex
 	ground_mat.uv1_scale = Vector3(8.0, 8.0, 8.0)
 	ground_mat.roughness = 0.88
