@@ -36,7 +36,13 @@ To maintain a consistent shape language across the game, corner rounding follows
 
 ## 3. Typography
 
-All in-game UI uses the custom font (loaded via `.ttf` and applied programmatically).
+The game uses custom fonts loaded via `.ttf` and applied programmatically depending on the UI context and the active language setting.
+
+*   **English (EN):**
+    *   **Titles & Headers:** `Kenney Future.ttf` (Bold, squared-off arcade look)
+    *   **Body Text & Descriptions:** `Inter-Medium.ttf` (Clean, highly legible sans-serif for paragraphs)
+*   **Korean (KR):**
+    *   **All Text:** `Galmuri11.ttf` (Retro pixel-art aesthetic that natively supports full KR characters while maintaining the game's style)
 
 ### Text Outlines and Shadows
 To ensure legibility against the bright, 3D sun background, heavy outlines and drop shadows are applied to all text.

@@ -1800,7 +1800,9 @@ func show_achievements_screen() -> void:
 		
 	var is_kr = GameState.language == "KR"
 	var font_path = "res://assets/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
+	var body_font_path = "res://assets/fonts/Galmuri11.ttf" if is_kr else "res://assets/fonts/Inter-Medium.ttf"
 	var font = load(font_path)
+	var body_font = load(body_font_path)
 	
 	var title = achievements_screen.get_node("CenterContainer/VBoxContainer/Title")
 	title.text = "업적" if is_kr else "ACHIEVEMENTS"
@@ -1867,7 +1869,7 @@ func show_achievements_screen() -> void:
 		ach_desc.text = (ach["desc_kr"] if is_kr else ach["desc_en"]) if unlocked else ("잠김" if is_kr else "LOCKED")
 		ach_desc.custom_minimum_size = Vector2(550, 0)
 		ach_desc.autowrap_mode = TextServer.AUTOWRAP_WORD
-		_style_lbl(ach_desc, 16, Color(1.0, 1.0, 1.0, 0.8) if unlocked else Color(0.4, 0.4, 0.4, 0.8), 1, Color.BLACK, font)
+		_style_lbl(ach_desc, 16, Color(1.0, 1.0, 1.0, 0.8) if unlocked else Color(0.4, 0.4, 0.4, 0.8), 1, Color.BLACK, body_font)
 		vbox.add_child(ach_desc)
 		
 		achievement_list.add_child(panel)
