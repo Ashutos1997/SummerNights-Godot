@@ -217,7 +217,7 @@ func _ready() -> void:
 	timer_label.text = ""
 	
 	callout_label = Label.new()
-	combo_label.get_parent().add_child(callout_label)
+	combo_label.add_sibling(callout_label)
 	callout_label.visible = false
 	callout_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	callout_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
