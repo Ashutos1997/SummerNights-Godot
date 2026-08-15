@@ -28,7 +28,8 @@ uniform float wave_height2 : hint_range(0.0, 1.0, 0.05) = 0.15;
 uniform float wave_pulse_time = -1000.0;
 uniform float pulse_speed : hint_range(0.1, 20.0, 0.1) = 12.0;
 uniform float pulse_width : hint_range(0.1, 20.0, 0.1) = 6.0;
-uniform float pulse_height : hint_range(0.0, 5.0, 0.1) = 1.8;
+uniform float pulse_height : hint_range(0.0, 15.0, 0.1) = 1.8;
+uniform float pulse_curl : hint_range(0.0, 2.0, 0.05) = 0.0;
 
 varying float pulse_mask;
 
@@ -69,6 +70,9 @@ void vertex() {
 	pulse_mask = p_mask; // Pass to fragment shader for foam
 	
 	VERTEX.y += w1 + w2 + (p_mask * pulse_height);
+	
+	// Gerstner Curl: Push the crest forward to create a surfing wave
+	VERTEX.z += (p_mask * pulse_height * pulse_curl);
 }
 
 void fragment() {
