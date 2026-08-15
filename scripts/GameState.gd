@@ -45,6 +45,20 @@ const ACHIEVEMENTS: Dictionary = {
 		"title_kr": "그림자 걷는 자",
 		"desc_en": "Survive a Solar Eclipse.",
 		"desc_kr": "일식 이벤트에서 생존하세요."
+	},
+	"bird_watcher": {
+		"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_white.png",
+		"title_en": "Shoo!",
+		"title_kr": "훠이!",
+		"desc_en": "Shoo away 5 seagulls.",
+		"desc_kr": "갈매기 5마리를 쫓아내세요."
+	},
+	"flare_catcher": {
+		"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_jewel_red.png",
+		"title_en": "Flare Catcher",
+		"title_kr": "플레어 사냥꾼",
+		"desc_en": "Intercept 10 Solar Flares.",
+		"desc_kr": "태양 플레어를 10회 요격하세요."
 	}
 }
 
@@ -194,6 +208,8 @@ var survival_time: float = 0.0
 var best_survival_time: float = 0.0
 var current_score: int = 0
 var high_score: int = 0
+var seagulls_shooed: int = 0
+var flares_intercepted: int = 0
 
 const SETTINGS_FILE_PATH = "user://settings.cfg"
 
@@ -229,6 +245,8 @@ func save_settings() -> void:
 	config.set_value("Localization", "language", language)
 	config.set_value("Stats", "high_score", high_score)
 	config.set_value("Stats", "unlocked_achievements", unlocked_achievements)
+	config.set_value("Stats", "seagulls_shooed", seagulls_shooed)
+	config.set_value("Stats", "flares_intercepted", flares_intercepted)
 	config.save(SETTINGS_FILE_PATH)
 
 func load_settings() -> void:
@@ -241,6 +259,8 @@ func load_settings() -> void:
 		language = config.get_value("Localization", "language", "EN")
 		best_survival_time = config.get_value("Stats", "best_survival_time", 0.0)
 		high_score = config.get_value("Stats", "high_score", 0)
+		seagulls_shooed = config.get_value("Stats", "seagulls_shooed", 0)
+		flares_intercepted = config.get_value("Stats", "flares_intercepted", 0)
 		var loaded_achievements = config.get_value("Stats", "unlocked_achievements", [])
 		unlocked_achievements.assign(loaded_achievements)
 		

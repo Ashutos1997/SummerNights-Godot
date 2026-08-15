@@ -62,7 +62,7 @@ Weather events trigger based on a dynamic probability system tied to the current
     *   Ice Charge indicators.
     *   Catastrom Ultimate notification toasts.
     *   Wave Timer and live Score counter (which formats and scales dynamically for juice).
-*   **Achievements System:** An in-game achievements gallery is available from both the Title Screen and the Pause Menu. The game tracks gameplay milestones (e.g. scoring 10,000 points, beating Level 5, reaching a 3.0x combo) and unlocks achievements dynamically. When an achievement is unlocked, a custom animated UI Toast descends from the top of the screen accompanied by an audio cue.
+*   **Achievements System:** An in-game achievements gallery is available from both the Title Screen and the Pause Menu. The game tracks gameplay milestones (e.g. scoring 10,000 points, beating Level 5, reaching a 3.0x combo, shooing seagulls, intercepting solar flares) and unlocks achievements dynamically. When an achievement is unlocked, a custom animated UI Toast descends from the top of the screen accompanied by an audio cue.
 *   **Startup Sequence:** The Title Screen features a dynamic "tech demo" boot sequence. It plays a custom synth audio that swells over 4 seconds, while a golden border procedurally draws itself around the perimeter. At the peak of the audio swell, the UI aggressively bounces up into place and the audio smoothly fades out while the ambient ocean fades in.
 *   **Global Overlays:** Full-screen menus (Title, Pause, Settings, Credits) are unified by a sleek golden border and an ultra-dark background dimming effect to eliminate visual clutter.
 *   **Accessibility & Settings:**

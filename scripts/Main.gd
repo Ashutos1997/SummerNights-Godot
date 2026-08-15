@@ -1695,6 +1695,11 @@ func _process(delta: float) -> void:
 							var closest_pt = aim_origin + aim_dir * proj_t
 							if b_pos.distance_to(closest_pt) < 1.5:
 								seagull_layer.scare_bird(bird)
+								GameState.seagulls_shooed += 1
+								if GameState.seagulls_shooed >= 5 and not "bird_watcher" in GameState.unlocked_achievements:
+									GameState.unlock_achievement("bird_watcher")
+								else:
+									GameState.save_settings()
 		
 		# Check Solar Flare Interception (Requires ~0.33s of tracking water spray)
 		var intercepted_flares = []
@@ -1743,6 +1748,12 @@ func _process(delta: float) -> void:
 				GameState.add_score(int(500.0 * c_mult))
 				water_refill_count += 1
 				water_changed.emit(water_tank, MAX_WATER)
+				
+				GameState.flares_intercepted += 1
+				if GameState.flares_intercepted >= 10 and not "flare_catcher" in GameState.unlocked_achievements:
+					GameState.unlock_achievement("flare_catcher")
+				else:
+					GameState.save_settings()
 
 				
 				if hud and hud.has_method("_on_projectile_hit"):

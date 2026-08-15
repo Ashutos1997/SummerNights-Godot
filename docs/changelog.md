@@ -5,7 +5,7 @@ All notable changes to the Summer Nights project will be documented in this file
 ## [v2.0.0] - WIP
 
 ### Added
-- **Achievements System:** Added an in-game achievements gallery accessible from the Title Screen. Unlocking achievements displays a custom animated Toast notification with an audio cue. Current achievements include "Dawn Breaks" (Beat Level 5), "Arcade Legend" (Score 10,000 pts), "Slam Dunk" (Use Catastrom), "Untouchable" (Hit 3.0x Combo), "Rock Solid" (Evaporate Magma), and "Shadow Walker" (Survive an Eclipse).
+- **Achievements System:** Added an in-game achievements gallery accessible from the Title Screen. Unlocking achievements displays a custom animated Toast notification with an audio cue. Current achievements include "Dawn Breaks" (Beat Level 5), "Arcade Legend" (Score 10,000 pts), "Slam Dunk" (Use Catastrom), "Untouchable" (Hit 3.0x Combo), "Rock Solid" (Evaporate Magma), "Shadow Walker" (Survive an Eclipse), "Shoo!" (Shoo 5 Seagulls), and "Flare Catcher" (Intercept 10 Solar Flares).
 - **Startup Boot Sequence:** The Title Screen now features a 4-second boot-up sequence syncing a swelling PS1-style synth pad with a procedurally animated golden border that draws itself around the screen.
 - **Rogue Waves:** Occasional large, foamy "rogue waves" now procedurally roll in from the distant horizon towards the island, making the ocean feel much more dynamic and lively without breaking the stylized aesthetic.
 
@@ -103,7 +103,7 @@ All notable changes to the Summer Nights project will be documented in this file
 ## [v2.0.0] - WIP
 
 ### 추가됨 (Added)
-- **업적 시스템 (Achievements System):** 타이틀 화면에서 확인할 수 있는 게임 내 업적 갤러리를 추가했습니다. 업적을 달성하면 애니메이션 효과가 적용된 팝업(Toast) 알림과 효과음이 재생됩니다. "새벽이 밝다" (레벨 5 클리어), "아케이드 전설" (10,000점 달성), "슬램 덩크" (카타스트롬 사용), "언터처블" (3.0x 콤보 달성), "단단한 바위" (마그마 파편 증발), "그림자 추적자" (일식 생존) 업적이 포함되어 있습니다.
+- **업적 시스템 (Achievements System):** 타이틀 화면에서 확인할 수 있는 게임 내 업적 갤러리를 추가했습니다. 업적을 달성하면 애니메이션 효과가 적용된 팝업(Toast) 알림과 효과음이 재생됩니다. "새벽이 밝다" (레벨 5 클리어), "아케이드 전설" (10,000점 달성), "슬램 덩크" (카타스트롬 사용), "언터처블" (3.0x 콤보 달성), "단단한 바위" (마그마 파편 증발), "그림자 추적자" (일식 생존), "훠이!" (갈매기 5마리 쫓아내기), "플레어 사냥꾼" (태양 플레어 10회 요격) 업적이 포함되어 있습니다.
 - **부팅 시퀀스 추가:** 타이틀 화면에 4초간 진행되는 부팅 시퀀스를 추가했습니다. PS1 스타일의 신스 패드 사운드와 함께 화면 가장자리를 따라 그려지는 황금색 테두리 애니메이션이 연출됩니다.
 - **돌발 파도 (Rogue Waves):** 먼 수평선에서 섬을 향해 거대한 거품을 일으키며 밀려오는 "돌발 파도"가 무작위로 생성되도록 추가했습니다. 기존의 로우폴리(low-poly) 아트 스타일을 해치지 않으면서 바다를 훨씬 더 역동적이고 생동감 있게 만들어 줍니다.
 

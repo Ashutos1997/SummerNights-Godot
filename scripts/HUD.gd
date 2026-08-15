@@ -1834,28 +1834,41 @@ func show_achievements_screen() -> void:
 		style.corner_radius_bottom_right = 6
 		panel.add_theme_stylebox_override("panel", style)
 		
+		var margin = MarginContainer.new()
+		margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		margin.add_theme_constant_override("margin_left", 16)
+		margin.add_theme_constant_override("margin_right", 16)
+		panel.add_child(margin)
+		
+		var hbox = HBoxContainer.new()
+		hbox.add_theme_constant_override("separation", 20)
+		margin.add_child(hbox)
+		
 		var icon_rect = TextureRect.new()
 		icon_rect.texture = load(ach["icon"]) if unlocked else load("res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_white.png")
 		icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon_rect.custom_minimum_size = Vector2(64, 64)
-		icon_rect.position = Vector2(16, 18)
+		icon_rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		icon_rect.modulate = Color(1.0, 1.0, 1.0, 1.0) if unlocked else Color(0.3, 0.3, 0.3, 0.5)
-		panel.add_child(icon_rect)
+		hbox.add_child(icon_rect)
+		
+		var vbox = VBoxContainer.new()
+		vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+		vbox.add_theme_constant_override("separation", 0)
+		hbox.add_child(vbox)
 		
 		var ach_title = Label.new()
 		ach_title.text = (ach["title_kr"] if is_kr else ach["title_en"]) if unlocked else "???"
-		ach_title.position = Vector2(96, 12)
 		_style_lbl(ach_title, 28, Color(1.0, 0.85, 0.2, 1.0) if unlocked else Color(0.5, 0.5, 0.5, 1.0), 2, Color.BLACK, font)
-		panel.add_child(ach_title)
+		vbox.add_child(ach_title)
 		
 		var ach_desc = Label.new()
 		ach_desc.text = (ach["desc_kr"] if is_kr else ach["desc_en"]) if unlocked else ("잠김" if is_kr else "LOCKED")
-		ach_desc.position = Vector2(96, 52)
 		ach_desc.custom_minimum_size = Vector2(550, 0)
 		ach_desc.autowrap_mode = TextServer.AUTOWRAP_WORD
 		_style_lbl(ach_desc, 16, Color(1.0, 1.0, 1.0, 0.8) if unlocked else Color(0.4, 0.4, 0.4, 0.8), 1, Color.BLACK, font)
-		panel.add_child(ach_desc)
+		vbox.add_child(ach_desc)
 		
 		achievement_list.add_child(panel)
 
