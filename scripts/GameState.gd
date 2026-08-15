@@ -1,6 +1,54 @@
 extends Node
 
 signal score_updated(new_score: int)
+signal achievement_unlocked(id)
+
+const ACHIEVEMENTS: Dictionary = {
+	"dawn_breaks": {
+		"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png",
+		"title_en": "Dawn Breaks",
+		"title_kr": "새벽이 밝다",
+		"desc_en": "Beat Level 5 in Normal Mode.",
+		"desc_kr": "일반 모드에서 레벨 5를 클리어하세요."
+	},
+	"arcade_legend": {
+		"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png",
+		"title_en": "Arcade Legend",
+		"title_kr": "아케이드 전설",
+		"desc_en": "Score over 10,000 points in a single run.",
+		"desc_kr": "한 게임에서 10,000점 이상을 달성하세요."
+	},
+	"slam_dunk": {
+		"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png",
+		"title_en": "Slam Dunk",
+		"title_kr": "슬램 덩크",
+		"desc_en": "Successfully use the Catastrom ultimate.",
+		"desc_kr": "카타스트롬 궁극기를 성공적으로 사용하세요."
+	},
+	"untouchable": {
+		"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png",
+		"title_en": "Untouchable",
+		"title_kr": "언터처블",
+		"desc_en": "Reach the maximum 3.0x Water Combo multiplier.",
+		"desc_kr": "최대 3.0배의 물줄기 콤보 배율에 도달하세요."
+	},
+	"rock_solid": {
+		"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png",
+		"title_en": "Rock Solid",
+		"title_kr": "단단한 바위",
+		"desc_en": "Evaporate a Magma Rock using the water gun.",
+		"desc_kr": "물총을 사용하여 마그마 파편을 증발시키세요."
+	},
+	"shadow_walker": {
+		"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png",
+		"title_en": "Shadow Walker",
+		"title_kr": "그림자 걷는 자",
+		"desc_en": "Survive a Solar Eclipse.",
+		"desc_kr": "일식 이벤트에서 생존하세요."
+	}
+}
+
+var unlocked_achievements: Array[String] = []
 
 const LEVEL_CONFIG = {
 	1: {
@@ -179,8 +227,8 @@ func save_settings() -> void:
 	config.set_value("Accessibility", "reduce_motion", reduce_motion)
 	config.set_value("Video", "fullscreen", fullscreen)
 	config.set_value("Localization", "language", language)
-	config.set_value("Stats", "best_survival_time", best_survival_time)
 	config.set_value("Stats", "high_score", high_score)
+	config.set_value("Stats", "unlocked_achievements", unlocked_achievements)
 	config.save(SETTINGS_FILE_PATH)
 
 func load_settings() -> void:
@@ -193,6 +241,8 @@ func load_settings() -> void:
 		language = config.get_value("Localization", "language", "EN")
 		best_survival_time = config.get_value("Stats", "best_survival_time", 0.0)
 		high_score = config.get_value("Stats", "high_score", 0)
+		var loaded_achievements = config.get_value("Stats", "unlocked_achievements", [])
+		unlocked_achievements.assign(loaded_achievements)
 		
 		# Apply loaded fullscreen state immediately
 		if fullscreen:
@@ -206,3 +256,14 @@ func add_score(amount: int) -> void:
 	if current_score > high_score:
 		high_score = current_score
 	emit_signal("score_updated", current_score)
+	
+	if current_score >= 10000:
+		unlock_achievement("arcade_legend")
+
+func unlock_achievement(id: String) -> void:
+	if id in unlocked_achievements: return
+	if not ACHIEVEMENTS.has(id): return
+	
+	unlocked_achievements.append(id)
+	save_settings()
+	emit_signal("achievement_unlocked", id)

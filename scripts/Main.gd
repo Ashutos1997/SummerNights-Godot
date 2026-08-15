@@ -1821,6 +1821,8 @@ func _process(delta: float) -> void:
 					combo_active = true
 					if hud and hud.has_method("show_combo"): hud.show_combo(true)
 				var current_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
+				if current_mult >= 3.0:
+					GameState.unlock_achievement("untouchable")
 				if hud and hud.has_method("update_combo_text"):
 					hud.update_combo_text(current_mult)
 					
@@ -1833,6 +1835,8 @@ func _process(delta: float) -> void:
 					if hud and hud.has_method("show_combo"): hud.show_combo(true)
 				
 				var current_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
+				if current_mult >= 3.0:
+					GameState.unlock_achievement("untouchable")
 				if hud and hud.has_method("update_combo_text"):
 					hud.update_combo_text(current_mult)
 		else:
@@ -2435,6 +2439,7 @@ func _update_sky(instant: bool) -> void:
 	
 func _trigger_catastrom_dunk() -> void:
 	shake(1.5, 0.5)
+	GameState.unlock_achievement("slam_dunk")
 	
 	if sun_face:
 		sun_face.texture = _draw_face("dizzy")
@@ -2487,6 +2492,9 @@ func _win() -> void:
 	tween.tween_property(sun_mat, "albedo_color", Color(0.1, 0.5, 1.0), 1.0)
 	tween.parallel().tween_property(sun_mat, "emission", Color(0.0, 0.2, 1.0), 1.0)
 	
+	if GameState.level >= 5 and not GameState.is_survival_mode:
+		GameState.unlock_achievement("dawn_breaks")
+		
 	if GameState.level >= 6:
 		game_complete.emit()
 	else:
@@ -3195,6 +3203,18 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_E:
 				_end_weather_event()
 				_start_weather_event("eclipse")
+			KEY_A:
+				# Cheat: Unlock a random locked achievement to test the UI!
+				var locked = []
+				for id in GameState.ACHIEVEMENTS.keys():
+					if not id in GameState.unlocked_achievements:
+						locked.append(id)
+				if locked.size() > 0:
+					GameState.unlock_achievement(locked.pick_random())
+				else:
+					if hud:
+						hud.show_toast("All Unlocked!", "Reset settings.cfg to test again.", "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1,1,1))
+
 			KEY_W:
 				if level_timer > 0.0:
 					level_timer = 0.1 # Skip wave

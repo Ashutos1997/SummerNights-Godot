@@ -15,10 +15,14 @@ extends Control
 @onready var credit_lbl = $CreditLine
 
 signal start_game(is_survival: bool)
+signal show_achievements()
 
 var is_starting: bool = false
 var best_time_lbl: Label = null
+var ach_btn: Button
 
+var achievements_screen: Control
+var achievement_list: VBoxContainer
 var border_progress: float = -1.0:
 	set(value):
 		border_progress = value
@@ -81,10 +85,21 @@ func _draw() -> void:
 
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	_update_language()
 
 	if lang_btn:
 		lang_btn.pressed.connect(_on_lang_btn_pressed)
+		
+	if dev_btn: dev_btn.visible = false
+	
+	# Dynamically add Achievements button
+	ach_btn = dev_btn.duplicate()
+	ach_btn.name = "AchievementsBtn"
+	ach_btn.visible = true
+	dev_btn.get_parent().add_child(ach_btn)
+	ach_btn.pressed.connect(_show_achievements)
+	
+	_build_achievements_screen()
+	_update_language()
 
 func _update_language() -> void:
 
@@ -98,6 +113,7 @@ func _update_language() -> void:
 	if normal_btn: normal_btn.text = "일반 모드" if is_kr else "NORMAL MODE"
 	if survival_btn: survival_btn.text = "무한 모드" if is_kr else "ENDLESS MODE"
 	if dev_btn: dev_btn.text = "DEV"
+	if ach_btn: ach_btn.text = "업적" if is_kr else "ACHIEVEMENTS"
 	
 	if font:
 		var title_color = Color(1.0, 0.75, 0.15, 1.0)
@@ -181,7 +197,7 @@ func _update_language() -> void:
 			
 		# Style buttons
 		if normal_btn and survival_btn and dev_btn:
-			for btn in [normal_btn, survival_btn, dev_btn, lang_btn]:
+			for btn in [normal_btn, survival_btn, dev_btn, lang_btn, ach_btn]:
 				if not btn: continue
 				btn.add_theme_font_override("font", font)
 				btn.add_theme_font_size_override("font_size", 20 if is_kr else 18)
@@ -214,6 +230,8 @@ func _update_language() -> void:
 					style_pressed.bg_color = Color(0.8, 0.2, 1.0, 0.4)
 				elif btn == lang_btn:
 					style_pressed.bg_color = Color(1.0, 1.0, 1.0, 0.4)
+				elif btn == ach_btn:
+					style_pressed.bg_color = Color(0.9, 0.6, 0.1, 0.4)
 				btn.add_theme_stylebox_override("pressed", style_pressed)
 				btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 
@@ -337,3 +355,216 @@ func _on_lang_btn_pressed() -> void:
 	GameState.language = "KR" if GameState.language == "EN" else "EN"
 	GameState.save_settings()
 	get_tree().reload_current_scene()
+
+func _build_achievements_screen() -> void:
+	achievements_screen = Control.new()
+	achievements_screen.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	achievements_screen.visible = false
+	achievements_screen.z_index = 50 # ensure it draws over everything
+	add_child(achievements_screen)
+	
+	var bg = ColorRect.new()
+	bg.color = Color(0, 0, 0, 0.96)
+	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	achievements_screen.add_child(bg)
+	
+	var border = Panel.new()
+	border.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	border.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	border.offset_left = 24
+	border.offset_top = 24
+	border.offset_right = -24
+	border.offset_bottom = -24
+	
+	var border_style = StyleBoxFlat.new()
+	border_style.bg_color = Color(0, 0, 0, 0)
+	border_style.border_width_left = 2
+	border_style.border_width_top = 2
+	border_style.border_width_right = 2
+	border_style.border_width_bottom = 2
+	border_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
+	border_style.corner_radius_top_left = 8
+	border_style.corner_radius_top_right = 8
+	border_style.corner_radius_bottom_left = 8
+	border_style.corner_radius_bottom_right = 8
+	border.add_theme_stylebox_override("panel", border_style)
+	achievements_screen.add_child(border)
+	
+	var center = CenterContainer.new()
+	center.name = "CenterContainer"
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	achievements_screen.add_child(center)
+	
+	var vbox = VBoxContainer.new()
+	vbox.name = "VBoxContainer"
+	vbox.add_theme_constant_override("separation", 24)
+	center.add_child(vbox)
+	
+	var title = Label.new()
+	title.name = "Title"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+	
+	var scroll = ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(700, 440)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	vbox.add_child(scroll)
+	
+	var list_margin = MarginContainer.new()
+	list_margin.add_theme_constant_override("margin_right", 16)
+	scroll.add_child(list_margin)
+	
+	achievement_list = VBoxContainer.new()
+	achievement_list.add_theme_constant_override("separation", 16)
+	list_margin.add_child(achievement_list)
+	
+	var back_btn = Button.new()
+	back_btn.name = "BackBtn"
+	back_btn.text = "BACK"
+	back_btn.custom_minimum_size = Vector2(240, 48)
+	
+	var style_normal = StyleBoxFlat.new()
+	style_normal.bg_color = Color(0.1, 0.1, 0.1, 0.8)
+	style_normal.border_width_left = 2
+	style_normal.border_width_right = 2
+	style_normal.border_width_top = 2
+	style_normal.border_width_bottom = 2
+	style_normal.border_color = Color(0.3, 0.3, 0.3, 0.8)
+	style_normal.corner_radius_top_left = 4
+	style_normal.corner_radius_top_right = 4
+	style_normal.corner_radius_bottom_left = 4
+	style_normal.corner_radius_bottom_right = 4
+	back_btn.add_theme_stylebox_override("normal", style_normal)
+	
+	var style_hover = style_normal.duplicate()
+	style_hover.bg_color = Color(0.2, 0.2, 0.2, 0.9)
+	style_hover.border_color = Color(1.0, 0.85, 0.2, 1.0)
+	back_btn.add_theme_stylebox_override("hover", style_hover)
+	
+	var style_pressed = style_normal.duplicate()
+	style_pressed.bg_color = Color(1.0, 0.85, 0.2, 0.4)
+	back_btn.add_theme_stylebox_override("pressed", style_pressed)
+	back_btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	
+	var btn_center = CenterContainer.new()
+	btn_center.name = "CenterContainer"
+	btn_center.add_child(back_btn)
+	vbox.add_child(btn_center)
+	
+	back_btn.pressed.connect(_hide_achievements)
+
+func _show_achievements() -> void:
+	if is_starting or not achievements_screen: return
+	
+	for child in achievement_list.get_children():
+		child.queue_free()
+		
+	var is_kr = GameState.language == "KR"
+	var font_path = "res://assets/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
+	var font = load(font_path)
+	
+	var title = achievements_screen.get_node("CenterContainer/VBoxContainer/Title")
+	title.text = "업적" if is_kr else "ACHIEVEMENTS"
+	_style_label(title, 36, Color(1.0, 0.85, 0.2, 1.0), font)
+	title.add_theme_constant_override("outline_size", 4)
+	title.add_theme_color_override("font_outline_color", Color.BLACK)
+	
+	var back_btn = achievements_screen.get_node("CenterContainer/VBoxContainer/CenterContainer/BackBtn")
+	back_btn.text = "돌아가기" if is_kr else "BACK"
+	back_btn.add_theme_font_override("font", font)
+	back_btn.add_theme_font_size_override("font_size", 24)
+	back_btn.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8, 1.0))
+	back_btn.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 1.0, 1.0))
+	
+	for ach_id in GameState.ACHIEVEMENTS.keys():
+		var ach = GameState.ACHIEVEMENTS[ach_id]
+		var unlocked = ach_id in GameState.unlocked_achievements
+		
+		var panel = Panel.new()
+		panel.custom_minimum_size = Vector2(660, 100)
+		panel.mouse_filter = Control.MOUSE_FILTER_PASS
+		
+		var style = StyleBoxFlat.new()
+		style.bg_color = Color(0.1, 0.1, 0.15, 0.8) if unlocked else Color(0.05, 0.05, 0.08, 0.8)
+		style.border_width_left = 1
+		style.border_width_right = 1
+		style.border_width_top = 1
+		style.border_width_bottom = 1
+		style.border_color = Color(1.0, 0.85, 0.2, 0.5) if unlocked else Color(0.3, 0.3, 0.3, 0.5)
+		style.corner_radius_top_left = 6
+		style.corner_radius_top_right = 6
+		style.corner_radius_bottom_left = 6
+		style.corner_radius_bottom_right = 6
+		panel.add_theme_stylebox_override("panel", style)
+		
+		var icon_rect = TextureRect.new()
+		icon_rect.texture = load(ach["icon"]) if unlocked else load("res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_white.png")
+		icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon_rect.custom_minimum_size = Vector2(64, 64)
+		icon_rect.position = Vector2(16, 18)
+		icon_rect.modulate = Color(1.0, 1.0, 1.0, 1.0) if unlocked else Color(0.3, 0.3, 0.3, 0.5)
+		panel.add_child(icon_rect)
+		
+		var ach_title = Label.new()
+		ach_title.text = (ach["title_kr"] if is_kr else ach["title_en"]) if unlocked else "???"
+		ach_title.position = Vector2(96, 12)
+		_style_label(ach_title, 28, Color(1.0, 0.85, 0.2, 1.0) if unlocked else Color(0.5, 0.5, 0.5, 1.0), font)
+		ach_title.add_theme_constant_override("outline_size", 2)
+		ach_title.add_theme_color_override("font_outline_color", Color.BLACK)
+		panel.add_child(ach_title)
+		
+		var ach_desc = Label.new()
+		ach_desc.text = (ach["desc_kr"] if is_kr else ach["desc_en"]) if unlocked else ("잠김" if is_kr else "LOCKED")
+		ach_desc.position = Vector2(96, 52)
+		ach_desc.custom_minimum_size = Vector2(550, 0)
+		ach_desc.autowrap_mode = TextServer.AUTOWRAP_WORD
+		_style_label(ach_desc, 16, Color(1.0, 1.0, 1.0, 0.8) if unlocked else Color(0.4, 0.4, 0.4, 0.8), font)
+		ach_desc.add_theme_constant_override("outline_size", 1)
+		ach_desc.add_theme_color_override("font_outline_color", Color.BLACK)
+		panel.add_child(ach_desc)
+		
+		achievement_list.add_child(panel)
+
+	achievements_screen.visible = true
+	achievements_screen.modulate.a = 0.0
+	achievements_screen.set_meta("is_hiding", false)
+	var tw = create_tween()
+	tw.tween_property(achievements_screen, "modulate:a", 1.0, 0.25)
+	
+	var back_node = achievements_screen.get_node_or_null("CenterContainer/VBoxContainer/CenterContainer/BackBtn")
+	if back_node: back_node.grab_focus()
+	
+	var audio = AudioStreamPlayer.new()
+	audio.stream = load("res://assets/sfx/ui_tick.wav")
+	audio.bus = "SFX"
+	add_child(audio)
+	audio.play()
+	audio.finished.connect(audio.queue_free)
+
+func _hide_achievements() -> void:
+	if not achievements_screen or not achievements_screen.visible: return
+	if achievements_screen.get_meta("is_hiding", false): return
+	achievements_screen.set_meta("is_hiding", true)
+	
+	var audio = AudioStreamPlayer.new()
+	audio.stream = load("res://assets/sfx/ui_tick.wav")
+	audio.bus = "SFX"
+	add_child(audio)
+	audio.play()
+	audio.finished.connect(audio.queue_free)
+	
+	var tw = create_tween()
+	tw.tween_property(achievements_screen, "modulate:a", 0.0, 0.2)
+	tw.tween_callback(func(): 
+		achievements_screen.visible = false
+		achievements_screen.set_meta("is_hiding", false)
+		if ach_btn: ach_btn.grab_focus()
+	)
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+		if achievements_screen and achievements_screen.visible:
+			_hide_achievements()
+			get_viewport().set_input_as_handled()

@@ -43,8 +43,9 @@ These elements sit on top of the Core Gameplay HUD and blur/dim the background w
 ### Pause Screen (`pause_screen`)
 *   Activated by pressing `ESC`.
 *   Blurs the background and pauses the `get_tree().paused` state.
-*   Contains the `SettingsScreen` (Volume, Sensitivity, Reduce Motion, Fullscreen, Language toggles) and the `CreditsScreen`.
+*   Contains the `SettingsScreen` (Volume, Sensitivity, Reduce Motion, Fullscreen, Language toggles), the `CreditsScreen`, and the `AchievementsScreen`.
     *   The **CreditsScreen** uses a vertically scrolling `ScrollContainer` with a cinematic auto-scroll effect that can be overridden by manual mouse scrolling.
+    *   The **AchievementsScreen** uses a vertically scrolling `ScrollContainer` displaying dynamically built panels for all configured achievements. It operates completely independently of the game's pause state (PROCESS_MODE_ALWAYS) to ensure its internal UI scrolling physics and animations never freeze when accessed from the Pause menu.
 
 ### Weapon Wheel (`WeaponWheel`)
 *   Activated by holding `TAB`.
