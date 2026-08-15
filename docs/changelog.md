@@ -15,6 +15,10 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### Fixed
 - Fixed an issue where the ambient ocean audio aggressively played at the start of the title screen, clashing with the startup synth. The ocean now smoothly fades in *after* the boot sequence completes.
+- Fixed a UI state lock that caused the pause menu to freeze when returning from the achievements screen using a mouse.
+- Fixed a bug where Godot's UI physics would fail to process scrolling for the achievements menu when the game world was paused.
+- The ESC key now correctly closes the achievements screen on the Title Screen.
+- Removed the Dev Mode toggle from the Title Screen to enforce standard gameplay unlocks.
 
 ---
 
@@ -109,6 +113,10 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### 수정됨 (Fixed)
 - 타이틀 화면 시작 시 배경 파도 소리가 부팅 시퀀스의 신스 사운드와 겹쳐서 재생되던 문제를 수정했습니다. 이제 파도 소리는 부팅 시퀀스가 완료된 후 부드럽게 페이드인 됩니다.
+- 마우스로 업적 화면에서 일시정지 메뉴로 돌아올 때 메뉴 입력이 멈추던 UI 상태 잠금 버그를 수정했습니다.
+- 게임이 일시정지 상태일 때 고도의 UI 물리 엔진이 업적 메뉴의 스크롤을 처리하지 못하던 버그를 수정했습니다.
+- 타이틀 화면에서 ESC 키를 눌러 업적 화면을 올바르게 닫을 수 있도록 수정했습니다.
+- 일반적인 게임 플레이 환경을 위해 타이틀 화면에서 개발자 모드 토글 버튼을 제거했습니다.
 
 ---
 
