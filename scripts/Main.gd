@@ -2540,7 +2540,7 @@ func _win() -> void:
 		level = GameState.level
 		if level == 4:
 			GameState.catastrom_charge = 1.0
-		sun_defeated.emit(level)
+		sun_defeated.emit(level - 1)
 		
 		# Seamless reload
 		var reload = func():
