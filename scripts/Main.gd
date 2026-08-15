@@ -163,8 +163,6 @@ var env_res:     Environment
 var sky_mat:     ProceduralSkyMaterial
 var _sky_shader_mat: ShaderMaterial
 var haze_mat:    ShaderMaterial
-var droplets_mat: ShaderMaterial
-var screen_wetness: float = 0.0
 var steam_particles: GPUParticles3D
 var splash_particles_pool: Array[GPUParticles3D] = []
 var splash_idx: int = 0
@@ -303,21 +301,6 @@ func _ready() -> void:
 	haze_mat.set_shader_parameter("heat_ratio", 1.0)
 	haze_rect.material = haze_mat
 	haze_layer.add_child(haze_rect)
-	
-	# Screen Water Droplets overlay (drawn above haze, under HUD)
-	var droplets_layer = CanvasLayer.new()
-	droplets_layer.layer = 0
-	add_child(droplets_layer)
-	
-	var droplets_rect = ColorRect.new()
-	droplets_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT, Control.PRESET_MODE_MINSIZE, 0)
-	droplets_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	
-	droplets_mat = ShaderMaterial.new()
-	droplets_mat.shader = load("res://assets/screen_droplets.gdshader")
-	droplets_mat.set_shader_parameter("wetness", 0.0)
-	droplets_rect.material = droplets_mat
-	droplets_layer.add_child(droplets_rect)
 
 	_build_scene()
 	_build_environment()
@@ -353,10 +336,6 @@ func _ready() -> void:
 				t.parallel().tween_property(ground_mat, "roughness", 0.15, 0.8).set_delay(hit_delay)
 				t.parallel().tween_property(ground_mat, "metallic", 0.3, 0.8).set_delay(hit_delay)
 				
-				# Splash the screen
-				var splash_tw = create_tween()
-				var splash_amt = 0.9 if is_high_tide else 0.5
-				splash_tw.tween_method(func(val): screen_wetness = val, screen_wetness, splash_amt, 0.3).set_delay(hit_delay)
 				# Stay wet briefly, then fade back to dry
 				t.tween_property(ground_mat, "albedo_color", Color(0.85, 0.85, 0.85), 8.0).set_delay(1.5)
 				t.parallel().tween_property(ground_mat, "roughness", 0.88, 8.0).set_delay(1.5)
@@ -1481,12 +1460,6 @@ func _process(delta: float) -> void:
 	if active_weather == "rain":
 		temperature = max(0.0, temperature - 5.0 * delta)
 		water_tank = min(MAX_WATER, water_tank + 25.0 * delta)
-		screen_wetness = min(0.8, screen_wetness + delta * 0.15)
-	else:
-		screen_wetness = max(0.0, screen_wetness - delta * 0.08) # Slowly dry
-		
-	if droplets_mat:
-		droplets_mat.set_shader_parameter("wetness", screen_wetness)
 		
 	# Dynamic Wind Sway on tropical foliage
 	var wind_t = Time.get_ticks_msec() * 0.001
@@ -3186,9 +3159,6 @@ func _on_game_resumed() -> void:
 # ─────────────────────────────────────────────────────────────────────────────
 func _reset_weather() -> void:
 	_end_weather_event()
-	screen_wetness = 0.0
-	if droplets_mat:
-		droplets_mat.set_shader_parameter("wetness", 0.0)
 	var wave_len = GameState.LEVEL_CONFIG[GameState.level].timer if not GameState.is_survival_mode else 60.0
 	weather_timer = randf_range(wave_len * 0.4, wave_len * 0.8)
 
