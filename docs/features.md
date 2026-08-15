@@ -40,8 +40,10 @@ Weather events trigger based on a dynamic probability system tied to the current
 *   **Rainstorms:** A massive downpour begins. Ambient lighting cools, and the Sun's heat begins to slowly drop. The player's water tank rapidly refills, allowing for infinite firing during the storm.
 *   **Solar Eclipses:** The sky drops into a moody twilight and the Sun becomes a dark silhouette with a bright corona. The Sun stops passively generating heat, but it begins rapidly firing high-speed, dark purple "Shadow Flares" that must be intercepted.
 
-## 5. Visuals & Environment
-*   **Dynamic Sky & Lighting:** The sky gradient, sun color (albedo/emission), and ambient lighting transition dynamically from afternoon to sunset as the wave progresses.
+## 5. Environment & Level Design
+*   **Dynamic Ocean:** The stylized ocean uses depth-based tinting, scrolling foam lines, and procedurally generated rogue waves that occasionally roll in from the horizon towards the island.
+*   **Dynamic Sky & Day/Night Cycle:** The sky uses custom shaders for sun/moon positioning, moving clouds, and stars. The scene transitions between daylight (bright blues) and night (deep purples) based on the wave progress.
+*   **Foliage & Props:** Low-poly stylized foliage (palms, bushes, rocks) scattered via GDScript.
 *   **Sun Expressions:** The 2D face on the Sun reacts to events (getting angry, taking damage, critical states).
 *   **Heat Distortion:** A screen-space shader applies heat shimmer/refraction over the environment, which intensifies as the Sun gets hotter.
 *   **Seagull Interactions:** Shooting the background seagulls with water causes them to squawk (pitch-shifted SFX), drop a burst of feathers, and rapidly flee higher into the sky.

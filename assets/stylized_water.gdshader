@@ -24,6 +24,14 @@ uniform vec2 wave_dir2    = vec2(-0.5, 0.8);
 uniform float wave_height1 : hint_range(0.0, 1.0, 0.05) = 0.25;
 uniform float wave_height2 : hint_range(0.0, 1.0, 0.05) = 0.15;
 
+// ── Rogue Waves ─────────────────────────────────────────────────────────────
+uniform float wave_pulse_time = -1000.0;
+uniform float pulse_speed : hint_range(0.1, 20.0, 0.1) = 12.0;
+uniform float pulse_width : hint_range(0.1, 20.0, 0.1) = 6.0;
+uniform float pulse_height : hint_range(0.0, 5.0, 0.1) = 1.8;
+
+varying float pulse_mask;
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Noise helper for wave displacement & foam pattern
 // ─────────────────────────────────────────────────────────────────────────────
@@ -51,7 +59,16 @@ void vertex() {
 	float w1 = sin(world_pos.x * wave_scale * wave_dir1.x + world_pos.z * wave_scale * wave_dir1.y + t) * wave_height1;
 	float w2 = cos(world_pos.x * wave_scale * wave_dir2.x + world_pos.z * wave_scale * wave_dir2.y + t * 1.5) * wave_height2;
 	
-	VERTEX.y += w1 + w2;
+	// Rogue Wave Pulse traveling along Z
+	// Starts deep in the horizon (negative Z) and travels forward
+	float pulse_pos = (TIME - wave_pulse_time) * pulse_speed - 100.0;
+	float dist = abs(world_pos.z - pulse_pos);
+	
+	// Gaussian pulse for the wave shape
+	float p_mask = exp(-dist * dist / (pulse_width * pulse_width));
+	pulse_mask = p_mask; // Pass to fragment shader for foam
+	
+	VERTEX.y += w1 + w2 + (p_mask * pulse_height);
 }
 
 void fragment() {
@@ -76,6 +93,10 @@ void fragment() {
 	// Add scrolling noise to shoreline foam for stylized organic wave break
 	float foam_noise = noise(UV * 8.0 + vec2(TIME * 0.15, TIME * 0.1));
 	float foam_final_mask = smoothstep(0.15, 0.65, shore_mask + (foam_noise * 0.25 * shore_mask));
+	
+	// Add rogue wave crest foam
+	float rogue_foam_mask = smoothstep(0.5, 0.95, pulse_mask) * (0.8 + foam_noise * 0.5);
+	foam_final_mask = clamp(foam_final_mask + rogue_foam_mask, 0.0, 1.0);
 	
 	vec3 final_color = mix(water_base, color_foam.rgb, foam_final_mask);
 	

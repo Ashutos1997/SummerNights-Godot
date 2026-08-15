@@ -304,6 +304,18 @@ func _ready() -> void:
 	_update_sky(true)
 	_sync_light_to_sun()
 	
+	# Occasional Rogue Wave Spawner
+	var wave_timer = Timer.new()
+	wave_timer.wait_time = randf_range(8.0, 18.0)
+	wave_timer.autostart = true
+	wave_timer.one_shot = false
+	wave_timer.timeout.connect(func():
+		if water_mat and water_mat is ShaderMaterial:
+			water_mat.set_shader_parameter("wave_pulse_time", Time.get_ticks_msec() / 1000.0)
+			wave_timer.wait_time = randf_range(12.0, 25.0)
+	)
+	add_child(wave_timer)
+
 
 	level = GameState.level
 	defeat_triggered = false
