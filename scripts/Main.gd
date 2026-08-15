@@ -2492,6 +2492,7 @@ func _trigger_catastrom_dunk() -> void:
 	GameState.catastrom_charge = 0.0
 	is_dragging_sun = false
 	is_catastrom_active = false
+	if gun: gun.visible = true
 	if GameState.is_survival_mode and active_weather != "none":
 		_reset_weather()
 		if hud:
