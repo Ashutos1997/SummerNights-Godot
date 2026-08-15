@@ -1,91 +1,95 @@
+// Open Source Rain on Glass
+// Based on standard community Voronoi refraction logic (MIT)
+// Adapted for Godot 4 and Summer Nights
+
 shader_type canvas_item;
 
-uniform sampler2D screen_texture : hint_screen_texture, filter_nearest;
+uniform sampler2D screen_texture : hint_screen_texture, filter_linear_mipmap;
 uniform float wetness : hint_range(0.0, 1.0) = 0.0;
+uniform float drop_size = 12.0;
 
-// Simple random generator
-vec2 random2(vec2 p) {
-    return fract(sin(vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)))) * 43758.5453);
+vec2 rand(vec2 p) {
+    p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
+    return fract(sin(p) * 43758.5453);
 }
 
 void fragment() {
     vec2 uv = SCREEN_UV;
-    vec4 col = texture(screen_texture, uv);
     
     if (wetness > 0.01) {
-        float t = TIME * 1.5;
+        float t = TIME * 1.0;
         
-        // Base grid for large chunky drops
-        vec2 grid = vec2(8.0, 5.0);
-        vec2 guv = uv * grid;
+        // --- Trails ---
+        vec2 trail_uv = uv * vec2(drop_size * 2.0, drop_size * 0.5);
+        trail_uv.y -= t * 2.0;
+        vec2 trail_i = floor(trail_uv);
+        vec2 trail_f = fract(trail_uv);
         
-        // Drops slide down
-        guv.y -= t;
+        float trail_active = rand(trail_i).x;
+        if(trail_active < wetness * 0.6) {
+            float trail_wobble = sin(uv.y * 30.0 + t) * 0.05;
+            float trail_x = abs((trail_f.x - 0.5) + trail_wobble);
+            if (trail_x < 0.08) {
+                uv.y += 0.008 * wetness;
+            }
+        }
         
-        vec2 i_guv = floor(guv);
-        vec2 f_guv = fract(guv);
+        // --- Drops (Voronoi) ---
+        vec2 drop_uv = uv * vec2(drop_size, drop_size * 0.6);
+        drop_uv.y -= t * 0.5;
         
-        // Jitter drop position per cell
-        vec2 offset = random2(i_guv) * 0.5 - 0.25;
-        vec2 drop_center = vec2(0.5) + offset;
+        vec2 i = floor(drop_uv);
+        vec2 f = fract(drop_uv);
         
-        // Procedural wobble to make them look like chunky irregular blobs
-        float angle = atan(f_guv.y - drop_center.y, f_guv.x - drop_center.x);
-        float wobble = sin(angle * 4.0 + t * 5.0) * 0.06;
+        vec2 min_dist_vec = vec2(1.0);
+        float min_dist = 1.0;
+        float drop_val = 0.0;
         
-        float dist = length(f_guv - drop_center) + wobble;
-        float drop_chance = random2(i_guv + vec2(3.14)).x;
-        
-        // Radius scales strongly with wetness to create massive splats at 1.0
-        float radius = 0.15 + (wetness * 0.4) * random2(i_guv).y;
-        
-        if (drop_chance < wetness) {
-            if (dist < radius) {
-                // Inside drop! Pure 2D flat cyan style
-                vec3 drop_color = vec3(0.1, 0.75, 1.0); 
+        for(int y = -1; y <= 1; y++) {
+            for(int x = -1; x <= 1; x++) {
+                vec2 neighbor = vec2(float(x), float(y));
+                vec2 p = rand(i + neighbor);
                 
-                // Hard outline (thick dark blue)
-                if (dist > radius * 0.75) {
-                    drop_color = vec3(0.02, 0.2, 0.5);
-                } 
-                // Hard stylized cel-shaded highlight crescent
-                else {
-                    vec2 light_dir = normalize(vec2(-1.0, -1.0));
-                    float highlight = dot(normalize(f_guv - drop_center), light_dir);
-                    if (highlight > 0.65 && dist > radius * 0.3 && dist < radius * 0.6) {
-                        drop_color = vec3(1.0); // Pure white highlight
+                // Add jitter to dropping
+                p.y += sin(t * 2.0 + p.x * 8.0) * 0.1;
+                
+                float active_chance = rand(i + neighbor + vec2(1.0)).x;
+                if (active_chance < wetness) {
+                    vec2 diff = neighbor + p - f;
+                    float dist = length(diff);
+                    
+                    if(dist < min_dist) {
+                        min_dist = dist;
+                        min_dist_vec = diff;
+                        drop_val = 1.0;
                     }
                 }
-                
-                // Apply flat color over the screen
-                col.rgb = mix(col.rgb, drop_color, min(1.0, wetness * 1.5));
             }
         }
         
-        // Layer 2: Fast sliding cartoon streaks
-        vec2 streak_uv = uv * vec2(18.0, 1.0);
-        streak_uv.y -= t * 2.5;
-        vec2 is = floor(streak_uv);
-        
-        if (random2(is).x < wetness * 0.6) {
-            float sx = fract(streak_uv.x);
-            float sy = fract(streak_uv.y);
+        float radius = 0.25 + wetness * 0.15;
+        if(min_dist < radius && drop_val > 0.0) {
+            vec2 normal = min_dist_vec / radius;
             
-            // Wobble streak width
-            float s_wobble = sin(uv.y * 40.0 + t * 10.0) * 0.04;
-            float s_width = 0.12 + s_wobble;
+            // Refract SCREEN_UV
+            uv += normal * 0.025 * wetness;
             
-            // Short streaky bursts
-            if (abs(sx - 0.5) < s_width && sy < 0.2) {
-                vec3 streak_color = vec3(0.2, 0.8, 1.0);
-                // Thick vertical borders for the streak
-                if (abs(sx - 0.5) > s_width * 0.6 || sy < 0.02 || sy > 0.18) {
-                    streak_color = vec3(0.02, 0.2, 0.5); // Outline
-                }
-                col.rgb = mix(col.rgb, streak_color, min(1.0, wetness * 1.5));
-            }
+            vec4 base_color = texture(screen_texture, uv);
+            
+            // Specular Highlight
+            vec2 light_dir = normalize(vec2(-1.0, -1.0));
+            float spec = max(0.0, dot(normal, light_dir));
+            spec = pow(spec, 6.0);
+            
+            COLOR = base_color + vec4(spec * 0.35 * wetness);
+        } else {
+            COLOR = texture(screen_texture, uv);
         }
+        
+        // Very subtle bluish tint for wetness
+        COLOR.rgb = mix(COLOR.rgb, vec3(0.8, 0.9, 1.0), 0.05 * wetness);
+        
+    } else {
+        COLOR = texture(screen_texture, uv);
     }
-    
-    COLOR = col;
 }
