@@ -41,8 +41,9 @@ Weather events trigger based on a dynamic probability system tied to the current
 *   **Solar Eclipses:** The sky drops into a moody twilight and the Sun becomes a dark silhouette with a bright corona. The Sun stops passively generating heat, but it begins rapidly firing high-speed, dark purple "Shadow Flares" that must be intercepted.
 
 ## 5. Environment & Level Design
-*   **Dynamic Ocean:** The stylized ocean uses depth-based tinting, scrolling foam lines, and procedurally generated rogue waves that occasionally roll in from the horizon towards the island.
-*   **Dynamic Sky & Day/Night Cycle:** The sky uses custom shaders for sun/moon positioning, moving clouds, and stars. The scene transitions between daylight (bright blues) and night (deep purples) based on the wave progress.
+*   **Dynamic Ocean:** Procedural water material (`water.gdshader`) with depth-based color absorption, edge intersection foam, specular highlights, and real-time vertex displacement.
+    *   **Rogue Waves:** Randomly spawned giant waves that travel towards the shore, adding unpredictable, dynamic motion to the ocean surface. When a rogue wave crashes, it temporarily turns the island's sand dark and glossy, slowly drying off over several seconds for enhanced immersion.
+*   **Sky & Weather:** Procedural sky shader featuring smooth time-of-day gradients, atmospheric fog, dynamic clouds, and a stylized sun. The scene transitions between daylight (bright blues) and night (deep purples) based on the wave progress.
 *   **Foliage & Props:** Low-poly stylized foliage (palms, bushes, rocks) scattered via GDScript.
 *   **Sun Expressions:** The 2D face on the Sun reacts to events (getting angry, taking damage, critical states).
 *   **Heat Distortion:** A screen-space shader applies heat shimmer/refraction over the environment, which intensifies as the Sun gets hotter.

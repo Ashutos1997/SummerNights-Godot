@@ -228,6 +228,7 @@ var magma_rock_prefabs: Array[PackedScene] = [
 var active_magma_rocks: Array[RigidBody3D] = []
 
 var water_mat:   Material
+var ground_mat:  StandardMaterial3D
 
 var sun_time:    float = 0.0
 var sun_base_pos := Vector3(0, 10.5, -42) # Raised height so sun sits majestically in upper sky
@@ -323,6 +324,17 @@ func _ready() -> void:
 				
 			water_mat.set_shader_parameter("wave_pulse_time", Time.get_ticks_msec() / 1000.0)
 			wave_timer.wait_time = randf_range(12.0, 25.0)
+			
+			# Wet sand effect
+			if ground_mat:
+				var t = create_tween()
+				var hit_delay = 1.5 if is_high_tide else 2.5 # Time for wave to travel to shore
+				# Fade to wet (darker, lower roughness)
+				t.tween_property(ground_mat, "albedo_color", Color(0.60, 0.35, 0.20), 0.8).set_delay(hit_delay)
+				t.parallel().tween_property(ground_mat, "roughness", 0.15, 0.8).set_delay(hit_delay)
+				# Stay wet briefly, then fade back to dry
+				t.tween_property(ground_mat, "albedo_color", Color(0.85, 0.55, 0.35), 8.0).set_delay(1.0)
+				t.parallel().tween_property(ground_mat, "roughness", 0.88, 8.0).set_delay(1.0)
 	)
 	add_child(wave_timer)
 
@@ -1039,7 +1051,7 @@ func _build_environment() -> void:
 	g_normal_tex.as_normal_map = true
 	g_normal_tex.bump_strength = 3.0
 	
-	var ground_mat = StandardMaterial3D.new()
+	ground_mat = StandardMaterial3D.new()
 	ground_mat.albedo_color = Color(0.85, 0.55, 0.35) # Warm tropical sand tone
 	ground_mat.albedo_texture = g_tex
 	ground_mat.uv1_scale = Vector3(8.0, 8.0, 8.0)
