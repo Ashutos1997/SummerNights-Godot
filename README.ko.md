@@ -14,21 +14,27 @@ Godot 4로 제작된 3D 아케이드 슈터. 태양을 식히기 전에 열기�
 
 ## 스크린샷
 
-<p align="center">
-  <img src="screenshots/01_Title_Screen_KR.png" width="48%">
-  <img src="screenshots/02_Core_Gameplay_KR.png" width="48%">
-  <br>
-  <img src="screenshots/03_Weapon_Wheel.png" width="48%">
-  <img src="screenshots/08_Catastrom.png" width="48%">
-  <br>
-  <img src="screenshots/09_Mirage.png" width="48%">
-  <img src="screenshots/10_Weather.png" width="48%">
-  <br>
-  <img src="screenshots/05_Weather_Solar_Wind.png" width="48%">
-  <img src="screenshots/06_Pause_Screen_KR.png" width="48%">
-  <br>
-  <img src="screenshots/11_Achievements_KR.png" width="48%">
-</p>
+<table align="center">
+  <tr>
+    <td align="center"><img src="screenshots/01_Title_Screen_KR.png" width="100%"><br><b>타이틀 화면</b></td>
+    <td align="center"><img src="screenshots/02_Core_Gameplay_KR.png" width="100%"><br><b>핵심 게임플레이</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="screenshots/03_Weapon_Wheel.png" width="100%"><br><b>무기 휠</b></td>
+    <td align="center"><img src="screenshots/08_Catastrom.png" width="100%"><br><b>카타스트롬 궁극기</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="screenshots/09_Mirage.png" width="100%"><br><b>열기 신기루</b></td>
+    <td align="center"><img src="screenshots/10_Weather.png" width="100%"><br><b>날씨 이벤트</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="screenshots/05_Weather_Solar_Wind.png" width="100%"><br><b>태양풍</b></td>
+    <td align="center"><img src="screenshots/06_Pause_Screen_KR.png" width="100%"><br><b>일시정지 화면</b></td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2"><img src="screenshots/11_Achievements_KR.png" width="50%"><br><b>업적 갤러리</b></td>
+  </tr>
+</table>
 
 ---
 

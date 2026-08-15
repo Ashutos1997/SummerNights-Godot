@@ -14,21 +14,27 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 
 ## Screenshots
 
-<p align="center">
-  <img src="screenshots/01_Title_Screen_EN.png" width="48%">
-  <img src="screenshots/02_Core_Gameplay.png" width="48%">
-  <br>
-  <img src="screenshots/03_Weapon_Wheel.png" width="48%">
-  <img src="screenshots/08_Catastrom.png" width="48%">
-  <br>
-  <img src="screenshots/09_Mirage.png" width="48%">
-  <img src="screenshots/10_Weather.png" width="48%">
-  <br>
-  <img src="screenshots/05_Weather_Solar_Wind.png" width="48%">
-  <img src="screenshots/06_Pause_Screen_EN.png" width="48%">
-  <br>
-  <img src="screenshots/11_Achievements_EN.png" width="48%">
-</p>
+<table align="center">
+  <tr>
+    <td align="center"><img src="screenshots/01_Title_Screen_EN.png" width="100%"><br><b>Title Screen</b></td>
+    <td align="center"><img src="screenshots/02_Core_Gameplay.png" width="100%"><br><b>Core Gameplay</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="screenshots/03_Weapon_Wheel.png" width="100%"><br><b>Weapon Wheel</b></td>
+    <td align="center"><img src="screenshots/08_Catastrom.png" width="100%"><br><b>Catastrom Ultimate</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="screenshots/09_Mirage.png" width="100%"><br><b>Heat Mirage</b></td>
+    <td align="center"><img src="screenshots/10_Weather.png" width="100%"><br><b>Weather Events</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="screenshots/05_Weather_Solar_Wind.png" width="100%"><br><b>Solar Wind</b></td>
+    <td align="center"><img src="screenshots/06_Pause_Screen_EN.png" width="100%"><br><b>Pause Screen</b></td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2"><img src="screenshots/11_Achievements_EN.png" width="50%"><br><b>Achievements Gallery</b></td>
+  </tr>
+</table>
 
 ---
 
