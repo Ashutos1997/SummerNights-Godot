@@ -1064,13 +1064,9 @@ func _build_environment() -> void:
 	ground_mat.normal_enabled = true
 	ground_mat.normal_texture = g_normal_tex
 	ground_mat.normal_scale = 0.4
-	
-	# Detail texture layer for subtle sand color variation
-	ground_mat.detail_enabled = true
-	ground_mat.detail_blend_mode = 3 # BaseMaterial3D.DETAIL_BLEND_MODE_MUL
-	ground_mat.detail_uv_layer = 0   # UV1
-	ground_mat.detail_albedo = g_tex
-	
+	# Detail texture removed to prevent "cooked" overly dark noise. 
+	# The albedo_texture handles the noise, and albedo_color will tint it properly.
+	ground_mat.detail_enabled = false
 	ground_mesh.material = ground_mat
 	var ground = MeshInstance3D.new()
 	ground.mesh = ground_mesh
