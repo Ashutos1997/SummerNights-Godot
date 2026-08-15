@@ -250,10 +250,7 @@ var sun_mirage_target: float = 0.0
 var gun_spray:   GPUParticles3D
 var wet_spawn_timer: float = 0.0
 
-func _process(delta: float) -> void:
-	if droplets_mat:
-		screen_wetness = move_toward(screen_wetness, 0.0, delta * 0.1)
-		droplets_mat.set_shader_parameter("wetness", screen_wetness)
+
 
 func _ready() -> void:
 	ice_shoot_sfx = AudioStreamPlayer.new()
