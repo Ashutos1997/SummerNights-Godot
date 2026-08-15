@@ -311,7 +311,7 @@ func _ready() -> void:
 	# New elements
 	_style_lbl(timer_label, 22, Color(1.0, 0.8, 0.2, 1.0), 2, Color.BLACK, font)
 	
-	var callout_font = galmuri_font if TranslationServer.get_locale().begins_with("ko") else kenney_font
+	var callout_font = galmuri_font if GameState.language == "KR" else kenney_font
 	_style_lbl(callout_label, 36, Color(0.4, 0.9, 1.0, 1.0), 3, Color.BLACK, callout_font)
 	
 	if score_label:
@@ -722,6 +722,10 @@ func _apply_language(lang: String) -> void:
 		if font: score_label.add_theme_font_override("font", font)
 		score_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
 		_update_score_display(display_score)
+		
+	if callout_label:
+		if font: callout_label.add_theme_font_override("font", font)
+		callout_label.add_theme_font_size_override("font_size", 42 if is_kr else 36)
 
 	# ── Top-right labels (in HBoxContainer, sizes scaled to match visually) ──
 	# (These buttons were moved to the pause menu, styled in _ready and translated below)
@@ -1422,16 +1426,16 @@ func update_combo_text(mult: float) -> void:
 		var callout_text = ""
 		if mult >= 3.0:
 			tier = 4
-			callout_text = "SUB-ZERO!" if not TranslationServer.get_locale().begins_with("ko") else "절대영도!"
+			callout_text = "절대영도!" if GameState.language == "KR" else "SUB-ZERO!"
 		elif mult >= 2.5:
 			tier = 3
-			callout_text = "ICE COLD!" if not TranslationServer.get_locale().begins_with("ko") else "빙점!"
+			callout_text = "빙점!" if GameState.language == "KR" else "ICE COLD!"
 		elif mult >= 2.0:
 			tier = 2
-			callout_text = "FROSTY!" if not TranslationServer.get_locale().begins_with("ko") else "짜릿해!"
+			callout_text = "짜릿해!" if GameState.language == "KR" else "FROSTY!"
 		elif mult >= 1.5:
 			tier = 1
-			callout_text = "CHILL!" if not TranslationServer.get_locale().begins_with("ko") else "시원해!"
+			callout_text = "시원해!" if GameState.language == "KR" else "CHILL!"
 			
 		if tier > last_callout_tier:
 			last_callout_tier = tier
