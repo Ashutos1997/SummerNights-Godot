@@ -38,7 +38,7 @@ var achievement_toast_container: Control
 @onready var end_level_lbl     = $HUD/EndScreen/ColorRect/VBoxContainer/LevelCount
 @onready var end_prompt_lbl    = $HUD/EndScreen/ColorRect/VBoxContainer/RestartPrompt
 
-@onready var timer_label       = $HUD/TopRow/TimerBox/TimerLabel
+@onready var timer_label       = $HUD/TimerLabel
 @onready var weather_icon_container = $HUD/WeatherIconContainer
 @onready var weather_icon       = $HUD/WeatherIconContainer/Icon
 @onready var score_label       = $HUD/ScoreLabel
