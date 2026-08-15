@@ -158,6 +158,7 @@ SummerNights-Godot/
 | 양식화된 물 셰이더 | Jtfinlay | MIT |
 | 열기 왜곡 셰이더 | MinionsArt | CC0 |
 | 폰트 - Kenney Future | Kenney | CC0 |
+| 영어 본문 폰트 - Inter | Rasmus Andersson | SIL OFL |
 | 한국어 폰트 - Galmuri11 | quiple | SIL OFL |
 | UI Pack Adventure | Kenney | CC0 |
 | SFX - 40가지 CC0 물/물결 효과음 | OpenGameArt | CC0 |
