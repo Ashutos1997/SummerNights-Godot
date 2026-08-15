@@ -10,11 +10,17 @@ All notable changes to the Summer Nights project will be documented in this file
 - **Rogue Waves:** Occasional large, foamy "rogue waves" now procedurally roll in from the distant horizon towards the island, making the ocean feel much more dynamic and lively without breaking the stylized aesthetic.
 
 ### Improved
+- **Environment Polish:** The island's foliage (trees and bushes) now aggressively bends and sways when the Solar Wind hazard is active, visually telegraphing the wind direction.
 - **In-Game Achievements:** The Achievements menu is now fully accessible from the in-game Pause Menu, allowing players to check their progress without returning to the Title Screen.
 - **Border Consistency:** Unified the custom animated startup border to mathematically trace the exact 8-pixel corner radius used by the static panels across the rest of the game's UI for a seamless transition.
 - **Typography Readability:** English body text (achievement descriptions, credits) now uses the Inter Medium font for improved legibility, while titles and headers retain the stylized Kenney Future typeface.
 
 ### Fixed
+- Fixed a visual bug where the beach sand material appeared "cooked" and dark; restored the original pale look while preserving the dynamic wet sand effect from rogue waves.
+- Fixed a bug where clicking "Retry" on the lose screen would boot the player to the Title Screen instead of restarting the run.
+- The Retry button now correctly resets the level and wave progression back to 1.
+- Fixed a bug where the weapon model would disappear and not return after executing the Catastrom ultimate.
+- Fixed an off-by-one error where the "Level Cleared" message would incorrectly display the next level number instead of the level just completed.
 - Fixed an issue where the ambient ocean audio aggressively played at the start of the title screen, clashing with the startup synth. The ocean now smoothly fades in *after* the boot sequence completes.
 - Fixed a UI state lock that caused the pause menu to freeze when returning from the achievements screen using a mouse.
 - Fixed a bug where Godot's UI physics would fail to process scrolling for the achievements menu when the game world was paused.
@@ -109,11 +115,17 @@ All notable changes to the Summer Nights project will be documented in this file
 - **돌발 파도 (Rogue Waves):** 먼 수평선에서 섬을 향해 거대한 거품을 일으키며 밀려오는 "돌발 파도"가 무작위로 생성되도록 추가했습니다. 기존의 로우폴리(low-poly) 아트 스타일을 해치지 않으면서 바다를 훨씬 더 역동적이고 생동감 있게 만들어 줍니다.
 
 ### 개선됨 (Improved)
+- **환경 폴리싱:** 태양풍(Solar Wind) 위험 요소가 활성화되었을 때 섬의 식물(야자수 및 수풀)이 강하게 구부러지고 흔들리도록 변경하여 풍향을 시각적으로 명확하게 전달합니다.
 - **게임 내 업적 확인:** 이제 게임 내 일시정지 메뉴에서도 업적 갤러리에 접근할 수 있어, 타이틀 화면으로 돌아가지 않고도 달성 진행도를 즉시 확인할 수 있습니다.
 - **테두리 일관성:** 시작 화면의 커스텀 테두리 드로잉 애니메이션이 게임 내 다른 UI 패널들과 동일한 8픽셀의 둥근 모서리를 가지도록 수학적으로 정확하게 일치시켜 자연스러운 전환을 구현했습니다.
 - **타이포그래피 가독성:** 영어 본문 텍스트(업적 설명, 크레딧)에 Inter Medium 폰트를 적용하여 가독성을 개선했습니다. 제목과 헤더에는 스타일리쉬한 Kenney Future 서체가 유지됩니다.
 
 ### 수정됨 (Fixed)
+- 해변 모래 질감이 어둡게 "타버린" 것처럼 보이던 시각적 버그를 수정했습니다. 돌발 파도의 젖은 모래 효과는 유지하면서 원래의 옅은 색상으로 복구했습니다.
+- 패배 화면에서 "다시 시도(Retry)"를 클릭하면 게임이 제대로 재시작되지 않고 타이틀 화면으로 튕기던 버그를 수정했습니다.
+- "다시 시도" 버튼이 이제 현재 레벨과 웨이브 진행도를 정상적으로 1로 초기화합니다.
+- 카타스트롬 궁극기 사용 후 무기 모델이 사라지고 다시 나타나지 않던 버그를 수정했습니다.
+- "레벨 클리어" 쿨다운 메시지가 방금 완료한 레벨이 아닌 다음 레벨 번호(예: "레벨 2 클리어")를 잘못 표시하던 off-by-one 오류를 수정했습니다.
 - 타이틀 화면 시작 시 배경 파도 소리가 부팅 시퀀스의 신스 사운드와 겹쳐서 재생되던 문제를 수정했습니다. 이제 파도 소리는 부팅 시퀀스가 완료된 후 부드럽게 페이드인 됩니다.
 - 마우스로 업적 화면에서 일시정지 메뉴로 돌아올 때 메뉴 입력이 멈추던 UI 상태 잠금 버그를 수정했습니다.
 - 게임이 일시정지 상태일 때 고도의 UI 물리 엔진이 업적 메뉴의 스크롤을 처리하지 못하던 버그를 수정했습니다.
