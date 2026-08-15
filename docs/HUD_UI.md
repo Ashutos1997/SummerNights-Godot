@@ -24,6 +24,7 @@ The live gameplay HUD is designed to minimize clutter while keeping critical sur
 ### Center
 *   **`Crosshair`:** The aiming reticle. It dynamically scales up slightly when successfully landing water hits on the sun.
 *   **`ComboLabel`:** Positioned slightly offset to the right of the crosshair. Appears when a water stream is held on the sun, displaying the active combo multiplier (e.g., `1.15x COMBO!`). It scales up to 3.0x and fades out when the stream is broken.
+*   **`CalloutLabel`:** Positioned just below the ComboLabel. Dynamically injected at runtime to display themed arcade callouts (e.g., "CHILL!", "ICE COLD!") at key combo milestones (1.5x, 2.0x, etc.). Translates text dynamically based on locale.
 
 ### Bottom-Right
 *   **`resource_container`:** A vertical box container managing player resources:

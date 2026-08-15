@@ -38,12 +38,14 @@ var achievement_toast_container: Control
 @onready var end_level_lbl     = $HUD/EndScreen/ColorRect/VBoxContainer/LevelCount
 @onready var end_prompt_lbl    = $HUD/EndScreen/ColorRect/VBoxContainer/RestartPrompt
 
-@onready var timer_label       = $HUD/TimerLabel
+@onready var timer_label       = $HUD/TopRow/TimerBox/TimerLabel
 @onready var weather_icon_container = $HUD/WeatherIconContainer
 @onready var weather_icon       = $HUD/WeatherIconContainer/Icon
 @onready var score_label       = $HUD/ScoreLabel
-@onready var phase2_label      = $HUD/Phase2Label
 @onready var combo_label       = $HUD/ComboLabel
+var callout_label: Label
+var last_callout_tier: int = 0
+@onready var phase2_label      = $HUD/Phase2Label
 @onready var lose_screen       = $HUD/LoseScreen
 @onready var lose_title_lbl    = $HUD/LoseScreen/ColorRect/VBoxContainer/Title
 @onready var lose_title2_lbl   = $HUD/LoseScreen/ColorRect/VBoxContainer/Title2
@@ -214,6 +216,14 @@ func _ready() -> void:
 	combo_label.visible = false
 	timer_label.text = ""
 	
+	callout_label = Label.new()
+	combo_label.get_parent().add_child(callout_label)
+	callout_label.visible = false
+	callout_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	callout_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	callout_label.position = combo_label.position + Vector2(0, 40)
+	callout_label.set_anchors_preset(Control.PRESET_CENTER)
+	
 	if weather_icon_container:
 		var w_style = StyleBoxFlat.new()
 		w_style.bg_color = Color(0.0, 0.0, 0.0, 0.4)
@@ -300,6 +310,10 @@ func _ready() -> void:
 
 	# New elements
 	_style_lbl(timer_label, 22, Color(1.0, 0.8, 0.2, 1.0), 2, Color.BLACK, font)
+	
+	var callout_font = galmuri_font if TranslationServer.get_locale().begins_with("ko") else kenney_font
+	_style_lbl(callout_label, 36, Color(0.4, 0.9, 1.0, 1.0), 3, Color.BLACK, callout_font)
+	
 	if score_label:
 		_style_lbl(score_label, 26, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
 	_style_lbl(phase2_label, 48, Color(1.0, 0.4, 0.1, 1.0), 3, Color.BLACK, font)
@@ -1392,6 +1406,8 @@ func show_combo(active: bool) -> void:
 		tw.tween_property(combo_label, "modulate:a", 1.0, 0.2)
 		tw.tween_property(combo_label, "scale", Vector2(1.0, 1.0), 0.3).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 	else:
+		last_callout_tier = 0
+		if callout_label: callout_label.visible = false
 		if combo_label.visible:
 			var tw = create_tween()
 			tw.tween_property(combo_label, "modulate:a", 0.0, 0.2)
@@ -1400,6 +1416,37 @@ func show_combo(active: bool) -> void:
 func update_combo_text(mult: float) -> void:
 	if not combo_label: return
 	combo_label.text = "%.2fx COMBO!" % mult
+	
+	if callout_label:
+		var tier = 0
+		var callout_text = ""
+		if mult >= 3.0:
+			tier = 4
+			callout_text = "SUB-ZERO!" if not TranslationServer.get_locale().begins_with("ko") else "절대영도!"
+		elif mult >= 2.5:
+			tier = 3
+			callout_text = "ICE COLD!" if not TranslationServer.get_locale().begins_with("ko") else "빙점!"
+		elif mult >= 2.0:
+			tier = 2
+			callout_text = "FROSTY!" if not TranslationServer.get_locale().begins_with("ko") else "짜릿해!"
+		elif mult >= 1.5:
+			tier = 1
+			callout_text = "CHILL!" if not TranslationServer.get_locale().begins_with("ko") else "시원해!"
+			
+		if tier > last_callout_tier:
+			last_callout_tier = tier
+			callout_label.text = callout_text
+			callout_label.visible = true
+			callout_label.modulate = Color(1, 1, 1, 1)
+			callout_label.scale = Vector2.ONE * 0.5
+			callout_label.rotation = randf_range(-0.1, 0.1)
+			
+			var c_tw = create_tween()
+			c_tw.set_parallel(true)
+			c_tw.tween_property(callout_label, "scale", Vector2(1.2, 1.2), 0.3).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+			c_tw.chain().tween_property(callout_label, "scale", Vector2(1.0, 1.0), 0.2).set_ease(Tween.EASE_IN_OUT)
+			c_tw.parallel().tween_property(callout_label, "modulate:a", 0.0, 1.5).set_delay(1.0)
+			c_tw.chain().tween_callback(func(): callout_label.visible = false)
 
 func _on_timer_expired() -> void:
 	show_lose_screen()
