@@ -138,4 +138,5 @@ When a menu or overlay is shown (e.g., Pause, Weapon Wheel), the screen behind i
 *   **Prompts (e.g., "Click to Continue"):** Use a Sine ease-in-out tween looping to pulse the alpha between `0.7` and `1.0` over `1.2s`.
 *   **Weapon Wheel:** Selected wedge stroke turns from dark brown (`Color(0.4, 0.35, 0.2, 0.8)`) to bright gold (`Color(1.0, 0.9, 0.3, 1.0)`).
 *   **Combo UI:** The combo multiplier fades in and out dynamically.
+*   **Combo Callouts:** Arcade-style floating text callouts for combo milestones. The text rapidly scales up to 1.2x and snaps back with a slight random rotation tilt to emphasize the impact, before fading out.
 *   **Live Score Counter:** When the score increases, the score label rapidly interpolates to the new value. It scales up to `1.2x` and snaps back to `1.0x` over `0.2s`, pivoting from the right edge to prevent the text from scaling off the screen.
