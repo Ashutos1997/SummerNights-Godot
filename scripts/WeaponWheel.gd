@@ -369,7 +369,8 @@ func _draw() -> void:
 		if w_cfg.has("unlock_achievement"):
 			is_locked = not (w_cfg.unlock_achievement in GameState.unlocked_achievements)
 		else:
-			is_locked = GameState.level < w_cfg.unlock_level
+			var prog = GameState.current_wave if GameState.is_survival_mode else GameState.level
+			is_locked = prog < w_cfg.unlock_level
 		
 		# Yellow Colors
 		var fill_color = Color(0.2, 0.18, 0.08, 0.6)
