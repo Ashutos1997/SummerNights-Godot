@@ -5,56 +5,56 @@ signal achievement_unlocked(id)
 
 const ACHIEVEMENTS: Dictionary = {
 	"dawn_breaks": {
-		"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png",
+		"icon": "res://assets/ui/achievements/sunset.png",
 		"title_en": "Dawn Breaks",
 		"title_kr": "새벽이 밝다",
 		"desc_en": "Beat Level 5 in Normal Mode.",
 		"desc_kr": "일반 모드에서 레벨 5를 클리어하세요."
 	},
 	"arcade_legend": {
-		"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png",
+		"icon": "res://assets/ui/achievements/trophy.png",
 		"title_en": "Arcade Legend",
 		"title_kr": "아케이드 전설",
 		"desc_en": "Score over 10,000 points in a single run.",
 		"desc_kr": "한 게임에서 10,000점 이상을 달성하세요."
 	},
 	"slam_dunk": {
-		"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png",
+		"icon": "res://assets/ui/achievements/water-splash.png",
 		"title_en": "Slam Dunk",
 		"title_kr": "슬램 덩크",
 		"desc_en": "Successfully use the Catastrom ultimate.",
 		"desc_kr": "카타스트롬 궁극기를 성공적으로 사용하세요."
 	},
 	"untouchable": {
-		"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png",
+		"icon": "res://assets/ui/achievements/water-recycling.png",
 		"title_en": "Untouchable",
 		"title_kr": "언터처블",
 		"desc_en": "Reach the maximum 3.0x Water Combo multiplier.",
 		"desc_kr": "최대 3.0배의 물줄기 콤보 배율에 도달하세요."
 	},
 	"rock_solid": {
-		"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png",
+		"icon": "res://assets/ui/achievements/ball-glow.png",
 		"title_en": "Rock Solid",
 		"title_kr": "단단한 바위",
 		"desc_en": "Evaporate a Magma Rock using the water gun.",
 		"desc_kr": "물총을 사용하여 마그마 파편을 증발시키세요."
 	},
 	"shadow_walker": {
-		"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png",
+		"icon": "res://assets/ui/achievements/eclipse.png",
 		"title_en": "Shadow Walker",
 		"title_kr": "그림자 걷는 자",
 		"desc_en": "Survive a Solar Eclipse.",
 		"desc_kr": "일식 이벤트에서 생존하세요."
 	},
 	"bird_watcher": {
-		"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_white.png",
+		"icon": "res://assets/ui/achievements/seagull.png",
 		"title_en": "Shoo!",
 		"title_kr": "훠이!",
 		"desc_en": "Shoo away 5 seagulls.",
 		"desc_kr": "갈매기 5마리를 쫓아내세요."
 	},
 	"flare_catcher": {
-		"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_jewel_red.png",
+		"icon": "res://assets/ui/achievements/fireball.png",
 		"title_en": "Flare Catcher",
 		"title_kr": "플레어 사냥꾼",
 		"desc_en": "Intercept 10 Solar Flares.",

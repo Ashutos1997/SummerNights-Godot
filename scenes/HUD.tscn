@@ -1221,6 +1221,14 @@ theme_override_font_sizes/font_size = 12
 text = "Kenney UI Pack Adventure  ·  kenney.nl  ·  CC0"
 horizontal_alignment = 1
 
+[node name="ItmUI1b" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "Achievement Icons  ·  Game-icons.net  ·  CC BY 3.0"
+horizontal_alignment = 1
+
 [node name="ItmUI2" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
 layout_mode = 2
 mouse_filter = 2
