@@ -170,6 +170,7 @@ SummerNights-Godot/
 | 영어 본문 폰트 - Inter | Rasmus Andersson | SIL OFL |
 | 한국어 폰트 - Galmuri11 | quiple | SIL OFL |
 | UI Pack Adventure | Kenney | CC0 |
+| 업적 아이콘 (Achievement Icons) | Game-icons.net | CC BY 3.0 |
 | SFX - 40가지 CC0 물/물결 효과음 | OpenGameArt | CC0 |
 | SFX - 물총 발사음 | belanhud (Freesound) | CC0 |
 | SFX - UI 오디오 팩 | Kenney | CC0 |
