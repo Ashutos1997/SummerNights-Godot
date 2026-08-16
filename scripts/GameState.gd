@@ -196,11 +196,11 @@ const WEAPONS = {
 		"name": "Tidal Gatling",
 		"model": "res://assets/blaster_gatling.glb",
 		"scale": Vector3(1.2, 1.2, 1.5),
-		"water_capacity": 300.0,
-		"water_drain": 18.0,
-		"cooling_power": 50.0,
-		"crit_multiplier": 1.5,
-		"recharge_rate": 20.0,
+		"water_capacity": 250.0,
+		"water_drain": 25.0,
+		"cooling_power": 40.0,
+		"crit_multiplier": 1.0,
+		"recharge_rate": 8.0,
 		"unlock_achievement": "arcade_legend"
 	}
 }
