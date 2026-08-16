@@ -37,7 +37,7 @@ Godot 4로 제작된 3D 아케이드 슈터. 태양을 식히기 전에 열기�
   </tr>
   <tr>
     <td align="center"><img src="screenshots/13_Weather_Event.png" width="100%"><br><b>날씨 이벤트</b></td>
-    <td align="center"></td>
+    <td align="center"><img src="screenshots/14_Active_Buffs_KR.png" width="100%"><br><b>활성화된 버프</b></td>
   </tr>
 </table>
 
