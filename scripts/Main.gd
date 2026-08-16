@@ -126,6 +126,8 @@ func _load_weapon_model() -> void:
 			shoot_loop_sfx.pitch_scale = 0.6
 		elif GameState.current_weapon_id == "precision":
 			shoot_loop_sfx.pitch_scale = 1.5
+		elif GameState.current_weapon_id == "tidal":
+			shoot_loop_sfx.pitch_scale = 0.5
 		else:
 			shoot_loop_sfx.pitch_scale = 1.0
 
@@ -145,6 +147,13 @@ func _load_weapon_model() -> void:
 			g_mat.albedo_color = Color(0.8, 0.95, 1.0, 0.8) # Brighter laser blue
 			p_mat.initial_velocity_min = 35.0
 			p_mat.initial_velocity_max = 45.0
+		elif GameState.current_weapon_id == "tidal":
+			gun_spray.amount = 300
+			p_mat.spread = 20.0 
+			g_mesh.size = Vector3(0.1, 0.1, 0.1)
+			g_mat.albedo_color = Color(0.2, 0.7, 1.0, 0.8) 
+			p_mat.initial_velocity_min = 25.0
+			p_mat.initial_velocity_max = 35.0
 		else: # Standard / Scatter
 			gun_spray.amount = 100
 			p_mat.spread = 8.0 # Preserving new splashy spread
@@ -1656,6 +1665,8 @@ func _process(delta: float) -> void:
 			target_fov = 83.0 # Wide, powerful pushback
 		elif GameState.current_weapon_id == "precision":
 			target_fov = 70.0 # Slight zoom-in for sniping focus
+		elif GameState.current_weapon_id == "tidal":
+			target_fov = 80.0 # Aggressive pushback for gatling recoil
 		else:
 			target_fov = 77.0 # Slight push
 	
@@ -2227,6 +2238,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 		var strength = 0.015
 		if GameState.current_weapon_id == "heavy": strength = 0.025
 		elif GameState.current_weapon_id == "precision": strength = 0.005
+		elif GameState.current_weapon_id == "tidal": strength = 0.035
 		shake(0.12, strength)
 	var is_critical: bool = false
 	if is_shooting:
