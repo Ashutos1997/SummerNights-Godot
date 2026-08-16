@@ -50,8 +50,8 @@ const ACHIEVEMENTS: Dictionary = {
 		"icon": "res://assets/ui/achievements/seagull.png",
 		"title_en": "Shoo!",
 		"title_kr": "훠이!",
-		"desc_en": "Shoo away 5 seagulls.",
-		"desc_kr": "갈매기 5마리를 쫓아내세요."
+		"desc_en": "Shoo away 50 seagulls.",
+		"desc_kr": "갈매기 50마리를 쫓아내세요."
 	},
 	"flare_catcher": {
 		"icon": "res://assets/ui/achievements/fireball.png",

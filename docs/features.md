@@ -66,7 +66,7 @@ Weather events trigger based on a dynamic probability system tied to the current
     *   Wave Timer and live Score counter (which formats and scales dynamically for juice).
     *   Dynamic Arcade Combo Callouts at key multiplier milestones (e.g., "CHILL!", "ICE COLD!").
 *   **Achievements System:** An in-game achievements gallery is available from both the Title Screen and the Pause Menu. The game tracks gameplay milestones and unlocks achievements dynamically, presenting a custom animated UI Toast with audio.
-    *   **Meaningful Rewards:** Unlocking achievements provides tangible gameplay bonuses (e.g., unlocking Endless Mode, Catastrom charge buffs, combo decay grace periods, heat resistance buffs, eclipse warning timers, cosmetic seagulls, and flare interception buffs).
+    *   **Meaningful Rewards:** Unlocking achievements provides tangible gameplay bonuses (e.g., unlocking Endless Mode, Catastrom charge buffs, combo decay grace periods, heat resistance buffs, eclipse warning timers, weapon handling buffs, and flare interception buffs).
 *   **Startup Sequence:** The Title Screen features a dynamic "tech demo" boot sequence. It plays a custom synth audio that swells over 4 seconds, while a golden border procedurally draws itself around the perimeter. At the peak of the audio swell, the UI aggressively bounces up into place and the audio smoothly fades out while the ambient ocean fades in.
 *   **Global Overlays:** Full-screen menus (Title, Pause, Settings, Credits) are unified by a sleek golden border and an ultra-dark background dimming effect to eliminate visual clutter.
 *   **Accessibility & Settings:**

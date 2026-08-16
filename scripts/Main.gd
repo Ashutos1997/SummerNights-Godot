@@ -162,12 +162,6 @@ func _load_weapon_model() -> void:
 			p_mat.initial_velocity_min = 20.0
 			p_mat.initial_velocity_max = 30.0
 			
-	if "bird_watcher" in GameState.unlocked_achievements and seagull_layer and seagull_layer.has_method("_create_seagull_mesh"):
-		var cosmetic_bird = seagull_layer._create_seagull_mesh()
-		cosmetic_bird.scale = Vector3(0.08, 0.08, 0.08)
-		cosmetic_bird.position = Vector3(0, 0.25, -0.4)
-		cosmetic_bird.rotation_degrees = Vector3(0, 180, 0)
-		gun_model.add_child(cosmetic_bird)
 	
 	water_changed.emit(water_tank, MAX_WATER)
 
@@ -418,12 +412,14 @@ func _ready() -> void:
 	
 	
 	if GameState.is_survival_mode:
-		GameState.ice_charges_remaining = 0 # Start with 0 ice in Endless Mode
-		hud.update_ice_charges(GameState.ice_charges_remaining, max_survival_ice_charges)
+		GameState.ice_charges_remaining = GameState.bonus_ice_charges # Start with bonus ice in Endless Mode
+		if hud:
+			hud.update_ice_charges(GameState.ice_charges_remaining, max_survival_ice_charges + GameState.bonus_ice_charges)
 		hud.ice_row.visible = false
 	else:
-		GameState.ice_charges_remaining = cfg.ice_charges
-		hud.update_ice_charges(GameState.ice_charges_remaining, cfg.ice_charges)
+		GameState.ice_charges_remaining = cfg.ice_charges + GameState.bonus_ice_charges
+		if hud:
+			hud.update_ice_charges(GameState.ice_charges_remaining, cfg.ice_charges + GameState.bonus_ice_charges)
 		if GameState.level == 2:
 			hud.show_weapon_unlock()
 		elif GameState.level == 3:
@@ -1516,13 +1512,14 @@ func _process(delta: float) -> void:
 			sun.position = sun.position.lerp(high_pos, 3.0 * delta)
 		elif sun_sway_amplitude > 0.0:
 			var spd_mult = 0.0 if is_sun_frozen else 1.0
+			var featherweight_amp = sun_sway_amplitude * (0.6 if "bird_watcher" in GameState.unlocked_achievements else 1.0)
 			sun_move_time += delta * spd_mult
-			var x_offset = sin(sun_move_time * sun_sway_speed) * sun_sway_amplitude
+			var x_offset = sin(sun_move_time * sun_sway_speed) * featherweight_amp
 			sun_mirage_offset = lerp(sun_mirage_offset, sun_mirage_target, delta * 1.5)
 			sun.position.x = sun_base_pos.x + x_offset + sun_mirage_offset
 			
 			if sun_figure8:
-				var y_offset = sin(sun_move_time * sun_sway_speed * 2.0) * (sun_sway_amplitude * 0.5)
+				var y_offset = sin(sun_move_time * sun_sway_speed * 2.0) * (featherweight_amp * 0.5)
 				sun.position.y = sun_base_pos.y + y_offset
 				sun.position.z = sun_base_pos.z
 			else:
@@ -1599,7 +1596,8 @@ func _process(delta: float) -> void:
 						# Calculate base x_offset of the sun without mirage offset
 						var base_x_offset = 0.0
 						if sun_sway_amplitude > 0.0:
-							base_x_offset = sin(sun_move_time * sun_sway_speed) * sun_sway_amplitude
+							var featherweight_amp = sun_sway_amplitude * (0.6 if "bird_watcher" in GameState.unlocked_achievements else 1.0)
+							base_x_offset = sin(sun_move_time * sun_sway_speed) * featherweight_amp
 						node.position.x = sun_base_pos.x + base_x_offset + m["current_offset"]
 						node.position.y = sun.position.y + sin(sun_time * sun_bob_speed * 1.2) * 2.0
 						node.position.z = sun.position.z + 2.0 # Slightly in front
@@ -1748,7 +1746,7 @@ func _process(delta: float) -> void:
 							if b_pos.distance_to(closest_pt) < 1.5:
 								seagull_layer.scare_bird(bird)
 								GameState.seagulls_shooed += 1
-								if GameState.seagulls_shooed >= 5 and not "bird_watcher" in GameState.unlocked_achievements:
+								if GameState.seagulls_shooed >= 50 and not "bird_watcher" in GameState.unlocked_achievements:
 									GameState.unlock_achievement("bird_watcher")
 								else:
 									GameState.save_settings()
@@ -1981,6 +1979,8 @@ func _input(event: InputEvent) -> void:
 			is_catastrom_active = true
 			is_shooting = false
 			if gun: gun.visible = false
+			_end_mirage()
+			active_mirages.clear()
 			return
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -2633,9 +2633,9 @@ func _win() -> void:
 				var amb_tw = create_tween()
 				amb_tw.tween_property(ambient_sfx, "volume_db", -20.0, 1.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 			
-			GameState.ice_charges_remaining = cfg.ice_charges
+			GameState.ice_charges_remaining = cfg.ice_charges + GameState.bonus_ice_charges
 			if hud:
-				hud.update_ice_charges(GameState.ice_charges_remaining, cfg.ice_charges)
+				hud.update_ice_charges(GameState.ice_charges_remaining, cfg.ice_charges + GameState.bonus_ice_charges)
 				if GameState.level == 2:
 					hud.show_weapon_unlock()
 				if GameState.level == 3:

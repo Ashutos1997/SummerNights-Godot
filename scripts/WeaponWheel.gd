@@ -199,11 +199,12 @@ func open() -> void:
 		parent.move_child(self, parent.get_child_count() - 1)
 	
 	open_tween = create_tween().set_parallel(true).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-	open_tween.tween_property(self, "modulate:a", 1.0, 0.2)
-	open_tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.2)
+	var open_dur = 0.1 if "bird_watcher" in GameState.unlocked_achievements else 0.2
+	open_tween.tween_property(self, "modulate:a", 1.0, open_dur)
+	open_tween.tween_property(self, "scale", Vector2(1.0, 1.0), open_dur)
 	if bg_dim and bg_dim.material:
-		open_tween.tween_property(bg_dim.material, "shader_parameter/blur_amount", 2.5, 0.2)
-		open_tween.tween_property(bg_dim.material, "shader_parameter/dim_amount", 0.5, 0.2)
+		open_tween.tween_property(bg_dim.material, "shader_parameter/blur_amount", 2.5, open_dur)
+		open_tween.tween_property(bg_dim.material, "shader_parameter/dim_amount", 0.5, open_dur)
 
 func close() -> void:
 	if not active: return
@@ -215,11 +216,12 @@ func close() -> void:
 	
 	if open_tween: open_tween.kill()
 	open_tween = create_tween().set_parallel(true).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CUBIC)
-	open_tween.tween_property(self, "modulate:a", 0.0, 0.15)
-	open_tween.tween_property(self, "scale", Vector2(0.9, 0.9), 0.15)
+	var close_dur = 0.075 if "bird_watcher" in GameState.unlocked_achievements else 0.15
+	open_tween.tween_property(self, "modulate:a", 0.0, close_dur)
+	open_tween.tween_property(self, "scale", Vector2(0.9, 0.9), close_dur)
 	if bg_dim and bg_dim.material:
-		open_tween.tween_property(bg_dim.material, "shader_parameter/blur_amount", 0.0, 0.15)
-		open_tween.tween_property(bg_dim.material, "shader_parameter/dim_amount", 0.0, 0.15)
+		open_tween.tween_property(bg_dim.material, "shader_parameter/blur_amount", 0.0, close_dur)
+		open_tween.tween_property(bg_dim.material, "shader_parameter/dim_amount", 0.0, close_dur)
 	
 	if selected_index >= 0 and selected_index < weapons.size():
 		var chosen = weapons[selected_index]
@@ -317,6 +319,13 @@ func _process(delta: float) -> void:
 		var w_id = weapons[selected_index]
 		var w_cfg = GameState.WEAPONS[w_id]
 		var is_kr = GameState.language == "KR"
+		
+		var font_path = "res://assets/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
+		var dyn_font = load(font_path)
+		name_label.label_settings.font = dyn_font
+		name_label.label_settings.font_size = 32 if is_kr else 28
+		stats_label.label_settings.font = dyn_font
+		stats_label.label_settings.font_size = 22 if is_kr else 18
 		
 		var is_locked = false
 		
