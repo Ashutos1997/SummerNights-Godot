@@ -304,9 +304,9 @@ func _evaluate_milestones() -> void:
 	if high_score >= 5000:
 		max_water_mult = 1.1
 	if high_score >= 15000:
-		bonus_ice_charges = 1
-	if high_score >= 25000:
 		cooling_power_mult = 1.1
+	if high_score >= 20000:
+		bonus_ice_charges = 1
 
 func unlock_achievement(id: String) -> void:
 	if id in unlocked_achievements: return

@@ -91,6 +91,10 @@ var achievements_btn: Button
 var achievements_screen: Control
 var achievement_list: VBoxContainer
 
+var buffs_btn: Button
+var buffs_screen: Control
+var buffs_list: VBoxContainer
+
 signal game_paused
 signal game_resumed
 var opened_from_pause: bool = false
@@ -422,7 +426,14 @@ func _ready() -> void:
 			achievements_btn.pressed.disconnect(_on_credits_pressed)
 		achievements_btn.pressed.connect(show_achievements_screen)
 		
+		buffs_btn = achievements_btn.duplicate()
+		buffs_btn.name = "BuffsBtn"
+		achievements_btn.get_parent().add_child(buffs_btn)
+		achievements_btn.get_parent().move_child(buffs_btn, achievements_btn.get_index() + 1)
+		buffs_btn.pressed.connect(show_buffs_screen)
+		
 	_build_achievements_screen()
+	_build_buffs_screen()
 
 	if font:
 		if pause_title: _style_lbl(pause_title, 32, Color(1.0, 0.85, 0.2, 1.0), 3, Color.BLACK, font)
@@ -507,7 +518,7 @@ func _ready() -> void:
 	style_focus.content_margin_top = 4
 	style_focus.content_margin_bottom = 4
 
-	for btn in [retry_btn, menu_btn, pause_resume_btn, settings_btn, credits_btn, achievements_btn, pause_menu_btn]:
+	for btn in [retry_btn, menu_btn, pause_resume_btn, settings_btn, credits_btn, achievements_btn, buffs_btn, pause_menu_btn]:
 		if btn:
 			if font: btn.add_theme_font_override("font", font)
 			btn.add_theme_font_size_override("font_size", 18)
@@ -890,6 +901,9 @@ func _apply_language(lang: String) -> void:
 	if achievements_btn:
 		achievements_btn.text = "업적" if is_kr else "ACHIEVEMENTS"
 		if font: achievements_btn.add_theme_font_override("font", font)
+	if buffs_btn:
+		buffs_btn.text = "활성화된 버프" if is_kr else "ACTIVE BUFFS"
+		if font: buffs_btn.add_theme_font_override("font", font)
 	if pause_menu_btn:
 		pause_menu_btn.text = "메인 메뉴" if is_kr else "MAIN MENU"
 		if font: pause_menu_btn.add_theme_font_override("font", font)
@@ -1177,6 +1191,10 @@ func _input(event: InputEvent) -> void:
 			hide_achievements_screen()
 			get_viewport().set_input_as_handled()
 			return
+		elif buffs_screen and buffs_screen.visible:
+			hide_buffs_screen()
+			get_viewport().set_input_as_handled()
+			return
 		
 		if pause_screen.visible:
 			_resume_game()
@@ -1205,11 +1223,15 @@ func _pause_game() -> void:
 		settings_btn.focus_neighbor_top = settings_btn.get_path_to(pause_resume_btn)
 		settings_btn.focus_neighbor_bottom = settings_btn.get_path_to(credits_btn)
 		credits_btn.focus_neighbor_top = credits_btn.get_path_to(settings_btn)
-		if achievements_btn:
+		if achievements_btn and buffs_btn:
 			credits_btn.focus_neighbor_bottom = credits_btn.get_path_to(achievements_btn)
 			achievements_btn.focus_neighbor_top = achievements_btn.get_path_to(credits_btn)
-			achievements_btn.focus_neighbor_bottom = achievements_btn.get_path_to(pause_menu_btn)
-			pause_menu_btn.focus_neighbor_top = pause_menu_btn.get_path_to(achievements_btn)
+			
+			achievements_btn.focus_neighbor_bottom = achievements_btn.get_path_to(buffs_btn)
+			buffs_btn.focus_neighbor_top = buffs_btn.get_path_to(achievements_btn)
+			
+			buffs_btn.focus_neighbor_bottom = buffs_btn.get_path_to(pause_menu_btn)
+			pause_menu_btn.focus_neighbor_top = pause_menu_btn.get_path_to(buffs_btn)
 		else:
 			credits_btn.focus_neighbor_bottom = credits_btn.get_path_to(pause_menu_btn)
 			pause_menu_btn.focus_neighbor_top = pause_menu_btn.get_path_to(credits_btn)
@@ -1967,4 +1989,302 @@ func hide_achievements_screen() -> void:
 		achievements_screen.set_meta("is_hiding", false)
 		pause_screen.visible = true
 		if achievements_btn: achievements_btn.grab_focus()
+	)
+
+func _build_buffs_screen() -> void:
+	buffs_screen = Control.new()
+	buffs_screen.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	buffs_screen.visible = false
+	buffs_screen.process_mode = Node.PROCESS_MODE_ALWAYS
+	buffs_screen.z_index = 50 # ensure it draws over everything
+	$HUD.add_child(buffs_screen)
+	
+	var bg = ColorRect.new()
+	bg.color = Color(0.02, 0.01, 0.05, 0.96)
+	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	buffs_screen.add_child(bg)
+	
+	var border = Panel.new()
+	border.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	border.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	border.offset_left = 24
+	border.offset_top = 24
+	border.offset_right = -24
+	border.offset_bottom = -24
+	
+	var border_style = StyleBoxFlat.new()
+	border_style.bg_color = Color(0, 0, 0, 0)
+	border_style.border_width_left = 2
+	border_style.border_width_top = 2
+	border_style.border_width_right = 2
+	border_style.border_width_bottom = 2
+	border_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
+	border_style.corner_radius_top_left = 8
+	border_style.corner_radius_top_right = 8
+	border_style.corner_radius_bottom_left = 8
+	border_style.corner_radius_bottom_right = 8
+	border.add_theme_stylebox_override("panel", border_style)
+	buffs_screen.add_child(border)
+	
+	var center = CenterContainer.new()
+	center.name = "CenterContainer"
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	buffs_screen.add_child(center)
+	
+	var vbox = VBoxContainer.new()
+	vbox.name = "VBoxContainer"
+	vbox.add_theme_constant_override("separation", 24)
+	center.add_child(vbox)
+	
+	var title = Label.new()
+	title.name = "Title"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+	
+	var scroll = ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(700, 440)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	vbox.add_child(scroll)
+	
+	var list_margin = MarginContainer.new()
+	list_margin.add_theme_constant_override("margin_right", 16)
+	scroll.add_child(list_margin)
+	
+	buffs_list = VBoxContainer.new()
+	buffs_list.add_theme_constant_override("separation", 16)
+	list_margin.add_child(buffs_list)
+	
+	var back_btn = Button.new()
+	back_btn.name = "BackBtn"
+	back_btn.text = "BACK"
+	back_btn.custom_minimum_size = Vector2(240, 48)
+	
+	var style_normal = StyleBoxFlat.new()
+	style_normal.bg_color = Color(0.1, 0.1, 0.1, 0.8)
+	style_normal.border_width_left = 2
+	style_normal.border_width_right = 2
+	style_normal.border_width_top = 2
+	style_normal.border_width_bottom = 2
+	style_normal.border_color = Color(0.3, 0.3, 0.3, 0.8)
+	style_normal.corner_radius_top_left = 4
+	style_normal.corner_radius_top_right = 4
+	style_normal.corner_radius_bottom_left = 4
+	style_normal.corner_radius_bottom_right = 4
+	back_btn.add_theme_stylebox_override("normal", style_normal)
+	
+	var style_hover = style_normal.duplicate()
+	style_hover.bg_color = Color(0.2, 0.2, 0.2, 0.9)
+	style_hover.border_color = Color(1.0, 0.85, 0.2, 1.0)
+	back_btn.add_theme_stylebox_override("hover", style_hover)
+	
+	var style_pressed = style_normal.duplicate()
+	style_pressed.bg_color = Color(1.0, 0.85, 0.2, 0.4)
+	back_btn.add_theme_stylebox_override("pressed", style_pressed)
+	back_btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	
+	var btn_center = CenterContainer.new()
+	btn_center.name = "CenterContainer"
+	btn_center.add_child(back_btn)
+	vbox.add_child(btn_center)
+	
+	back_btn.pressed.connect(hide_buffs_screen)
+
+func show_buffs_screen() -> void:
+	if not buffs_screen: return
+	_play_ui_tick()
+	
+	for child in buffs_list.get_children():
+		child.queue_free()
+		
+	var is_kr = (GameState.language == "KR")
+	var font_path = "res://assets/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
+	var body_font_path = "res://assets/fonts/Galmuri11.ttf" if is_kr else "res://assets/fonts/Inter-Medium.ttf"
+	var font = load(font_path)
+	var body_font = load(body_font_path)
+	
+	var title = buffs_screen.get_node("CenterContainer/VBoxContainer/Title")
+	title.text = "활성화된 버프" if is_kr else "ACTIVE BUFFS"
+	_style_lbl(title, 36, Color(1.0, 0.85, 0.2, 1.0), 4, Color.BLACK, font)
+	
+	var back_btn = buffs_screen.get_node("CenterContainer/VBoxContainer/CenterContainer/BackBtn")
+	back_btn.text = "돌아가기" if is_kr else "BACK"
+	back_btn.add_theme_font_override("font", font)
+	back_btn.add_theme_font_size_override("font_size", 24)
+	back_btn.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8, 1.0))
+	back_btn.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 1.0, 1.0))
+	
+	var active_buffs = [
+		{
+			"id": "tank_upgrade",
+			"condition": GameState.high_score >= 5000,
+			"icon": "res://assets/ui/achievements/water-recycling.png",
+			"title_en": "Deep Reserves",
+			"title_kr": "깊은 저장고",
+			"desc_en": "Max Water Tank capacity is permanently increased.",
+			"desc_kr": "최대 물탱크 용량이 영구적으로 증가했습니다."
+		},
+		{
+			"id": "cooling_upgrade",
+			"condition": GameState.high_score >= 15000,
+			"icon": "res://assets/ui/achievements/water-splash.png",
+			"title_en": "Liquid Nitrogen",
+			"title_kr": "액체 질소",
+			"desc_en": "Water gun cooling power is permanently increased.",
+			"desc_kr": "물총의 냉각력이 영구적으로 증가했습니다."
+		},
+		{
+			"id": "ice_upgrade",
+			"condition": GameState.high_score >= 20000,
+			"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_white.png",
+			"title_en": "Extra Ice Charge",
+			"title_kr": "추가 얼음 충전",
+			"desc_en": "Spawn with an additional Ice Burst charge.",
+			"desc_kr": "얼음 폭발 스킬이 1회 추가 충전된 상태로 시작합니다."
+		},
+		{
+			"id": "gold_weapon",
+			"condition": GameState.high_score >= 50000,
+			"icon": "res://assets/ui/achievements/trophy.png",
+			"title_en": "Solid Gold",
+			"title_kr": "순금",
+			"desc_en": "All weapons are forged from solid gold.",
+			"desc_kr": "모든 무기가 순금으로 도금됩니다."
+		},
+		{
+			"id": "catastrom_buff",
+			"condition": "slam_dunk" in GameState.unlocked_achievements,
+			"icon": "res://assets/ui/achievements/water-splash.png",
+			"title_en": "Catastrom Flow",
+			"title_kr": "카타스트롬 흐름",
+			"desc_en": "Catastrom meter fills 10% faster.",
+			"desc_kr": "카타스트롬 게이지가 10% 더 빠르게 차오릅니다."
+		},
+		{
+			"id": "combo_grace",
+			"condition": "untouchable" in GameState.unlocked_achievements,
+			"icon": "res://assets/ui/achievements/water-recycling.png",
+			"title_en": "Combo Grace",
+			"title_kr": "콤보 유예",
+			"desc_en": "Combo pauses an extra 0.5s before decaying.",
+			"desc_kr": "콤보가 감소하기 전 0.5초의 추가 유예 시간이 주어집니다."
+		},
+		{
+			"id": "flare_boost",
+			"condition": "flare_catcher" in GameState.unlocked_achievements,
+			"icon": "res://assets/ui/achievements/fireball.png",
+			"title_en": "Flare Refill Boost",
+			"title_kr": "플레어 충전 부스트",
+			"desc_en": "Intercepting flares refills 40% water (up from 30%).",
+			"desc_kr": "플레어 요격 시 물이 30%가 아닌 40% 충전됩니다."
+		},
+		{
+			"id": "heat_resist",
+			"condition": "rock_solid" in GameState.unlocked_achievements,
+			"icon": "res://assets/ui/achievements/ball-glow.png",
+			"title_en": "Heat Resistance",
+			"title_kr": "열 저항",
+			"desc_en": "Permanent 5% Heat Resistance across all waves.",
+			"desc_kr": "모든 웨이브에서 열 저항이 5% 증가합니다."
+		},
+		{
+			"id": "featherweight",
+			"condition": "bird_watcher" in GameState.unlocked_achievements,
+			"icon": "res://assets/ui/achievements/seagull.png",
+			"title_en": "Featherweight",
+			"title_kr": "깃털 같은 가벼움",
+			"desc_en": "Weapon swaps are 50% faster, and sun sway is reduced.",
+			"desc_kr": "무기 교체가 50% 빨라지고 태양의 흔들림이 감소합니다."
+		},
+		{
+			"id": "eclipse_timer",
+			"condition": "shadow_walker" in GameState.unlocked_achievements,
+			"icon": "res://assets/ui/achievements/eclipse.png",
+			"title_en": "Eclipse Warning",
+			"title_kr": "일식 경고",
+			"desc_en": "Displays a precise countdown timer during Eclipses.",
+			"desc_kr": "일식 이벤트 동안 정확한 카운트다운 타이머가 표시됩니다."
+		}
+	]
+	
+	for buff in active_buffs:
+		var unlocked = buff["condition"]
+		
+		var panel = Panel.new()
+		panel.custom_minimum_size = Vector2(660, 100)
+		panel.mouse_filter = Control.MOUSE_FILTER_PASS
+		
+		var style = StyleBoxFlat.new()
+		style.bg_color = Color(0.1, 0.1, 0.15, 0.8) if unlocked else Color(0.05, 0.05, 0.08, 0.8)
+		style.border_width_left = 1
+		style.border_width_right = 1
+		style.border_width_top = 1
+		style.border_width_bottom = 1
+		style.border_color = Color(1.0, 0.85, 0.2, 0.5) if unlocked else Color(0.3, 0.3, 0.3, 0.5)
+		style.corner_radius_top_left = 6
+		style.corner_radius_top_right = 6
+		style.corner_radius_bottom_left = 6
+		style.corner_radius_bottom_right = 6
+		panel.add_theme_stylebox_override("panel", style)
+		
+		var margin = MarginContainer.new()
+		margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		margin.add_theme_constant_override("margin_left", 16)
+		margin.add_theme_constant_override("margin_right", 16)
+		panel.add_child(margin)
+		
+		var hbox = HBoxContainer.new()
+		hbox.add_theme_constant_override("separation", 20)
+		margin.add_child(hbox)
+		
+		var icon_rect = TextureRect.new()
+		icon_rect.texture = load(buff["icon"]) if unlocked else load("res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_white.png")
+		icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon_rect.custom_minimum_size = Vector2(64, 64)
+		icon_rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		icon_rect.modulate = Color(1.0, 1.0, 1.0, 1.0) if unlocked else Color(0.3, 0.3, 0.3, 0.5)
+		hbox.add_child(icon_rect)
+		
+		var vbox_item = VBoxContainer.new()
+		vbox_item.alignment = BoxContainer.ALIGNMENT_CENTER
+		vbox_item.add_theme_constant_override("separation", 0)
+		hbox.add_child(vbox_item)
+		
+		var title_lbl = Label.new()
+		title_lbl.text = (buff["title_kr"] if is_kr else buff["title_en"]) if unlocked else "???"
+		_style_lbl(title_lbl, 28, Color(1.0, 0.85, 0.2, 1.0) if unlocked else Color(0.5, 0.5, 0.5, 1.0), 2, Color.BLACK, font)
+		vbox_item.add_child(title_lbl)
+		
+		var desc_lbl = Label.new()
+		desc_lbl.text = (buff["desc_kr"] if is_kr else buff["desc_en"]) if unlocked else ("잠김" if is_kr else "LOCKED")
+		desc_lbl.custom_minimum_size = Vector2(550, 0)
+		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
+		_style_lbl(desc_lbl, 16, Color(1.0, 1.0, 1.0, 0.8) if unlocked else Color(0.4, 0.4, 0.4, 0.8), 1, Color.BLACK, body_font)
+		vbox_item.add_child(desc_lbl)
+		
+		buffs_list.add_child(panel)
+
+	buffs_screen.visible = true
+	buffs_screen.modulate.a = 0.0
+	buffs_screen.set_meta("is_hiding", false)
+	var tw = create_tween()
+	tw.tween_property(buffs_screen, "modulate:a", 1.0, 0.25)
+	
+	if back_btn: back_btn.grab_focus()
+
+func hide_buffs_screen() -> void:
+	if not buffs_screen or not buffs_screen.visible: return
+	if buffs_screen.get_meta("is_hiding", false): return
+	buffs_screen.set_meta("is_hiding", true)
+	
+	_play_ui_tick()
+	
+	var tw = create_tween()
+	tw.tween_property(buffs_screen, "modulate:a", 0.0, 0.2)
+	tw.tween_callback(func(): 
+		buffs_screen.visible = false 
+		buffs_screen.set_meta("is_hiding", false)
+		pause_screen.visible = true
+		if buffs_btn: buffs_btn.grab_focus()
 	)

@@ -8,6 +8,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - **Tidal Gatling:** Added a massive 5th weapon (a heavy gatling gun) boasting huge cooling power but extreme water drain and slow recharge. Serves as an endgame loop goal and unlocks via the "Arcade Legend" achievement.
 - **Dynamic Combo Callouts:** Reaching combo milestones (1.5x, 2.0x, 2.5x, 3.0x) now triggers energetic, themed floating text callouts (e.g., "CHILL!", "ICE COLD!") that scale and fade dynamically to boost the arcade feel.
 - **Achievements System:** Added an in-game achievements gallery accessible from the Title Screen. Unlocking achievements displays a custom animated Toast notification with an audio cue. Features custom vector icons from Game-icons.net for each achievement. Current achievements include "Dawn Breaks" (Beat Level 5), "Arcade Legend" (Score 10,000 pts), "Slam Dunk" (Use Catastrom), "Untouchable" (Hit 3.0x Combo), "Rock Solid" (Evaporate Magma), "Shadow Walker" (Survive an Eclipse), "Shoo!" (Shoo 50 Seagulls), and "Flare Catcher" (Intercept 10 Solar Flares).
+- **Active Buffs Menu:** Added a dedicated "Active Buffs" menu to the Pause screen. This dynamically checks the player's high score and achievements, displaying a live list of all currently active gameplay buffs and rewards.
 - **Startup Boot Sequence:** The Title Screen now features a 4-second boot-up sequence syncing a swelling PS1-style synth pad with a procedurally animated golden border that draws itself around the screen.
 - **Rogue Waves:** Occasional large, foamy "rogue waves" now procedurally roll in from the distant horizon towards the island, making the ocean feel much more dynamic and lively without breaking the stylized aesthetic.
 
@@ -27,6 +28,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - Fixed a UI state lock that caused the pause menu to freeze when returning from the achievements screen using a mouse.
 - Fixed a bug where Godot's UI physics would fail to process scrolling for the achievements menu when the game world was paused.
 - The ESC key now correctly closes the achievements screen on the Title Screen.
+- Fixed an issue where the Ice Charge and Cooling Power high-score buffs were unlocking at the wrong point thresholds. They now correctly unlock at 20,000 and 15,000 points respectively, matching the design guide.
 - Removed the Dev Mode toggle from the Title Screen to enforce standard gameplay unlocks.
 
 ---
@@ -115,6 +117,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - **타이달 개틀링 (Tidal Gatling):** 5번째 무기인 거대한 개틀링 건을 추가했습니다. 강력한 냉각력을 자랑하지만 물 소모량이 극심하고 재충전 속도가 느립니다. 엔드게임 루프 목표로 제공되며 "아케이드 전설" 업적 달성 시 해제됩니다.
 - **다이내믹 콤보 콜아웃 (Dynamic Combo Callouts):** 콤보 배율이 특정 목표치(1.5x, 2.0x, 2.5x, 3.0x)에 도달할 때마다 역동적으로 팝업되는 아케이드 스타일의 텍스트 콜아웃(예: "시원해!", "빙점!") 기능을 추가하여 타격감을 높였습니다.
 - **업적 시스템 (Achievements System):** 타이틀 화면에서 확인할 수 있는 게임 내 업적 갤러리를 추가했습니다. 업적을 달성하면 애니메이션 효과가 적용된 팝업(Toast) 알림과 효과음이 재생됩니다. 각 업적마다 Game-icons.net에서 제공하는 커스텀 벡터 아이콘이 포함되어 있습니다. "새벽이 밝다" (레벨 5 클리어), "아케이드 전설" (10,000점 달성), "슬램 덩크" (카타스트롬 사용), "언터처블" (3.0x 콤보 달성), "단단한 바위" (마그마 파편 증발), "그림자 추적자" (일식 생존), "훠이!" (갈매기 50마리 쫓아내기), "플레어 사냥꾼" (태양 플레어 10회 요격) 업적이 포함되어 있습니다.
+- **활성화된 버프 메뉴 (Active Buffs Menu):** 일시정지 화면에 전용 "활성화된 버프" 메뉴를 추가했습니다. 플레이어의 최고 점수와 업적을 동적으로 확인하여 현재 적용 중인 모든 게임플레이 버프와 보상을 실시간 목록으로 보여줍니다.
 - **부팅 시퀀스 추가:** 타이틀 화면에 4초간 진행되는 부팅 시퀀스를 추가했습니다. PS1 스타일의 신스 패드 사운드와 함께 화면 가장자리를 따라 그려지는 황금색 테두리 애니메이션이 연출됩니다.
 - **돌발 파도 (Rogue Waves):** 먼 수평선에서 섬을 향해 거대한 거품을 일으키며 밀려오는 "돌발 파도"가 무작위로 생성되도록 추가했습니다. 기존의 로우폴리(low-poly) 아트 스타일을 해치지 않으면서 바다를 훨씬 더 역동적이고 생동감 있게 만들어 줍니다.
 
@@ -134,6 +137,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - 마우스로 업적 화면에서 일시정지 메뉴로 돌아올 때 메뉴 입력이 멈추던 UI 상태 잠금 버그를 수정했습니다.
 - 게임이 일시정지 상태일 때 고도의 UI 물리 엔진이 업적 메뉴의 스크롤을 처리하지 못하던 버그를 수정했습니다.
 - 타이틀 화면에서 ESC 키를 눌러 업적 화면을 올바르게 닫을 수 있도록 수정했습니다.
+- 얼음 충전 및 냉각력 최고 점수 버프가 잘못된 점수에서 잠금 해제되던 문제를 수정했습니다. 기획서에 맞게 각각 20,000점과 15,000점에서 정상적으로 해제되도록 수정했습니다.
 - 일반적인 게임 플레이 환경을 위해 타이틀 화면에서 개발자 모드 토글 버튼을 제거했습니다.
 
 ---

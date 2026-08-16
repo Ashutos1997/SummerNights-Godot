@@ -15,3 +15,6 @@ Read these files to understand existing patterns before proposing new changes. F
 
 ## Repository Management
 **CRITICAL README RULE:** The project contains both an English `README.md` and a Korean `README.ko.md`. Whenever making updates to the README structure, layout, or content, you MUST ensure that both files are updated synchronously to keep their contents, image counts, and structures completely identical (accounting for language translations).
+
+## UI & Design Consistency
+**CRITICAL DESIGN RULE:** You must ALWAYS follow our design system (`docs/ui_design_system.md`) 1:1 for every single thing you create or modify. Fonts, colors, border radii, alignments, margins, and container sizes must strictly adhere to the established styles. Never introduce arbitrary colors or styling choices.

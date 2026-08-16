@@ -35,6 +35,10 @@ Godot 4로 제작된 3D 아케이드 슈터. 태양을 식히기 전에 열기�
     <td align="center"><img src="screenshots/11_Achievements_New.png" width="100%"><br><b>업적 갤러리</b></td>
     <td align="center"><img src="screenshots/12_Achievements_Locked_New.png" width="100%"><br><b>잠긴 업적</b></td>
   </tr>
+  <tr>
+    <td align="center"><img src="screenshots/13_Weather_Event.png" width="100%"><br><b>날씨 이벤트</b></td>
+    <td align="center"></td>
+  </tr>
 </table>
 
 ---
