@@ -247,6 +247,7 @@ func reset() -> void:
 
 func _ready() -> void:
 	load_settings()
+	_evaluate_milestones()
 
 func save_settings() -> void:
 	var config = ConfigFile.new()
@@ -287,10 +288,25 @@ func add_score(amount: int) -> void:
 	current_score += amount
 	if current_score > high_score:
 		high_score = current_score
+		_evaluate_milestones()
 	emit_signal("score_updated", current_score)
 	
 	if current_score >= 10000:
 		unlock_achievement("arcade_legend")
+
+func _evaluate_milestones() -> void:
+	# Base values
+	max_water_mult = 1.0
+	cooling_power_mult = 1.0
+	bonus_ice_charges = 0
+	heat_resistance = 0.05 if "rock_solid" in unlocked_achievements else 0.0
+	
+	if high_score >= 5000:
+		max_water_mult = 1.1
+	if high_score >= 15000:
+		bonus_ice_charges = 1
+	if high_score >= 25000:
+		cooling_power_mult = 1.1
 
 func unlock_achievement(id: String) -> void:
 	if id in unlocked_achievements: return

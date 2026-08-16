@@ -161,6 +161,13 @@ func _load_weapon_model() -> void:
 			g_mat.albedo_color = Color(0.2, 0.9, 1.0, 0.8) # Preserving new vibrant cyan
 			p_mat.initial_velocity_min = 20.0
 			p_mat.initial_velocity_max = 30.0
+			
+	if "bird_watcher" in GameState.unlocked_achievements and seagull_layer and seagull_layer.has_method("_create_seagull_mesh"):
+		var cosmetic_bird = seagull_layer._create_seagull_mesh()
+		cosmetic_bird.scale = Vector3(0.08, 0.08, 0.08)
+		cosmetic_bird.position = Vector3(0, 0.25, -0.4)
+		cosmetic_bird.rotation_degrees = Vector3(0, 180, 0)
+		gun_model.add_child(cosmetic_bird)
 	
 	water_changed.emit(water_tank, MAX_WATER)
 
@@ -214,6 +221,7 @@ var flare_intercept_sfx: AudioStreamPlayer
 # Weather system
 var is_dragging_sun: bool = false
 var is_catastrom_active: bool = false
+var catastrom_buff: float = 1.0
 var was_catastrom_charged: bool = false
 var catastrom_sfx: AudioStreamPlayer
 var active_weather: String = "none" # "none", "rain", "eclipse"
@@ -225,6 +233,7 @@ var weather_blend: float = 0.0
 var foliage_props: Array[Node3D] = []
 
 var combo_timer: float = 0.0
+var combo_grace_timer: float = 0.0
 var combo_active: bool = false
 
 var magma_rock_prefabs: Array[PackedScene] = [
@@ -260,6 +269,7 @@ var wet_spawn_timer: float = 0.0
 
 
 func _ready() -> void:
+	catastrom_buff = 1.1 if "slam_dunk" in GameState.unlocked_achievements else 1.0
 	ice_shoot_sfx = AudioStreamPlayer.new()
 	ice_shoot_sfx.stream = preload("res://assets/audio/sfx/ice_shoot.ogg")
 	ice_shoot_sfx.volume_db = -5.0
@@ -1456,6 +1466,8 @@ func _process(delta: float) -> void:
 		weather_blend = max(0.0, weather_blend - delta * 1.5)
 		if weather_timer > 0.0 and timer_running:
 			weather_timer -= delta
+			if active_weather == "eclipse" and hud and hud.has_method("update_eclipse_timer"):
+				hud.update_eclipse_timer(weather_timer)
 			if weather_timer <= 0.0:
 				_start_weather_event()
 	else:
@@ -1781,9 +1793,10 @@ func _process(delta: float) -> void:
 				
 				_spawn_flare_explosion(flare_pos)
 				
-				# Reward: Instantly refill +40% Water Tank & +2% Catastrom Charge!
-				water_tank = min(MAX_WATER, water_tank + MAX_WATER * 0.40)
-				GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + 0.02)
+				# Reward: Instantly refill Water Tank & +2% Catastrom Charge (scaled by buff)!
+				var refill_amount = 0.40 if "flare_catcher" in GameState.unlocked_achievements else 0.30
+				water_tank = min(MAX_WATER, water_tank + (MAX_WATER * refill_amount))
+				GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (0.02 * catastrom_buff))
 				var c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2)) if combo_active else 1.0
 				GameState.add_score(int(500.0 * c_mult))
 				water_refill_count += 1
@@ -1876,6 +1889,7 @@ func _process(delta: float) -> void:
 					GameState.unlock_achievement("untouchable")
 				if hud and hud.has_method("update_combo_text"):
 					hud.update_combo_text(current_mult)
+			combo_grace_timer = 0.5 if "untouchable" in GameState.unlocked_achievements else 0.0
 					
 		elif aim_dist < 5.0: # Close enough to hit the larger sun
 			_on_hit(delta, target_pos)
@@ -1890,16 +1904,20 @@ func _process(delta: float) -> void:
 					GameState.unlock_achievement("untouchable")
 				if hud and hud.has_method("update_combo_text"):
 					hud.update_combo_text(current_mult)
+			combo_grace_timer = 0.5 if "untouchable" in GameState.unlocked_achievements else 0.0
 		else:
 			combo_timer = 0.0
 			if combo_active:
 				combo_active = false
 				if hud and hud.has_method("show_combo"): hud.show_combo(false)
 	else:
-		combo_timer = max(0.0, combo_timer - delta)
-		if combo_timer <= 0.0 and combo_active:
-			combo_active = false
-			if hud and hud.has_method("show_combo"): hud.show_combo(false)
+		if combo_grace_timer > 0.0:
+			combo_grace_timer -= delta
+		else:
+			combo_timer = max(0.0, combo_timer - delta)
+			if combo_timer <= 0.0 and combo_active:
+				combo_active = false
+				if hud and hud.has_method("show_combo"): hud.show_combo(false)
 			
 		gun_spray.emitting = false
 		var combo_regen_bonus = 0.0
@@ -2200,7 +2218,11 @@ func _adjust_gun_materials(node: Node) -> void:
 				mat = node.mesh.surface_get_material(i)
 			if mat is StandardMaterial3D:
 				var new_mat = mat.duplicate() as StandardMaterial3D
-				if new_mat.metallic > 0.1:
+				if GameState.high_score >= 50000:
+					new_mat.albedo_color = Color(1.0, 0.85, 0.1) # Solid Gold!
+					new_mat.metallic = 0.8
+					new_mat.roughness = 0.2
+				elif new_mat.metallic > 0.1:
 					new_mat.metallic = 0.0
 				node.set_surface_override_material(i, new_mat)
 	for child in node.get_children():
@@ -2259,7 +2281,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			var c_mult = 1.0
 			if combo_active:
 				c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
-			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult / 1200.0))
+			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult * catastrom_buff / 1200.0))
 			GameState.add_score(int(dmg * 10.0 * c_mult))
 			if sizzle_sfx and not sizzle_sfx.playing:
 				sizzle_sfx.play()
@@ -2275,7 +2297,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			var c_mult = 1.0
 			if combo_active:
 				c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
-			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult / 1200.0))
+			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult * catastrom_buff / 1200.0))
 			GameState.add_score(int(dmg * 5.0 * c_mult))
 			projectile_hit.emit()
 			
@@ -3237,6 +3259,8 @@ func _end_weather_event() -> void:
 		
 	active_weather = "none"
 	hud.update_weather_icon("none")
+	if hud and hud.has_method("update_eclipse_timer"):
+		hud.update_eclipse_timer(0.0)
 	_update_sky(false)
 
 func _unhandled_input(event: InputEvent) -> void:

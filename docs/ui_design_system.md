@@ -59,6 +59,10 @@ To ensure legibility against the bright, 3D sun background, heavy outlines and d
 *   **Buttons:**
     *   Size: `18px` (EN) / `20px` (KR)
     *   Outline Size: `2px` (Black)
+*   **Warning Timers (e.g., Eclipse Countdown):**
+    *   Size: `24px`
+    *   Text Color: `Color(1, 0, 0, 1)` (Red)
+    *   Outline Size: `4px` (Black)
 
 ---
 

@@ -111,7 +111,13 @@ func _update_language() -> void:
 	if title2_lbl: title2_lbl.text = "나이츠" if is_kr else "NIGHTS"
 	if subtitle_lbl: subtitle_lbl.text = "태양을 식혀라" if is_kr else "COOL DOWN THE SUN"
 	if normal_btn: normal_btn.text = "일반 모드" if is_kr else "NORMAL MODE"
-	if survival_btn: survival_btn.text = "무한 모드" if is_kr else "ENDLESS MODE"
+	if survival_btn:
+		var has_dawn_breaks = "dawn_breaks" in GameState.unlocked_achievements
+		survival_btn.disabled = not has_dawn_breaks
+		if not has_dawn_breaks:
+			survival_btn.text = "무한 모드 (잠김)" if is_kr else "ENDLESS MODE (LOCKED)"
+		else:
+			survival_btn.text = "무한 모드" if is_kr else "ENDLESS MODE"
 	if dev_btn: dev_btn.text = "DEV"
 	if ach_btn: ach_btn.text = "업적" if is_kr else "ACHIEVEMENTS"
 	

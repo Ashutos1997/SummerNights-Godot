@@ -98,6 +98,7 @@ var opened_from_pause: bool = false
 var water_tween: Tween
 var hit_tween: Tween
 var heat_tween: Tween
+var weather_timer_lbl: Label
 
 # Weapon HUD
 var hud_weapon_icons: Dictionary = {}  # w_id -> ImageTexture
@@ -241,6 +242,17 @@ func _ready() -> void:
 		w_style.content_margin_top = 6.0
 		w_style.content_margin_bottom = 6.0
 		weather_icon_container.add_theme_stylebox_override("panel", w_style)
+		
+		weather_timer_lbl = Label.new()
+		weather_timer_lbl.label_settings = LabelSettings.new()
+		weather_timer_lbl.label_settings.font = load("res://assets/fonts/Galmuri11.ttf") if GameState.language == "KR" else load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+		weather_timer_lbl.label_settings.font_size = 14
+		weather_timer_lbl.label_settings.font_color = Color(1.0, 0.4, 0.4)
+		weather_timer_lbl.label_settings.outline_size = 4
+		weather_timer_lbl.label_settings.outline_color = Color.BLACK
+		weather_timer_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		weather_icon_container.get_parent().add_child(weather_timer_lbl)
+		weather_timer_lbl.visible = false
 		
 	update_weather_icon("none")
 	
