@@ -20,7 +20,7 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
     <td align="center"><img src="screenshots/02_Core_Gameplay.png" width="100%"><br><b>Core Gameplay</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="screenshots/03_Weapon_Wheel.png" width="100%"><br><b>Weapon Wheel</b></td>
+    <td align="center"><img src="screenshots/03_Weapon_Wheel_v2.png" width="100%"><br><b>Weapon Wheel</b></td>
     <td align="center"><img src="screenshots/08_Catastrom.png" width="100%"><br><b>Catastrom Ultimate</b></td>
   </tr>
   <tr>
