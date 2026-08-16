@@ -25,7 +25,7 @@ Godot 4로 제작된 3D 아케이드 슈터. 태양을 식히기 전에 열기�
   </tr>
   <tr>
     <td align="center"><img src="screenshots/09_Mirage.png" width="100%"><br><b>열기 신기루</b></td>
-    <td align="center"><img src="screenshots/10_Weather.png" width="100%"><br><b>날씨 이벤트</b></td>
+    <td align="center"><img src="screenshots/10_Incoming_Wave.png" width="100%"><br><b>돌발 파도</b></td>
   </tr>
   <tr>
     <td align="center"><img src="screenshots/05_Weather_Solar_Wind.png" width="100%"><br><b>태양풍</b></td>
