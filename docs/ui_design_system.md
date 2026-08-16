@@ -112,6 +112,10 @@ Transient popups that slide in from the top of the screen to notify the player o
 *   **Text & Accent:** Uses the Bright Accent `Color(1.0, 0.85, 0.2, 1.0)`.
 *   **Animation:** Uses a Sine ease-out tween to slide the `position.y` onto the screen and hold for 3 seconds before sliding back up.
 
+### Achievement Icons
+
+All achievements utilize thematic, open-source vector graphics from Game-icons.net (CC BY 3.0). These are imported as crisp PNGs to maintain consistency with the arcade aesthetic.
+
 ### Sliding Toggle Pill
 
 A sleek, modern binary toggle used for premium settings like the Language switch (EN/KR).
