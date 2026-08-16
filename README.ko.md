@@ -20,7 +20,7 @@ Godot 4로 제작된 3D 아케이드 슈터. 태양을 식히기 전에 열기�
     <td align="center"><img src="screenshots/02_Core_Gameplay_KR.png" width="100%"><br><b>핵심 게임플레이</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="screenshots/03_Weapon_Wheel.png" width="100%"><br><b>무기 휠</b></td>
+    <td align="center"><img src="screenshots/03_Weapon_Wheel_v2.png" width="100%"><br><b>무기 휠</b></td>
     <td align="center"><img src="screenshots/08_Catastrom.png" width="100%"><br><b>카타스트롬 궁극기</b></td>
   </tr>
   <tr>
