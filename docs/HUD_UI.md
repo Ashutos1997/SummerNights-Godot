@@ -51,7 +51,9 @@ These elements sit on top of the Core Gameplay HUD and blur/dim the background w
 ### Weapon Wheel (`WeaponWheel`)
 *   Activated by holding `TAB`.
 *   Slows time (`Engine.time_scale = 0.1`) instead of fully pausing.
-*   Draws procedural wedges using the `_draw()` API based on the number of unlocked weapons. Renders live 3D thumbnails of the weapons into viewports mapped to 2D textures.
+*   Draws procedural wedges using the `_draw()` API based on the number of configured weapons (currently 5). 
+*   Weapons can be locked either by level progression or via achievements. Locked wedges are drawn in a flat dark gray (`Color(0.1, 0.1, 0.1, 0.6)`) to visually distinguish them from unlocked yellow/golden wedges.
+*   Renders live 3D thumbnails of the weapons into viewports mapped to 2D textures.
 
 ### Title Screen (`TitleScreen`)
 *   Serves as the main menu and boot sequence.
