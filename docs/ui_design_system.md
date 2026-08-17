@@ -80,6 +80,7 @@ All full-screen menus (Title Screen, Pause Screen, Settings, Credits, etc.) are 
 ### Menu Interiors
 All menus (Pause, Settings, Credits, Achievements, Buffs) follow a strict internal layout logic:
 *   **Alignment:** Content is always left-aligned (anchored to the left) with a `96px` margin from the global border.
+*   **Vertical Flow:** All primary interior components (e.g., Title Row, Divider, Body Content) are separated by exactly `24px` of vertical spacing to ensure perfect visual rhythm across all menus.
 *   **Title Icons:** Each menu title is preceded by a `40x40` icon (`TextureRect` using Game-icons.net SVGs/PNGs) wrapped in a `TitleRow` HBoxContainer (separation `12px`). The icons are dynamically tinted to exactly match the gold color of their respective titles.
 *   **Title Separator:** An `HSeparator` sits directly beneath the TitleRow.
     *   **Color:** `Color(1.0, 0.88, 0.3, 0.35)`
