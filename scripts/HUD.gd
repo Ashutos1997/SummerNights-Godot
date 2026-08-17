@@ -466,45 +466,19 @@ func _ready() -> void:
 		sens_slider.add_theme_icon_override("grabber_highlight", grab_tex)
 
 	# Style Back buttons (transparent background, amber outline, 13.4:1 contrast, 160x44px, 20px font)
-	var style_back = StyleBoxFlat.new()
-	style_back.bg_color = Color(0, 0, 0, 0)
-	style_back.border_color = Color(1.0, 0.88, 0.3, 0.7)
-	style_back.set_border_width_all(1)
-	style_back.set_corner_radius_all(4)
+	# Standard Menu & Lose Screen buttons
+	var style_menu_btn = StyleBoxFlat.new()
+	style_menu_btn.bg_color = Color(0, 0, 0, 0.4)
+	style_menu_btn.border_color = Color(1.0, 0.85, 0.2, 0.6)
+	style_menu_btn.set_border_width_all(2)
+	style_menu_btn.set_corner_radius_all(0)
+	style_menu_btn.content_margin_left = 16
+	style_menu_btn.content_margin_right = 16
+	style_menu_btn.content_margin_top = 8
+	style_menu_btn.content_margin_bottom = 8
 
-	var style_back_hover = StyleBoxFlat.new()
-	style_back_hover.bg_color = Color(1.0, 0.88, 0.3, 0.15)
-	style_back_hover.border_color = Color(1.0, 0.88, 0.3, 1.0)
-	style_back_hover.set_border_width_all(1)
-	style_back_hover.set_corner_radius_all(4)
-
-	for btn in [settings_back_btn, credits_back_btn]:
-		if btn:
-			if font: btn.add_theme_font_override("font", font)
-			btn.add_theme_font_size_override("font_size", 20)
-			btn.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 0.95))
-			btn.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 0.6, 1.0))
-			btn.add_theme_constant_override("outline_size", 2)
-			btn.add_theme_color_override("font_outline_color", Color.BLACK)
-			btn.add_theme_stylebox_override("normal", style_back)
-			btn.add_theme_stylebox_override("hover", style_back_hover)
-			btn.add_theme_stylebox_override("pressed", style_back_hover)
-			btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
-			btn.mouse_entered.connect(_play_ui_tick)
-
-	# Lose Screen buttons
-	var style_lose_btn = StyleBoxFlat.new()
-	style_lose_btn.bg_color = Color(0, 0, 0, 0)
-	style_lose_btn.border_color = Color(1.0, 0.8, 0.2, 1.0)
-	style_lose_btn.set_border_width_all(1)
-	style_lose_btn.set_corner_radius_all(4)
-	style_lose_btn.content_margin_left = 16
-	style_lose_btn.content_margin_right = 16
-	style_lose_btn.content_margin_top = 8
-	style_lose_btn.content_margin_bottom = 8
-
-	var style_lose_btn_hover = style_lose_btn.duplicate()
-	style_lose_btn_hover.bg_color = Color(1.0, 0.8, 0.2, 0.2)
+	var style_menu_btn_hover = style_menu_btn.duplicate()
+	style_menu_btn_hover.bg_color = Color(1.0, 0.75, 0.15, 0.2)
 
 
 	# Keyboard focus ring — amber outline so keyboard users can see where they are
@@ -518,17 +492,17 @@ func _ready() -> void:
 	style_focus.content_margin_top = 4
 	style_focus.content_margin_bottom = 4
 
-	for btn in [retry_btn, menu_btn, pause_resume_btn, settings_btn, credits_btn, achievements_btn, buffs_btn, pause_menu_btn]:
+	for btn in [retry_btn, menu_btn, pause_resume_btn, settings_btn, credits_btn, achievements_btn, buffs_btn, pause_menu_btn, settings_back_btn, credits_back_btn]:
 		if btn:
 			if font: btn.add_theme_font_override("font", font)
 			btn.add_theme_font_size_override("font_size", 22)
 			btn.add_theme_constant_override("letter_spacing", 1)
-			btn.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 1.0))
+			btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
 			btn.add_theme_constant_override("outline_size", 2)
 			btn.add_theme_color_override("font_outline_color", Color.BLACK)
-			btn.add_theme_stylebox_override("normal", style_lose_btn)
-			btn.add_theme_stylebox_override("hover", style_lose_btn_hover)
-			btn.add_theme_stylebox_override("pressed", style_lose_btn_hover)
+			btn.add_theme_stylebox_override("normal", style_menu_btn)
+			btn.add_theme_stylebox_override("hover", style_menu_btn_hover)
+			btn.add_theme_stylebox_override("pressed", style_menu_btn_hover)
 			btn.add_theme_stylebox_override("focus", style_focus)
 			btn.focus_mode = Control.FOCUS_ALL
 			btn.mouse_entered.connect(_play_ui_tick)
@@ -1899,30 +1873,8 @@ func _build_achievements_screen() -> void:
 	var back_btn = Button.new()
 	back_btn.name = "BackBtn"
 	back_btn.text = "BACK"
-	back_btn.custom_minimum_size = Vector2(240, 48)
-	
-	var style_normal = StyleBoxFlat.new()
-	style_normal.bg_color = Color(0.1, 0.1, 0.1, 0.8)
-	style_normal.border_width_left = 2
-	style_normal.border_width_right = 2
-	style_normal.border_width_top = 2
-	style_normal.border_width_bottom = 2
-	style_normal.border_color = Color(0.3, 0.3, 0.3, 0.8)
-	style_normal.corner_radius_top_left = 4
-	style_normal.corner_radius_top_right = 4
-	style_normal.corner_radius_bottom_left = 4
-	style_normal.corner_radius_bottom_right = 4
-	back_btn.add_theme_stylebox_override("normal", style_normal)
-	
-	var style_hover = style_normal.duplicate()
-	style_hover.bg_color = Color(0.2, 0.2, 0.2, 0.9)
-	style_hover.border_color = Color(1.0, 0.85, 0.2, 1.0)
-	back_btn.add_theme_stylebox_override("hover", style_hover)
-	
-	var style_pressed = style_normal.duplicate()
-	style_pressed.bg_color = Color(1.0, 0.85, 0.2, 0.4)
-	back_btn.add_theme_stylebox_override("pressed", style_pressed)
-	back_btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	back_btn.custom_minimum_size = Vector2(280, 52)
+	back_btn.mouse_entered.connect(_play_ui_tick)
 	
 	var btn_center = CenterContainer.new()
 	btn_center.name = "CenterContainer"
@@ -1957,10 +1909,40 @@ func show_achievements_screen() -> void:
 	
 	var back_btn = achievements_screen.get_node("CenterContainer/VBoxContainer/CenterContainer/BackBtn")
 	back_btn.text = "돌아가기" if is_kr else "BACK"
-	back_btn.add_theme_font_override("font", font)
-	back_btn.add_theme_font_size_override("font_size", 24)
-	back_btn.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8, 1.0))
-	back_btn.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 1.0, 1.0))
+	if font: back_btn.add_theme_font_override("font", font)
+	back_btn.add_theme_font_size_override("font_size", 22)
+	back_btn.add_theme_constant_override("letter_spacing", 1)
+	back_btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+	back_btn.add_theme_constant_override("outline_size", 2)
+	back_btn.add_theme_color_override("font_outline_color", Color.BLACK)
+	
+	var style_menu_btn = StyleBoxFlat.new()
+	style_menu_btn.bg_color = Color(0, 0, 0, 0.4)
+	style_menu_btn.border_color = Color(1.0, 0.85, 0.2, 0.6)
+	style_menu_btn.set_border_width_all(2)
+	style_menu_btn.set_corner_radius_all(0)
+	style_menu_btn.content_margin_left = 16
+	style_menu_btn.content_margin_right = 16
+	style_menu_btn.content_margin_top = 8
+	style_menu_btn.content_margin_bottom = 8
+	
+	var style_menu_btn_hover = style_menu_btn.duplicate()
+	style_menu_btn_hover.bg_color = Color(1.0, 0.75, 0.15, 0.2)
+	
+	var style_focus = StyleBoxFlat.new()
+	style_focus.bg_color = Color(0, 0, 0, 0)
+	style_focus.border_color = Color(1.0, 0.85, 0.2, 1.0)
+	style_focus.set_border_width_all(2)
+	style_focus.set_corner_radius_all(6)
+	style_focus.content_margin_left = 6
+	style_focus.content_margin_right = 6
+	style_focus.content_margin_top = 4
+	style_focus.content_margin_bottom = 4
+	
+	back_btn.add_theme_stylebox_override("normal", style_menu_btn)
+	back_btn.add_theme_stylebox_override("hover", style_menu_btn_hover)
+	back_btn.add_theme_stylebox_override("pressed", style_menu_btn_hover)
+	back_btn.add_theme_stylebox_override("focus", style_focus)
 	
 	for ach_id in GameState.ACHIEVEMENTS.keys():
 		var ach = GameState.ACHIEVEMENTS[ach_id]
@@ -2140,30 +2122,8 @@ func _build_buffs_screen() -> void:
 	var back_btn = Button.new()
 	back_btn.name = "BackBtn"
 	back_btn.text = "BACK"
-	back_btn.custom_minimum_size = Vector2(240, 48)
-	
-	var style_normal = StyleBoxFlat.new()
-	style_normal.bg_color = Color(0.1, 0.1, 0.1, 0.8)
-	style_normal.border_width_left = 2
-	style_normal.border_width_right = 2
-	style_normal.border_width_top = 2
-	style_normal.border_width_bottom = 2
-	style_normal.border_color = Color(0.3, 0.3, 0.3, 0.8)
-	style_normal.corner_radius_top_left = 4
-	style_normal.corner_radius_top_right = 4
-	style_normal.corner_radius_bottom_left = 4
-	style_normal.corner_radius_bottom_right = 4
-	back_btn.add_theme_stylebox_override("normal", style_normal)
-	
-	var style_hover = style_normal.duplicate()
-	style_hover.bg_color = Color(0.2, 0.2, 0.2, 0.9)
-	style_hover.border_color = Color(1.0, 0.85, 0.2, 1.0)
-	back_btn.add_theme_stylebox_override("hover", style_hover)
-	
-	var style_pressed = style_normal.duplicate()
-	style_pressed.bg_color = Color(1.0, 0.85, 0.2, 0.4)
-	back_btn.add_theme_stylebox_override("pressed", style_pressed)
-	back_btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	back_btn.custom_minimum_size = Vector2(280, 52)
+	back_btn.mouse_entered.connect(_play_ui_tick)
 	
 	var btn_center = CenterContainer.new()
 	btn_center.name = "CenterContainer"
@@ -2199,10 +2159,40 @@ func show_buffs_screen() -> void:
 	
 	var back_btn = buffs_screen.get_node("CenterContainer/VBoxContainer/CenterContainer/BackBtn")
 	back_btn.text = "돌아가기" if is_kr else "BACK"
-	back_btn.add_theme_font_override("font", font)
-	back_btn.add_theme_font_size_override("font_size", 24)
-	back_btn.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8, 1.0))
-	back_btn.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 1.0, 1.0))
+	if font: back_btn.add_theme_font_override("font", font)
+	back_btn.add_theme_font_size_override("font_size", 22)
+	back_btn.add_theme_constant_override("letter_spacing", 1)
+	back_btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+	back_btn.add_theme_constant_override("outline_size", 2)
+	back_btn.add_theme_color_override("font_outline_color", Color.BLACK)
+	
+	var style_menu_btn = StyleBoxFlat.new()
+	style_menu_btn.bg_color = Color(0, 0, 0, 0.4)
+	style_menu_btn.border_color = Color(1.0, 0.85, 0.2, 0.6)
+	style_menu_btn.set_border_width_all(2)
+	style_menu_btn.set_corner_radius_all(0)
+	style_menu_btn.content_margin_left = 16
+	style_menu_btn.content_margin_right = 16
+	style_menu_btn.content_margin_top = 8
+	style_menu_btn.content_margin_bottom = 8
+	
+	var style_menu_btn_hover = style_menu_btn.duplicate()
+	style_menu_btn_hover.bg_color = Color(1.0, 0.75, 0.15, 0.2)
+	
+	var style_focus = StyleBoxFlat.new()
+	style_focus.bg_color = Color(0, 0, 0, 0)
+	style_focus.border_color = Color(1.0, 0.85, 0.2, 1.0)
+	style_focus.set_border_width_all(2)
+	style_focus.set_corner_radius_all(6)
+	style_focus.content_margin_left = 6
+	style_focus.content_margin_right = 6
+	style_focus.content_margin_top = 4
+	style_focus.content_margin_bottom = 4
+	
+	back_btn.add_theme_stylebox_override("normal", style_menu_btn)
+	back_btn.add_theme_stylebox_override("hover", style_menu_btn_hover)
+	back_btn.add_theme_stylebox_override("pressed", style_menu_btn_hover)
+	back_btn.add_theme_stylebox_override("focus", style_focus)
 	
 	var active_buffs = [
 		{

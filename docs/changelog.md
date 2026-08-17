@@ -16,6 +16,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - **Environment Polish:** The island's foliage (trees and bushes) now aggressively bends and sways when the Solar Wind hazard is active, visually telegraphing the wind direction.
 - **In-Game Achievements:** The Achievements menu is now fully accessible from the in-game Pause Menu, allowing players to check their progress without returning to the Title Screen.
 - **Border Consistency:** Unified the custom animated startup border to mathematically trace the exact 8-pixel corner radius used by the static panels across the rest of the game's UI for a seamless transition.
+- **Button Consistency:** Standardized all "BACK" buttons across menus (Settings, Credits, Achievements, Buffs) to strictly match the global menu button design system (280x52 size, 2px gold borders, no arrow prefixes).
 - **Menu Polish:** Unified the design across all menus (Pause, Settings, Credits, Achievements, Buffs) with consistent left-aligned layouts, unified 96px interior margins, uniform dividers, exactly 24px vertical separation gaps, and dynamic gold-tinted UI icons. Menu buttons were also increased in size for better accessibility.
 - **Pause Screen Border:** Added a custom broken-border design to the Pause menu featuring an animated procedurally-drawn vector sun graphic in the bottom-right corner.
 - **Typography Readability:** English body text (achievement descriptions, credits) now uses the Inter Medium font for improved legibility, while titles and headers retain the stylized Kenney Future typeface.
@@ -127,6 +128,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - **환경 폴리싱:** 태양풍(Solar Wind) 위험 요소가 활성화되었을 때 섬의 식물(야자수 및 수풀)이 강하게 구부러지고 흔들리도록 변경하여 풍향을 시각적으로 명확하게 전달합니다.
 - **게임 내 업적 확인:** 이제 게임 내 일시정지 메뉴에서도 업적 갤러리에 접근할 수 있어, 타이틀 화면으로 돌아가지 않고도 달성 진행도를 즉시 확인할 수 있습니다.
 - **테두리 일관성:** 시작 화면의 커스텀 테두리 드로잉 애니메이션이 게임 내 다른 UI 패널들과 동일한 8픽셀의 둥근 모서리를 가지도록 수학적으로 정확하게 일치시켜 자연스러운 전환을 구현했습니다.
+- **버튼 일관성:** 설정, 크레딧, 업적, 버프 등 모든 메뉴의 "돌아가기(BACK)" 버튼을 글로벌 메뉴 버튼 디자인 시스템(280x52 크기, 2px 황금색 테두리, 화살표 접두사 제거)에 완벽하게 일치하도록 통일했습니다.
 - **메뉴 폴리싱:** 일시정지, 설정, 크레딧, 업적, 버프 등 모든 메뉴의 디자인을 일관된 좌측 정렬 레이아웃, 통일된 96px 내부 여백, 동일한 구분선 및 정확한 24px 수직 간격, 그리고 텍스트 색상에 맞춘 황금색 UI 아이콘으로 통일했습니다. 접근성을 높이기 위해 메뉴 버튼의 크기도 확대했습니다.
 - **일시정지 화면 테두리:** 일시정지 메뉴에 우측 하단이 끊어진 형태의 커스텀 테두리 디자인을 추가하고, 해당 위치에 절차적(procedurally)으로 그려지는 애니메이션 벡터 태양 그래픽을 배치했습니다.
 - **타이포그래피 가독성:** 영어 본문 텍스트(업적 설명, 크레딧)에 Inter Medium 폰트를 적용하여 가독성을 개선했습니다. 제목과 헤더에는 스타일리쉬한 Kenney Future 서체가 유지됩니다.
