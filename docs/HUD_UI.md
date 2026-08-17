@@ -45,7 +45,8 @@ These elements sit on top of the Core Gameplay HUD and blur/dim the background w
 ### Pause Screen (`pause_screen`)
 *   Activated by pressing `ESC`.
 *   Blurs the background and pauses the `get_tree().paused` state.
-*   Contains the `SettingsScreen` (Volume, Sensitivity, Reduce Motion, Fullscreen, Language toggles), the `CreditsScreen`, and the `AchievementsScreen`.
+*   Contains the `SettingsScreen` (Volume, Sensitivity, Reduce Motion, Fullscreen, Language toggles), the `CreditsScreen`, the `AchievementsScreen`, and the `ActiveBuffsScreen`.
+    *   All these full-screen menus follow a strict unified layout: left-aligned content with a 96px margin, a 40x40 dynamic gold-tinted title icon, and a 2px horizontal separator under the title. Menu buttons use an increased size of 280x52.
     *   The **CreditsScreen** uses a vertically scrolling `ScrollContainer` with a cinematic auto-scroll effect that can be overridden by manual mouse scrolling.
     *   The **AchievementsScreen** uses a vertically scrolling `ScrollContainer` displaying dynamically built panels for all configured achievements, utilizing custom icons sourced from Game-icons.net. It operates completely independently of the game's pause state (PROCESS_MODE_ALWAYS) to ensure its internal UI scrolling physics and animations never freeze when accessed from the Pause menu.
 

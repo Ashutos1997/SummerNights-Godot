@@ -12,6 +12,9 @@
 [ext_resource type="Texture2D" path="res://assets/ui/Catastrom.png" id="10_catastrom"]
 [ext_resource type="Texture2D" path="res://assets/ui/grab_open.png" id="11_grab_open"]
 [ext_resource type="Texture2D" path="res://assets/ui/grab_closed.png" id="12_grab_closed"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu_icons/pause.png" id="13_icon_pause"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu_icons/settings.png" id="14_icon_settings"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu_icons/credits.png" id="15_icon_credits"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_border"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -487,31 +490,52 @@ grow_vertical = 2
 theme_override_constants/separation = 20
 alignment = 1
 
-[node name="Title" type="Label" parent="HUD/pause_screen/ColorRect/VBoxContainer"]
+[node name="TitleRow" type="HBoxContainer" parent="HUD/pause_screen/ColorRect/VBoxContainer"]
 layout_mode = 2
-horizontal_alignment = 1
+mouse_filter = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="TitleIcon" type="TextureRect" parent="HUD/pause_screen/ColorRect/VBoxContainer/TitleRow"]
+modulate = Color(1, 0.85, 0.2, 1)
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("13_icon_pause")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Title" type="Label" parent="HUD/pause_screen/ColorRect/VBoxContainer/TitleRow"]
+layout_mode = 2
+horizontal_alignment = 0
+vertical_alignment = 1
 text = "PAUSED"
 
+[node name="Divider" type="HSeparator" parent="HUD/pause_screen/ColorRect/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+
 [node name="ResumeBtn" type="Button" parent="HUD/pause_screen/ColorRect/VBoxContainer"]
-custom_minimum_size = Vector2(200, 44)
+custom_minimum_size = Vector2(280, 52)
 layout_mode = 2
 mouse_filter = 0
 text = "RESUME"
 
 [node name="SettingsBtn" type="Button" parent="HUD/pause_screen/ColorRect/VBoxContainer"]
-custom_minimum_size = Vector2(200, 44)
+custom_minimum_size = Vector2(280, 52)
 layout_mode = 2
 mouse_filter = 0
 text = "SETTINGS"
 
 [node name="CreditsBtn" type="Button" parent="HUD/pause_screen/ColorRect/VBoxContainer"]
-custom_minimum_size = Vector2(200, 44)
+custom_minimum_size = Vector2(280, 52)
 layout_mode = 2
 mouse_filter = 0
 text = "CREDITS"
 
 [node name="MainMenuBtn" type="Button" parent="HUD/pause_screen/ColorRect/VBoxContainer"]
-custom_minimum_size = Vector2(200, 44)
+custom_minimum_size = Vector2(280, 52)
 layout_mode = 2
 mouse_filter = 0
 text = "MAIN MENU"
@@ -566,13 +590,30 @@ mouse_filter = 2
 alignment = 1
 theme_override_constants/separation = 28
 
-[node name="Title" type="Label" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
+[node name="TitleRow" type="HBoxContainer" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="TitleIcon" type="TextureRect" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer/TitleRow"]
+modulate = Color(1, 0.8, 0.2, 1)
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("14_icon_settings")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Title" type="Label" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer/TitleRow"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
 theme_override_font_sizes/font_size = 48
 text = "SETTINGS"
-horizontal_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 1
 
 [node name="Divider" type="HSeparator" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
@@ -1038,13 +1079,30 @@ layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 16
 
-[node name="Title" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+[node name="TitleRow" type="HBoxContainer" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="TitleIcon" type="TextureRect" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/TitleRow"]
+modulate = Color(1, 0.9, 0.2, 1)
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("15_icon_credits")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Title" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/TitleRow"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.2, 1)
 theme_override_font_sizes/font_size = 32
 text = "CREDITS"
-horizontal_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 1
 
 [node name="Divider" type="HSeparator" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
@@ -1226,7 +1284,7 @@ layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.85)
 theme_override_font_sizes/font_size = 12
-text = "Achievement Icons  ·  Game-icons.net  ·  CC BY 3.0"
+text = "Menu & Achievement Icons  ·  Game-icons.net  ·  CC BY 3.0"
 horizontal_alignment = 1
 
 [node name="ItmUI2" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]

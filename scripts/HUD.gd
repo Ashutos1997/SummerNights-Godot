@@ -58,7 +58,7 @@ var last_callout_tier: int = 0
 
 
 @onready var pause_screen       = $HUD/pause_screen
-@onready var pause_title        = $HUD/pause_screen/ColorRect/VBoxContainer/Title
+@onready var pause_title        = $HUD/pause_screen/ColorRect/VBoxContainer/TitleRow/Title
 @onready var pause_resume_btn   = $HUD/pause_screen/ColorRect/VBoxContainer/ResumeBtn
 @onready var settings_btn       = $HUD/pause_screen/ColorRect/VBoxContainer/SettingsBtn
 @onready var credits_btn        = $HUD/pause_screen/ColorRect/VBoxContainer/CreditsBtn
@@ -67,7 +67,7 @@ var last_callout_tier: int = 0
 
 @onready var settings_screen   = $HUD/SettingsScreen
 @onready var settings_bg       = $HUD/SettingsScreen/BG
-@onready var settings_title    = $HUD/SettingsScreen/CenterContainer/VBoxContainer/Title
+@onready var settings_title    = $HUD/SettingsScreen/CenterContainer/VBoxContainer/TitleRow/Title
 @onready var settings_prompt   = $HUD/SettingsScreen/CenterContainer/VBoxContainer/ClosePrompt
 @onready var sfx_slider        = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowSFX/Slider
 @onready var sens_slider       = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowSens/Slider
@@ -82,7 +82,7 @@ var lang_btn_kr: Button
 
 @onready var credits_screen   = $HUD/CreditsScreen
 @onready var credits_bg       = $HUD/CreditsScreen/BG
-@onready var credits_title    = $HUD/CreditsScreen/CenterContainer/VBoxContainer/Title
+@onready var credits_title    = $HUD/CreditsScreen/CenterContainer/VBoxContainer/TitleRow/Title
 @onready var credits_prompt   = $HUD/CreditsScreen/CenterContainer/VBoxContainer/ClosePrompt
 @onready var credits_vbox     = $HUD/CreditsScreen/CenterContainer/VBoxContainer
 @onready var credits_back_btn = $HUD/CreditsScreen/CenterContainer/VBoxContainer/BackBtn
@@ -521,7 +521,7 @@ func _ready() -> void:
 	for btn in [retry_btn, menu_btn, pause_resume_btn, settings_btn, credits_btn, achievements_btn, buffs_btn, pause_menu_btn]:
 		if btn:
 			if font: btn.add_theme_font_override("font", font)
-			btn.add_theme_font_size_override("font_size", 18)
+			btn.add_theme_font_size_override("font_size", 22)
 			btn.add_theme_constant_override("letter_spacing", 1)
 			btn.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 1.0))
 			btn.add_theme_constant_override("outline_size", 2)
@@ -773,6 +773,26 @@ func _apply_language(lang: String) -> void:
 			var sep = settings_vbox.get_node_or_null(sep_name)
 			if sep:
 				sep.add_theme_stylebox_override("separator", sep_style)
+
+	var pause_vbox = $HUD/pause_screen/ColorRect/VBoxContainer
+	if pause_vbox:
+		var pause_div = pause_vbox.get_node_or_null("Divider")
+		if pause_div:
+			pause_div.add_theme_stylebox_override("separator", sep_style)
+
+	# Style TitleIcon panels across all menus
+	var icon_style = StyleBoxFlat.new()
+	icon_style.bg_color = Color(0, 0, 0, 0)
+	icon_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
+	icon_style.set_border_width_all(2)
+	for icon_path in [
+		"HUD/pause_screen/ColorRect/VBoxContainer/TitleRow/TitleIcon",
+		"HUD/SettingsScreen/CenterContainer/VBoxContainer/TitleRow/TitleIcon",
+		"HUD/CreditsScreen/CenterContainer/VBoxContainer/TitleRow/TitleIcon"
+	]:
+		var icon_panel = get_node_or_null(icon_path)
+		if icon_panel:
+			icon_panel.add_theme_stylebox_override("panel", icon_style)
 
 	var row_texts_en := ["Master Volume", "Sensitivity", "Reduce Motion", "Fullscreen", "Language"]
 	var row_texts_kr := ["전체 볼륨", "마우스 감도", "화면 흔들림 감소", "전체 화면", "언어"]
@@ -1830,10 +1850,37 @@ func _build_achievements_screen() -> void:
 	vbox.add_theme_constant_override("separation", 24)
 	center.add_child(vbox)
 	
+	var title_row = HBoxContainer.new()
+	title_row.name = "TitleRow"
+	title_row.add_theme_constant_override("separation", 12)
+	title_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_child(title_row)
+	
+	var title_icon = TextureRect.new()
+	title_icon.name = "TitleIcon"
+	title_icon.custom_minimum_size = Vector2(40, 40)
+	title_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title_icon.texture = load("res://assets/ui/menu_icons/achievements.png")
+	title_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	title_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	title_icon.modulate = Color(1.0, 0.85, 0.2, 1.0)
+	title_row.add_child(title_icon)
+	
 	var title = Label.new()
 	title.name = "Title"
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(title)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	title_row.add_child(title)
+	
+	var divider = HSeparator.new()
+	divider.name = "Divider"
+	var div_style = StyleBoxLine.new()
+	div_style.color = Color(1.0, 0.88, 0.3, 0.35)
+	div_style.grow_begin = 0
+	div_style.grow_end = 0
+	div_style.thickness = 2
+	divider.add_theme_stylebox_override("separator", div_style)
+	vbox.add_child(divider)
 	
 	var scroll = ScrollContainer.new()
 	scroll.custom_minimum_size = Vector2(700, 440)
@@ -1896,9 +1943,17 @@ func show_achievements_screen() -> void:
 	var font = load(font_path)
 	var body_font = load(body_font_path)
 	
-	var title = achievements_screen.get_node("CenterContainer/VBoxContainer/Title")
+	var title = achievements_screen.get_node("CenterContainer/VBoxContainer/TitleRow/Title")
 	title.text = "업적" if is_kr else "ACHIEVEMENTS"
 	_style_lbl(title, 36, Color(1.0, 0.85, 0.2, 1.0), 4, Color.BLACK, font)
+	
+	var title_icon = achievements_screen.get_node_or_null("CenterContainer/VBoxContainer/TitleRow/TitleIcon")
+	if title_icon:
+		var icon_style = StyleBoxFlat.new()
+		icon_style.bg_color = Color(0, 0, 0, 0)
+		icon_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
+		icon_style.set_border_width_all(2)
+		title_icon.add_theme_stylebox_override("panel", icon_style)
 	
 	var back_btn = achievements_screen.get_node("CenterContainer/VBoxContainer/CenterContainer/BackBtn")
 	back_btn.text = "돌아가기" if is_kr else "BACK"
@@ -2036,10 +2091,37 @@ func _build_buffs_screen() -> void:
 	vbox.add_theme_constant_override("separation", 24)
 	center.add_child(vbox)
 	
+	var title_row = HBoxContainer.new()
+	title_row.name = "TitleRow"
+	title_row.add_theme_constant_override("separation", 12)
+	title_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_child(title_row)
+	
+	var title_icon = TextureRect.new()
+	title_icon.name = "TitleIcon"
+	title_icon.custom_minimum_size = Vector2(40, 40)
+	title_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title_icon.texture = load("res://assets/ui/menu_icons/buffs.png")
+	title_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	title_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	title_icon.modulate = Color(1.0, 0.85, 0.2, 1.0)
+	title_row.add_child(title_icon)
+	
 	var title = Label.new()
 	title.name = "Title"
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(title)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	title_row.add_child(title)
+	
+	var divider = HSeparator.new()
+	divider.name = "Divider"
+	var div_style = StyleBoxLine.new()
+	div_style.color = Color(1.0, 0.88, 0.3, 0.35)
+	div_style.grow_begin = 0
+	div_style.grow_end = 0
+	div_style.thickness = 2
+	divider.add_theme_stylebox_override("separator", div_style)
+	vbox.add_child(divider)
 	
 	var scroll = ScrollContainer.new()
 	scroll.custom_minimum_size = Vector2(700, 440)
@@ -2103,9 +2185,17 @@ func show_buffs_screen() -> void:
 	var font = load(font_path)
 	var body_font = load(body_font_path)
 	
-	var title = buffs_screen.get_node("CenterContainer/VBoxContainer/Title")
+	var title = buffs_screen.get_node("CenterContainer/VBoxContainer/TitleRow/Title")
 	title.text = "활성화된 버프" if is_kr else "ACTIVE BUFFS"
 	_style_lbl(title, 36, Color(1.0, 0.85, 0.2, 1.0), 4, Color.BLACK, font)
+	
+	var title_icon = buffs_screen.get_node_or_null("CenterContainer/VBoxContainer/TitleRow/TitleIcon")
+	if title_icon:
+		var icon_style = StyleBoxFlat.new()
+		icon_style.bg_color = Color(0, 0, 0, 0)
+		icon_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
+		icon_style.set_border_width_all(2)
+		title_icon.add_theme_stylebox_override("panel", icon_style)
 	
 	var back_btn = buffs_screen.get_node("CenterContainer/VBoxContainer/CenterContainer/BackBtn")
 	back_btn.text = "돌아가기" if is_kr else "BACK"

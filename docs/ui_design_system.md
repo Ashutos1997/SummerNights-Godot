@@ -77,11 +77,20 @@ All full-screen menus (Title Screen, Pause Screen, Settings, Credits, etc.) are 
 *   **Fade Animation:** Menus tween the entire screen node (`self.modulate:a`) seamlessly over 0.5s rather than fading individual components out-of-sync.
 *   **Startup Animation:** The Title Screen border features a custom `_draw()` sequence that procedurally traces the 8px rounded rectangle perimeter over 4.0 seconds to sync with the boot audio, perfectly matching the final `StyleBoxFlat`.
 
+### Menu Interiors
+All menus (Pause, Settings, Credits, Achievements, Buffs) follow a strict internal layout logic:
+*   **Alignment:** Content is always left-aligned (anchored to the left) with a `96px` margin from the global border.
+*   **Title Icons:** Each menu title is preceded by a `40x40` icon (`TextureRect` using Game-icons.net SVGs/PNGs) wrapped in a `TitleRow` HBoxContainer (separation `12px`). The icons are dynamically tinted to exactly match the gold color of their respective titles.
+*   **Title Separator:** An `HSeparator` sits directly beneath the TitleRow.
+    *   **Color:** `Color(1.0, 0.88, 0.3, 0.35)`
+    *   **Thickness:** `2px`
+
 ### Buttons (StyleBoxFlat)
 
 Buttons use a sleek, semi-transparent flat style with thick borders.
 
 *   **Corner Radius:** `0px` (Standard buttons)
+*   **Menu Buttons Sizing:** `custom_minimum_size = Vector2(280, 52)` with font size `22px`
 
 *   **Normal State:**
     *   Background: `Color(0, 0, 0, 0.4)`

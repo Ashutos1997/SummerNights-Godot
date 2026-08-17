@@ -406,10 +406,37 @@ func _build_achievements_screen() -> void:
 	vbox.add_theme_constant_override("separation", 24)
 	center.add_child(vbox)
 	
+	var title_row = HBoxContainer.new()
+	title_row.name = "TitleRow"
+	title_row.add_theme_constant_override("separation", 12)
+	title_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_child(title_row)
+	
+	var title_icon = TextureRect.new()
+	title_icon.name = "TitleIcon"
+	title_icon.custom_minimum_size = Vector2(40, 40)
+	title_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title_icon.texture = load("res://assets/ui/menu_icons/achievements.png")
+	title_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	title_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	title_icon.modulate = Color(1.0, 0.85, 0.2, 1.0)
+	title_row.add_child(title_icon)
+	
 	var title = Label.new()
 	title.name = "Title"
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(title)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	title_row.add_child(title)
+	
+	var divider = HSeparator.new()
+	divider.name = "Divider"
+	var div_style = StyleBoxLine.new()
+	div_style.color = Color(1.0, 0.88, 0.3, 0.35)
+	div_style.grow_begin = 0
+	div_style.grow_end = 0
+	div_style.thickness = 2
+	divider.add_theme_stylebox_override("separator", div_style)
+	vbox.add_child(divider)
 	
 	var scroll = ScrollContainer.new()
 	scroll.custom_minimum_size = Vector2(700, 440)
@@ -472,11 +499,19 @@ func _show_achievements() -> void:
 	var font = load(font_path)
 	var body_font = load(body_font_path)
 	
-	var title = achievements_screen.get_node("CenterContainer/VBoxContainer/Title")
+	var title = achievements_screen.get_node("CenterContainer/VBoxContainer/TitleRow/Title")
 	title.text = "업적" if is_kr else "ACHIEVEMENTS"
 	_style_label(title, 36, Color(1.0, 0.85, 0.2, 1.0), font)
 	title.add_theme_constant_override("outline_size", 4)
 	title.add_theme_color_override("font_outline_color", Color.BLACK)
+	
+	var title_icon = achievements_screen.get_node_or_null("CenterContainer/VBoxContainer/TitleRow/TitleIcon")
+	if title_icon:
+		var icon_style = StyleBoxFlat.new()
+		icon_style.bg_color = Color(0, 0, 0, 0)
+		icon_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
+		icon_style.set_border_width_all(2)
+		title_icon.add_theme_stylebox_override("panel", icon_style)
 	
 	var back_btn = achievements_screen.get_node("CenterContainer/VBoxContainer/CenterContainer/BackBtn")
 	back_btn.text = "돌아가기" if is_kr else "BACK"
