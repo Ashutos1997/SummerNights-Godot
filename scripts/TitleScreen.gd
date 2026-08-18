@@ -228,17 +228,15 @@ func _update_language() -> void:
 				btn.add_theme_stylebox_override("hover", style_hover)
 				
 				var style_pressed = style_normal.duplicate()
-				if btn == normal_btn:
-					style_pressed.bg_color = Color(1.0, 0.8, 0.2, 0.4)
-				elif btn == survival_btn:
-					style_pressed.bg_color = Color(0.2, 0.8, 1.0, 0.4)
-				elif btn == dev_btn:
-					style_pressed.bg_color = Color(0.8, 0.2, 1.0, 0.4)
-				elif btn == lang_btn:
-					style_pressed.bg_color = Color(1.0, 1.0, 1.0, 0.4)
-				elif btn == ach_btn:
-					style_pressed.bg_color = Color(0.9, 0.6, 0.1, 0.4)
+				style_pressed.bg_color = Color(1.0, 0.85, 0.2, 0.4)
+				style_pressed.border_color = Color(1.0, 0.9, 0.3, 1.0)
 				btn.add_theme_stylebox_override("pressed", style_pressed)
+				
+				var style_disabled = style_normal.duplicate()
+				style_disabled.bg_color = Color(0, 0, 0, 0.2)
+				style_disabled.border_color = Color(0.5, 0.5, 0.5, 0.5)
+				btn.add_theme_stylebox_override("disabled", style_disabled)
+				
 				btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 
 	color_rect.modulate.a = 0.0
@@ -510,9 +508,17 @@ func _show_achievements() -> void:
 	style_menu_btn.content_margin_right = 16
 	style_menu_btn.content_margin_top = 8
 	style_menu_btn.content_margin_bottom = 8
-	
+
 	var style_menu_btn_hover = style_menu_btn.duplicate()
 	style_menu_btn_hover.bg_color = Color(1.0, 0.75, 0.15, 0.2)
+	
+	var style_menu_btn_pressed = style_menu_btn.duplicate()
+	style_menu_btn_pressed.bg_color = Color(1.0, 0.85, 0.2, 0.4)
+	style_menu_btn_pressed.border_color = Color(1.0, 0.9, 0.3, 1.0)
+	
+	var style_menu_btn_disabled = style_menu_btn.duplicate()
+	style_menu_btn_disabled.bg_color = Color(0, 0, 0, 0.2)
+	style_menu_btn_disabled.border_color = Color(0.5, 0.5, 0.5, 0.5)
 	
 	var style_focus = StyleBoxFlat.new()
 	style_focus.bg_color = Color(0, 0, 0, 0)
@@ -526,6 +532,8 @@ func _show_achievements() -> void:
 	
 	back_btn.add_theme_stylebox_override("normal", style_menu_btn)
 	back_btn.add_theme_stylebox_override("hover", style_menu_btn_hover)
+	back_btn.add_theme_stylebox_override("pressed", style_menu_btn_pressed)
+	back_btn.add_theme_stylebox_override("disabled", style_menu_btn_disabled)
 	back_btn.add_theme_stylebox_override("pressed", style_menu_btn_hover)
 	back_btn.add_theme_stylebox_override("focus", style_focus)
 	

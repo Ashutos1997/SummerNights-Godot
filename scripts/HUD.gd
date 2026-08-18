@@ -480,6 +480,14 @@ func _ready() -> void:
 
 	var style_menu_btn_hover = style_menu_btn.duplicate()
 	style_menu_btn_hover.bg_color = Color(1.0, 0.75, 0.15, 0.2)
+	
+	var style_menu_btn_pressed = style_menu_btn.duplicate()
+	style_menu_btn_pressed.bg_color = Color(1.0, 0.85, 0.2, 0.4)
+	style_menu_btn_pressed.border_color = Color(1.0, 0.9, 0.3, 1.0)
+	
+	var style_menu_btn_disabled = style_menu_btn.duplicate()
+	style_menu_btn_disabled.bg_color = Color(0, 0, 0, 0.2)
+	style_menu_btn_disabled.border_color = Color(0.5, 0.5, 0.5, 0.5)
 
 
 	# Keyboard focus ring — amber outline so keyboard users can see where they are
@@ -503,7 +511,8 @@ func _ready() -> void:
 			btn.add_theme_color_override("font_outline_color", Color.BLACK)
 			btn.add_theme_stylebox_override("normal", style_menu_btn)
 			btn.add_theme_stylebox_override("hover", style_menu_btn_hover)
-			btn.add_theme_stylebox_override("pressed", style_menu_btn_hover)
+			btn.add_theme_stylebox_override("pressed", style_menu_btn_pressed)
+			btn.add_theme_stylebox_override("disabled", style_menu_btn_disabled)
 			btn.add_theme_stylebox_override("focus", style_focus)
 			btn.focus_mode = Control.FOCUS_ALL
 			btn.mouse_entered.connect(_play_ui_tick)
@@ -1932,9 +1941,17 @@ func show_achievements_screen() -> void:
 	style_menu_btn.content_margin_right = 16
 	style_menu_btn.content_margin_top = 8
 	style_menu_btn.content_margin_bottom = 8
-	
+
 	var style_menu_btn_hover = style_menu_btn.duplicate()
 	style_menu_btn_hover.bg_color = Color(1.0, 0.75, 0.15, 0.2)
+	
+	var style_menu_btn_pressed = style_menu_btn.duplicate()
+	style_menu_btn_pressed.bg_color = Color(1.0, 0.85, 0.2, 0.4)
+	style_menu_btn_pressed.border_color = Color(1.0, 0.9, 0.3, 1.0)
+	
+	var style_menu_btn_disabled = style_menu_btn.duplicate()
+	style_menu_btn_disabled.bg_color = Color(0, 0, 0, 0.2)
+	style_menu_btn_disabled.border_color = Color(0.5, 0.5, 0.5, 0.5)
 	
 	var style_focus = StyleBoxFlat.new()
 	style_focus.bg_color = Color(0, 0, 0, 0)
@@ -1948,7 +1965,8 @@ func show_achievements_screen() -> void:
 	
 	back_btn.add_theme_stylebox_override("normal", style_menu_btn)
 	back_btn.add_theme_stylebox_override("hover", style_menu_btn_hover)
-	back_btn.add_theme_stylebox_override("pressed", style_menu_btn_hover)
+	back_btn.add_theme_stylebox_override("pressed", style_menu_btn_pressed)
+	back_btn.add_theme_stylebox_override("disabled", style_menu_btn_disabled)
 	back_btn.add_theme_stylebox_override("focus", style_focus)
 	
 	for ach_id in GameState.ACHIEVEMENTS.keys():
@@ -2184,9 +2202,17 @@ func show_buffs_screen() -> void:
 	style_menu_btn.content_margin_right = 16
 	style_menu_btn.content_margin_top = 8
 	style_menu_btn.content_margin_bottom = 8
-	
+
 	var style_menu_btn_hover = style_menu_btn.duplicate()
 	style_menu_btn_hover.bg_color = Color(1.0, 0.75, 0.15, 0.2)
+	
+	var style_menu_btn_pressed = style_menu_btn.duplicate()
+	style_menu_btn_pressed.bg_color = Color(1.0, 0.85, 0.2, 0.4)
+	style_menu_btn_pressed.border_color = Color(1.0, 0.9, 0.3, 1.0)
+	
+	var style_menu_btn_disabled = style_menu_btn.duplicate()
+	style_menu_btn_disabled.bg_color = Color(0, 0, 0, 0.2)
+	style_menu_btn_disabled.border_color = Color(0.5, 0.5, 0.5, 0.5)
 	
 	var style_focus = StyleBoxFlat.new()
 	style_focus.bg_color = Color(0, 0, 0, 0)
@@ -2200,7 +2226,8 @@ func show_buffs_screen() -> void:
 	
 	back_btn.add_theme_stylebox_override("normal", style_menu_btn)
 	back_btn.add_theme_stylebox_override("hover", style_menu_btn_hover)
-	back_btn.add_theme_stylebox_override("pressed", style_menu_btn_hover)
+	back_btn.add_theme_stylebox_override("pressed", style_menu_btn_pressed)
+	back_btn.add_theme_stylebox_override("disabled", style_menu_btn_disabled)
 	back_btn.add_theme_stylebox_override("focus", style_focus)
 	
 	var active_buffs = [
