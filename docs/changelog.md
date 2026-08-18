@@ -26,6 +26,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - Fixed a bug where clicking "Retry" on the lose screen would boot the player to the Title Screen instead of restarting the run.
 - The Retry button now correctly resets the level and wave progression back to 1.
 - Fixed a bug where the weapon model would disappear and not return after executing the Catastrom ultimate.
+- Fixed an exploit where switching weapons via the Pause menu mid-game would magically refill the water tank to 100%; the water tank now correctly maintains its current percentage when a new weapon is equipped.
 - Fixed an off-by-one error where the "Level Cleared" message would incorrectly display the next level number instead of the level just completed.
 - Fixed an issue where the ambient ocean audio aggressively played at the start of the title screen, clashing with the startup synth. The ocean now smoothly fades in *after* the boot sequence completes.
 - Fixed a UI state lock that caused the pause menu to freeze when returning from the achievements screen using a mouse.
@@ -33,6 +34,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - The ESC key now correctly closes the achievements screen on the Title Screen.
 - Fixed an issue where the Ice Charge and Cooling Power high-score buffs were unlocking at the wrong point thresholds. They now correctly unlock at 20,000 and 15,000 points respectively, matching the design guide.
 - Removed the Dev Mode toggle from the Title Screen to enforce standard gameplay unlocks.
+- Fixed visual inconsistencies where the gap after menu dividers appeared too large in the Settings and Credits screens due to invisible bounding box padding, strictly aligning them to the standard 24px separation.
 
 ---
 
@@ -138,6 +140,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - 패배 화면에서 "다시 시도(Retry)"를 클릭하면 게임이 제대로 재시작되지 않고 타이틀 화면으로 튕기던 버그를 수정했습니다.
 - "다시 시도" 버튼이 이제 현재 레벨과 웨이브 진행도를 정상적으로 1로 초기화합니다.
 - 카타스트롬 궁극기 사용 후 무기 모델이 사라지고 다시 나타나지 않던 버그를 수정했습니다.
+- 게임 중 일시정지 메뉴에서 무기를 교체할 때마다 물탱크가 100%로 마법처럼 꽉 차던 악용 가능한 버그를 수정했습니다. 이제 새 무기를 장착해도 현재의 물 잔량 비율(%)이 올바르게 유지됩니다.
 - "레벨 클리어" 쿨다운 메시지가 방금 완료한 레벨이 아닌 다음 레벨 번호(예: "레벨 2 클리어")를 잘못 표시하던 off-by-one 오류를 수정했습니다.
 - 타이틀 화면 시작 시 배경 파도 소리가 부팅 시퀀스의 신스 사운드와 겹쳐서 재생되던 문제를 수정했습니다. 이제 파도 소리는 부팅 시퀀스가 완료된 후 부드럽게 페이드인 됩니다.
 - 마우스로 업적 화면에서 일시정지 메뉴로 돌아올 때 메뉴 입력이 멈추던 UI 상태 잠금 버그를 수정했습니다.
@@ -145,6 +148,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - 타이틀 화면에서 ESC 키를 눌러 업적 화면을 올바르게 닫을 수 있도록 수정했습니다.
 - 얼음 충전 및 냉각력 최고 점수 버프가 잘못된 점수에서 잠금 해제되던 문제를 수정했습니다. 기획서에 맞게 각각 20,000점과 15,000점에서 정상적으로 해제되도록 수정했습니다.
 - 일반적인 게임 플레이 환경을 위해 타이틀 화면에서 개발자 모드 토글 버튼을 제거했습니다.
+- 설정 및 크레딧 화면에서 메뉴 구분선 아래의 간격이 비정상적으로 넓게 표시되던 시각적 불일치 문제를 수정하여, 모든 메뉴가 표준 24px 간격으로 정확히 정렬되도록 했습니다.
 
 ---
 

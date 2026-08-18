@@ -435,6 +435,8 @@ func _build_achievements_screen() -> void:
 	div_style.grow_begin = 0
 	div_style.grow_end = 0
 	div_style.thickness = 2
+	div_style.content_margin_top = 0
+	div_style.content_margin_bottom = 0
 	divider.add_theme_stylebox_override("separator", div_style)
 	vbox.add_child(divider)
 	

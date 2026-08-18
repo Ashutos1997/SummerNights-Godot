@@ -110,8 +110,14 @@ func _load_weapon_model() -> void:
 	_adjust_gun_materials(gun_model)
 	gun.add_child(gun_model)
 	
+	var old_max = MAX_WATER
+	var old_water = water_tank
 	MAX_WATER = w_cfg.water_capacity * GameState.max_water_mult
-	water_tank = MAX_WATER
+	
+	if old_max > 0.0:
+		water_tank = MAX_WATER * (old_water / old_max)
+	else:
+		water_tank = MAX_WATER
 	current_weapon_power = w_cfg.cooling_power * GameState.cooling_power_mult
 	current_weapon_crit = w_cfg.crit_multiplier
 	current_weapon_recharge = w_cfg.recharge_rate

@@ -404,6 +404,7 @@ func _ready() -> void:
 			var r_lbl = r_node.get_node_or_null("Label")
 			if r_lbl:
 				_style_lbl(r_lbl, 20, Color(1.0, 0.85, 0.2, 1.0), 2, Color.BLACK, font)
+				r_lbl.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 
 	# Build language row programmatically (below RowFullscreen)
 	_build_lang_row(font)
@@ -742,6 +743,8 @@ func _apply_language(lang: String) -> void:
 	sep_style.grow_begin = 0
 	sep_style.grow_end = 0
 	sep_style.thickness = 2
+	sep_style.content_margin_top = 0
+	sep_style.content_margin_bottom = 0
 	if settings_vbox:
 		for sep_name in ["Divider", "Divider2"]:
 			var sep = settings_vbox.get_node_or_null(sep_name)
@@ -806,6 +809,8 @@ func _apply_language(lang: String) -> void:
 	sep_style.grow_begin = 0
 	sep_style.grow_end = 0
 	sep_style.thickness = 2
+	sep_style.content_margin_top = 0
+	sep_style.content_margin_bottom = 0
 	for sep_name in ["Divider", "Divider2"]:
 		var sep = credits_vbox.get_node_or_null(sep_name)
 		if sep:
@@ -1853,6 +1858,8 @@ func _build_achievements_screen() -> void:
 	div_style.grow_begin = 0
 	div_style.grow_end = 0
 	div_style.thickness = 2
+	div_style.content_margin_top = 0
+	div_style.content_margin_bottom = 0
 	divider.add_theme_stylebox_override("separator", div_style)
 	vbox.add_child(divider)
 	
@@ -2102,6 +2109,8 @@ func _build_buffs_screen() -> void:
 	div_style.grow_begin = 0
 	div_style.grow_end = 0
 	div_style.thickness = 2
+	div_style.content_margin_top = 0
+	div_style.content_margin_bottom = 0
 	divider.add_theme_stylebox_override("separator", div_style)
 	vbox.add_child(divider)
 	
