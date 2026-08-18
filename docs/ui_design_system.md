@@ -100,11 +100,18 @@ Buttons use a sleek, semi-transparent flat style with thick borders.
     *   Content Margins: `Left/Right: 16px`, `Top/Bottom: 8px`
 *   **Hover State:**
     *   Background: `Color(1.0, 0.75, 0.15, 0.2)`
-*   **Pressed State:**
-    *   Background (Normal Mode): `Color(1.0, 0.8, 0.2, 0.4)`
-    *   Background (Endless Mode): `Color(0.2, 0.8, 1.0, 0.4)`
+    *   Border: Same as Normal
+*   **Pressed (Click) State:**
+    *   Background: `Color(1.0, 0.85, 0.2, 0.4)`
+    *   Border: `Color(1.0, 0.9, 0.3, 1.0)`
+*   **Disabled State:**
+    *   Background: `Color(0, 0, 0, 0.2)`
+    *   Border: `Color(0.5, 0.5, 0.5, 0.5)`
 *   **Focus State:**
-    *   `StyleBoxEmpty` (Removes default Godot focus rectangle)
+    *   Background: `Color(0, 0, 0, 0)`
+    *   Border: `Color(1.0, 0.85, 0.2, 1.0)`
+    *   Border Width: `2px`
+    *   Corner Radius: `6px`
 
 ### Panels & Overlays (Weapon Wheel Style)
 
