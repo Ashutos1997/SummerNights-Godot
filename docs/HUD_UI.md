@@ -29,7 +29,7 @@ The live gameplay HUD is designed to minimize clutter while keeping critical sur
 
 ### Bottom-Right
 *   **`resource_container`:** A vertical box container managing player resources:
-    *   **Water Bar:** Shows current water tank capacity. Recharges when not shooting.
+    *   **Water Bar:** Shows current water tank capacity. Recharges when not shooting. Smoothly lerps (interpolates) to changes, but instantly snaps its visual value if its maximum capacity changes (e.g., when switching weapons) to prevent visual artifacting.
     *   **Ice Charges:** Displays pip-style dots indicating how many Ice Bursts the player has stored.
     *   **Catastrom Bar:** Shows the ultimate gauge, which fills rapidly via the Combo System.
 

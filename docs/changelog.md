@@ -28,6 +28,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - The Retry button now correctly resets the level and wave progression back to 1.
 - Fixed a bug where the weapon model would disappear and not return after executing the Catastrom ultimate.
 - Fixed an exploit where switching weapons via the Pause menu mid-game would magically refill the water tank to 100%; the water tank now correctly maintains its current percentage when a new weapon is equipped.
+- Fixed a visual bug where the water meter would briefly flash to full capacity for a split second when switching weapons.
 - Fixed an off-by-one error where the "Level Cleared" message would incorrectly display the next level number instead of the level just completed.
 - Fixed an issue where the ambient ocean audio aggressively played at the start of the title screen, clashing with the startup synth. The ocean now smoothly fades in *after* the boot sequence completes.
 - Fixed a UI state lock that caused the pause menu to freeze when returning from the achievements screen using a mouse.
@@ -143,6 +144,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - "다시 시도" 버튼이 이제 현재 레벨과 웨이브 진행도를 정상적으로 1로 초기화합니다.
 - 카타스트롬 궁극기 사용 후 무기 모델이 사라지고 다시 나타나지 않던 버그를 수정했습니다.
 - 게임 중 일시정지 메뉴에서 무기를 교체할 때마다 물탱크가 100%로 마법처럼 꽉 차던 악용 가능한 버그를 수정했습니다. 이제 새 무기를 장착해도 현재의 물 잔량 비율(%)이 올바르게 유지됩니다.
+- 무기를 변경할 때 워터 미터가 아주 짧은 순간 동안 시각적으로 가득 찬 상태로 번쩍이는 버그를 수정했습니다.
 - "레벨 클리어" 쿨다운 메시지가 방금 완료한 레벨이 아닌 다음 레벨 번호(예: "레벨 2 클리어")를 잘못 표시하던 off-by-one 오류를 수정했습니다.
 - 타이틀 화면 시작 시 배경 파도 소리가 부팅 시퀀스의 신스 사운드와 겹쳐서 재생되던 문제를 수정했습니다. 이제 파도 소리는 부팅 시퀀스가 완료된 후 부드럽게 페이드인 됩니다.
 - 마우스로 업적 화면에서 일시정지 메뉴로 돌아올 때 메뉴 입력이 멈추던 UI 상태 잠금 버그를 수정했습니다.

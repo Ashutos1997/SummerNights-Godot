@@ -11,7 +11,7 @@ This document outlines the UI design system, color palette, typography guideline
 
 ### Secondary Accents (Cooling / Ice / Water)
 - **Cyan Accent (Survival Mode):** `Color(0.2, 0.8, 1.0, 1.0)`
-- **Water UI Bars:** `Color(0.1, 0.65, 0.95, 1.0)`
+- **Water UI Bars:** `Color(0.1, 0.65, 0.95, 1.0)` (Features smooth internal value lerping, but must bypass lerp and instantly snap its visual representation whenever the maximum capacity changes to prevent UI flashing).
 
 ### Backgrounds & Panels
 - **Global Menu Background:** `Color(0.02, 0.01, 0.05, 0.96)` (Extremely dark, almost solid black for full-screen pause/settings menus)
