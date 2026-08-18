@@ -1079,7 +1079,13 @@ func update_mirage_hp(current: float, max_val: float) -> void:
 
 func _on_water_changed(current: float, max_val: float) -> void:
 	if water_bar:
-		water_bar.max_value = max_val
+		# When capacity changes (weapon switch), snap the bar immediately
+		# to prevent it visually flashing to full for a split second.
+		if water_bar.max_value != max_val:
+			water_bar.max_value = max_val
+			water_bar.value = current
+		else:
+			water_bar.max_value = max_val
 		target_water = current
 			
 		if current < max_val * 0.2:
