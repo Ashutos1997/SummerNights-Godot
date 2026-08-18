@@ -208,6 +208,10 @@ func _update_language() -> void:
 				btn.add_theme_font_override("font", font)
 				btn.add_theme_font_size_override("font_size", 20 if is_kr else 18)
 				btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+				btn.add_theme_color_override("font_hover_color", Color(1.0, 0.85, 0.2, 1.0))
+				btn.add_theme_color_override("font_pressed_color", Color(1.0, 0.85, 0.2, 1.0))
+				btn.add_theme_color_override("font_focus_color", Color(1.0, 0.85, 0.2, 1.0))
+				btn.add_theme_color_override("font_disabled_color", Color(1.0, 0.85, 0.2, 1.0))
 				btn.add_theme_color_override("font_outline_color", Color.BLACK)
 				btn.add_theme_constant_override("outline_size", 2)
 				var style_normal = StyleBoxFlat.new()
@@ -496,6 +500,10 @@ func _show_achievements() -> void:
 	back_btn.add_theme_font_size_override("font_size", 22)
 	back_btn.add_theme_constant_override("letter_spacing", 1)
 	back_btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+	back_btn.add_theme_color_override("font_hover_color", Color(1.0, 0.85, 0.2, 1.0))
+	back_btn.add_theme_color_override("font_pressed_color", Color(1.0, 0.85, 0.2, 1.0))
+	back_btn.add_theme_color_override("font_focus_color", Color(1.0, 0.85, 0.2, 1.0))
+	back_btn.add_theme_color_override("font_disabled_color", Color(1.0, 0.85, 0.2, 1.0))
 	back_btn.add_theme_constant_override("outline_size", 2)
 	back_btn.add_theme_color_override("font_outline_color", Color.BLACK)
 	
@@ -534,7 +542,6 @@ func _show_achievements() -> void:
 	back_btn.add_theme_stylebox_override("hover", style_menu_btn_hover)
 	back_btn.add_theme_stylebox_override("pressed", style_menu_btn_pressed)
 	back_btn.add_theme_stylebox_override("disabled", style_menu_btn_disabled)
-	back_btn.add_theme_stylebox_override("pressed", style_menu_btn_hover)
 	back_btn.add_theme_stylebox_override("focus", style_focus)
 	
 	for ach_id in GameState.ACHIEVEMENTS.keys():

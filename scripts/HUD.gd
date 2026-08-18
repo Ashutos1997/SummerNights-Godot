@@ -507,6 +507,10 @@ func _ready() -> void:
 			btn.add_theme_font_size_override("font_size", 22)
 			btn.add_theme_constant_override("letter_spacing", 1)
 			btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+			btn.add_theme_color_override("font_hover_color", Color(1.0, 0.85, 0.2, 1.0))
+			btn.add_theme_color_override("font_pressed_color", Color(1.0, 0.85, 0.2, 1.0))
+			btn.add_theme_color_override("font_focus_color", Color(1.0, 0.85, 0.2, 1.0))
+			btn.add_theme_color_override("font_disabled_color", Color(1.0, 0.85, 0.2, 1.0))
 			btn.add_theme_constant_override("outline_size", 2)
 			btn.add_theme_color_override("font_outline_color", Color.BLACK)
 			btn.add_theme_stylebox_override("normal", style_menu_btn)
@@ -793,6 +797,10 @@ func _apply_language(lang: String) -> void:
 					if font: r_lbl.add_theme_font_override("font", font)
 					r_lbl.add_theme_font_size_override("font_size", 20)
 					r_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+					r_lbl.add_theme_color_override("font_hover_color", Color(1.0, 0.85, 0.2, 1.0))
+					r_lbl.add_theme_color_override("font_pressed_color", Color(1.0, 0.85, 0.2, 1.0))
+					r_lbl.add_theme_color_override("font_focus_color", Color(1.0, 0.85, 0.2, 1.0))
+					r_lbl.add_theme_color_override("font_disabled_color", Color(1.0, 0.85, 0.2, 1.0))
 					r_lbl.add_theme_constant_override("outline_size", 2)
 					r_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 
@@ -843,6 +851,10 @@ func _apply_language(lang: String) -> void:
 						child.add_theme_color_override("font_outline_color", Color.BLACK)
 						if is_header:
 							child.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+							child.add_theme_color_override("font_hover_color", Color(1.0, 0.85, 0.2, 1.0))
+							child.add_theme_color_override("font_pressed_color", Color(1.0, 0.85, 0.2, 1.0))
+							child.add_theme_color_override("font_focus_color", Color(1.0, 0.85, 0.2, 1.0))
+							child.add_theme_color_override("font_disabled_color", Color(1.0, 0.85, 0.2, 1.0))
 						else:
 							child.add_theme_color_override("font_color", Color(0.92, 0.92, 0.92, 0.9))
 
@@ -1929,6 +1941,10 @@ func show_achievements_screen() -> void:
 	back_btn.add_theme_font_size_override("font_size", 22)
 	back_btn.add_theme_constant_override("letter_spacing", 1)
 	back_btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+	back_btn.add_theme_color_override("font_hover_color", Color(1.0, 0.85, 0.2, 1.0))
+	back_btn.add_theme_color_override("font_pressed_color", Color(1.0, 0.85, 0.2, 1.0))
+	back_btn.add_theme_color_override("font_focus_color", Color(1.0, 0.85, 0.2, 1.0))
+	back_btn.add_theme_color_override("font_disabled_color", Color(1.0, 0.85, 0.2, 1.0))
 	back_btn.add_theme_constant_override("outline_size", 2)
 	back_btn.add_theme_color_override("font_outline_color", Color.BLACK)
 	
@@ -2190,6 +2206,10 @@ func show_buffs_screen() -> void:
 	back_btn.add_theme_font_size_override("font_size", 22)
 	back_btn.add_theme_constant_override("letter_spacing", 1)
 	back_btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+	back_btn.add_theme_color_override("font_hover_color", Color(1.0, 0.85, 0.2, 1.0))
+	back_btn.add_theme_color_override("font_pressed_color", Color(1.0, 0.85, 0.2, 1.0))
+	back_btn.add_theme_color_override("font_focus_color", Color(1.0, 0.85, 0.2, 1.0))
+	back_btn.add_theme_color_override("font_disabled_color", Color(1.0, 0.85, 0.2, 1.0))
 	back_btn.add_theme_constant_override("outline_size", 2)
 	back_btn.add_theme_color_override("font_outline_color", Color.BLACK)
 	
