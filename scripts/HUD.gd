@@ -820,9 +820,9 @@ func _apply_language(lang: String) -> void:
 			
 			for child in lose_vbox.get_children():
 				if child is Label:
-					child.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+					child.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 				elif child is BoxContainer:
-					child.alignment = BoxContainer.ALIGNMENT_BEGIN
+					child.alignment = BoxContainer.ALIGNMENT_CENTER
 			
 			var hbox = lose_vbox.get_node_or_null("HBoxContainer")
 			if hbox:
