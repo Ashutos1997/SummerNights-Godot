@@ -28,6 +28,7 @@ signal level_config_loaded(timer_duration: float)
 signal timer_tick(seconds_remaining: float)
 signal timer_expired()
 signal phase2_started()
+signal supernova_triggered()
 var hud: CanvasLayer
 var shoot_loop_sfx: AudioStreamPlayer
 var hit_sfx: AudioStreamPlayer
@@ -436,6 +437,7 @@ func _ready() -> void:
 	timer_tick.connect(hud._on_timer_tick)
 	timer_expired.connect(hud._on_timer_expired)
 	phase2_started.connect(hud._on_phase2_started)
+	supernova_triggered.connect(hud._on_supernova_triggered)
 	emit_signal("level_config_loaded", cfg.timer)
 	crosshair_moved.connect(hud._on_crosshair_moved)
 	hud.sensitivity_changed.connect(func(val): GameState.mouse_sensitivity = val)
@@ -1453,16 +1455,18 @@ func _process(delta: float) -> void:
 			is_shooting = false
 			if gun_spray: gun_spray.emitting = false
 			
-			# Dramatic Game Over Impact
-			shake(0.5, 0.08)
+			# Supernova Game Over Cinematic
+			if not reduce_motion:
+				shake(2.0, 0.15)
+				
 			if sun_mat:
 				var tw = create_tween()
-				tw.tween_property(sun_mat, "emission_energy_multiplier", 12.0, 0.3)
-				tw.parallel().tween_property(sun_mat, "albedo_color", Color(4.0, 2.0, 1.0), 0.3)
+				tw.tween_property(sun_mat, "emission_energy_multiplier", 16.0, 1.2)
+				tw.parallel().tween_property(sun_mat, "albedo_color", Color(5.0, 3.0, 1.5), 1.2)
 				if sun_mesh:
-					tw.parallel().tween_property(sun_mesh, "scale", Vector3(1.2, 1.2, 1.2), 0.3)
+					tw.parallel().tween_property(sun_mesh, "scale", Vector3(25.0, 25.0, 25.0), 1.2).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_EXPO)
 					
-			timer_expired.emit()
+			supernova_triggered.emit()
 			
 		if GameState.is_survival_mode:
 			GameState.survival_time += delta

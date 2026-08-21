@@ -1530,6 +1530,26 @@ func update_combo_text(mult: float) -> void:
 			c_tw.parallel().tween_property(callout_label, "modulate:a", 0.0, 1.5).set_delay(1.0)
 			c_tw.chain().tween_callback(func(): callout_label.visible = false)
 
+func _on_supernova_triggered() -> void:
+	var flash = ColorRect.new()
+	flash.color = Color(1.0, 1.0, 1.0, 0.0) # Start transparent
+	flash.anchor_right = 1.0
+	flash.anchor_bottom = 1.0
+	flash.z_index = 200
+	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(flash)
+	
+	var tw = create_tween()
+	# Sync with the sun expansion in Main.gd (1.2 seconds)
+	tw.tween_property(flash, "color:a", 1.0, 1.2).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_EXPO)
+	# Hold for 0.5s impact
+	tw.tween_interval(0.5)
+	# Reveal game over UI
+	tw.tween_callback(show_lose_screen)
+	# Fade whiteout away
+	tw.tween_property(flash, "color:a", 0.0, 1.0)
+	tw.tween_callback(flash.queue_free)
+
 func _on_timer_expired() -> void:
 	show_lose_screen()
 
