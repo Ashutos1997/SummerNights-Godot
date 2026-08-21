@@ -780,6 +780,64 @@ func _apply_language(lang: String) -> void:
 		if pause_div:
 			pause_div.add_theme_stylebox_override("separator", sep_style)
 
+	# ── Restyle Lose Screen (fix HDR bleed and match design system) ──
+	if lose_screen:
+		var lose_bg = lose_screen.get_node_or_null("ColorRect")
+		if lose_bg:
+			# Fully opaque to block Supernova HDR bleed-through
+			lose_bg.color = Color(0.02, 0.01, 0.05, 1.0)
+			
+		var lose_border = Panel.new()
+		lose_border.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		lose_border.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		lose_border.offset_left = 24
+		lose_border.offset_top = 24
+		lose_border.offset_right = -24
+		lose_border.offset_bottom = -24
+		
+		var b_style = StyleBoxFlat.new()
+		b_style.bg_color = Color(0, 0, 0, 0)
+		b_style.border_width_left = 2
+		b_style.border_width_top = 2
+		b_style.border_width_right = 2
+		b_style.border_width_bottom = 2
+		b_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
+		b_style.corner_radius_top_left = 8
+		b_style.corner_radius_top_right = 8
+		b_style.corner_radius_bottom_left = 8
+		b_style.corner_radius_bottom_right = 8
+		lose_border.add_theme_stylebox_override("panel", b_style)
+		lose_screen.add_child(lose_border)
+		
+		var lose_vbox = lose_screen.get_node_or_null("ColorRect/VBoxContainer")
+		if lose_vbox:
+			lose_vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			lose_vbox.offset_left = 96
+			lose_vbox.offset_top = 96
+			lose_vbox.offset_right = -96
+			lose_vbox.offset_bottom = -96
+			lose_vbox.alignment = BoxContainer.ALIGNMENT_BEGIN
+			
+			for child in lose_vbox.get_children():
+				if child is Label:
+					child.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+				elif child is BoxContainer:
+					child.alignment = BoxContainer.ALIGNMENT_BEGIN
+				elif child is CenterContainer:
+					var div = child.get_node_or_null("Divider")
+					if div:
+						div.custom_minimum_size.x = 240 # Make divider longer
+					child.queue_free() # Actually, let's replace CenterContainer logic
+			
+			# HSeparator instead of CenterContainer>ColorRect
+			var c = lose_vbox.get_node_or_null("CenterContainer")
+			if c:
+				var hsep = HSeparator.new()
+				hsep.add_theme_stylebox_override("separator", sep_style)
+				lose_vbox.add_child(hsep)
+				lose_vbox.move_child(hsep, c.get_index())
+				c.queue_free()
+
 	# Style TitleIcon panels across all menus
 	var icon_style = StyleBoxFlat.new()
 	icon_style.bg_color = Color(0, 0, 0, 0)
@@ -886,11 +944,14 @@ func _apply_language(lang: String) -> void:
 
 	# ── Lose screen & Phase 2 ─────────────────────────────────────────────────
 	if lose_title_lbl:
-		lose_title_lbl.text = "태양이" if is_kr else "THE SUN"
+		lose_title_lbl.text = "태양이 이겼습니다" if is_kr else "THE SUN WON"
 		if font: lose_title_lbl.add_theme_font_override("font", font)
+		lose_title_lbl.add_theme_font_size_override("font_size", 56)
+		lose_title_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+		lose_title_lbl.add_theme_constant_override("outline_size", 4)
+		lose_title_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 	if lose_title2_lbl:
-		lose_title2_lbl.text = "이겼습니다" if is_kr else "WON"
-		if font: lose_title2_lbl.add_theme_font_override("font", font)
+		lose_title2_lbl.hide()
 	if lose_subtitle_lbl:
 		lose_subtitle_lbl.text = "너무 뜨겁습니다" if is_kr else "TOO HOT TO HANDLE"
 		if font: lose_subtitle_lbl.add_theme_font_override("font", font)
