@@ -198,6 +198,7 @@ var seagull_layer: Node3D = null
 var virtual_mouse_pos: Vector2
 var blasts:      Node3D
 var particles:   GPUParticles3D
+var high_heat_steam: GPUParticles3D
 var sun_shatter_particles: GPUParticles3D
 signal critical_hit
 var sunspot_node: MeshInstance3D
@@ -955,6 +956,31 @@ func _build_scene() -> void:
 	steam_particles.lifetime = 1.2
 	sun.add_child(steam_particles)
 	
+	# High Heat Steam effect
+	high_heat_steam = GPUParticles3D.new()
+	var hh_mat = ParticleProcessMaterial.new()
+	hh_mat.direction = Vector3(0, 1, 0)
+	hh_mat.spread = 60.0
+	hh_mat.initial_velocity_min = 2.0
+	hh_mat.initial_velocity_max = 5.0
+	hh_mat.gravity = Vector3(0, 4.0, 0)
+	hh_mat.scale_min = 0.5
+	hh_mat.scale_max = 2.0
+	var hh_mesh = SphereMesh.new()
+	hh_mesh.radius = 0.5
+	hh_mesh.height = 1.0
+	var hh_mesh_mat = StandardMaterial3D.new()
+	hh_mesh_mat.albedo_color = Color(1.0, 1.0, 1.0, 0.35)
+	hh_mesh_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	hh_mesh.material = hh_mesh_mat
+	high_heat_steam.process_material = hh_mat
+	high_heat_steam.draw_pass_1 = hh_mesh
+	high_heat_steam.emitting = false
+	high_heat_steam.one_shot = false
+	high_heat_steam.amount = 40
+	high_heat_steam.lifetime = 1.5
+	sun.add_child(high_heat_steam)
+	
 	# Water splash particles pool
 	for i in range(10):
 		var splash = GPUParticles3D.new()
@@ -1567,6 +1593,16 @@ func _process(delta: float) -> void:
 			m["node"].scale = sun.scale
 	
 	_update_sun_face(ratio)
+	
+	# High Heat Steam Visual Warning
+	if high_heat_steam:
+		if temperature > 75.0 and not is_sun_frozen and active_weather != "eclipse":
+			if not high_heat_steam.emitting: high_heat_steam.emitting = true
+			var heat_ratio = clamp((temperature - 75.0) / 25.0, 0.0, 1.0)
+			high_heat_steam.amount_ratio = max(0.1, heat_ratio)
+			high_heat_steam.speed_scale = 1.0 + heat_ratio
+		else:
+			if high_heat_steam.emitting: high_heat_steam.emitting = false
 	
 	# Heat Regeneration
 	if temperature < MAX_TEMP and not is_sun_frozen and active_weather != "eclipse":

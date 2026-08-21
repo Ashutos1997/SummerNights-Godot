@@ -12,6 +12,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - **Buff Notifications:** Unlocking a high-score buff now triggers a golden Toast notification during gameplay, sharing the unified design language of achievement unlocks but animating below them to prevent overlap.
 - **Startup Boot Sequence:** The Title Screen now features a 4-second boot-up sequence syncing a swelling PS1-style synth pad with a procedurally animated golden border that draws itself around the screen.
 - **Rogue Waves:** Occasional large, foamy "rogue waves" now procedurally roll in from the distant horizon towards the island, making the ocean feel much more dynamic and lively without breaking the stylized aesthetic.
+- **High Heat Steam:** Added a dynamic visual effect where the sun furiously boils off steam when its temperature exceeds 75%. The steam thickness and speed dynamically scale with the heat, serving as a juicy visual warning of critical danger.
 
 ### Improved
 - **Environment Polish:** The island's foliage (trees and bushes) now aggressively bends and sways when the Solar Wind hazard is active, visually telegraphing the wind direction.
@@ -129,6 +130,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - **버프 알림:** 최고 점수 버프를 잠금 해제하면 게임 플레이 중 업적 알림과 동일한 디자인 언어를 공유하는 황금색 팝업(Toast) 알림이 표시됩니다. 업적과 동시에 달성될 경우 겹치지 않도록 업적 알림 아래쪽에 표시됩니다.
 - **부팅 시퀀스 추가:** 타이틀 화면에 4초간 진행되는 부팅 시퀀스를 추가했습니다. PS1 스타일의 신스 패드 사운드와 함께 화면 가장자리를 따라 그려지는 황금색 테두리 애니메이션이 연출됩니다.
 - **돌발 파도 (Rogue Waves):** 먼 수평선에서 섬을 향해 거대한 거품을 일으키며 밀려오는 "돌발 파도"가 무작위로 생성되도록 추가했습니다. 기존의 로우폴리(low-poly) 아트 스타일을 해치지 않으면서 바다를 훨씬 더 역동적이고 생동감 있게 만들어 줍니다.
+- **고열 증기 효과 (High Heat Steam):** 태양의 온도가 75%를 초과하면 격렬하게 증기를 뿜어내는 동적 시각 효과를 추가했습니다. 열기가 높아질수록 증기의 밀도와 속도가 증가하여 위험 상태를 시각적으로 경고합니다.
 
 ### 개선됨 (Improved)
 - **환경 폴리싱:** 태양풍(Solar Wind) 위험 요소가 활성화되었을 때 섬의 식물(야자수 및 수풀)이 강하게 구부러지고 흔들리도록 변경하여 풍향을 시각적으로 명확하게 전달합니다.
