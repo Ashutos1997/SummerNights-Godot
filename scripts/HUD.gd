@@ -788,27 +788,29 @@ func _apply_language(lang: String) -> void:
 			# Fully opaque to block Supernova HDR bleed-through
 			lose_bg.color = Color(0.02, 0.01, 0.05, 1.0)
 			
-		var lose_border = Panel.new()
-		lose_border.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		lose_border.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		lose_border.offset_left = 24
-		lose_border.offset_top = 24
-		lose_border.offset_right = -24
-		lose_border.offset_bottom = -24
-		
-		var b_style = StyleBoxFlat.new()
-		b_style.bg_color = Color(0, 0, 0, 0)
-		b_style.border_width_left = 2
-		b_style.border_width_top = 2
-		b_style.border_width_right = 2
-		b_style.border_width_bottom = 2
-		b_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
-		b_style.corner_radius_top_left = 8
-		b_style.corner_radius_top_right = 8
-		b_style.corner_radius_bottom_left = 8
-		b_style.corner_radius_bottom_right = 8
-		lose_border.add_theme_stylebox_override("panel", b_style)
-		lose_screen.add_child(lose_border)
+		if not lose_screen.has_node("LoseBorder"):
+			var lose_border = Panel.new()
+			lose_border.name = "LoseBorder"
+			lose_border.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			lose_border.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			lose_border.offset_left = 24
+			lose_border.offset_top = 24
+			lose_border.offset_right = -24
+			lose_border.offset_bottom = -24
+			
+			var b_style = StyleBoxFlat.new()
+			b_style.bg_color = Color(0, 0, 0, 0)
+			b_style.border_width_left = 2
+			b_style.border_width_top = 2
+			b_style.border_width_right = 2
+			b_style.border_width_bottom = 2
+			b_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
+			b_style.corner_radius_top_left = 8
+			b_style.corner_radius_top_right = 8
+			b_style.corner_radius_bottom_left = 8
+			b_style.corner_radius_bottom_right = 8
+			lose_border.add_theme_stylebox_override("panel", b_style)
+			lose_screen.add_child(lose_border)
 		
 		var lose_vbox = lose_screen.get_node_or_null("ColorRect/VBoxContainer")
 		if lose_vbox:
@@ -828,11 +830,13 @@ func _apply_language(lang: String) -> void:
 					n.name = s + "_deleted" # Rename to avoid matching again if queried
 					n.queue_free()
 			
-			var hsep = HSeparator.new()
-			hsep.add_theme_stylebox_override("separator", sep_style)
-			lose_vbox.add_child(hsep)
-			# Move it after the titles
-			lose_vbox.move_child(hsep, 2)
+			if not lose_vbox.has_node("LoseDivider"):
+				var hsep = HSeparator.new()
+				hsep.name = "LoseDivider"
+				hsep.add_theme_stylebox_override("separator", sep_style)
+				lose_vbox.add_child(hsep)
+				# Move it after the titles
+				lose_vbox.move_child(hsep, 2)
 
 	# Style TitleIcon panels across all menus
 	var icon_style = StyleBoxFlat.new()
