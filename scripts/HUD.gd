@@ -811,32 +811,25 @@ func _apply_language(lang: String) -> void:
 		
 		var lose_vbox = lose_screen.get_node_or_null("ColorRect/VBoxContainer")
 		if lose_vbox:
-			lose_vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-			lose_vbox.offset_left = 96
-			lose_vbox.offset_top = 96
-			lose_vbox.offset_right = -96
-			lose_vbox.offset_bottom = -96
-			lose_vbox.alignment = BoxContainer.ALIGNMENT_BEGIN
+			lose_vbox.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+			lose_vbox.add_theme_constant_override("separation", 24)
+			lose_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
 			
 			for child in lose_vbox.get_children():
 				if child is Label:
 					child.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 				elif child is BoxContainer:
 					child.alignment = BoxContainer.ALIGNMENT_BEGIN
+				elif child.name.begins_with("Spacer"):
+					child.queue_free()
 				elif child is CenterContainer:
-					var div = child.get_node_or_null("Divider")
-					if div:
-						div.custom_minimum_size.x = 240 # Make divider longer
-					child.queue_free() # Actually, let's replace CenterContainer logic
+					child.queue_free()
 			
-			# HSeparator instead of CenterContainer>ColorRect
-			var c = lose_vbox.get_node_or_null("CenterContainer")
-			if c:
-				var hsep = HSeparator.new()
-				hsep.add_theme_stylebox_override("separator", sep_style)
-				lose_vbox.add_child(hsep)
-				lose_vbox.move_child(hsep, c.get_index())
-				c.queue_free()
+			var hsep = HSeparator.new()
+			hsep.add_theme_stylebox_override("separator", sep_style)
+			lose_vbox.add_child(hsep)
+			# Move it after the titles
+			lose_vbox.move_child(hsep, 2)
 
 	# Style TitleIcon panels across all menus
 	var icon_style = StyleBoxFlat.new()
