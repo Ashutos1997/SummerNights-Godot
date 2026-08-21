@@ -1605,8 +1605,10 @@ func _on_supernova_triggered() -> void:
 	tw.tween_property(flash, "color:a", 1.0, 1.2).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_EXPO)
 	# Hold for 0.5s impact
 	tw.tween_interval(0.5)
-	# Reveal game over UI
+	# Reveal game over UI (it takes 0.4s to fade in)
 	tw.tween_callback(show_lose_screen)
+	# Wait for LoseScreen to fully fade in before removing the solid white flash!
+	tw.tween_interval(0.5)
 	# Fade whiteout away
 	tw.tween_property(flash, "color:a", 0.0, 1.0)
 	tw.tween_callback(flash.queue_free)
