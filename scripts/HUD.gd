@@ -1601,8 +1601,8 @@ func _on_supernova_triggered() -> void:
 	add_child(flash)
 	
 	var tw = create_tween()
-	# Sync with the sun expansion in Main.gd (1.2 seconds)
-	tw.tween_property(flash, "color:a", 1.0, 1.2).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_EXPO)
+	# Sync with the sun expansion in Main.gd (1.2 seconds), but fade in smoothly to give an evaporating effect
+	tw.tween_property(flash, "color:a", 1.0, 1.2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	# Hold for 0.5s impact
 	tw.tween_interval(0.5)
 	# Reveal game over UI (it takes 0.4s to fade in)
