@@ -18,3 +18,6 @@ Read these files to understand existing patterns before proposing new changes. F
 
 ## UI & Design Consistency
 **CRITICAL DESIGN RULE:** You must ALWAYS follow our design system (`docs/ui_design_system.md`) 1:1 for every single thing you create or modify. Fonts, colors, border radii, alignments, margins, and container sizes must strictly adhere to the established styles. Never introduce arbitrary colors or styling choices.
+
+## Export Guidelines
+**CRITICAL RULE:** Whenever exporting a macOS build, you must ALWAYS export it as a `.dmg` file format instead of a `.zip` file.
