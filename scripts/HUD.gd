@@ -25,6 +25,7 @@ signal weapon_changed(weapon_id: String)
 
 @onready var toast_container = $HUD/ToastContainer
 var achievement_toast_container: Control
+var buff_toast_container: Control
 @onready var crosshair = $HUD/Crosshair
 @onready var win_screen = $HUD/WinScreen
 @onready var level_label = $HUD/LevelLabel
@@ -288,9 +289,18 @@ func _ready() -> void:
 	achievement_toast_container.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE, 0)
 	achievement_toast_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	$HUD.add_child(achievement_toast_container)
+	
+	buff_toast_container = Control.new()
+	buff_toast_container.name = "BuffToastContainer"
+	buff_toast_container.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE, 0)
+	buff_toast_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	$HUD.add_child(buff_toast_container)
+	
 	if pause_screen:
 		$HUD.move_child(achievement_toast_container, pause_screen.get_index())
+		$HUD.move_child(buff_toast_container, pause_screen.get_index())
 	GameState.achievement_unlocked.connect(show_achievement_toast)
+	GameState.buff_unlocked.connect(show_buff_toast)
 	
 	# ───────────────────────────────────────────────
 
@@ -1359,16 +1369,14 @@ func _close_credits() -> void:
 
 
 
-func show_achievement_toast(id: String) -> void:
-	if not achievement_toast_container: return
-	if not GameState.ACHIEVEMENTS.has(id): return
+func _show_toast(header_kr: String, header_en: String, title_kr: String, title_en: String, icon_path: String, target_y: float, container: Control) -> void:
+	if not container: return
 	
-	var ach = GameState.ACHIEVEMENTS[id]
 	var is_kr = GameState.language == "KR"
 	
 	var panel = Panel.new()
 	panel.custom_minimum_size = Vector2(440, 80)
-	panel.position = Vector2(-220, -100) # Start above screen, centered since parent is top wide but wait, parent is just a point if it's PRESET_TOP_WIDE
+	panel.position = Vector2(-220, -100)
 	
 	var style = StyleBoxFlat.new()
 	style.bg_color = Color(0.12, 0.12, 0.15, 0.95)
@@ -1387,7 +1395,7 @@ func show_achievement_toast(id: String) -> void:
 	panel.add_theme_stylebox_override("panel", style)
 	
 	var icon_rect = TextureRect.new()
-	icon_rect.texture = load(ach["icon"])
+	icon_rect.texture = load(icon_path)
 	icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	icon_rect.custom_minimum_size = Vector2(56, 56)
@@ -1397,19 +1405,19 @@ func show_achievement_toast(id: String) -> void:
 	panel.add_child(icon_rect)
 	
 	var header_lbl = Label.new()
-	header_lbl.text = "업적 달성!" if is_kr else "ACHIEVEMENT UNLOCKED!"
+	header_lbl.text = header_kr if is_kr else header_en
 	header_lbl.position = Vector2(84, 14)
 	_style_lbl(header_lbl, 16, Color(1.0, 1.0, 1.0, 0.9), 2, Color.BLACK, galmuri_font if is_kr else kenney_font)
 	panel.add_child(header_lbl)
 	
 	var title_lbl = Label.new()
-	title_lbl.text = ach["title_kr"] if is_kr else ach["title_en"]
+	title_lbl.text = title_kr if is_kr else title_en
 	title_lbl.position = Vector2(84, 38)
 	_style_lbl(title_lbl, 24, Color(1.0, 0.85, 0.2, 1.0), 3, Color.BLACK, galmuri_font if is_kr else kenney_font)
 	panel.add_child(title_lbl)
 	
 	panel.process_mode = Node.PROCESS_MODE_PAUSABLE
-	achievement_toast_container.add_child(panel)
+	container.add_child(panel)
 	
 	# SFX
 	var sfx = AudioStreamPlayer.new()
@@ -1421,7 +1429,7 @@ func show_achievement_toast(id: String) -> void:
 	# Animate Panel
 	var tw = create_tween().bind_node(panel)
 	tw.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-	tw.tween_property(panel, "position:y", 20.0, 0.6)
+	tw.tween_property(panel, "position:y", target_y, 0.6)
 	tw.tween_interval(4.0)
 	tw.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_BACK)
 	tw.tween_property(panel, "position:y", -120.0, 0.5)
@@ -1432,6 +1440,16 @@ func show_achievement_toast(id: String) -> void:
 	icon_tw.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 	icon_tw.tween_interval(0.3)
 	icon_tw.tween_property(icon_rect, "scale", Vector2.ONE, 0.5)
+
+func show_achievement_toast(id: String) -> void:
+	if not GameState.ACHIEVEMENTS.has(id): return
+	var ach = GameState.ACHIEVEMENTS[id]
+	_show_toast("업적 달성!", "ACHIEVEMENT UNLOCKED!", ach["title_kr"], ach["title_en"], ach["icon"], 20.0, achievement_toast_container)
+
+func show_buff_toast(id: String) -> void:
+	if not GameState.BUFFS.has(id): return
+	var buff = GameState.BUFFS[id]
+	_show_toast("버프 활성화!", "BUFF UNLOCKED!", buff["title_kr"], buff["title_en"], buff["icon"], 110.0, buff_toast_container)
 func hide_win_screen() -> void:
 	if win_screen:
 		win_screen.visible = false
@@ -2256,98 +2274,23 @@ func show_buffs_screen() -> void:
 	back_btn.add_theme_stylebox_override("disabled", style_menu_btn_disabled)
 	back_btn.add_theme_stylebox_override("focus", style_focus)
 	
-	var active_buffs = [
-		{
-			"id": "tank_upgrade",
-			"condition": GameState.high_score >= 5000,
-			"icon": "res://assets/ui/achievements/water-recycling.png",
-			"title_en": "Deep Reserves",
-			"title_kr": "깊은 저장고",
-			"desc_en": "Max Water Tank capacity is permanently increased.",
-			"desc_kr": "최대 물탱크 용량이 영구적으로 증가했습니다."
-		},
-		{
-			"id": "cooling_upgrade",
-			"condition": GameState.high_score >= 15000,
-			"icon": "res://assets/ui/achievements/water-splash.png",
-			"title_en": "Liquid Nitrogen",
-			"title_kr": "액체 질소",
-			"desc_en": "Water gun cooling power is permanently increased.",
-			"desc_kr": "물총의 냉각력이 영구적으로 증가했습니다."
-		},
-		{
-			"id": "ice_upgrade",
-			"condition": GameState.high_score >= 20000,
-			"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_white.png",
-			"title_en": "Extra Ice Charge",
-			"title_kr": "추가 얼음 충전",
-			"desc_en": "Spawn with an additional Ice Burst charge.",
-			"desc_kr": "얼음 폭발 스킬이 1회 추가 충전된 상태로 시작합니다."
-		},
-		{
-			"id": "gold_weapon",
-			"condition": GameState.high_score >= 50000,
-			"icon": "res://assets/ui/achievements/trophy.png",
-			"title_en": "Solid Gold",
-			"title_kr": "순금",
-			"desc_en": "All weapons are forged from solid gold.",
-			"desc_kr": "모든 무기가 순금으로 도금됩니다."
-		},
-		{
-			"id": "catastrom_buff",
-			"condition": "slam_dunk" in GameState.unlocked_achievements,
-			"icon": "res://assets/ui/achievements/water-splash.png",
-			"title_en": "Catastrom Flow",
-			"title_kr": "카타스트롬 흐름",
-			"desc_en": "Catastrom meter fills 10% faster.",
-			"desc_kr": "카타스트롬 게이지가 10% 더 빠르게 차오릅니다."
-		},
-		{
-			"id": "combo_grace",
-			"condition": "untouchable" in GameState.unlocked_achievements,
-			"icon": "res://assets/ui/achievements/water-recycling.png",
-			"title_en": "Combo Grace",
-			"title_kr": "콤보 유예",
-			"desc_en": "Combo pauses an extra 0.5s before decaying.",
-			"desc_kr": "콤보가 감소하기 전 0.5초의 추가 유예 시간이 주어집니다."
-		},
-		{
-			"id": "flare_boost",
-			"condition": "flare_catcher" in GameState.unlocked_achievements,
-			"icon": "res://assets/ui/achievements/fireball.png",
-			"title_en": "Flare Refill Boost",
-			"title_kr": "플레어 충전 부스트",
-			"desc_en": "Intercepting flares refills 40% water (up from 30%).",
-			"desc_kr": "플레어 요격 시 물이 30%가 아닌 40% 충전됩니다."
-		},
-		{
-			"id": "heat_resist",
-			"condition": "rock_solid" in GameState.unlocked_achievements,
-			"icon": "res://assets/ui/achievements/ball-glow.png",
-			"title_en": "Heat Resistance",
-			"title_kr": "열 저항",
-			"desc_en": "Permanent 5% Heat Resistance across all waves.",
-			"desc_kr": "모든 웨이브에서 열 저항이 5% 증가합니다."
-		},
-		{
-			"id": "featherweight",
-			"condition": "bird_watcher" in GameState.unlocked_achievements,
-			"icon": "res://assets/ui/achievements/seagull.png",
-			"title_en": "Featherweight",
-			"title_kr": "깃털 같은 가벼움",
-			"desc_en": "Weapon swaps are 50% faster, and sun sway is reduced.",
-			"desc_kr": "무기 교체가 50% 빨라지고 태양의 흔들림이 감소합니다."
-		},
-		{
-			"id": "eclipse_timer",
-			"condition": "shadow_walker" in GameState.unlocked_achievements,
-			"icon": "res://assets/ui/achievements/eclipse.png",
-			"title_en": "Eclipse Warning",
-			"title_kr": "일식 경고",
-			"desc_en": "Displays a precise countdown timer during Eclipses.",
-			"desc_kr": "일식 이벤트 동안 정확한 카운트다운 타이머가 표시됩니다."
-		}
-	]
+	var active_buffs = []
+	for buff_id in GameState.BUFFS:
+		var buff = GameState.BUFFS[buff_id].duplicate()
+		var unlocked = false
+		match buff_id:
+			"tank_upgrade": unlocked = GameState.high_score >= 5000
+			"cooling_upgrade": unlocked = GameState.high_score >= 15000
+			"ice_upgrade": unlocked = GameState.high_score >= 20000
+			"gold_weapon": unlocked = GameState.high_score >= 50000
+			"catastrom_buff": unlocked = "slam_dunk" in GameState.unlocked_achievements
+			"combo_grace": unlocked = "untouchable" in GameState.unlocked_achievements
+			"flare_boost": unlocked = "flare_catcher" in GameState.unlocked_achievements
+			"heat_resist": unlocked = "rock_solid" in GameState.unlocked_achievements
+			"featherweight": unlocked = "bird_watcher" in GameState.unlocked_achievements
+			"eclipse_timer": unlocked = "shadow_walker" in GameState.unlocked_achievements
+		buff["condition"] = unlocked
+		active_buffs.append(buff)
 	
 	for buff in active_buffs:
 		var unlocked = buff["condition"]

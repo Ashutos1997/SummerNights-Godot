@@ -2,6 +2,7 @@ extends Node
 
 signal score_updated(new_score: int)
 signal achievement_unlocked(id)
+signal buff_unlocked(id)
 
 const ACHIEVEMENTS: Dictionary = {
 	"dawn_breaks": {
@@ -59,6 +60,79 @@ const ACHIEVEMENTS: Dictionary = {
 		"title_kr": "플레어 사냥꾼",
 		"desc_en": "Intercept 10 Solar Flares.",
 		"desc_kr": "태양 플레어를 10회 요격하세요."
+	}
+}
+
+const BUFFS: Dictionary = {
+	"tank_upgrade": {
+		"icon": "res://assets/ui/achievements/water-recycling.png",
+		"title_en": "Deep Reserves",
+		"title_kr": "깊은 저장고",
+		"desc_en": "Max Water Tank capacity is permanently increased.",
+		"desc_kr": "최대 물탱크 용량이 영구적으로 증가했습니다."
+	},
+	"cooling_upgrade": {
+		"icon": "res://assets/ui/achievements/water-splash.png",
+		"title_en": "Liquid Nitrogen",
+		"title_kr": "액체 질소",
+		"desc_en": "Water gun cooling power is permanently increased.",
+		"desc_kr": "물총의 냉각력이 영구적으로 증가했습니다."
+	},
+	"ice_upgrade": {
+		"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_white.png",
+		"title_en": "Extra Ice Charge",
+		"title_kr": "추가 얼음 충전",
+		"desc_en": "Spawn with an additional Ice Burst charge.",
+		"desc_kr": "얼음 폭발 스킬이 1회 추가 충전된 상태로 시작합니다."
+	},
+	"gold_weapon": {
+		"icon": "res://assets/ui/achievements/trophy.png",
+		"title_en": "Solid Gold",
+		"title_kr": "순금",
+		"desc_en": "All weapons are forged from solid gold.",
+		"desc_kr": "모든 무기가 순금으로 도금됩니다."
+	},
+	"catastrom_buff": {
+		"icon": "res://assets/ui/achievements/water-splash.png",
+		"title_en": "Catastrom Flow",
+		"title_kr": "카타스트롬 흐름",
+		"desc_en": "Increases Catastrom charge rate by 10%.",
+		"desc_kr": "카타스트롬 충전 속도가 10% 증가합니다."
+	},
+	"combo_grace": {
+		"icon": "res://assets/ui/achievements/water-recycling.png",
+		"title_en": "Combo Grace",
+		"title_kr": "콤보 유예",
+		"desc_en": "Combo pauses an extra 0.5s before decaying.",
+		"desc_kr": "콤보가 감소하기 전 0.5초의 추가 유예 시간이 주어집니다."
+	},
+	"flare_boost": {
+		"icon": "res://assets/ui/achievements/fireball.png",
+		"title_en": "Flare Refill Boost",
+		"title_kr": "플레어 충전 부스트",
+		"desc_en": "Intercepting flares refills 40% water (up from 30%).",
+		"desc_kr": "플레어 요격 시 물이 30%가 아닌 40% 충전됩니다."
+	},
+	"heat_resist": {
+		"icon": "res://assets/ui/achievements/ball-glow.png",
+		"title_en": "Heat Resistance",
+		"title_kr": "열 저항",
+		"desc_en": "Permanent 5% Heat Resistance across all waves.",
+		"desc_kr": "모든 웨이브에서 열 저항이 5% 증가합니다."
+	},
+	"featherweight": {
+		"icon": "res://assets/ui/achievements/seagull.png",
+		"title_en": "Featherweight",
+		"title_kr": "깃털 같은 가벼움",
+		"desc_en": "Weapon swaps are 50% faster, and sun sway is reduced.",
+		"desc_kr": "무기 교체가 50% 빨라지고 태양의 흔들림이 감소합니다."
+	},
+	"eclipse_timer": {
+		"icon": "res://assets/ui/achievements/eclipse.png",
+		"title_en": "Eclipse Warning",
+		"title_kr": "일식 경고",
+		"desc_en": "Displays a precise countdown timer during Eclipses.",
+		"desc_kr": "일식 이벤트 동안 정확한 카운트다운 타이머가 표시됩니다."
 	}
 }
 
@@ -287,14 +361,15 @@ func add_score(amount: int) -> void:
 	if amount <= 0: return
 	current_score += amount
 	if current_score > high_score:
+		var old_high = high_score
 		high_score = current_score
-		_evaluate_milestones()
+		_evaluate_milestones(old_high)
 	emit_signal("score_updated", current_score)
 	
 	if current_score >= 10000:
 		unlock_achievement("arcade_legend")
 
-func _evaluate_milestones() -> void:
+func _evaluate_milestones(old_high: int = -1) -> void:
 	# Base values
 	max_water_mult = 1.0
 	cooling_power_mult = 1.0
@@ -303,10 +378,15 @@ func _evaluate_milestones() -> void:
 	
 	if high_score >= 5000:
 		max_water_mult = 1.1
+		if old_high >= 0 and old_high < 5000: emit_signal("buff_unlocked", "tank_upgrade")
 	if high_score >= 15000:
 		cooling_power_mult = 1.1
+		if old_high >= 0 and old_high < 15000: emit_signal("buff_unlocked", "cooling_upgrade")
 	if high_score >= 20000:
 		bonus_ice_charges = 1
+		if old_high >= 0 and old_high < 20000: emit_signal("buff_unlocked", "ice_upgrade")
+	if high_score >= 50000:
+		if old_high >= 0 and old_high < 50000: emit_signal("buff_unlocked", "gold_weapon")
 
 func unlock_achievement(id: String) -> void:
 	if id in unlocked_achievements: return
