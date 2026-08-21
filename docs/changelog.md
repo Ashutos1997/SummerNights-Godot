@@ -2,7 +2,7 @@
 
 All notable changes to the Summer Nights project will be documented in this file.
 
-## [v1.3.0] - WIP
+## [v1.3.0] - 2026-08-21
 
 ### Added
 - **Tidal Gatling:** Added a massive 5th weapon (a heavy gatling gun) boasting huge cooling power but extreme water drain and slow recharge. Serves as an endgame loop goal and unlocks via the "Arcade Legend" achievement.
@@ -122,7 +122,7 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ---
 
-## [v1.3.0] - WIP
+## [v1.3.0] - 2026-08-21
 
 ### 추가됨 (Added)
 - **타이달 개틀링 (Tidal Gatling):** 5번째 무기인 거대한 개틀링 건을 추가했습니다. 강력한 냉각력을 자랑하지만 물 소모량이 극심하고 재충전 속도가 느립니다. 엔드게임 루프 목표로 제공되며 "아케이드 전설" 업적 달성 시 해제됩니다.
