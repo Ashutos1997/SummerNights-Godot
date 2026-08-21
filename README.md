@@ -29,15 +29,15 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
   </tr>
   <tr>
     <td align="center"><img src="screenshots/05_Weather_Solar_Wind.png" width="100%"><br><b>Solar Wind</b></td>
+    <td align="center"><img src="screenshots/13_Weather_Event.png" width="100%"><br><b>Weather Event</b></td>
+  </tr>
+  <tr>
     <td align="center"><img src="screenshots/06_Pause_Screen_v1.3.png" width="100%"><br><b>Pause Screen</b></td>
+    <td align="center"><img src="screenshots/14_Active_Buffs_v1.3.png" width="100%"><br><b>Active Buffs</b></td>
   </tr>
   <tr>
     <td align="center"><img src="screenshots/11_Achievements_v1.3.png" width="100%"><br><b>Achievements Gallery</b></td>
     <td align="center"><img src="screenshots/12_Settings_v1.3.png" width="100%"><br><b>Settings</b></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="screenshots/13_Weather_Event.png" width="100%"><br><b>Weather Event</b></td>
-    <td align="center"><img src="screenshots/14_Active_Buffs_v1.3.png" width="100%"><br><b>Active Buffs</b></td>
   </tr>
 </table>
 

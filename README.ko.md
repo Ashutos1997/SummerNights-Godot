@@ -29,15 +29,15 @@ Godot 4로 제작된 3D 아케이드 슈터. 태양을 식히기 전에 열기�
   </tr>
   <tr>
     <td align="center"><img src="screenshots/05_Weather_Solar_Wind.png" width="100%"><br><b>태양풍</b></td>
+    <td align="center"><img src="screenshots/13_Weather_Event.png" width="100%"><br><b>날씨 이벤트</b></td>
+  </tr>
+  <tr>
     <td align="center"><img src="screenshots/06_Pause_Screen_v1.3.png" width="100%"><br><b>일시정지 화면</b></td>
+    <td align="center"><img src="screenshots/14_Active_Buffs_v1.3.png" width="100%"><br><b>활성화된 버프</b></td>
   </tr>
   <tr>
     <td align="center"><img src="screenshots/11_Achievements_v1.3.png" width="100%"><br><b>업적 갤러리</b></td>
     <td align="center"><img src="screenshots/12_Settings_v1.3.png" width="100%"><br><b>설정 화면</b></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="screenshots/13_Weather_Event.png" width="100%"><br><b>날씨 이벤트</b></td>
-    <td align="center"><img src="screenshots/14_Active_Buffs_v1.3.png" width="100%"><br><b>활성화된 버프</b></td>
   </tr>
 </table>
 
