@@ -824,6 +824,15 @@ func _apply_language(lang: String) -> void:
 				elif child is BoxContainer:
 					child.alignment = BoxContainer.ALIGNMENT_BEGIN
 			
+			var hbox = lose_vbox.get_node_or_null("HBoxContainer")
+			if hbox:
+				var btns = hbox.get_children()
+				for b in btns:
+					hbox.remove_child(b)
+					lose_vbox.add_child(b)
+				hbox.name = "HBoxContainer_deleted"
+				hbox.queue_free()
+			
 			for s in ["SpacerDivider", "Spacer2", "CenterContainer"]:
 				var n = lose_vbox.get_node_or_null(s)
 				if n:
@@ -955,9 +964,17 @@ func _apply_language(lang: String) -> void:
 	if lose_subtitle_lbl:
 		lose_subtitle_lbl.text = "너무 뜨겁습니다" if is_kr else "TOO HOT TO HANDLE"
 		if font: lose_subtitle_lbl.add_theme_font_override("font", font)
+		lose_subtitle_lbl.add_theme_font_size_override("font_size", 20 if is_kr else 18)
+		lose_subtitle_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.7))
+		lose_subtitle_lbl.add_theme_constant_override("outline_size", 4)
+		lose_subtitle_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 	if lose_level_lbl:
 		lose_level_lbl.text = "%02d 단계 실패" % GameState.level if is_kr else "LEVEL %02d FAILED" % GameState.level
 		if font: lose_level_lbl.add_theme_font_override("font", font)
+		lose_level_lbl.add_theme_font_size_override("font_size", 20 if is_kr else 18)
+		lose_level_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.7))
+		lose_level_lbl.add_theme_constant_override("outline_size", 4)
+		lose_level_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 	if lose_wave_time_lbl:
 		lose_wave_time_lbl.hide()
 	if retry_btn:
