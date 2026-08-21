@@ -529,6 +529,7 @@ func _ready() -> void:
 			btn.add_theme_stylebox_override("disabled", style_menu_btn_disabled)
 			btn.add_theme_stylebox_override("focus", style_focus)
 			btn.focus_mode = Control.FOCUS_ALL
+			btn.custom_minimum_size = Vector2(280, 52)
 			btn.mouse_entered.connect(_play_ui_tick)
 			
 	if retry_btn:
@@ -820,10 +821,12 @@ func _apply_language(lang: String) -> void:
 					child.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 				elif child is BoxContainer:
 					child.alignment = BoxContainer.ALIGNMENT_BEGIN
-				elif child.name.begins_with("Spacer"):
-					child.queue_free()
-				elif child is CenterContainer:
-					child.queue_free()
+			
+			for s in ["SpacerDivider", "Spacer2", "CenterContainer"]:
+				var n = lose_vbox.get_node_or_null(s)
+				if n:
+					n.name = s + "_deleted" # Rename to avoid matching again if queried
+					n.queue_free()
 			
 			var hsep = HSeparator.new()
 			hsep.add_theme_stylebox_override("separator", sep_style)
