@@ -66,7 +66,7 @@ These elements sit on top of the Core Gameplay HUD and blur/dim the background w
 ### End State Screens
 *   **`WinScreen`:** Shown upon completing a wave. Displays level stats and loading text.
 *   **`EndScreen`:** Shown upon beating the entire game.
-*   **`LoseScreen`:** Shown if the Sun hits 100% heat. Displays failure stats and offers Retry/Menu buttons.
+*   **`LoseScreen`:** Shown if the Sun hits 100% heat. Instead of an immediate popup, this triggers a dramatic Supernova cinematic (massive sun expansion, screen shake, blinding flash) that fades into the menu. Features a fully opaque background to block HDR bleed, a perfectly centered vertical layout for dramatic emphasis, and offers Retry/Menu buttons styled exactly like the Pause menu.
 
 ---
 

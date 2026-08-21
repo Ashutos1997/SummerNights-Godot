@@ -40,6 +40,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - Fixed an issue where the Ice Charge and Cooling Power high-score buffs were unlocking at the wrong point thresholds. They now correctly unlock at 20,000 and 15,000 points respectively, matching the design guide.
 - Removed the Dev Mode toggle from the Title Screen to enforce standard gameplay unlocks.
 - Fixed visual inconsistencies where the gap after menu dividers appeared too large in the Settings and Credits screens due to invisible bounding box padding, strictly aligning them to the standard 24px separation.
+- Fixed multiple styling and layout issues on the Lose Screen where duplicate dividers were spawning on language toggle, buttons were sized incorrectly, and text typography was incorrectly applying left-alignment in a centered layout.
 
 ---
 
@@ -159,6 +160,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - 얼음 충전 및 냉각력 최고 점수 버프가 잘못된 점수에서 잠금 해제되던 문제를 수정했습니다. 기획서에 맞게 각각 20,000점과 15,000점에서 정상적으로 해제되도록 수정했습니다.
 - 일반적인 게임 플레이 환경을 위해 타이틀 화면에서 개발자 모드 토글 버튼을 제거했습니다.
 - 설정 및 크레딧 화면에서 메뉴 구분선 아래의 간격이 비정상적으로 넓게 표시되던 시각적 불일치 문제를 수정하여, 모든 메뉴가 표준 24px 간격으로 정확히 정렬되도록 했습니다.
+- 패배 화면에서 언어 변경 시 구분선이 중복 생성되거나 버튼 크기가 잘못 적용되던 문제, 그리고 중앙 정렬 레이아웃에서 텍스트가 강제로 좌측 정렬되던 타이포그래피 및 레이아웃 관련 다수의 버그를 수정했습니다.
 
 ---
 
