@@ -5,13 +5,14 @@ All notable changes to the Summer Nights project will be documented in this file
 ## [v1.4.0 - WIP]
 
 ### Added
+- **Water Shader Overhaul:** Completely rewrote the procedural water shader (`stylized_water.gdshader`) to use physical Gerstner waves, procedural Voronoi surface foam/caustics that scroll across the open ocean, and fake subsurface scattering (SSS) that dynamically highlights wave crests based on height and view angle.
 - **PBR Sand Texture:** Replaced the procedurally generated sand noise with a high-quality CC0 PBR texture (Coast Sand 01) from Poly Haven, featuring diffuse, normal, and roughness maps for a smoother, stylized beach aesthetic.
 - **Retro Post-Processing:** Added a global screen shader applying film grain, vignette, and synthwave color grading (S-curve contrast and complementary split-toning) for a cohesive arcade aesthetic.
 - **Cinematic Bloom:** Enabled soft additive bloom in the WorldEnvironment. The sun and all dynamically generated particles (water shots, ice bursts, catastrom) are now emissive, dynamically bleeding light into the atmosphere.
 
 ### Fixed
 - **Sand Reflectivity & Weather:** Fixed an issue where the new PBR sand texture looked overly reflective (like wet mud) and stayed brightly lit during dark weather events. The material now uses a completely matte finish (`specular = 0.0`) and dynamically fades its emission during Rainstorms and Eclipses to perfectly match the environment's ambient lighting.
-- **Cinematic Rogue Waves:** Rogue waves now spawn off-mesh for a smooth entry and dynamically swell in height as they travel towards the island, creating a realistic, cinematic build-up before crashing. Additionally, the dark wet sand visual effect is now perfectly synchronized with the wave's exact speed and impact time.
+- **Cinematic Rogue Waves:** Rogue waves now spawn off-mesh for a smooth entry and dynamically swell in height as they travel towards the island, creating a realistic, cinematic build-up before crashing. Additionally, the dark wet sand visual effect is now perfectly synchronized with the wave's exact speed and impact time. The logic for small, unimpactful rogue waves was completely removed—every rogue wave is now guaranteed to be a massive surfing wave, and their spawn interval has been increased (from 12-25s to 20-35s) so they feel like rarer, more cinematic events.
 - **Distant Water Horizon:** Fixed an issue where the distant ocean was blending too heavily into the skybox due to volumetric fog and excessive sunset reflections. The water shader now disables fog, correctly fades out fresnel reflections based on depth, and is 100% opaque, resulting in a razor-sharp, deep blue horizon line.
 - **Shiny Sand Highlights:** Disabled artificial specular light emission from the Sun and global directional lights to prevent them from projecting glossy, plastic-like reflection spots onto the dry, matte sand.
 - **Solar Flare Intercept Effect:** Changed the particle explosion effect when successfully shooting down a Solar Flare from an un-natural purple/magenta to a fiery orange (`Color(1.0, 0.6, 0.1)`) that properly matches the flare's plasma core.
@@ -144,13 +145,14 @@ All notable changes to the Summer Nights project will be documented in this file
 ## [v1.4.0 - WIP]
 
 ### 추가됨 (Added)
+- **물 셰이더 전면 개편 (Water Shader Overhaul):** 물 셰이더(`stylized_water.gdshader`)를 완전히 다시 작성하여 물리적인 거스트너 파도(Gerstner waves), 절차적으로 생성되어 먼 바다를 가로지르는 보로노이 표면 거품/코스틱 효과, 그리고 높이와 시야각에 따라 파도 마루를 빛나게 하는 가짜 표면하 산란(Subsurface Scattering, SSS) 효과를 추가했습니다.
 - **PBR 모래 텍스처 (PBR Sand Texture):** 절차적으로 생성되던 모래 노이즈를 Poly Haven의 고품질 CC0 PBR 텍스처(Coast Sand 01)로 교체하여, 디퓨즈, 노멀, 러프니스 맵을 통해 더욱 부드럽고 양식화된 해변 느낌을 구현했습니다.
 - **레트로 포스트 프로세싱 (Retro Post-Processing):** 전반적인 아케이드 감성을 통일하기 위해 필름 그레인, 비네팅, 그리고 신스웨이브 컬러 그레이딩(S 커브 대비 및 보색 스플릿 토닝)을 적용하는 글로벌 화면 셰이더를 추가했습니다.
 - **시네마틱 블룸 (Cinematic Bloom):** WorldEnvironment에서 부드러운 가산 블룸(Bloom) 효과를 활성화했습니다. 이제 태양과 동적으로 생성되는 모든 입자(물줄기, 얼음 폭발, 카타스트롬 등)가 발광하여 주변 환경에 자연스럽게 빛을 뿜어냅니다.
 
 ### 수정됨 (Fixed)
 - **모래 반사율 및 날씨 동기화 (Sand Reflectivity & Weather):** 새로운 PBR 모래 텍스처가 과도하게 반사되어 젖은 진흙처럼 보이고, 어두운 날씨 이벤트 중에도 밝게 빛나던 문제를 수정했습니다. 이제 재질에 완전한 무광 마감(`specular = 0.0`)을 적용하고 비바람이나 일식 이벤트 동안 방출광(emission)을 동적으로 줄여 주변 조명과 완벽하게 일치하도록 만들었습니다.
-- **시네마틱 파도 (Cinematic Rogue Waves):** 이제 돌발 파도가 바다 메시 바깥에서 생성되어 매끄럽게 진입하며, 섬을 향해 다가올수록 높이가 동적으로 부풀어 올라 부딪히기 전 사실적이고 시네마틱한 연출을 보여줍니다. 또한, 모래가 젖어 어두워지는 시각 효과가 파도의 이동 속도 및 충돌 시간에 완벽하게 동기화되도록 수정했습니다.
+- **시네마틱 파도 (Cinematic Rogue Waves):** 이제 돌발 파도가 바다 메시 바깥에서 생성되어 매끄럽게 진입하며, 섬을 향해 다가올수록 높이가 동적으로 부풀어 올라 부딪히기 전 사실적이고 시네마틱한 연출을 보여줍니다. 또한, 모래가 젖어 어두워지는 시각 효과가 파도의 이동 속도 및 충돌 시간에 완벽하게 동기화되도록 수정했습니다. 더불어 해변을 적시지만 작고 의미 없던 파도 생성 로직을 완전히 제거했습니다. 이제 모든 돌발 파도는 무조건 거대한 서핑 파도 크기로 생성되며, 생성 주기를 (12-25초에서 20-35초로) 늘려 더욱 드물고 시네마틱한 이벤트로 느껴지도록 개선했습니다.
 - **먼 바다 수평선 (Distant Water Horizon):** 체적 안개(Volumetric Fog)와 과도한 일몰 반사로 인해 먼 바다가 하늘과 지나치게 섞여 보이던 문제를 수정했습니다. 물 셰이더에서 안개 적용을 비활성화하고, 깊이에 따라 프레넬 반사를 자연스럽게 감소시키며, 원경의 바다를 완전히 불투명하게 설정하여 수평선이 선명하고 짙은 파란색으로 뚜렷하게 구분되도록 개선했습니다.
 - **모래 빛 반사 (Shiny Sand Highlights):** 마른 모래 위에 인위적으로 플라스틱처럼 반짝이는 반사점이 생기는 것을 방지하기 위해, 태양 광원 및 글로벌 직사광선(DirectionalLight3D)의 스페큘러 빛 방출을 완전히 비활성화했습니다.
 - **태양 플레어 요격 효과 (Solar Flare Intercept Effect):** 태양 플레어를 성공적으로 격추했을 때 발생하는 파티클 폭발 효과의 색상을 부자연스러운 보라색/자홍색에서 플레어의 플라즈마 코어와 어울리는 불타는 주황색(`Color(1.0, 0.6, 0.1)`)으로 변경했습니다.
