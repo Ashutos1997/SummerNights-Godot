@@ -106,7 +106,9 @@ void fragment() {
 	// ── Toon specular reflection (Toon mode) ─────────────────────────────────
 	float fresnel = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), 3.0);
 	vec3 reflection_col = vec3(0.98, 0.72, 0.35); // Warm sunset reflection
-	final_color = mix(final_color, reflection_col, fresnel * 0.45);
+	// Fade reflection out at a distance so the water stays blue and distinct from the sky
+	float dist_fade = smoothstep(150.0, 50.0, -VERTEX.z);
+	final_color = mix(final_color, reflection_col, fresnel * 0.45 * dist_fade);
 	
 	ALBEDO = final_color;
 	ALPHA = mix(color_shallow.a, color_deep.a, depth_factor);

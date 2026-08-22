@@ -672,6 +672,7 @@ func _build_scene() -> void:
 	dir_light = DirectionalLight3D.new()
 	dir_light.light_color = Color(1.0, 0.75, 0.35)  # Warm golden
 	dir_light.light_energy = 1.35
+	dir_light.light_specular = 0.0 # Prevent shiny reflection spots on the sand
 	dir_light.shadow_enabled = true
 	dir_light.shadow_blur = 3.5
 	dir_light.shadow_bias = 0.03
@@ -846,6 +847,7 @@ func _build_scene() -> void:
 	var sun_light = OmniLight3D.new()
 	sun_light.light_color = Color(1.0, 0.7, 0.3)
 	sun_light.light_energy = 2.0
+	sun_light.light_specular = 0.0 # Prevent shiny reflection spots on the sand
 	sun_light.omni_range = 30.0
 	sun.add_child(sun_light)
 	
