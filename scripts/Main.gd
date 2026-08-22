@@ -57,6 +57,7 @@ var sun_figure8: bool = false
 var sun_move_time: float = 0.0
 var level_timer: float = 0.0
 var wave_timer: float = 0.0
+var sand_wetness: float = 0.0
 var timer_running: bool = false
 var max_survival_ice_charges: int = 3
 var is_two_phase: bool = false
@@ -362,18 +363,12 @@ func _ready() -> void:
 				var t = create_tween()
 				# Wave spawns at -100 and travels at 'speed'. Island center is at -10.
 				var hit_delay = 90.0 / speed # Time for wave to perfectly wash over the beach
-				var dry_color = Color(0.95, 0.88, 0.75)
-				var wet_color = dry_color.darkened(0.4)
 				
 				# Fade to wet (darker, lower roughness, high specular for reflections)
-				t.tween_property(ground_mat, "albedo_color", wet_color, 0.8).set_delay(hit_delay)
-				t.parallel().tween_property(ground_mat, "roughness", 0.25, 0.8).set_delay(hit_delay)
-				t.parallel().tween_property(ground_mat, "metallic_specular", 0.6, 0.8).set_delay(hit_delay)
+				t.tween_property(self, "sand_wetness", 1.0, 0.8).set_delay(hit_delay)
 				
 				# Stay wet briefly, then slowly dry off (fade back to matte)
-				t.tween_property(ground_mat, "albedo_color", dry_color, 8.0).set_delay(1.5)
-				t.parallel().tween_property(ground_mat, "roughness", 1.0, 8.0).set_delay(1.5)
-				t.parallel().tween_property(ground_mat, "metallic_specular", 0.0, 8.0).set_delay(1.5)
+				t.tween_property(self, "sand_wetness", 0.0, 8.0).set_delay(1.5)
 	)
 	add_child(wave_timer)
 
@@ -2542,8 +2537,17 @@ func _update_sky(instant: bool) -> void:
 		dir_light.light_color = base_dir.lerp(target_dir, weather_blend)
 		
 	if ground_mat:
-		ground_mat.emission = base_sand_color.lerp(target_sand_color, weather_blend)
-		ground_mat.emission_energy_multiplier = lerp(base_sand_emission, target_sand_emission, weather_blend)
+		var current_emission_col = base_sand_color.lerp(target_sand_color, weather_blend)
+		var current_emission_energy = lerp(base_sand_emission, target_sand_emission, weather_blend)
+		
+		# Wetness blending
+		ground_mat.albedo_color = base_sand_color.lerp(base_sand_color.darkened(0.5), sand_wetness)
+		ground_mat.roughness = lerp(1.0, 0.2, sand_wetness)
+		ground_mat.metallic_specular = lerp(0.0, 0.8, sand_wetness)
+		
+		# Wet sand also extinguishes the glow
+		ground_mat.emission = current_emission_col.lerp(current_emission_col.darkened(0.7), sand_wetness)
+		ground_mat.emission_energy_multiplier = lerp(current_emission_energy, 0.0, sand_wetness)
 
 	# Sun visual phases (Middle states)
 	var sun_base_albedo = Color.WHITE
