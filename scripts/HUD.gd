@@ -1068,7 +1068,8 @@ func _on_fullscreen_toggled(toggled: bool) -> void:
 	else:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 		DisplayServer.window_set_size(Vector2i(1280, 720))
-		var screen_size = DisplayServer.screen_get_size()
+		var screen = DisplayServer.window_get_current_screen()
+		var screen_size = DisplayServer.screen_get_size(screen)
 		DisplayServer.window_set_position(screen_size / 2 - Vector2i(1280, 720) / 2)
 
 func _make_ui_tick_player() -> AudioStreamPlayer:
