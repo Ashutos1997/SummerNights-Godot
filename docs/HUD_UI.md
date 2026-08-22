@@ -75,3 +75,11 @@ These elements sit on top of the Core Gameplay HUD and blur/dim the background w
 All labels within the HUD are dynamically localized in `HUD.gd` via the `_apply_language(lang: String)` function.
 *   **English (EN):** Uses `Kenney Future.ttf`
 *   **Korean (KR):** Uses `Galmuri11.ttf`. Font sizes are manually boosted (e.g., from 22px to 26px) to match the visual weight of the English pixel font.
+
+---
+
+## 4. CanvasLayer Hierarchy
+
+To correctly manage drawing order between the 3D world, global post-processing effects, and the 2D UI, the game utilizes multiple `CanvasLayer` nodes:
+*   **Layer 0 (Post-Processing):** A full-screen `ColorRect` is dynamically injected at runtime behind the HUD. It runs `retro_postprocess.gdshader`, capturing the `SCREEN_TEXTURE` (which is the 3D game world) and applying color grading and film grain.
+*   **Layer 10 (HUD):** The main `HUD.tscn` root operates at layer 10. This ensures that UI elements, crosshairs, and text remain crisp, legible, and completely unaffected by the retro shader.

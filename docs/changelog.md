@@ -4,7 +4,12 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ## [v1.4.0 - WIP]
 
+### Added
+- **Retro Post-Processing:** Added a global screen shader applying film grain, vignette, and synthwave color grading (S-curve contrast and complementary split-toning) for a cohesive arcade aesthetic.
+- **Cinematic Bloom:** Enabled soft additive bloom in the WorldEnvironment. The sun and all dynamically generated particles (water shots, ice bursts, catastrom) are now emissive, dynamically bleeding light into the atmosphere.
+
 ### Fixed
+- **Credits Button Color:** Fixed a bug where the "Credits" and "Settings" buttons would occasionally render in a translucent grey instead of the standard yellow due to redundant manual hover-detection logic inside `HUD.gd`.
 - **Weapon Wheel Exploit:** Fixed an exploit where players could stall the game in slow-motion using the Weapon Wheel to wait out hazards (Solar Wind, Eclipses). Hazard timers now pause completely while the wheel is open, forcing players to face them, while the main level timer continues to tick down.
 - **Windowed Mode Legibility:** The game now launches in Fullscreen mode by default to ensure maximum font legibility and visual clarity.
 
@@ -132,7 +137,12 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ## [v1.4.0 - WIP]
 
+### 추가됨 (Added)
+- **레트로 포스트 프로세싱 (Retro Post-Processing):** 전반적인 아케이드 감성을 통일하기 위해 필름 그레인, 비네팅, 그리고 신스웨이브 컬러 그레이딩(S 커브 대비 및 보색 스플릿 토닝)을 적용하는 글로벌 화면 셰이더를 추가했습니다.
+- **시네마틱 블룸 (Cinematic Bloom):** WorldEnvironment에서 부드러운 가산 블룸(Bloom) 효과를 활성화했습니다. 이제 태양과 동적으로 생성되는 모든 입자(물줄기, 얼음 폭발, 카타스트롬 등)가 발광하여 주변 환경에 자연스럽게 빛을 뿜어냅니다.
+
 ### 수정됨 (Fixed)
+- **크레딧 버튼 색상 (Credits Button Color):** `HUD.gd` 내부에 남아있던 불필요한 수동 마우스 호버 감지 로직으로 인해 "크레딧"과 "설정" 버튼이 표준 노란색 대신 가끔 반투명한 회색으로 렌더링되던 버그를 수정했습니다.
 - **무기 휠 꼼수 (Weapon Wheel Exploit):** 무기 휠을 열어 시간이 느려지는 기능을 악용하여 태양풍이나 일식 같은 위험 요소가 지나가기를 기다릴 수 있던 꼼수를 수정했습니다. 이제 무기 휠이 열려 있는 동안 모든 위험 요소의 타이머가 완전히 일시 정지되어 위험 요소에 직접 맞서도록 강제하며, 메인 레벨 타이머는 계속 감소하여 지연 행위에 패널티를 줍니다.
 - **창 모드 가독성 (Windowed Mode Legibility):** 폰트 가독성과 시각적 선명도를 극대화하기 위해 이제 게임이 기본적으로 전체 화면(Fullscreen) 모드로 실행되도록 변경했습니다.
 

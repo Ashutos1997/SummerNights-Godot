@@ -191,15 +191,7 @@ func _process(delta: float) -> void:
 		else:
 			catastrom_bar.tint_progress = Color(0.6, 0, 1, 1)
 			
-	if credits_btn and not credits_screen.visible:
-		var btn_rect = credits_btn.get_global_rect()
-		var is_hovered = btn_rect.has_point(cursor_screen_pos)
-		_on_credits_btn_hover(is_hovered)
-		
-		var target_col = Color(1.0, 0.88, 0.3, 0.95) if is_hovered else Color(1.0, 1.0, 1.0, 0.6)
-		credits_btn.add_theme_color_override("font_color", credits_btn.get_theme_color("font_color").lerp(target_col, 10.0 * delta))
 
-		
 	if credits_screen and credits_screen.visible:
 		var scroll_area = credits_vbox.get_node_or_null("ScrollArea") if credits_vbox else null
 		if scroll_area:
@@ -209,11 +201,6 @@ func _process(delta: float) -> void:
 				scroll_area.scroll_vertical += amt
 				credits_scroll_acc -= amt
 		
-	if settings_btn and not settings_screen.visible:
-		var s_rect = settings_btn.get_global_rect()
-		var s_hovered = s_rect.has_point(cursor_screen_pos)
-		_on_settings_btn_hover(s_hovered)
-
 func _ready() -> void:
 
 
@@ -589,15 +576,6 @@ func _ready() -> void:
 	_on_fullscreen_toggled(GameState.fullscreen)
 	
 	
-	# Top right button hover/input connections
-	credits_btn.mouse_entered.connect(_on_credits_btn_hover.bind(true))
-	credits_btn.mouse_exited.connect(_on_credits_btn_hover.bind(false))
-	credits_btn.gui_input.connect(_on_credits_btn_input)
-
-	settings_btn.mouse_entered.connect(_on_settings_btn_hover.bind(true))
-	settings_btn.mouse_exited.connect(_on_settings_btn_hover.bind(false))
-	settings_btn.gui_input.connect(_on_settings_btn_input)
-
 	# Accessibility Metadata
 	heat_bar.set_meta("accessible_name", "Sun heat level")
 	water_bar.set_meta("accessible_name", "Water gun level")  
@@ -1375,15 +1353,6 @@ func _on_credits_pressed() -> void:
 	opened_from_pause = pause_screen.visible
 	_open_credits()
 
-func _on_settings_btn_hover(hovered: bool) -> void:
-	if hovered:
-		settings_btn.add_theme_color_override("font_color", Color(1.0, 1.0, 0.6, 1.0))
-	else:
-		settings_btn.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 0.95))
-
-func _on_settings_btn_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_on_settings_pressed()
 
 func _open_settings() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -1409,15 +1378,6 @@ func _close_settings() -> void:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	)
 
-func _on_credits_btn_hover(hovered: bool) -> void:
-	if hovered:
-		credits_btn.add_theme_color_override("font_color", Color(1.0, 1.0, 0.6, 1.0))
-	else:
-		credits_btn.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 0.95))
-
-func _on_credits_btn_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_on_credits_pressed()
 
 func _open_credits() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)

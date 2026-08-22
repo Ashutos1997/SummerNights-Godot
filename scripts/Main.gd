@@ -30,6 +30,7 @@ signal timer_expired()
 signal phase2_started()
 signal supernova_triggered()
 var hud: CanvasLayer
+var post_process_mat: ShaderMaterial
 var shoot_loop_sfx: AudioStreamPlayer
 var hit_sfx: AudioStreamPlayer
 var sun_defeated_sfx: AudioStreamPlayer
@@ -271,6 +272,7 @@ var wet_spawn_timer: float = 0.0
 
 
 func _ready() -> void:
+	_setup_post_process()
 	catastrom_buff = 1.1 if "slam_dunk" in GameState.unlocked_achievements else 1.0
 	ice_shoot_sfx = AudioStreamPlayer.new()
 	ice_shoot_sfx.stream = preload("res://assets/audio/sfx/ice_shoot.ogg")
@@ -443,6 +445,7 @@ func _ready() -> void:
 	hud.sensitivity_changed.connect(func(val): GameState.mouse_sensitivity = val)
 	hud.reduce_motion_changed.connect(func(enabled):
 		reduce_motion = enabled
+		_update_post_process_settings()
 		if enabled and is_instance_valid(sunspot_tween):
 			sunspot_tween.kill()
 			if sunspot_node: sunspot_node.scale = Vector3(1.0, 1.0, 1.0)
@@ -589,8 +592,14 @@ func _build_scene() -> void:
 	env_res.tonemap_exposure = 1.15
 	env_res.tonemap_white = 5.5
 	
-	# ── Glow — disabled to eliminate glare
-	env_res.glow_enabled = false
+	# ── Glow — Enabled for cinematic bloom and cohesive lighting
+	env_res.glow_enabled = true
+	env_res.glow_intensity = 0.5
+	env_res.glow_strength = 0.8
+	env_res.glow_bloom = 0.1
+	env_res.glow_blend_mode = Environment.GLOW_BLEND_MODE_SOFTLIGHT
+	env_res.glow_hdr_threshold = 1.0
+	env_res.glow_hdr_scale = 1.5
 	
 	# ── SSAO — rich contact ambient occlusion under palm trees & model bases
 	env_res.ssao_enabled = true
@@ -922,6 +931,9 @@ func _build_scene() -> void:
 	var p_mesh_mat = StandardMaterial3D.new()
 	p_mesh_mat.albedo_color = Color(0.0, 0.8, 1.0, 0.7) # Cyan water drops
 	p_mesh_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	p_mesh_mat.emission_enabled = true
+	p_mesh_mat.emission = Color(0.0, 0.4, 0.6)
+	p_mesh_mat.emission_energy_multiplier = 0.5
 	p_mesh.material = p_mesh_mat
 	particles.process_material = p_mat
 	particles.draw_pass_1 = p_mesh
@@ -1000,6 +1012,9 @@ func _build_scene() -> void:
 		var sp_mesh_mat = StandardMaterial3D.new()
 		sp_mesh_mat.albedo_color = Color(0.2, 0.7, 1.0, 0.8)
 		sp_mesh_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		sp_mesh_mat.emission_enabled = true
+		sp_mesh_mat.emission = Color(0.1, 0.4, 0.6)
+		sp_mesh_mat.emission_energy_multiplier = 0.5
 		sp_mesh.material = sp_mesh_mat
 		splash.process_material = sp_mat
 		splash.draw_pass_1 = sp_mesh
@@ -1050,6 +1065,9 @@ func _build_scene() -> void:
 	var g_mesh_mat = StandardMaterial3D.new()
 	g_mesh_mat.albedo_color = Color(0.2, 0.9, 1.0, 0.8) # 10% Accent: Brighter Vibrant Cyan Water
 	g_mesh_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	g_mesh_mat.emission_enabled = true
+	g_mesh_mat.emission = Color(0.1, 0.5, 0.7)
+	g_mesh_mat.emission_energy_multiplier = 0.5
 	g_mesh.material = g_mesh_mat
 	gun_spray.process_material = g_mat
 	gun_spray.draw_pass_1 = g_mesh
@@ -1110,7 +1128,7 @@ func _build_environment() -> void:
 	g_normal_tex.bump_strength = 3.0
 	
 	ground_mat = StandardMaterial3D.new()
-	ground_mat.albedo_color = Color(0.85, 0.85, 0.85) # Pasty white/grey sand tone
+	ground_mat.albedo_color = Color(0.95, 0.88, 0.75) # Warm sunset sand tone
 	ground_mat.albedo_texture = g_tex
 	ground_mat.uv1_scale = Vector3(8.0, 8.0, 8.0)
 	ground_mat.roughness = 0.88
@@ -1119,7 +1137,7 @@ func _build_environment() -> void:
 	# Normal Map detail
 	ground_mat.normal_enabled = true
 	ground_mat.normal_texture = g_normal_tex
-	ground_mat.normal_scale = 0.4
+	ground_mat.normal_scale = 0.65
 	# Detail texture removed to prevent "cooked" overly dark noise. 
 	# The albedo_texture handles the noise, and albedo_color will tint it properly.
 	ground_mat.detail_enabled = false
@@ -3035,6 +3053,9 @@ func _spawn_flare_explosion(pos: Vector3) -> void:
 	var mat = StandardMaterial3D.new()
 	mat.albedo_color = Color(1.0, 1.0, 1.0, 0.6)
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.emission_enabled = true
+	mat.emission = Color(0.8, 0.1, 1.0) # Purple/magenta emission
+	mat.emission_energy_multiplier = 3.0
 	mesh.material = mat
 	
 	poof.process_material = pmat
@@ -3344,3 +3365,26 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_W:
 				if level_timer > 0.0:
 					level_timer = 0.1 # Skip wave
+
+func _setup_post_process() -> void:
+	var post_process_layer = CanvasLayer.new()
+	post_process_layer.name = "PostProcessLayer"
+	post_process_layer.layer = 0 # Ensures it renders below the HUD (layer 10)
+	
+	var color_rect = ColorRect.new()
+	color_rect.name = "PostProcessRect"
+	color_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	color_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
+	post_process_mat = ShaderMaterial.new()
+	post_process_mat.shader = load("res://assets/shaders/retro_postprocess.gdshader")
+	color_rect.material = post_process_mat
+	
+	post_process_layer.add_child(color_rect)
+	add_child(post_process_layer)
+	
+	_update_post_process_settings()
+
+func _update_post_process_settings() -> void:
+	if post_process_mat:
+		post_process_mat.set_shader_parameter("reduce_motion", GameState.reduce_motion)

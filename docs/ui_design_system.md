@@ -165,3 +165,10 @@ When a menu or overlay is shown (e.g., Pause, Weapon Wheel), the screen behind i
 *   **Combo UI:** The combo multiplier fades in and out dynamically.
 *   **Combo Callouts:** Arcade-style floating text callouts for combo milestones. The text rapidly scales up to 1.2x and snaps back with a slight random rotation tilt to emphasize the impact, before fading out.
 *   **Live Score Counter:** When the score increases, the score label rapidly interpolates to the new value. It scales up to `1.2x` and snaps back to `1.0x` over `0.2s`, pivoting from the right edge to prevent the text from scaling off the screen.
+
+## 6. Global Post-Processing & Screen Effects
+To unify the arcade aesthetic, a global post-processing shader (`retro_postprocess.gdshader`) is applied dynamically at runtime to a CanvasLayer sitting at `layer = 0` (behind the `layer = 10` UI elements).
+
+*   **Color Grading:** S-Curve contrast boost combined with Synthwave split-toning (deep blue/purple shadows and warm golden highlights).
+*   **Film Grain:** Animated noise added to the screen to simulate retro CRT/film quality. It automatically switches to a static noise pattern when the 'Reduce Motion' accessibility setting is enabled to prevent rapid flickering.
+*   **Vignette:** A soft, darkened edge vignette (`intensity: 0.4`, `opacity: 0.5`) focuses the player's attention on the center of the screen.

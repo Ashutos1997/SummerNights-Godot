@@ -54,7 +54,10 @@ Weather events trigger based on a dynamic probability system tied to the current
 *   **Decorative Layers:**
     *   **Cloud Layer:** Stylized 3D clouds that float across the sky.
     *   **Seagull Layer:** Flocks of seagulls that fly in the distance.
-*   **Particle Effects:** Splashes for water hitting the sun, shattered chunks for the Catastrom dunk, shattered ice particles for ice blasts, and steam plumes.
+*   **Particle Effects:** Splashes for water hitting the sun, shattered chunks for the Catastrom dunk, shattered ice particles for ice blasts, and steam plumes. All dynamically generated particles are emissive, reacting strongly to the WorldEnvironment.
+*   **Atmospherics & Post-Processing:**
+    *   **Retro Shader:** A global screen shader applying film grain, vignette, and synthwave color grading (S-curve contrast and complementary split-toning).
+    *   **Cinematic Bloom:** The `WorldEnvironment` utilizes soft additive bloom, causing the sun and emissive particles to visibly bleed light into the environment.
 
 ## 6. UI, Juice, & Game Feel
 *   **Custom Crosshair:** A dynamic cursor that scales up on hits.
