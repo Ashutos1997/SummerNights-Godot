@@ -10,6 +10,8 @@ All notable changes to the Summer Nights project will be documented in this file
 - **Cinematic Bloom:** Enabled soft additive bloom in the WorldEnvironment. The sun and all dynamically generated particles (water shots, ice bursts, catastrom) are now emissive, dynamically bleeding light into the atmosphere.
 
 ### Fixed
+- **Sand Reflectivity & Weather:** Fixed an issue where the new PBR sand texture looked overly reflective (like wet mud) and stayed brightly lit during dark weather events. The material now uses a completely matte finish (`specular = 0.0`) and dynamically fades its emission during Rainstorms and Eclipses to perfectly match the environment's ambient lighting.
+- **Solar Flare Intercept Effect:** Changed the particle explosion effect when successfully shooting down a Solar Flare from an un-natural purple/magenta to a fiery orange (`Color(1.0, 0.6, 0.1)`) that properly matches the flare's plasma core.
 - **Credits Button Color:** Fixed a bug where the "Credits" and "Settings" buttons would occasionally render in a translucent grey instead of the standard yellow due to redundant manual hover-detection logic inside `HUD.gd`.
 - **Weapon Wheel Exploit:** Fixed an exploit where players could stall the game in slow-motion using the Weapon Wheel to wait out hazards (Solar Wind, Eclipses). Hazard timers now pause completely while the wheel is open, forcing players to face them, while the main level timer continues to tick down.
 - **Windowed Mode Legibility:** The game now launches in Fullscreen mode by default to ensure maximum font legibility and visual clarity.
@@ -144,6 +146,8 @@ All notable changes to the Summer Nights project will be documented in this file
 - **시네마틱 블룸 (Cinematic Bloom):** WorldEnvironment에서 부드러운 가산 블룸(Bloom) 효과를 활성화했습니다. 이제 태양과 동적으로 생성되는 모든 입자(물줄기, 얼음 폭발, 카타스트롬 등)가 발광하여 주변 환경에 자연스럽게 빛을 뿜어냅니다.
 
 ### 수정됨 (Fixed)
+- **모래 반사율 및 날씨 동기화 (Sand Reflectivity & Weather):** 새로운 PBR 모래 텍스처가 과도하게 반사되어 젖은 진흙처럼 보이고, 어두운 날씨 이벤트 중에도 밝게 빛나던 문제를 수정했습니다. 이제 재질에 완전한 무광 마감(`specular = 0.0`)을 적용하고 비바람이나 일식 이벤트 동안 방출광(emission)을 동적으로 줄여 주변 조명과 완벽하게 일치하도록 만들었습니다.
+- **태양 플레어 요격 효과 (Solar Flare Intercept Effect):** 태양 플레어를 성공적으로 격추했을 때 발생하는 파티클 폭발 효과의 색상을 부자연스러운 보라색/자홍색에서 플레어의 플라즈마 코어와 어울리는 불타는 주황색(`Color(1.0, 0.6, 0.1)`)으로 변경했습니다.
 - **크레딧 버튼 색상 (Credits Button Color):** `HUD.gd` 내부에 남아있던 불필요한 수동 마우스 호버 감지 로직으로 인해 "크레딧"과 "설정" 버튼이 표준 노란색 대신 가끔 반투명한 회색으로 렌더링되던 버그를 수정했습니다.
 - **무기 휠 꼼수 (Weapon Wheel Exploit):** 무기 휠을 열어 시간이 느려지는 기능을 악용하여 태양풍이나 일식 같은 위험 요소가 지나가기를 기다릴 수 있던 꼼수를 수정했습니다. 이제 무기 휠이 열려 있는 동안 모든 위험 요소의 타이머가 완전히 일시 정지되어 위험 요소에 직접 맞서도록 강제하며, 메인 레벨 타이머는 계속 감소하여 지연 행위에 패널티를 줍니다.
 - **창 모드 가독성 (Windowed Mode Legibility):** 폰트 가독성과 시각적 선명도를 극대화하기 위해 이제 게임이 기본적으로 전체 화면(Fullscreen) 모드로 실행되도록 변경했습니다.

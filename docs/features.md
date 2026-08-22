@@ -48,14 +48,14 @@ Weather events trigger based on a dynamic probability system tied to the current
     *   **Rogue Waves:** Randomly spawned giant waves that travel towards the shore, adding unpredictable, dynamic motion to the ocean surface. When a rogue wave crashes, it temporarily turns the island's sand dark and glossy, slowly drying off over several seconds for enhanced immersion.
 *   **Sky & Weather:** Procedural sky shader featuring smooth time-of-day gradients, atmospheric fog, dynamic clouds, and a stylized sun. The scene transitions between daylight (bright blues) and night (deep purples) based on the wave progress.
 *   **Foliage & Props:** Low-poly stylized foliage (palms, bushes, rocks) scattered via GDScript.
-*   **PBR Beach Sand:** The island's ground uses a high-quality CC0 PBR material (diffuse, normal, roughness maps) heavily tinted with a warm sunset tone to maintain a smooth, stylized aesthetic.
+*   **PBR Beach Sand:** The island's ground uses a high-quality CC0 PBR material (diffuse, normal, roughness maps) heavily tinted with a warm sunset tone to maintain a smooth, stylized aesthetic. Its emission dynamically fades to match dark ambient lighting during severe weather events (e.g., Rainstorms, Eclipses) while having a completely matte finish (`specular = 0.0`) for a realistic dry-sand feel.
 *   **Sun Expressions:** The 2D face on the Sun reacts to events (getting angry, taking damage, critical states).
 *   **Heat Distortion:** A screen-space shader applies heat shimmer/refraction over the environment, which intensifies as the Sun gets hotter.
 *   **Seagull Interactions:** Shooting the background seagulls with water causes them to squawk (pitch-shifted SFX), drop a burst of feathers, and rapidly flee higher into the sky.
 *   **Decorative Layers:**
     *   **Cloud Layer:** Stylized 3D clouds that float across the sky.
     *   **Seagull Layer:** Flocks of seagulls that fly in the distance.
-*   **Particle Effects:** Splashes for water hitting the sun, shattered chunks for the Catastrom dunk, shattered ice particles for ice blasts, and steam plumes. All dynamically generated particles are emissive, reacting strongly to the WorldEnvironment.
+*   **Particle Effects:** Splashes for water hitting the sun, fiery orange sparks for intercepted solar flares, shattered chunks for the Catastrom dunk, shattered ice particles for ice blasts, and steam plumes. All dynamically generated particles are emissive, reacting strongly to the WorldEnvironment.
 *   **Atmospherics & Post-Processing:**
     *   **Retro Shader:** A global screen shader applying film grain, vignette, and synthwave color grading (S-curve contrast and complementary split-toning).
     *   **Cinematic Bloom:** The `WorldEnvironment` utilizes soft additive bloom, causing the sun and emissive particles to visibly bleed light into the environment.
