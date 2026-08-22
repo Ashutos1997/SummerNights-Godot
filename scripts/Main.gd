@@ -338,19 +338,9 @@ func _ready() -> void:
 	wave_timer.one_shot = false
 	wave_timer.timeout.connect(func():
 		if water_mat and water_mat is ShaderMaterial:
-			var is_high_tide = randf() < 0.25 # 25% chance for a massive surfing wave
-			var target_height = 0.0
-			var target_curl = 0.0
-			var speed = 0.0
-			
-			if is_high_tide:
-				target_height = randf_range(5.0, 8.0)
-				target_curl = randf_range(0.7, 0.95)
-				speed = randf_range(14.0, 18.0)
-			else:
-				target_height = randf_range(1.2, 2.2)
-				target_curl = 0.0
-				speed = randf_range(10.0, 13.0)
+			var target_height = randf_range(5.0, 8.0)
+			var target_curl = randf_range(0.7, 0.95)
+			var speed = randf_range(14.0, 18.0)
 				
 			var w_tween = create_tween()
 			var start_pos = -150.0 # Start off-mesh for a smooth entry
@@ -372,7 +362,7 @@ func _ready() -> void:
 			# Slowly collapse after passing the island
 			swell_tween.tween_method(func(v): water_mat.set_shader_parameter("pulse_height", v), target_height, 0.0, duration * 0.3).set_delay(duration * 0.2)
 			
-			wave_timer.wait_time = randf_range(12.0, 25.0)
+			wave_timer.wait_time = randf_range(20.0, 35.0)
 			
 			# Wet sand effect
 			if ground_mat:
