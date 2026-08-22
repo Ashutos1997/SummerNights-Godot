@@ -2,6 +2,14 @@
 
 All notable changes to the Summer Nights project will be documented in this file.
 
+## [v1.4.0 - WIP]
+
+### Fixed
+- **Weapon Wheel Exploit:** Fixed an exploit where players could stall the game in slow-motion using the Weapon Wheel to wait out hazards (Solar Wind, Eclipses). Hazard timers now pause completely while the wheel is open, forcing players to face them, while the main level timer continues to tick down.
+- **Windowed Mode Legibility:** The game now launches in Fullscreen mode by default to ensure maximum font legibility and visual clarity.
+
+---
+
 ## [v1.3.0] - 2026-08-21
 
 ### Added
@@ -119,6 +127,14 @@ All notable changes to the Summer Nights project will be documented in this file
 - **Audio:** 
   - Procedural UI synthesizer for sci-fi interface ticks and whooshes.
   - Immersive sound effects for water spraying, sizzling, bird calls, and wind.
+
+---
+
+## [v1.4.0 - WIP]
+
+### 수정됨 (Fixed)
+- **무기 휠 꼼수 (Weapon Wheel Exploit):** 무기 휠을 열어 시간이 느려지는 기능을 악용하여 태양풍이나 일식 같은 위험 요소가 지나가기를 기다릴 수 있던 꼼수를 수정했습니다. 이제 무기 휠이 열려 있는 동안 모든 위험 요소의 타이머가 완전히 일시 정지되어 위험 요소에 직접 맞서도록 강제하며, 메인 레벨 타이머는 계속 감소하여 지연 행위에 패널티를 줍니다.
+- **창 모드 가독성 (Windowed Mode Legibility):** 폰트 가독성과 시각적 선명도를 극대화하기 위해 이제 게임이 기본적으로 전체 화면(Fullscreen) 모드로 실행되도록 변경했습니다.
 
 ---
 
