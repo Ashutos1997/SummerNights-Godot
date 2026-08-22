@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://luqer57mdoxt"
-path="res://.godot/imported/14_Active_Buffs_KR.png-b59652148928627fffcb9f4415f5cc30.ctex"
+uid="uid://b1t0gslnj31i8"
+path="res://.godot/imported/12_Settings_v1.3.png-e32b245d688e7c8e6f7348dee24d1744.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://screenshots/14_Active_Buffs_KR.png"
-dest_files=["res://.godot/imported/14_Active_Buffs_KR.png-b59652148928627fffcb9f4415f5cc30.ctex"]
+source_file="res://screenshots/12_Settings_v1.3.png"
+dest_files=["res://.godot/imported/12_Settings_v1.3.png-e32b245d688e7c8e6f7348dee24d1744.ctex"]
 
 [params]
 
