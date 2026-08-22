@@ -360,7 +360,8 @@ func _ready() -> void:
 			# Wet sand effect
 			if ground_mat:
 				var t = create_tween()
-				var hit_delay = 1.5 if is_high_tide else 2.5 # Time for wave to travel to shore
+				# Wave spawns at -100 and travels at 'speed'. Island center is at -10.
+				var hit_delay = 90.0 / speed # Time for wave to perfectly wash over the beach
 				var dry_color = Color(0.95, 0.88, 0.75)
 				var wet_color = dry_color.darkened(0.4)
 				
@@ -2514,19 +2515,23 @@ func _update_sky(instant: bool) -> void:
 	var base_amb = Color(0.75, 0.65, 0.6)
 	var base_dir = Color(1.0, 0.75, 0.35)
 	var base_sand_emission = 0.15 # Warm sunset glow
+	var base_sand_color = Color(0.95, 0.88, 0.75)
 	
 	var target_amb = base_amb
 	var target_dir = base_dir
 	var target_sand_emission = base_sand_emission
+	var target_sand_color = base_sand_color
 	
 	if active_weather == "rain":
 		target_amb = Color(0.4, 0.45, 0.6)
 		target_dir = Color(0.6, 0.65, 0.8)
-		target_sand_emission = 0.0 # Fade out glow to match dark rain
+		target_sand_color = Color(0.5, 0.55, 0.65) # Cool blue/grey sand
+		target_sand_emission = 0.08
 	elif active_weather == "eclipse":
 		target_amb = Color(0.3, 0.1, 0.4)
 		target_dir = Color(0.4, 0.1, 0.3)
-		target_sand_emission = 0.0 # Fade out glow to match deep shadow
+		target_sand_color = Color(0.4, 0.2, 0.5) # Deep purple sand
+		target_sand_emission = 0.08
 		
 	if world_env and world_env.environment:
 		var env = world_env.environment
@@ -2537,6 +2542,7 @@ func _update_sky(instant: bool) -> void:
 		dir_light.light_color = base_dir.lerp(target_dir, weather_blend)
 		
 	if ground_mat:
+		ground_mat.emission = base_sand_color.lerp(target_sand_color, weather_blend)
 		ground_mat.emission_energy_multiplier = lerp(base_sand_emission, target_sand_emission, weather_blend)
 
 	# Sun visual phases (Middle states)
