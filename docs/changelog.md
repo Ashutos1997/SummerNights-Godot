@@ -11,6 +11,9 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### Fixed
 - **Sand Reflectivity & Weather:** Fixed an issue where the new PBR sand texture looked overly reflective (like wet mud) and stayed brightly lit during dark weather events. The material now uses a completely matte finish (`specular = 0.0`) and dynamically fades its emission during Rainstorms and Eclipses to perfectly match the environment's ambient lighting.
+- **Cinematic Rogue Waves:** Rogue waves now spawn off-mesh for a smooth entry and dynamically swell in height as they travel towards the island, creating a realistic, cinematic build-up before crashing. Additionally, the dark wet sand visual effect is now perfectly synchronized with the wave's exact speed and impact time.
+- **Distant Water Horizon:** Fixed an issue where the distant ocean was blending too heavily into the skybox due to volumetric fog and excessive sunset reflections. The water shader now disables fog, correctly fades out fresnel reflections based on depth, and is 100% opaque, resulting in a razor-sharp, deep blue horizon line.
+- **Shiny Sand Highlights:** Disabled artificial specular light emission from the Sun and global directional lights to prevent them from projecting glossy, plastic-like reflection spots onto the dry, matte sand.
 - **Solar Flare Intercept Effect:** Changed the particle explosion effect when successfully shooting down a Solar Flare from an un-natural purple/magenta to a fiery orange (`Color(1.0, 0.6, 0.1)`) that properly matches the flare's plasma core.
 - **Credits Button Color:** Fixed a bug where the "Credits" and "Settings" buttons would occasionally render in a translucent grey instead of the standard yellow due to redundant manual hover-detection logic inside `HUD.gd`.
 - **Weapon Wheel Exploit:** Fixed an exploit where players could stall the game in slow-motion using the Weapon Wheel to wait out hazards (Solar Wind, Eclipses). Hazard timers now pause completely while the wheel is open, forcing players to face them, while the main level timer continues to tick down.
@@ -147,6 +150,9 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### 수정됨 (Fixed)
 - **모래 반사율 및 날씨 동기화 (Sand Reflectivity & Weather):** 새로운 PBR 모래 텍스처가 과도하게 반사되어 젖은 진흙처럼 보이고, 어두운 날씨 이벤트 중에도 밝게 빛나던 문제를 수정했습니다. 이제 재질에 완전한 무광 마감(`specular = 0.0`)을 적용하고 비바람이나 일식 이벤트 동안 방출광(emission)을 동적으로 줄여 주변 조명과 완벽하게 일치하도록 만들었습니다.
+- **시네마틱 파도 (Cinematic Rogue Waves):** 이제 돌발 파도가 바다 메시 바깥에서 생성되어 매끄럽게 진입하며, 섬을 향해 다가올수록 높이가 동적으로 부풀어 올라 부딪히기 전 사실적이고 시네마틱한 연출을 보여줍니다. 또한, 모래가 젖어 어두워지는 시각 효과가 파도의 이동 속도 및 충돌 시간에 완벽하게 동기화되도록 수정했습니다.
+- **먼 바다 수평선 (Distant Water Horizon):** 체적 안개(Volumetric Fog)와 과도한 일몰 반사로 인해 먼 바다가 하늘과 지나치게 섞여 보이던 문제를 수정했습니다. 물 셰이더에서 안개 적용을 비활성화하고, 깊이에 따라 프레넬 반사를 자연스럽게 감소시키며, 원경의 바다를 완전히 불투명하게 설정하여 수평선이 선명하고 짙은 파란색으로 뚜렷하게 구분되도록 개선했습니다.
+- **모래 빛 반사 (Shiny Sand Highlights):** 마른 모래 위에 인위적으로 플라스틱처럼 반짝이는 반사점이 생기는 것을 방지하기 위해, 태양 광원 및 글로벌 직사광선(DirectionalLight3D)의 스페큘러 빛 방출을 완전히 비활성화했습니다.
 - **태양 플레어 요격 효과 (Solar Flare Intercept Effect):** 태양 플레어를 성공적으로 격추했을 때 발생하는 파티클 폭발 효과의 색상을 부자연스러운 보라색/자홍색에서 플레어의 플라즈마 코어와 어울리는 불타는 주황색(`Color(1.0, 0.6, 0.1)`)으로 변경했습니다.
 - **크레딧 버튼 색상 (Credits Button Color):** `HUD.gd` 내부에 남아있던 불필요한 수동 마우스 호버 감지 로직으로 인해 "크레딧"과 "설정" 버튼이 표준 노란색 대신 가끔 반투명한 회색으로 렌더링되던 버그를 수정했습니다.
 - **무기 휠 꼼수 (Weapon Wheel Exploit):** 무기 휠을 열어 시간이 느려지는 기능을 악용하여 태양풍이나 일식 같은 위험 요소가 지나가기를 기다릴 수 있던 꼼수를 수정했습니다. 이제 무기 휠이 열려 있는 동안 모든 위험 요소의 타이머가 완전히 일시 정지되어 위험 요소에 직접 맞서도록 강제하며, 메인 레벨 타이머는 계속 감소하여 지연 행위에 패널티를 줍니다.
