@@ -1120,6 +1120,11 @@ func _build_environment() -> void:
 	ground_mat.uv1_scale = Vector3(16.0, 16.0, 16.0) # Tile the 1k texture to maintain crispness
 	ground_mat.roughness = 1.0
 	ground_mat.roughness_texture = sand_rough
+	ground_mat.specular = 0.0 # Remove all environmental reflections so the sand looks dry and grainy
+	
+	ground_mat.emission_enabled = true
+	ground_mat.emission = Color(0.95, 0.88, 0.75)
+	ground_mat.emission_energy_multiplier = 0.15
 	
 	# Normal Map detail
 	ground_mat.normal_enabled = true
@@ -2497,16 +2502,20 @@ func _update_sky(instant: bool) -> void:
 	# Weather Overrides (Smoothly blended)
 	var base_amb = Color(0.75, 0.65, 0.6)
 	var base_dir = Color(1.0, 0.75, 0.35)
+	var base_sand_emission = 0.15 # Warm sunset glow
 	
 	var target_amb = base_amb
 	var target_dir = base_dir
+	var target_sand_emission = base_sand_emission
 	
 	if active_weather == "rain":
 		target_amb = Color(0.4, 0.45, 0.6)
 		target_dir = Color(0.6, 0.65, 0.8)
+		target_sand_emission = 0.0 # Fade out glow to match dark rain
 	elif active_weather == "eclipse":
 		target_amb = Color(0.3, 0.1, 0.4)
 		target_dir = Color(0.4, 0.1, 0.3)
+		target_sand_emission = 0.0 # Fade out glow to match deep shadow
 		
 	if world_env and world_env.environment:
 		var env = world_env.environment
@@ -2515,6 +2524,9 @@ func _update_sky(instant: bool) -> void:
 		
 	if dir_light:
 		dir_light.light_color = base_dir.lerp(target_dir, weather_blend)
+		
+	if ground_mat:
+		ground_mat.emission_energy_multiplier = lerp(base_sand_emission, target_sand_emission, weather_blend)
 
 	# Sun visual phases (Middle states)
 	var sun_base_albedo = Color.WHITE
