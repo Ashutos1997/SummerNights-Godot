@@ -354,15 +354,18 @@ func _ready() -> void:
 			if ground_mat:
 				var t = create_tween()
 				var hit_delay = 1.5 if is_high_tide else 2.5 # Time for wave to travel to shore
-				# Fade to wet (darker, lower roughness, slight metallic for specular highlights)
-				t.tween_property(ground_mat, "albedo_color", Color(0.5, 0.5, 0.5), 0.8).set_delay(hit_delay)
-				t.parallel().tween_property(ground_mat, "roughness", 0.15, 0.8).set_delay(hit_delay)
-				t.parallel().tween_property(ground_mat, "metallic", 0.3, 0.8).set_delay(hit_delay)
+				var dry_color = Color(0.95, 0.88, 0.75)
+				var wet_color = dry_color.darkened(0.4)
 				
-				# Stay wet briefly, then fade back to dry
-				t.tween_property(ground_mat, "albedo_color", Color(0.85, 0.85, 0.85), 8.0).set_delay(1.5)
-				t.parallel().tween_property(ground_mat, "roughness", 0.88, 8.0).set_delay(1.5)
-				t.parallel().tween_property(ground_mat, "metallic", 0.0, 8.0).set_delay(1.5)
+				# Fade to wet (darker, lower roughness, high specular for reflections)
+				t.tween_property(ground_mat, "albedo_color", wet_color, 0.8).set_delay(hit_delay)
+				t.parallel().tween_property(ground_mat, "roughness", 0.25, 0.8).set_delay(hit_delay)
+				t.parallel().tween_property(ground_mat, "metallic_specular", 0.6, 0.8).set_delay(hit_delay)
+				
+				# Stay wet briefly, then slowly dry off (fade back to matte)
+				t.tween_property(ground_mat, "albedo_color", dry_color, 8.0).set_delay(1.5)
+				t.parallel().tween_property(ground_mat, "roughness", 1.0, 8.0).set_delay(1.5)
+				t.parallel().tween_property(ground_mat, "metallic_specular", 0.0, 8.0).set_delay(1.5)
 	)
 	add_child(wave_timer)
 
@@ -1120,7 +1123,7 @@ func _build_environment() -> void:
 	ground_mat.uv1_scale = Vector3(16.0, 16.0, 16.0) # Tile the 1k texture to maintain crispness
 	ground_mat.roughness = 1.0
 	ground_mat.roughness_texture = sand_rough
-	ground_mat.specular = 0.0 # Remove all environmental reflections so the sand looks dry and grainy
+	ground_mat.metallic_specular = 0.0 # Remove all environmental reflections so the sand looks dry and grainy
 	
 	ground_mat.emission_enabled = true
 	ground_mat.emission = Color(0.95, 0.88, 0.75)
@@ -1430,8 +1433,9 @@ func _process(delta: float) -> void:
 		title_cam_angle += 0.3 * delta  # time accumulator (not a rotation angle)
 		var swing = sin(title_cam_angle) * 0.52  # ±~30° arc in radians
 		var cam_dist = 6.0
-		camera.position = Vector3(sin(swing) * cam_dist, 2.0, cos(swing) * cam_dist)
-		camera.look_at(Vector3(0, 1, 0), Vector3.UP)
+		# Lower the camera to use the island as a natural horizon blocker
+		camera.position = Vector3(sin(swing) * cam_dist, 0.5, cos(swing) * cam_dist)
+		camera.look_at(Vector3(0, 1.5, 0), Vector3.UP)
 		
 		# Slowly drift the sun and clouds
 		if sun_mesh:
