@@ -338,16 +338,23 @@ func _ready() -> void:
 	wave_timer.timeout.connect(func():
 		if water_mat and water_mat is ShaderMaterial:
 			var is_high_tide = randf() < 0.25 # 25% chance for a massive surfing wave
+			var speed = 0.0
+			
 			if is_high_tide:
 				water_mat.set_shader_parameter("pulse_height", randf_range(5.0, 8.0))
 				water_mat.set_shader_parameter("pulse_curl", randf_range(0.7, 0.95))
-				water_mat.set_shader_parameter("pulse_speed", randf_range(14.0, 18.0))
+				speed = randf_range(14.0, 18.0)
 			else:
 				water_mat.set_shader_parameter("pulse_height", randf_range(1.2, 2.2))
 				water_mat.set_shader_parameter("pulse_curl", 0.0)
-				water_mat.set_shader_parameter("pulse_speed", randf_range(10.0, 13.0))
+				speed = randf_range(10.0, 13.0)
 				
-			water_mat.set_shader_parameter("wave_pulse_time", Time.get_ticks_msec() / 1000.0)
+			var w_tween = create_tween()
+			var travel_dist = 150.0
+			var duration = travel_dist / speed
+			water_mat.set_shader_parameter("wave_pulse_offset", -100.0)
+			w_tween.tween_method(func(v): water_mat.set_shader_parameter("wave_pulse_offset", v), -100.0, 50.0, duration)
+			
 			wave_timer.wait_time = randf_range(12.0, 25.0)
 			
 			# Wet sand effect

@@ -25,8 +25,7 @@ uniform float wave_height1 : hint_range(0.0, 1.0, 0.05) = 0.25;
 uniform float wave_height2 : hint_range(0.0, 1.0, 0.05) = 0.15;
 
 // ── Rogue Waves ─────────────────────────────────────────────────────────────
-uniform float wave_pulse_time = -1000.0;
-uniform float pulse_speed : hint_range(0.1, 20.0, 0.1) = 12.0;
+uniform float wave_pulse_offset = -1000.0;
 uniform float pulse_width : hint_range(0.1, 20.0, 0.1) = 6.0;
 uniform float pulse_height : hint_range(0.0, 15.0, 0.1) = 1.8;
 uniform float pulse_curl : hint_range(0.0, 2.0, 0.05) = 0.0;
@@ -61,8 +60,8 @@ void vertex() {
 	float w2 = cos(world_pos.x * wave_scale * wave_dir2.x + world_pos.z * wave_scale * wave_dir2.y + t * 1.5) * wave_height2;
 	
 	// Rogue Wave Pulse traveling along Z
-	// Starts deep in the horizon (negative Z) and travels forward
-	float pulse_pos = (TIME - wave_pulse_time) * pulse_speed - 100.0;
+	// Animated directly via script tweening to avoid Engine TIME desyncs
+	float pulse_pos = wave_pulse_offset;
 	float dist = abs(world_pos.z - pulse_pos);
 	
 	// Gaussian pulse for the wave shape
