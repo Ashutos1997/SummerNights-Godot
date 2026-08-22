@@ -5,6 +5,7 @@ All notable changes to the Summer Nights project will be documented in this file
 ## [v1.4.0 - WIP]
 
 ### Added
+- **PBR Sand Texture:** Replaced the procedurally generated sand noise with a high-quality CC0 PBR texture (Coast Sand 01) from Poly Haven, featuring diffuse, normal, and roughness maps for a smoother, stylized beach aesthetic.
 - **Retro Post-Processing:** Added a global screen shader applying film grain, vignette, and synthwave color grading (S-curve contrast and complementary split-toning) for a cohesive arcade aesthetic.
 - **Cinematic Bloom:** Enabled soft additive bloom in the WorldEnvironment. The sun and all dynamically generated particles (water shots, ice bursts, catastrom) are now emissive, dynamically bleeding light into the atmosphere.
 
@@ -138,6 +139,7 @@ All notable changes to the Summer Nights project will be documented in this file
 ## [v1.4.0 - WIP]
 
 ### 추가됨 (Added)
+- **PBR 모래 텍스처 (PBR Sand Texture):** 절차적으로 생성되던 모래 노이즈를 Poly Haven의 고품질 CC0 PBR 텍스처(Coast Sand 01)로 교체하여, 디퓨즈, 노멀, 러프니스 맵을 통해 더욱 부드럽고 양식화된 해변 느낌을 구현했습니다.
 - **레트로 포스트 프로세싱 (Retro Post-Processing):** 전반적인 아케이드 감성을 통일하기 위해 필름 그레인, 비네팅, 그리고 신스웨이브 컬러 그레이딩(S 커브 대비 및 보색 스플릿 토닝)을 적용하는 글로벌 화면 셰이더를 추가했습니다.
 - **시네마틱 블룸 (Cinematic Bloom):** WorldEnvironment에서 부드러운 가산 블룸(Bloom) 효과를 활성화했습니다. 이제 태양과 동적으로 생성되는 모든 입자(물줄기, 얼음 폭발, 카타스트롬 등)가 발광하여 주변 환경에 자연스럽게 빛을 뿜어냅니다.
 
