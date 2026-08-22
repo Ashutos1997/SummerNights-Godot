@@ -3053,7 +3053,7 @@ func _spawn_flare_explosion(pos: Vector3) -> void:
 	mat.albedo_color = Color(1.0, 1.0, 1.0, 0.6)
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	mat.emission_enabled = true
-	mat.emission = Color(0.8, 0.1, 1.0) # Purple/magenta emission
+	mat.emission = Color(1.0, 0.6, 0.1) # Fiery orange sparks
 	mat.emission_energy_multiplier = 3.0
 	mesh.material = mat
 	
