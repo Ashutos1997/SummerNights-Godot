@@ -3,13 +3,13 @@
 // License: CC0 / MIT
 
 shader_type spatial;
-render_mode depth_draw_always, specular_toon;
+render_mode depth_draw_always, specular_toon, fog_disabled;
 
 uniform sampler2D depth_texture : hint_depth_texture, filter_nearest;
 
 // ── Colors ──────────────────────────────────────────────────────────────────
 uniform vec4 color_shallow : source_color = vec4(0.12, 0.45, 0.55, 0.65); // Warm teal
-uniform vec4 color_deep    : source_color = vec4(0.08, 0.15, 0.35, 0.9);  // Deep tropical blue-purple
+uniform vec4 color_deep    : source_color = vec4(0.08, 0.15, 0.35, 1.0);  // Deep tropical blue-purple, fully opaque
 uniform vec4 color_foam    : source_color = vec4(1.0, 1.0, 1.0, 1.0);     // Bright white foam
 
 // ── Depth & Fog ─────────────────────────────────────────────────────────────
