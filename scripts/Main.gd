@@ -339,30 +339,46 @@ func _ready() -> void:
 	wave_timer.timeout.connect(func():
 		if water_mat and water_mat is ShaderMaterial:
 			var is_high_tide = randf() < 0.25 # 25% chance for a massive surfing wave
+			var target_height = 0.0
+			var target_curl = 0.0
 			var speed = 0.0
 			
 			if is_high_tide:
-				water_mat.set_shader_parameter("pulse_height", randf_range(5.0, 8.0))
-				water_mat.set_shader_parameter("pulse_curl", randf_range(0.7, 0.95))
+				target_height = randf_range(5.0, 8.0)
+				target_curl = randf_range(0.7, 0.95)
 				speed = randf_range(14.0, 18.0)
 			else:
-				water_mat.set_shader_parameter("pulse_height", randf_range(1.2, 2.2))
-				water_mat.set_shader_parameter("pulse_curl", 0.0)
+				target_height = randf_range(1.2, 2.2)
+				target_curl = 0.0
 				speed = randf_range(10.0, 13.0)
 				
 			var w_tween = create_tween()
-			var travel_dist = 150.0
+			var start_pos = -150.0 # Start off-mesh for a smooth entry
+			var travel_dist = 200.0 # From -150 to +50
 			var duration = travel_dist / speed
-			water_mat.set_shader_parameter("wave_pulse_offset", -100.0)
-			w_tween.tween_method(func(v): water_mat.set_shader_parameter("wave_pulse_offset", v), -100.0, 50.0, duration)
+			
+			# Animate the wave position
+			water_mat.set_shader_parameter("wave_pulse_offset", start_pos)
+			w_tween.tween_method(func(v): water_mat.set_shader_parameter("wave_pulse_offset", v), start_pos, 50.0, duration)
+			
+			# Animate the wave swelling up (buildup)
+			water_mat.set_shader_parameter("pulse_height", 0.0)
+			water_mat.set_shader_parameter("pulse_curl", 0.0)
+			
+			var swell_tween = create_tween()
+			swell_tween.tween_method(func(v): water_mat.set_shader_parameter("pulse_height", v), 0.0, target_height, duration * 0.4).set_ease(Tween.EASE_OUT)
+			swell_tween.parallel().tween_method(func(v): water_mat.set_shader_parameter("pulse_curl", v), 0.0, target_curl, duration * 0.5).set_ease(Tween.EASE_IN_OUT)
+			
+			# Slowly collapse after passing the island
+			swell_tween.tween_method(func(v): water_mat.set_shader_parameter("pulse_height", v), target_height, 0.0, duration * 0.3).set_delay(duration * 0.2)
 			
 			wave_timer.wait_time = randf_range(12.0, 25.0)
 			
 			# Wet sand effect
 			if ground_mat:
 				var t = create_tween()
-				# Wave spawns at -100 and travels at 'speed'. Island center is at -10.
-				var hit_delay = 90.0 / speed # Time for wave to perfectly wash over the beach
+				# Wave spawns at -150. Island center is at -10. Distance = 140.0.
+				var hit_delay = 140.0 / speed # Time for wave to perfectly wash over the beach
 				
 				# Fade to wet (darker, lower roughness, high specular for reflections)
 				t.tween_property(self, "sand_wetness", 1.0, 0.8).set_delay(hit_delay)
