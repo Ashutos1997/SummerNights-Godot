@@ -284,7 +284,7 @@ var level: int = 1
 var sfx_volume: float = 1.0
 var mouse_sensitivity: float = 1.0
 var reduce_motion: bool = false
-var fullscreen: bool = false
+var fullscreen: bool = true
 var language: String = "EN"  # "EN" or "KR"
 var ice_charges_remaining: int = 0
 var is_survival_mode: bool = false
@@ -342,7 +342,7 @@ func load_settings() -> void:
 		sfx_volume = config.get_value("Audio", "sfx_volume", 1.0)
 		mouse_sensitivity = config.get_value("Controls", "mouse_sensitivity", 1.0)
 		reduce_motion = config.get_value("Accessibility", "reduce_motion", false)
-		fullscreen = config.get_value("Video", "fullscreen", false)
+		fullscreen = config.get_value("Video", "fullscreen", true)
 		language = config.get_value("Localization", "language", "EN")
 		best_survival_time = config.get_value("Stats", "best_survival_time", 0.0)
 		high_score = config.get_value("Stats", "high_score", 0)
