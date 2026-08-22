@@ -568,11 +568,16 @@ func _ready() -> void:
 	if credits_back_btn:
 		credits_back_btn.pressed.connect(_close_credits)
 
-	# Apply initial values
+	# Apply initial AudioServer volume (since GameState doesn't manage AudioServer directly)
 	_on_sfx_volume_changed(GameState.sfx_volume)
-	_on_sens_changed(GameState.mouse_sensitivity)
-	_on_motion_toggled(GameState.reduce_motion)
-	_on_fullscreen_toggled(GameState.fullscreen)
+	
+	# Emit signals for sensitivity and motion so Player/Camera can catch them, but avoid triggering save_settings
+	sensitivity_changed.emit(GameState.mouse_sensitivity)
+	reduce_motion_changed.emit(GameState.reduce_motion)
+	
+	# Apply initial visual button states without triggering full toggle logic
+	_update_toggle_btn(motion_check, GameState.reduce_motion)
+	_update_toggle_btn(fullscreen_check, GameState.fullscreen)
 	
 	
 	# Accessibility Metadata
