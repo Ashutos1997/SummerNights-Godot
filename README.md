@@ -165,7 +165,8 @@ SummerNights-Godot/
 |---|---|---|
 | 3D Sun Model - PS1 Style Low Poly Sun | albert_buscio (Sketchfab) | CC0 |
 | 3D Gun Model - 3D Blaster | Kenney | CC0 |
-| Foliage, Rocks, Sand - Ultimate Stylized Nature | Quaternius | CC0 |
+| Foliage & Rocks - Ultimate Stylized Nature | Quaternius | CC0 |
+| Sand Texture - Coast Sand 01 | Poly Haven | CC0 |
 | Stylized Sky Shader | MinionsArt | CC0 |
 | Stylized Water Shader | Jtfinlay | MIT |
 | Heat Haze Screen Distortion | MinionsArt | CC0 |

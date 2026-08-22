@@ -1168,6 +1168,28 @@ theme_override_font_sizes/font_size = 12
 text = "PS1 Style Low Poly Sun  ·  Sketchfab  ·  CC0"
 horizontal_alignment = 1
 
+[node name="Spacer3D" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+custom_minimum_size = Vector2(0, 8)
+
+[node name="HdrTextures" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = "TEXTURES"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="ItmTextures1" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "Coast Sand 01  ·  Poly Haven  ·  CC0"
+horizontal_alignment = 1
+
 [node name="Spacer1" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
 layout_mode = 2
 mouse_filter = 2

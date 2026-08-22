@@ -166,8 +166,9 @@ SummerNights-Godot/
 | 에셋 | 제작자 | 라이선스 |
 |---|---|---|
 | 3D 태양 모델 - PS1 Style Low Poly Sun | albert_buscio (Sketchfab) | CC0 |
-| 3D 총 모델 - 3D Blaster | Kenney | CC0 |
-| 식물, 바위, 모래 - Ultimate Stylized Nature | Quaternius | CC0 |
+| 3D 총기 모델 - 3D Blaster | Kenney | CC0 |
+| 식물 및 바위 - Ultimate Stylized Nature | Quaternius | CC0 |
+| 모래 텍스처 - Coast Sand 01 | Poly Haven | CC0 |
 | 양식화된 하늘 셰이더 | MinionsArt | CC0 |
 | 양식화된 물 셰이더 | Jtfinlay | MIT |
 | 열기 왜곡 셰이더 | MinionsArt | CC0 |

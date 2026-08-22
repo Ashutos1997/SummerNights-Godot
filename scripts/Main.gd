@@ -1109,35 +1109,22 @@ func _build_environment() -> void:
 	ground_mesh.bottom_radius = 40.0
 	ground_mesh.height = 2.0
 	
-	# Stylized Sand Texture with Normal Map & Detail Layer
-	var g_noise = FastNoiseLite.new()
-	g_noise.noise_type = FastNoiseLite.TYPE_PERLIN
-	g_noise.frequency = 0.15
-	g_noise.fractal_octaves = 2
-	
-	var g_tex = NoiseTexture2D.new()
-	g_tex.width = 128
-	g_tex.height = 128
-	g_tex.noise = g_noise
-	
-	var g_normal_tex = NoiseTexture2D.new()
-	g_normal_tex.width = 128
-	g_normal_tex.height = 128
-	g_normal_tex.noise = g_noise
-	g_normal_tex.as_normal_map = true
-	g_normal_tex.bump_strength = 3.0
+	# Stylized PBR Sand Textures (Poly Haven Coast Sand 01)
+	var sand_diff = load("res://assets/textures/sand/coast_sand_01_diff_1k.jpg")
+	var sand_nor = load("res://assets/textures/sand/coast_sand_01_nor_gl_1k.exr")
+	var sand_rough = load("res://assets/textures/sand/coast_sand_01_rough_1k.exr")
 	
 	ground_mat = StandardMaterial3D.new()
-	ground_mat.albedo_color = Color(0.95, 0.88, 0.75) # Warm sunset sand tone
-	ground_mat.albedo_texture = g_tex
-	ground_mat.uv1_scale = Vector3(8.0, 8.0, 8.0)
-	ground_mat.roughness = 0.88
-	ground_mat.roughness_texture = g_tex
+	ground_mat.albedo_color = Color(0.95, 0.88, 0.75) # Warm sunset tint on the sand
+	ground_mat.albedo_texture = sand_diff
+	ground_mat.uv1_scale = Vector3(16.0, 16.0, 16.0) # Tile the 1k texture to maintain crispness
+	ground_mat.roughness = 1.0
+	ground_mat.roughness_texture = sand_rough
 	
 	# Normal Map detail
 	ground_mat.normal_enabled = true
-	ground_mat.normal_texture = g_normal_tex
-	ground_mat.normal_scale = 0.65
+	ground_mat.normal_texture = sand_nor
+	ground_mat.normal_scale = 1.0
 	# Detail texture removed to prevent "cooked" overly dark noise. 
 	# The albedo_texture handles the noise, and albedo_color will tint it properly.
 	ground_mat.detail_enabled = false
