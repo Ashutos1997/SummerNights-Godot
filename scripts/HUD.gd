@@ -561,6 +561,10 @@ func _ready() -> void:
 			btn.add_theme_stylebox_override("pressed", style_btn_on)
 			btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 
+	# Sync GameState fullscreen with actual OS window mode to prevent mismatches
+	var actual_mode = DisplayServer.window_get_mode()
+	GameState.fullscreen = (actual_mode == DisplayServer.WINDOW_MODE_FULLSCREEN or actual_mode == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
+
 	# Apply GameState values to controls
 	sfx_slider.value = GameState.sfx_volume
 	sens_slider.value = GameState.mouse_sensitivity
