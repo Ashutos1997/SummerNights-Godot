@@ -3,7 +3,7 @@
 // License: CC0 / MIT
 
 shader_type spatial;
-render_mode depth_draw_always, specular_toon, fog_disabled;
+render_mode depth_draw_always, specular_toon;
 
 uniform sampler2D depth_texture : hint_depth_texture, filter_nearest;
 

@@ -650,7 +650,7 @@ func _build_scene() -> void:
 	
 	# ── Volumetric Fog — warm atmospheric haze
 	env_res.volumetric_fog_enabled = true
-	env_res.volumetric_fog_density = 0.01
+	env_res.volumetric_fog_density = 0.003 # Lowered to prevent distant water from disappearing into fog
 	env_res.volumetric_fog_albedo = Color(0.9, 0.6, 0.3, 1.0)
 	env_res.volumetric_fog_emission = Color(0.0, 0.0, 0.0)
 	env_res.volumetric_fog_emission_energy = 0.0
