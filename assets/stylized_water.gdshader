@@ -1,5 +1,5 @@
 // Summer Nights Stylized Water Shader
-// Procedural stylized 3D water with vertex waves, depth gradient, and shoreline foam.
+// Procedural stylized 3D water with Gerstner waves, depth gradient, Voronoi surface foam, and subsurface scattering.
 // License: CC0 / MIT
 
 shader_type spatial;
@@ -18,11 +18,15 @@ uniform float foam_amount    : hint_range(0.0, 4.0, 0.05) = 0.8;
 
 // ── Waves ───────────────────────────────────────────────────────────────────
 uniform float wave_speed  : hint_range(0.1, 4.0, 0.1) = 1.2;
-uniform float wave_scale  : hint_range(0.1, 5.0, 0.1) = 1.5;
-uniform vec2 wave_dir1    = vec2(1.0, 0.5);
-uniform vec2 wave_dir2    = vec2(-0.5, 0.8);
-uniform float wave_height1 : hint_range(0.0, 1.0, 0.05) = 0.25;
-uniform float wave_height2 : hint_range(0.0, 1.0, 0.05) = 0.15;
+
+// Gerstner Wave Parameters
+uniform vec2 gerstner_dir1 = vec2(1.0, 0.5);
+uniform float gerstner_steepness1 : hint_range(0.0, 1.0, 0.05) = 0.3;
+uniform float gerstner_wavelength1 : hint_range(1.0, 50.0, 1.0) = 10.0;
+
+uniform vec2 gerstner_dir2 = vec2(-0.5, 0.8);
+uniform float gerstner_steepness2 : hint_range(0.0, 1.0, 0.05) = 0.2;
+uniform float gerstner_wavelength2 : hint_range(1.0, 50.0, 1.0) = 7.0;
 
 // ── Rogue Waves ─────────────────────────────────────────────────────────────
 uniform float wave_pulse_offset = -1000.0;
@@ -31,12 +35,17 @@ uniform float pulse_height : hint_range(0.0, 15.0, 0.1) = 1.8;
 uniform float pulse_curl : hint_range(0.0, 2.0, 0.05) = 0.0;
 
 varying float pulse_mask;
+varying float wave_height_factor; // Passed to fragment for fake SSS
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Noise helper for wave displacement & foam pattern
+// Noise helpers
 // ─────────────────────────────────────────────────────────────────────────────
 float hash(vec2 p) {
 	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+}
+
+vec2 random2(vec2 p) {
+    return fract(sin(vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)))) * 43758.5453);
 }
 
 float noise(vec2 p) {
@@ -47,55 +56,93 @@ float noise(vec2 p) {
 	           mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
 }
 
+float voronoi(vec2 x) {
+    vec2 n = floor(x);
+    vec2 f = fract(x);
+    float m = 8.0;
+    for (int j = -1; j <= 1; j++) {
+        for (int i = -1; i <= 1; i++) {
+            vec2 g = vec2(float(i), float(j));
+            vec2 o = random2(n + g);
+            o = 0.5 + 0.5 * sin(TIME * 0.5 + 6.2831 * o);
+            vec2 r = g - f + o;
+            float d = dot(r, r);
+            m = min(m, d);
+        }
+    }
+    return sqrt(m);
+}
+
+// ── Gerstner Wave Function ──
+vec3 gerstner_wave(vec2 dir, float steepness, float wavelength, vec3 p, float t) {
+    float k = 6.28318 / wavelength;
+    float c = sqrt(9.8 / k) * wave_speed; // Physical speed
+    vec2 d = normalize(dir);
+    float f = k * (dot(d, p.xz) - c * t);
+    float a = steepness / k;
+    
+    return vec3(d.x * (a * cos(f)), a * sin(f), d.y * (a * cos(f)));
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 void vertex() {
-	// Generate stylized vertex waves
 	vec3 world_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	float t = TIME;
 	
-	float t = TIME * wave_speed;
-	
-	// Stacked sine waves for stylized low-poly wave motion
-	float w1 = sin(world_pos.x * wave_scale * wave_dir1.x + world_pos.z * wave_scale * wave_dir1.y + t) * wave_height1;
-	float w2 = cos(world_pos.x * wave_scale * wave_dir2.x + world_pos.z * wave_scale * wave_dir2.y + t * 1.5) * wave_height2;
+	// Apply Gerstner waves
+	vec3 g1 = gerstner_wave(gerstner_dir1, gerstner_steepness1, gerstner_wavelength1, world_pos, t);
+	vec3 g2 = gerstner_wave(gerstner_dir2, gerstner_steepness2, gerstner_wavelength2, world_pos, t);
 	
 	// Rogue Wave Pulse traveling along Z
-	// Animated directly via script tweening to avoid Engine TIME desyncs
 	float pulse_pos = wave_pulse_offset;
 	float dist = abs(world_pos.z - pulse_pos);
-	
-	// Gaussian pulse for the wave shape
 	float p_mask = exp(-dist * dist / (pulse_width * pulse_width));
-	pulse_mask = p_mask; // Pass to fragment shader for foam
+	pulse_mask = p_mask;
 	
-	VERTEX.y += w1 + w2 + (p_mask * pulse_height);
+	// Combine displacements
+	vec3 total_displacement = g1 + g2;
 	
-	// Gerstner Curl: Push the crest forward to create a surfing wave
-	VERTEX.z += (p_mask * pulse_height * pulse_curl);
+	// Add rogue wave
+	total_displacement.y += (p_mask * pulse_height);
+	total_displacement.z += (p_mask * pulse_height * pulse_curl);
+	
+	VERTEX += total_displacement;
+	
+	// Pass total wave height to fragment shader for SSS/crest highlighting
+	// Normalize against expected max height
+	wave_height_factor = clamp((total_displacement.y + 0.5) / 2.0, 0.0, 1.0);
 }
 
 void fragment() {
-	// ── Depth Buffer sampling for shoreline foam detection ───────────────────
 	float depth_raw = textureLod(depth_texture, SCREEN_UV, 0.0).r;
-	
-	// Convert NDC depth to linear eye depth
 	vec4 upos = INV_PROJECTION_MATRIX * vec4(SCREEN_UV * 2.0 - 1.0, depth_raw, 1.0);
 	float pixel_depth = -upos.z / upos.w;
-	
-	// Distance from water surface to geometry below it
 	float depth_diff = pixel_depth - VERTEX.z;
 	
 	// ── Color Gradient based on water depth ──────────────────────────────────
 	float depth_factor = clamp(depth_diff / depth_distance, 0.0, 1.0);
 	vec3 water_base = mix(color_shallow.rgb, color_deep.rgb, depth_factor);
 	
-	// ── Edge Foam / Shoreline Foam ───────────────────────────────────────────
-	// High foam where depth difference is very small (near intersection edges)
-	float shore_mask = 1.0 - clamp(depth_diff / foam_amount, 0.0, 1.0);
+	// ── Fake Subsurface Scattering (SSS) ─────────────────────────────────────
+	// Brighten the wave crests based on height to fake SSS
+	float crest_glow = pow(wave_height_factor, 1.5) * 0.4;
+	water_base = mix(water_base, color_shallow.rgb * 1.5, crest_glow);
 	
-	// Add scrolling noise to shoreline foam for stylized organic wave break
+	// ── Edge Foam / Shoreline Foam ───────────────────────────────────────────
+	float shore_mask = 1.0 - clamp(depth_diff / foam_amount, 0.0, 1.0);
 	float foam_noise = noise(UV * 8.0 + vec2(TIME * 0.15, TIME * 0.1));
 	float foam_final_mask = smoothstep(0.15, 0.65, shore_mask + (foam_noise * 0.25 * shore_mask));
+	
+	// ── Procedural Surface Foam (Voronoi) ────────────────────────────────────
+	vec3 world_pos = (INV_VIEW_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	float v_noise = voronoi(world_pos.xz * 0.4 + vec2(TIME * -0.1, TIME * 0.05));
+	// Sharp, thin foam lines
+	float surface_foam = 1.0 - smoothstep(0.0, 0.15, v_noise);
+	// Fade surface foam out in deep water so it doesn't look overwhelming
+	surface_foam *= clamp(1.0 - depth_factor * 0.5, 0.0, 1.0) * 0.15;
+	
+	foam_final_mask = clamp(foam_final_mask + surface_foam, 0.0, 1.0);
 	
 	// Add rogue wave crest foam
 	float rogue_foam_mask = smoothstep(0.5, 0.95, pulse_mask) * (0.8 + foam_noise * 0.5);
@@ -106,7 +153,6 @@ void fragment() {
 	// ── Toon specular reflection (Toon mode) ─────────────────────────────────
 	float fresnel = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), 3.0);
 	vec3 reflection_col = vec3(0.98, 0.72, 0.35); // Warm sunset reflection
-	// Fade reflection out at a distance so the water stays blue and distinct from the sky
 	float dist_fade = smoothstep(150.0, 50.0, -VERTEX.z);
 	final_color = mix(final_color, reflection_col, fresnel * 0.45 * dist_fade);
 	
