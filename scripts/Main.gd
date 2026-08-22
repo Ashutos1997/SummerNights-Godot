@@ -1413,6 +1413,7 @@ func _process(delta: float) -> void:
 			shoot_loop_sfx.stop()
 		return
 		
+	var is_wheel_open = hud and hud.weapon_wheel.active
 	timer_running = true
 	
 	if is_title_screen:
@@ -1481,33 +1482,34 @@ func _process(delta: float) -> void:
 				heat_regen_base *= 1.2 # The Boss Phase is aggressive but beatable with base gun
 
 		
-	# Relocate sunspot on timer
-	if sunspot_node:
-		sunspot_timer -= delta
-		if sunspot_timer <= 0.0:
-			_relocate_sunspot()
-
-	# Solar flare spawn & movement
-	flare_spawn_timer -= delta
-	if flare_spawn_timer <= 0.0:
-		_spawn_solar_flare()
-	_update_flares(delta)
-	
-	# Weather system logic
-	if active_weather == "none":
-		weather_blend = max(0.0, weather_blend - delta * 1.5)
-		if weather_timer > 0.0 and timer_running:
-			weather_timer -= delta
-			if active_weather == "eclipse" and hud and hud.has_method("update_eclipse_timer"):
-				hud.update_eclipse_timer(weather_timer)
-			if weather_timer <= 0.0:
-				_start_weather_event()
-	else:
-		weather_blend = min(1.0, weather_blend + delta * 1.5)
-		if weather_duration > 0.0 and timer_running:
-			weather_duration -= delta
-			if weather_duration <= 0.0:
-				_end_weather_event()
+		if not is_wheel_open:
+			# Relocate sunspot on timer
+			if sunspot_node:
+				sunspot_timer -= delta
+				if sunspot_timer <= 0.0:
+					_relocate_sunspot()
+		
+			# Solar flare spawn & movement
+			flare_spawn_timer -= delta
+			if flare_spawn_timer <= 0.0:
+				_spawn_solar_flare()
+			_update_flares(delta)
+			
+			# Weather system logic
+			if active_weather == "none":
+				weather_blend = max(0.0, weather_blend - delta * 1.5)
+				if weather_timer > 0.0 and timer_running:
+					weather_timer -= delta
+					if active_weather == "eclipse" and hud and hud.has_method("update_eclipse_timer"):
+						hud.update_eclipse_timer(weather_timer)
+					if weather_timer <= 0.0:
+						_start_weather_event()
+			else:
+				weather_blend = min(1.0, weather_blend + delta * 1.5)
+				if weather_duration > 0.0 and timer_running:
+					weather_duration -= delta
+					if weather_duration <= 0.0:
+						_end_weather_event()
 				
 	# Weather Mechanics
 	if active_weather == "rain":
@@ -1655,7 +1657,8 @@ func _process(delta: float) -> void:
 
 	# Solar Wind hazard
 	if solar_wind_enabled and not is_title_screen:
-		_process_solar_wind(delta)
+		if not (hud and hud.weapon_wheel.active):
+			_process_solar_wind(delta)
 	else:
 		wind_strength = 0.0
 		if wind_particles and wind_particles.emitting:
