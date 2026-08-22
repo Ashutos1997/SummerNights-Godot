@@ -548,9 +548,8 @@ func _ready() -> void:
 			btn.add_theme_stylebox_override("pressed", style_btn_on)
 			btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 
-	# Sync GameState fullscreen with actual OS window mode to prevent mismatches
-	var actual_mode = DisplayServer.window_get_mode()
-	GameState.fullscreen = (actual_mode == DisplayServer.WINDOW_MODE_FULLSCREEN or actual_mode == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
+	# Trust GameState.fullscreen which is loaded directly from settings.cfg
+	# Do not poll OS mode here as macOS fullscreen transitions are asynchronous.
 
 	# Apply GameState values to controls
 	sfx_slider.value = GameState.sfx_volume
@@ -1063,9 +1062,13 @@ func _on_fullscreen_toggled(toggled: bool) -> void:
 	GameState.fullscreen = toggled
 	GameState.save_settings()
 	_update_toggle_btn(fullscreen_check, toggled)
-	if toggled:
+	
+	var current_mode = DisplayServer.window_get_mode()
+	var is_currently_fullscreen = (current_mode == DisplayServer.WINDOW_MODE_FULLSCREEN or current_mode == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
+	
+	if toggled and not is_currently_fullscreen:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
-	else:
+	elif not toggled and is_currently_fullscreen:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 		DisplayServer.window_set_size(Vector2i(1280, 720))
 		var screen = DisplayServer.window_get_current_screen()

@@ -351,11 +351,18 @@ func load_settings() -> void:
 		var loaded_achievements = config.get_value("Stats", "unlocked_achievements", [])
 		unlocked_achievements.assign(loaded_achievements)
 		
-		# Apply loaded fullscreen state immediately
-		if fullscreen:
+		# Apply loaded fullscreen state immediately only if it differs from current mode
+		var current_mode = DisplayServer.window_get_mode()
+		var is_currently_fullscreen = (current_mode == DisplayServer.WINDOW_MODE_FULLSCREEN or current_mode == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
+		
+		if fullscreen and not is_currently_fullscreen:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
-		else:
+		elif not fullscreen and is_currently_fullscreen:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+			DisplayServer.window_set_size(Vector2i(1280, 720))
+			var screen = DisplayServer.window_get_current_screen()
+			var screen_size = DisplayServer.screen_get_size(screen)
+			DisplayServer.window_set_position(screen_size / 2 - Vector2i(1280, 720) / 2)
 
 func add_score(amount: int) -> void:
 	if amount <= 0: return
