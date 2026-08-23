@@ -557,7 +557,7 @@ func _ready() -> void:
 			btn.add_theme_stylebox_override("normal", style_btn_off)
 			btn.add_theme_stylebox_override("hover", style_btn_off)
 			btn.add_theme_stylebox_override("pressed", style_btn_on)
-			btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+			btn.add_theme_stylebox_override("focus", style_focus)
 
 	# Trust GameState.fullscreen which is loaded directly from settings.cfg
 	# Do not poll OS mode here as macOS fullscreen transitions are asynchronous.
@@ -643,7 +643,13 @@ func _build_lang_row(font: Font) -> void:
 	btn_en.add_theme_font_size_override("font_size", 18)
 	btn_en.add_theme_constant_override("outline_size", 1)
 	btn_en.add_theme_color_override("font_outline_color", Color.BLACK)
-	btn_en.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	var lang_focus = StyleBoxFlat.new()
+	lang_focus.bg_color = Color(0, 0, 0, 0)
+	lang_focus.border_color = Color(1.0, 0.85, 0.2, 1.0)
+	lang_focus.set_border_width_all(2)
+	lang_focus.set_corner_radius_all(6)
+	
+	btn_en.add_theme_stylebox_override("focus", lang_focus)
 	btn_en.add_theme_stylebox_override("hover", StyleBoxEmpty.new())
 	btn_en.mouse_entered.connect(_play_ui_tick)
 	btn_en.pressed.connect(func(): _on_language_toggle("EN"))
@@ -666,7 +672,7 @@ func _build_lang_row(font: Font) -> void:
 	btn_kr.add_theme_font_size_override("font_size", 18)
 	btn_kr.add_theme_constant_override("outline_size", 1)
 	btn_kr.add_theme_color_override("font_outline_color", Color.BLACK)
-	btn_kr.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	btn_kr.add_theme_stylebox_override("focus", lang_focus)
 	btn_kr.add_theme_stylebox_override("hover", StyleBoxEmpty.new())
 	btn_kr.mouse_entered.connect(_play_ui_tick)
 	btn_kr.pressed.connect(func(): _on_language_toggle("KR"))
@@ -1383,7 +1389,10 @@ func _input(event: InputEvent) -> void:
 				weapon_wheel.close()
 				get_viewport().set_input_as_handled()
 
-	if event.is_action_pressed("ui_pause") and not event.is_echo():
+	var is_cancel = event.is_action_pressed("ui_cancel")
+	var is_pause = event.is_action_pressed("ui_pause")
+	
+	if (is_cancel or is_pause) and not event.is_echo():
 		if weapon_wheel.active:
 			weapon_wheel.close()
 			get_viewport().set_input_as_handled()
@@ -1412,10 +1421,12 @@ func _input(event: InputEvent) -> void:
 		
 		if pause_screen.visible:
 			_resume_game()
-		else:
+			get_viewport().set_input_as_handled()
+			return
+		elif is_pause:
 			_pause_game()
-		get_viewport().set_input_as_handled()
-		return
+			get_viewport().set_input_as_handled()
+			return
 
 	if end_screen and end_screen.visible:
 		if event.is_action_pressed("ui_accept") or event.is_action_pressed("ui_shoot"):
@@ -1479,6 +1490,8 @@ func _on_controller_pressed() -> void:
 	controller_screen.modulate.a = 0.0
 	var tw = create_tween()
 	tw.tween_property(controller_screen, "modulate:a", 1.0, 0.3)
+	await get_tree().process_frame
+	if controller_back_btn: controller_back_btn.grab_focus()
 
 func _close_controller() -> void:
 	if ui_tick_player: ui_tick_player.play()
@@ -1766,6 +1779,8 @@ func show_lose_screen() -> void:
 	var tw = create_tween()
 	tw.tween_property(lose_screen, "modulate:a", 1.0, 0.4)
 	tw.set_ease(Tween.EASE_OUT)
+	await get_tree().process_frame
+	if retry_btn: retry_btn.grab_focus()
 
 func _on_phase2_started() -> void:
 	var flash = ColorRect.new()
