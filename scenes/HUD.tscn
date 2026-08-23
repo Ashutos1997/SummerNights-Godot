@@ -500,7 +500,7 @@ mouse_filter = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="HUD/pause_screen/ColorRect/CenterContainer"]
 custom_minimum_size = Vector2(280, 0)
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 16
 alignment = 1
 
 [node name="TitleRow" type="HBoxContainer" parent="HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer"]
@@ -607,7 +607,7 @@ custom_minimum_size = Vector2(560, 0)
 layout_mode = 2
 mouse_filter = 2
 alignment = 1
-theme_override_constants/separation = 12
+theme_override_constants/separation = 16
 
 [node name="TitleRow" type="HBoxContainer" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
@@ -800,7 +800,7 @@ custom_minimum_size = Vector2(560, 0)
 layout_mode = 2
 mouse_filter = 2
 alignment = 1
-theme_override_constants/separation = 12
+theme_override_constants/separation = 16
 
 [node name="TitleRow" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
@@ -1184,7 +1184,7 @@ mouse_filter = 2
 custom_minimum_size = Vector2(900, 0)
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 16
 
 [node name="TitleRow" type="HBoxContainer" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2

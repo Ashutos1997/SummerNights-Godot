@@ -2018,7 +2018,7 @@ func _build_achievements_screen() -> void:
 	
 	var vbox = VBoxContainer.new()
 	vbox.name = "VBoxContainer"
-	vbox.add_theme_constant_override("separation", 12)
+	vbox.add_theme_constant_override("separation", 16)
 	center.add_child(vbox)
 	
 	var title_row = HBoxContainer.new()
@@ -2287,7 +2287,7 @@ func _build_buffs_screen() -> void:
 	
 	var vbox = VBoxContainer.new()
 	vbox.name = "VBoxContainer"
-	vbox.add_theme_constant_override("separation", 12)
+	vbox.add_theme_constant_override("separation", 16)
 	center.add_child(vbox)
 	
 	var title_row = HBoxContainer.new()
