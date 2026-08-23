@@ -1041,30 +1041,30 @@ func _apply_language(lang: String) -> void:
 		var prefix = "ESC" if row_name == "KeyboardRow" else "MENU"
 		var leg_pause = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/" + row_name + "/LegendColumn/LegPause/Label")
 		if leg_pause:
-			leg_pause.text = prefix + " - 일시정지" if is_kr else "MENU BUTTON - PAUSE" if row_name == "XboxRow" else prefix + " - PAUSE"
+			leg_pause.text = prefix + " - 일시정지" if is_kr else "MENU - PAUSE" if row_name == "XboxRow" else prefix + " - PAUSE"
 			if font: leg_pause.add_theme_font_override("font", font)
 
-		var prefix_weap = "TAB" if row_name == "KeyboardRow" else "Y"
+		var prefix_weap = "TAB" if row_name == "KeyboardRow" else "LB"
 		var leg_weapons = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/" + row_name + "/LegendColumn/LegWeapons/Label")
 		if leg_weapons:
-			leg_weapons.text = prefix_weap + " - 무기 변경" if is_kr else "Y BUTTON - WEAPONS" if row_name == "XboxRow" else prefix_weap + " - WEAPONS"
+			leg_weapons.text = prefix_weap + " - 무기 변경" if is_kr else "LB - WEAPONS" if row_name == "XboxRow" else prefix_weap + " - WEAPONS"
 			if font: leg_weapons.add_theme_font_override("font", font)
 
-		var prefix_ice = "R" if row_name == "KeyboardRow" else "LEFT TRIGGER"
+		var prefix_ice = "R" if row_name == "KeyboardRow" else "LT"
 		var leg_ice = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/" + row_name + "/LegendColumn/LegIceBlast/Label")
 		if leg_ice:
 			leg_ice.text = prefix_ice + " - 얼음 폭발" if is_kr else prefix_ice + " - ICE BLAST"
 			if font: leg_ice.add_theme_font_override("font", font)
 
 		var prefix_cat = "F" if row_name == "KeyboardRow" else "F"
-		if row_name == "XboxRow": prefix_cat = "RIGHT BUMPER"
+		if row_name == "XboxRow": prefix_cat = "RB"
 		var leg_catastrom = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/" + row_name + "/LegendColumn/LegCatastrom/Label")
 		if leg_catastrom:
 			leg_catastrom.text = prefix_cat + " - 카타스트롬" if is_kr else prefix_cat + " - CATASTROM"
 			if font: leg_catastrom.add_theme_font_override("font", font)
 
 		var prefix_mouse = "MOUSE - 조준/발사" if is_kr else "MOUSE - AIM/SHOOT"
-		if row_name == "XboxRow": prefix_mouse = "L/R STICK - 조준 / R TRIGGER - 발사" if is_kr else "L/R STICKS - AIM / R TRIGGER - FIRE"
+		if row_name == "XboxRow": prefix_mouse = "LS/RS - 조준 / RT - 발사" if is_kr else "LS/RS - AIM / RT - FIRE"
 		var leg_mouse = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/" + row_name + "/LegendColumn/LegMouse/Label")
 		if leg_mouse:
 			leg_mouse.text = prefix_mouse
@@ -1373,7 +1373,7 @@ func _input(event: InputEvent) -> void:
 	if not visible:
 		return
 		
-	if event.is_action_pressed("ui_weapons") and not event.is_echo():
+	if event.is_action("ui_weapons") and not event.is_echo():
 		if event.pressed:
 			if not weapon_wheel.active and not pause_screen.visible and not win_screen.visible and not end_screen.visible and not lose_screen.visible:
 				weapon_wheel.open()
