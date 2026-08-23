@@ -145,7 +145,7 @@ All achievements utilize thematic, open-source vector graphics from Game-icons.n
 
 ### Sliding Toggle Pill
 
-A sleek, modern binary toggle used for premium settings like the Language switch (EN/KR).
+A sleek, modern binary toggle used for premium settings like the Language switch (EN/KR) and the Controls device selector (Keyboard/Xbox).
 
 *   **Container:** Uses a flat `ColorRect` background `Color(0, 0, 0, 0.4)` and a `ReferenceRect` golden border `Color(1.0, 0.85, 0.2, 0.6)` with `2px` width.
 *   **Labels:** Uses an `HBoxContainer` spanning the entire rect, containing two labels with equal size flags. Text is completely borderless.
