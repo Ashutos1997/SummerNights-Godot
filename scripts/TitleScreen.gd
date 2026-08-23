@@ -643,7 +643,7 @@ func _hide_achievements() -> void:
 	)
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+	if event.is_action_pressed("ui_pause") and not event.is_echo():
 		if achievements_screen and achievements_screen.visible:
 			_hide_achievements()
 			get_viewport().set_input_as_handled()

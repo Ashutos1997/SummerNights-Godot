@@ -20,6 +20,7 @@
 [ext_resource type="Script" path="res://scripts/PauseSunGraphic.gd" id="91_sun"]
 [ext_resource type="Texture2D" path="res://assets/ui/controller/Keyboard.svg" id="92_keyboard"]
 [ext_resource type="Texture2D" uid="uid://9a7d1fe1f4f14e3383f9fcc44b573c9a" path="res://assets/ui/controller/Keyboard_controls.svg" id="92_keyboard_controls"]
+[ext_resource type="Texture2D" uid="uid://temp_xbox_front" path="res://assets/ui/gamepad/xbox_front.svg" id="93_xbox_front"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_border"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -894,21 +895,28 @@ vertical_alignment = 1
 layout_mode = 2
 mouse_filter = 2
 
-[node name="ContentRow" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer"]
+[node name="InputSelectRow" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+
+[node name="KeyboardRow" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 48
 alignment = 1
 
-[node name="LegendColumn" type="VBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/ContentRow"]
+[node name="LegendColumn" type="VBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow"]
 layout_mode = 2
 theme_override_constants/separation = 24
 alignment = 1
 
-[node name="KeyboardLayout" type="Control" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/ContentRow"]
+[node name="KeyboardLayout" type="Control" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow"]
 custom_minimum_size = Vector2(559, 231)
 layout_mode = 2
 
-[node name="TextureRect" type="TextureRect" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/ContentRow/KeyboardLayout"]
+[node name="TextureRect" type="TextureRect" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/KeyboardLayout"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -919,82 +927,188 @@ texture = ExtResource("92_keyboard_controls")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="LegPause" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/ContentRow/LegendColumn"]
+[node name="LegPause" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/LegendColumn"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
 
-[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/ContentRow/LegendColumn/LegPause"]
+[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/LegendColumn/LegPause"]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_leg_esc")
 
-[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/ContentRow/LegendColumn/LegPause"]
+[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/LegendColumn/LegPause"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "ESC - PAUSE"
 
-[node name="LegWeapons" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/ContentRow/LegendColumn"]
+[node name="LegWeapons" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/LegendColumn"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
 
-[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/ContentRow/LegendColumn/LegWeapons"]
+[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/LegendColumn/LegWeapons"]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_leg_tab")
 
-[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/ContentRow/LegendColumn/LegWeapons"]
+[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/LegendColumn/LegWeapons"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "TAB - WEAPONS"
 
-[node name="LegIceBlast" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/ContentRow/LegendColumn"]
+[node name="LegIceBlast" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/LegendColumn"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
 
-[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/ContentRow/LegendColumn/LegIceBlast"]
+[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/LegendColumn/LegIceBlast"]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_leg_r")
 
-[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/ContentRow/LegendColumn/LegIceBlast"]
+[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/LegendColumn/LegIceBlast"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "R - ICE BLAST"
 
-[node name="LegCatastrom" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/ContentRow/LegendColumn"]
+[node name="LegCatastrom" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/LegendColumn"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
 
-[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/ContentRow/LegendColumn/LegCatastrom"]
+[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/LegendColumn/LegCatastrom"]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_leg_f")
 
-[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/ContentRow/LegendColumn/LegCatastrom"]
+[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/LegendColumn/LegCatastrom"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "F - CATASTROM"
 
-[node name="LegMouse" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/ContentRow/LegendColumn"]
+[node name="LegMouse" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/LegendColumn"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
 
-[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/ContentRow/LegendColumn/LegMouse"]
+[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/LegendColumn/LegMouse"]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_leg_mouse")
 
-[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/ContentRow/LegendColumn/LegMouse"]
+[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/LegendColumn/LegMouse"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "MOUSE - AIM/SHOOT"
+
+[node name="XboxRow" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 48
+alignment = 1
+
+[node name="LegendColumn" type="VBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow"]
+layout_mode = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="XboxLayout" type="Control" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow"]
+custom_minimum_size = Vector2(559, 231)
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/XboxLayout"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("93_xbox_front")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LegPause" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/LegendColumn"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+
+[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/LegendColumn/LegPause"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_leg_esc")
+
+[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/LegendColumn/LegPause"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "ESC - PAUSE"
+
+[node name="LegWeapons" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/LegendColumn"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+
+[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/LegendColumn/LegWeapons"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_leg_tab")
+
+[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/LegendColumn/LegWeapons"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "TAB - WEAPONS"
+
+[node name="LegIceBlast" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/LegendColumn"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+
+[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/LegendColumn/LegIceBlast"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_leg_r")
+
+[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/LegendColumn/LegIceBlast"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "R - ICE BLAST"
+
+[node name="LegCatastrom" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/LegendColumn"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+
+[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/LegendColumn/LegCatastrom"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_leg_f")
+
+[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/LegendColumn/LegCatastrom"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "F - CATASTROM"
+
+[node name="LegMouse" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/LegendColumn"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+
+[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/LegendColumn/LegMouse"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_leg_mouse")
+
+[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/LegendColumn/LegMouse"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "MOUSE - AIM/SHOOT"

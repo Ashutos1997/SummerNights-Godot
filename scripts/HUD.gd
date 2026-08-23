@@ -63,6 +63,8 @@ var last_callout_tier: int = 0
 @onready var pause_resume_btn   = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/ResumeBtn
 @onready var settings_btn       = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/SettingsBtn
 @onready var controller_btn     = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/ControllerBtn
+@onready var keyboard_row = $HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow
+@onready var xbox_row = $HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow
 @onready var credits_btn        = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/CreditsBtn
 @onready var pause_menu_btn     = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/MainMenuBtn
 @onready var esc_hint_label     = $HUD/esc_hint_label
@@ -575,6 +577,8 @@ func _ready() -> void:
 		credits_back_btn.pressed.connect(_close_credits)
 	if controller_btn:
 		controller_btn.pressed.connect(_on_controller_pressed)
+
+	_build_input_toggle()
 	if controller_back_btn:
 		controller_back_btn.pressed.connect(_close_controller)
 
@@ -1027,30 +1031,38 @@ func _apply_language(lang: String) -> void:
 		if font: controller_btn.add_theme_font_override("font", font)
 	if controller_title:
 		controller_title.text = "조작법" if is_kr else "CONTROLS"
-	var leg_pause = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/ContentRow/LegendColumn/LegPause/Label")
-	if leg_pause:
-		leg_pause.text = "ESC - 일시정지" if is_kr else "ESC - PAUSE"
-		if font: leg_pause.add_theme_font_override("font", font)
+	for row_name in ["KeyboardRow", "XboxRow"]:
+		var prefix = "ESC" if row_name == "KeyboardRow" else "MENU"
+		var leg_pause = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/" + row_name + "/LegendColumn/LegPause/Label")
+		if leg_pause:
+			leg_pause.text = prefix + " - 일시정지" if is_kr else prefix + " - PAUSE"
+			if font: leg_pause.add_theme_font_override("font", font)
 
-	var leg_weapons = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/ContentRow/LegendColumn/LegWeapons/Label")
-	if leg_weapons:
-		leg_weapons.text = "TAB - 무기 변경" if is_kr else "TAB - WEAPONS"
-		if font: leg_weapons.add_theme_font_override("font", font)
+		var prefix_weap = "TAB" if row_name == "KeyboardRow" else "Y"
+		var leg_weapons = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/" + row_name + "/LegendColumn/LegWeapons/Label")
+		if leg_weapons:
+			leg_weapons.text = prefix_weap + " - 무기 변경" if is_kr else prefix_weap + " - WEAPONS"
+			if font: leg_weapons.add_theme_font_override("font", font)
 
-	var leg_ice = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/ContentRow/LegendColumn/LegIceBlast/Label")
-	if leg_ice:
-		leg_ice.text = "R - 얼음 폭발" if is_kr else "R - ICE BLAST"
-		if font: leg_ice.add_theme_font_override("font", font)
+		var prefix_ice = "R" if row_name == "KeyboardRow" else "LT"
+		var leg_ice = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/" + row_name + "/LegendColumn/LegIceBlast/Label")
+		if leg_ice:
+			leg_ice.text = prefix_ice + " - 얼음 폭발" if is_kr else prefix_ice + " - ICE BLAST"
+			if font: leg_ice.add_theme_font_override("font", font)
 
-	var leg_catastrom = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/ContentRow/LegendColumn/LegCatastrom/Label")
-	if leg_catastrom:
-		leg_catastrom.text = "F - 카타스트롬" if is_kr else "F - CATASTROM"
-		if font: leg_catastrom.add_theme_font_override("font", font)
+		var prefix_cat = "F" if row_name == "KeyboardRow" else "F" # No wait, Xbox was F? No, RB? Wait, the Xbox screenshot has F - CATASTROM. I messed up earlier and kept it as F. Let us fix it to RT - CATASTROM.
+		if row_name == "XboxRow": prefix_cat = "RT"
+		var leg_catastrom = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/" + row_name + "/LegendColumn/LegCatastrom/Label")
+		if leg_catastrom:
+			leg_catastrom.text = prefix_cat + " - 카타스트롬" if is_kr else prefix_cat + " - CATASTROM"
+			if font: leg_catastrom.add_theme_font_override("font", font)
 
-	var leg_mouse = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/ContentRow/LegendColumn/LegMouse/Label")
-	if leg_mouse:
-		leg_mouse.text = "MOUSE - 조준/발사" if is_kr else "MOUSE - AIM/SHOOT"
-		if font: leg_mouse.add_theme_font_override("font", font)
+		var prefix_mouse = "MOUSE - 조준/발사" if is_kr else "MOUSE - AIM/SHOOT"
+		if row_name == "XboxRow": prefix_mouse = "LS - 조준 / RT - 발사" if is_kr else "LS - AIM / RT - FIRE"
+		var leg_mouse = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/" + row_name + "/LegendColumn/LegMouse/Label")
+		if leg_mouse:
+			leg_mouse.text = prefix_mouse
+			if font: leg_mouse.add_theme_font_override("font", font)
 
 		if font: controller_title.add_theme_font_override("font", font)
 		controller_title.add_theme_font_size_override("font_size", 32)
@@ -1098,6 +1110,9 @@ func _apply_language(lang: String) -> void:
 
 	# ── Toggle highlight (color-only, no layout impact) ───────────────────────
 	_update_lang_toggle(is_kr)
+	
+	if input_lbl_kb:
+		_update_input_toggle_visuals(true)
 
 
 # ---------- Toggle button ---------------------------------------------------
@@ -1346,7 +1361,7 @@ func _input(event: InputEvent) -> void:
 	if not visible:
 		return
 		
-	if event is InputEventKey and event.keycode == KEY_TAB and not event.echo:
+	if event.is_action_pressed("ui_weapons") and not event.is_echo():
 		if event.pressed:
 			if not weapon_wheel.active and not pause_screen.visible and not win_screen.visible and not end_screen.visible and not lose_screen.visible:
 				weapon_wheel.open()
@@ -1356,7 +1371,7 @@ func _input(event: InputEvent) -> void:
 				weapon_wheel.close()
 				get_viewport().set_input_as_handled()
 
-	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+	if event.is_action_pressed("ui_pause") and not event.is_echo():
 		if weapon_wheel.active:
 			weapon_wheel.close()
 			get_viewport().set_input_as_handled()
@@ -1391,7 +1406,7 @@ func _input(event: InputEvent) -> void:
 		return
 
 	if end_screen and end_screen.visible:
-		if (event is InputEventKey and event.pressed and event.keycode == KEY_SPACE) or (event is InputEventMouseButton and event.pressed):
+		if event.is_action_pressed("ui_accept") or event.is_action_pressed("ui_shoot"):
 			GameState.reset()
 			get_viewport().set_input_as_handled()
 			get_tree().change_scene_to_file("res://scenes/Main.tscn")
@@ -2558,3 +2573,107 @@ func hide_buffs_screen() -> void:
 		pause_screen.visible = true
 		if buffs_btn: buffs_btn.grab_focus()
 	)
+
+
+func _on_input_select_changed(index: int) -> void:
+	if index == 0:
+		keyboard_row.visible = true
+		xbox_row.visible = false
+	else:
+		keyboard_row.visible = false
+		xbox_row.visible = true
+
+# ---------- Input Toggle Pill ------------------------------------------------
+var input_toggle_state: int = 0
+var input_highlight: ColorRect
+var input_lbl_kb: Label
+var input_lbl_xb: Label
+var input_toggle_tween: Tween
+
+func _build_input_toggle() -> void:
+	var row = $HUD/ControllerScreen/CenterContainer/VBoxContainer/InputSelectRow
+	if not row: return
+	
+	var container = Control.new()
+	container.custom_minimum_size = Vector2(440, 50)
+	row.add_child(container)
+	
+	var bg = ColorRect.new()
+	bg.color = Color(0, 0, 0, 0.4)
+	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	container.add_child(bg)
+	
+	var border = ReferenceRect.new()
+	border.border_color = Color(1.0, 0.85, 0.2, 0.6)
+	border.border_width = 2.0
+	border.editor_only = false
+	border.set_anchors_preset(Control.PRESET_FULL_RECT)
+	container.add_child(border)
+	
+	input_highlight = ColorRect.new()
+	input_highlight.color = Color(1.0, 0.85, 0.2, 1.0)
+	input_highlight.size = Vector2(220, 50)
+	input_highlight.position = Vector2(0, 0)
+	container.add_child(input_highlight)
+	
+	var hbox = HBoxContainer.new()
+	hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	hbox.add_theme_constant_override("separation", 0)
+	container.add_child(hbox)
+	
+	input_lbl_kb = Label.new()
+	input_lbl_kb.text = "KEYBOARD"
+	input_lbl_kb.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	input_lbl_kb.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	input_lbl_kb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hbox.add_child(input_lbl_kb)
+	
+	input_lbl_xb = Label.new()
+	input_lbl_xb.text = "XBOX"
+	input_lbl_xb.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	input_lbl_xb.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	input_lbl_xb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hbox.add_child(input_lbl_xb)
+	
+	var btn = Button.new()
+	btn.flat = true
+	btn.set_anchors_preset(Control.PRESET_FULL_RECT)
+	btn.pressed.connect(_on_input_toggle_pressed)
+	btn.mouse_entered.connect(_play_ui_tick)
+	container.add_child(btn)
+	
+	_update_input_toggle_visuals(true)
+
+func _on_input_toggle_pressed() -> void:
+	input_toggle_state = 1 if input_toggle_state == 0 else 0
+	_update_input_toggle_visuals(false)
+	_on_input_select_changed(input_toggle_state)
+
+func _update_input_toggle_visuals(instant: bool = false) -> void:
+	var target_x = 0.0 if input_toggle_state == 0 else 220.0
+	
+	var font = load("res://assets/fonts/Galmuri11.ttf") if GameState.language == "KR" else load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+	if input_lbl_kb:
+		input_lbl_kb.add_theme_font_override("font", font)
+		input_lbl_kb.add_theme_font_size_override("font_size", 20)
+		input_lbl_kb.text = "키보드" if GameState.language == "KR" else "KEYBOARD"
+	if input_lbl_xb:
+		input_lbl_xb.add_theme_font_override("font", font)
+		input_lbl_xb.add_theme_font_size_override("font_size", 20)
+		
+	if instant:
+		input_highlight.position.x = target_x
+		input_lbl_kb.add_theme_color_override("font_color", Color(0,0,0,1) if input_toggle_state == 0 else Color(1,0.85,0.2,1))
+		input_lbl_xb.add_theme_color_override("font_color", Color(0,0,0,1) if input_toggle_state == 1 else Color(1,0.85,0.2,1))
+	else:
+		if input_toggle_tween and input_toggle_tween.is_valid():
+			input_toggle_tween.kill()
+		input_toggle_tween = create_tween().set_parallel(true)
+		input_toggle_tween.tween_property(input_highlight, "position:x", target_x, 0.25).set_trans(Tween.TRANS_SINE)
+		# Text colors
+		if input_toggle_state == 0:
+			input_toggle_tween.tween_method(func(c): input_lbl_kb.add_theme_color_override("font_color", c), input_lbl_kb.get_theme_color("font_color"), Color(0,0,0,1), 0.15)
+			input_toggle_tween.tween_method(func(c): input_lbl_xb.add_theme_color_override("font_color", c), input_lbl_xb.get_theme_color("font_color"), Color(1,0.85,0.2,1), 0.15)
+		else:
+			input_toggle_tween.tween_method(func(c): input_lbl_kb.add_theme_color_override("font_color", c), input_lbl_kb.get_theme_color("font_color"), Color(1,0.85,0.2,1), 0.15)
+			input_toggle_tween.tween_method(func(c): input_lbl_xb.add_theme_color_override("font_color", c), input_lbl_xb.get_theme_color("font_color"), Color(0,0,0,1), 0.15)

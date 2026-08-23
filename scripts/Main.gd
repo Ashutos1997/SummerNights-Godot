@@ -40,6 +40,7 @@ var sun_hit_tween: Tween
 var is_shaking: bool = false
 var level: int            = 1
 var mouse_sensitivity: float = 1.0
+var gamepad_sensitivity: float = 800.0
 var reduce_motion: bool   = false
 signal crosshair_moved(screen_pos: Vector2, is_behind: bool)
 
@@ -1701,6 +1702,26 @@ func _process(delta: float) -> void:
 		active_magma_rocks = valid_rocks
 		
 
+	# Gamepad Analog Aiming & Dragging
+	if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED and not game_over and not is_title_screen:
+		if is_dragging_sun:
+			var aim_y = Input.get_axis("aim_up", "aim_down")
+			if abs(aim_y) > 0.05:
+				if aim_y > 0:
+					sun.position.y -= aim_y * 15.0 * delta
+				else:
+					sun.position.y -= aim_y * 5.0 * delta
+				sun.position.y = clamp(sun.position.y, -2.0, sun_base_pos.y + 15.0)
+				if sun.position.y <= 0.0:
+					_trigger_catastrom_dunk()
+		else:
+			var aim_vec = Input.get_vector("aim_left", "aim_right", "aim_up", "aim_down")
+			if aim_vec.length_squared() > 0.01:
+				virtual_mouse_pos += aim_vec * gamepad_sensitivity * mouse_sensitivity * delta
+				var viewport_size = get_viewport().get_visible_rect().size
+				virtual_mouse_pos.x = clamp(virtual_mouse_pos.x, 0, viewport_size.x)
+				virtual_mouse_pos.y = clamp(virtual_mouse_pos.y, 0, viewport_size.y)
+
 	# Aim gun (apply wind drift to virtual mouse position)
 	var mouse_pos = virtual_mouse_pos
 	if wind_state == 2 and wind_strength > 0.0:
@@ -2043,12 +2064,11 @@ func _input(event: InputEvent) -> void:
 			virtual_mouse_pos.x = clamp(virtual_mouse_pos.x, 0, viewport_size.x)
 			virtual_mouse_pos.y = clamp(virtual_mouse_pos.y, 0, viewport_size.y)
 		
-	if (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed) or \
-	   (event is InputEventKey and event.keycode == KEY_R and event.pressed):
+	if event.is_action_pressed("ui_ice_blast") and not event.is_echo():
 		if GameState.ice_charges_remaining > 0:
 			_shoot_ice()
 
-	if event is InputEventKey and event.keycode == KEY_F and event.pressed and not event.echo:
+	if event.is_action_pressed("ui_catastrom") and not event.is_echo():
 		if GameState.catastrom_charge >= 1.0 and not is_catastrom_active:
 			is_catastrom_active = true
 			is_shooting = false
@@ -2057,8 +2077,8 @@ func _input(event: InputEvent) -> void:
 			active_mirages.clear()
 			return
 
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if is_catastrom_active and event.pressed and not is_dragging_sun:
+	if event.is_action("ui_shoot"):
+		if is_catastrom_active and event.is_pressed() and not is_dragging_sun:
 			is_dragging_sun = true
 			is_shooting = false
 			if catastrom_sfx:
@@ -2067,10 +2087,10 @@ func _input(event: InputEvent) -> void:
 				hud.grab_icon.texture = preload("res://assets/ui/grab_closed.png")
 			return
 					
-		if Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE and event.pressed:
+		if Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE and event.is_pressed():
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		else:
-			is_shooting = event.pressed
+			is_shooting = event.is_pressed()
 			
 	if is_dragging_sun and event is InputEventMouseMotion:
 		# Directly modify sun position based on mouse motion
