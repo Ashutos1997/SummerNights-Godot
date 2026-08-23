@@ -37,7 +37,7 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
   </tr>
   <tr>
     <td align="center"><img src="screenshots/11_Achievements_EN_v2.png" width="100%"><br><b>Achievements Gallery</b></td>
-    <td align="center"><img src="screenshots/12_Settings_EN_v2.png" width="100%"><br><b>Settings</b></td>
+    <td align="center"><img src="screenshots/12_Settings_EN_v3.png" width="100%"><br><b>Settings</b></td>
   </tr>
   <tr>
     <td align="center"><img src="screenshots/15_Credits_EN_v2.png" width="100%"><br><b>Credits</b></td>
