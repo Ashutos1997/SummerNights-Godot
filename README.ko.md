@@ -180,7 +180,7 @@ SummerNights-Godot/
 | 영어 본문 폰트 - Inter | Rasmus Andersson | SIL OFL |
 | 한국어 폰트 - Galmuri11 | quiple | SIL OFL |
 | UI Pack Adventure | Kenney | CC0 |
-| 키보드 SVG (Keyboard SVG) | Oscar Nilsson | CC0 |
+| 컨트롤러 SVGs (Controller SVGs) | Oscar Nilsson | CC0 |
 | 메뉴 및 업적 아이콘 (Menu & Achievement Icons) | Game-icons.net | CC BY 3.0 |
 | SFX - 40가지 CC0 물/물결 효과음 | OpenGameArt | CC0 |
 | SFX - 물총 발사음 | belanhud (Freesound) | CC0 |
