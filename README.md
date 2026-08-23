@@ -16,20 +16,20 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 
 <table align="center">
   <tr>
-    <td align="center" width="50%"><img src="screenshots/01_Title_Screen_EN_v2.png" width="100%"><br><b>Title Screen</b></td>
-    <td align="center" width="50%"><img src="screenshots/02_Core_Gameplay.png" width="100%"><br><b>Core Gameplay</b></td>
+    <td align="center" width="50%"><img src="screenshots/01_Title_Screen_v3.png" width="100%"><br><b>Title Screen</b></td>
+    <td align="center" width="50%"><img src="screenshots/02_Core_Gameplay_v3.png" width="100%"><br><b>Core Gameplay</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="screenshots/03_Weapon_Wheel_v2.png" width="100%"><br><b>Weapon Wheel</b></td>
-    <td align="center"><img src="screenshots/08_Catastrom.png" width="100%"><br><b>Catastrom Ultimate</b></td>
+    <td align="center"><img src="screenshots/03_Weapon_Wheel_v3.png" width="100%"><br><b>Weapon Wheel</b></td>
+    <td align="center"><img src="screenshots/08_Catastrom_v3.png" width="100%"><br><b>Catastrom Ultimate</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="screenshots/09_Mirage.png" width="100%"><br><b>Heat Mirage</b></td>
-    <td align="center"><img src="screenshots/10_Incoming_Wave.png" width="100%"><br><b>Incoming Wave</b></td>
+    <td align="center"><img src="screenshots/09_Mirage_v3.png" width="100%"><br><b>Heat Mirage</b></td>
+    <td align="center"><img src="screenshots/10_Incoming_Wave_v3.png" width="100%"><br><b>Incoming Wave</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="screenshots/05_Weather_Solar_Wind.png" width="100%"><br><b>Solar Wind</b></td>
-    <td align="center"><img src="screenshots/13_Weather_Event.png" width="100%"><br><b>Weather Event</b></td>
+    <td align="center"><img src="screenshots/05_Weather_Solar_Wind_v3.png" width="100%"><br><b>Solar Wind</b></td>
+    <td align="center"><img src="screenshots/13_Achievement_Pop_Ups_v3.png" width="100%"><br><b>Achievement Pop-Ups</b></td>
   </tr>
   <tr>
     <td align="center"><img src="screenshots/06_Pause_Screen_EN_v2.png" width="100%"><br><b>Pause Screen</b></td>
@@ -45,7 +45,7 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
   </tr>
   <tr>
     <td align="center"><img src="screenshots/07_Controls_XB_EN_v3.png" width="100%"><br><b>Controls (Xbox)</b></td>
-    <td></td>
+    <td align="center"><img src="screenshots/16_Notification_Pop_Up_v3.png" width="100%"><br><b>Notification Pop-Up</b></td>
   </tr>
 </table>
 

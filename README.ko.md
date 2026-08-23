@@ -16,20 +16,20 @@ Godot 4로 제작된 3D 아케이드 슈터. 태양을 식히기 전에 열기�
 
 <table align="center">
   <tr>
-    <td align="center" width="50%"><img src="screenshots/01_Title_Screen_KR_v2.png" width="100%"><br><b>타이틀 화면</b></td>
-    <td align="center" width="50%"><img src="screenshots/02_Core_Gameplay_KR.png" width="100%"><br><b>핵심 게임플레이</b></td>
+    <td align="center" width="50%"><img src="screenshots/01_Title_Screen_v3.png" width="100%"><br><b>타이틀 화면</b></td>
+    <td align="center" width="50%"><img src="screenshots/02_Core_Gameplay_v3.png" width="100%"><br><b>핵심 게임플레이</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="screenshots/03_Weapon_Wheel_v2.png" width="100%"><br><b>무기 휠</b></td>
-    <td align="center"><img src="screenshots/08_Catastrom.png" width="100%"><br><b>카타스트롬 궁극기</b></td>
+    <td align="center"><img src="screenshots/03_Weapon_Wheel_v3.png" width="100%"><br><b>무기 휠</b></td>
+    <td align="center"><img src="screenshots/08_Catastrom_v3.png" width="100%"><br><b>카타스트롬 (궁극기)</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="screenshots/09_Mirage.png" width="100%"><br><b>열기 신기루</b></td>
-    <td align="center"><img src="screenshots/10_Incoming_Wave.png" width="100%"><br><b>돌발 파도</b></td>
+    <td align="center"><img src="screenshots/09_Mirage_v3.png" width="100%"><br><b>아지랑이 환영 (Mirage)</b></td>
+    <td align="center"><img src="screenshots/10_Incoming_Wave_v3.png" width="100%"><br><b>다가오는 파도</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="screenshots/05_Weather_Solar_Wind.png" width="100%"><br><b>태양풍</b></td>
-    <td align="center"><img src="screenshots/13_Weather_Event.png" width="100%"><br><b>날씨 이벤트</b></td>
+    <td align="center"><img src="screenshots/05_Weather_Solar_Wind_v3.png" width="100%"><br><b>태양풍 (Solar Wind)</b></td>
+    <td align="center"><img src="screenshots/13_Achievement_Pop_Ups_v3.png" width="100%"><br><b>업적 팝업</b></td>
   </tr>
   <tr>
     <td align="center"><img src="screenshots/06_Pause_Screen_KR_v2.png" width="100%"><br><b>일시정지 화면</b></td>
@@ -45,7 +45,7 @@ Godot 4로 제작된 3D 아케이드 슈터. 태양을 식히기 전에 열기�
   </tr>
   <tr>
     <td align="center"><img src="screenshots/07_Controls_XB_KR_v3.png" width="100%"><br><b>조작법 (Xbox)</b></td>
-    <td></td>
+    <td align="center"><img src="screenshots/16_Notification_Pop_Up_v3.png" width="100%"><br><b>알림 팝업</b></td>
   </tr>
 </table>
 
