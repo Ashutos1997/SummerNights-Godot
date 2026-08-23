@@ -772,6 +772,13 @@ func _apply_language(lang: String) -> void:
 			if sep:
 				sep.add_theme_stylebox_override("separator", sep_style)
 
+	var controller_vbox = controller_screen.get_node_or_null("CenterContainer/VBoxContainer") if controller_screen else null
+	if controller_vbox:
+		for sep_name in ["Divider", "Divider2"]:
+			var sep = controller_vbox.get_node_or_null(sep_name)
+			if sep:
+				sep.add_theme_stylebox_override("separator", sep_style)
+
 	var pause_vbox = $HUD/pause_screen/ColorRect/VBoxContainer
 	if pause_vbox:
 		var pause_div = pause_vbox.get_node_or_null("Divider")
