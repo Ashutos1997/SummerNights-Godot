@@ -500,7 +500,7 @@ mouse_filter = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="HUD/pause_screen/ColorRect/CenterContainer"]
 custom_minimum_size = Vector2(280, 0)
 layout_mode = 2
-theme_override_constants/separation = 24
+theme_override_constants/separation = 12
 alignment = 1
 
 [node name="TitleRow" type="HBoxContainer" parent="HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer"]
@@ -530,31 +530,31 @@ layout_mode = 2
 mouse_filter = 2
 
 [node name="ResumeBtn" type="Button" parent="HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(280, 52)
+custom_minimum_size = Vector2(280, 44)
 layout_mode = 2
 mouse_filter = 0
 text = "RESUME"
 
 [node name="SettingsBtn" type="Button" parent="HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(280, 52)
+custom_minimum_size = Vector2(280, 44)
 layout_mode = 2
 mouse_filter = 0
 text = "SETTINGS"
 
 [node name="CreditsBtn" type="Button" parent="HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(280, 52)
+custom_minimum_size = Vector2(280, 44)
 layout_mode = 2
 mouse_filter = 0
 text = "CREDITS"
 
 [node name="ControllerBtn" type="Button" parent="HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(280, 52)
+custom_minimum_size = Vector2(280, 44)
 layout_mode = 2
 mouse_filter = 0
 text = "CONTROLLER"
 
 [node name="MainMenuBtn" type="Button" parent="HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(280, 52)
+custom_minimum_size = Vector2(280, 44)
 layout_mode = 2
 mouse_filter = 0
 text = "MAIN MENU"

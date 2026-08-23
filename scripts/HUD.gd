@@ -2056,7 +2056,7 @@ func _build_achievements_screen() -> void:
 	vbox.add_child(divider)
 	
 	var scroll = ScrollContainer.new()
-	scroll.custom_minimum_size = Vector2(700, 440)
+	scroll.custom_minimum_size = Vector2(700, 380)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	vbox.add_child(scroll)
@@ -2325,7 +2325,7 @@ func _build_buffs_screen() -> void:
 	vbox.add_child(divider)
 	
 	var scroll = ScrollContainer.new()
-	scroll.custom_minimum_size = Vector2(700, 440)
+	scroll.custom_minimum_size = Vector2(700, 380)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	vbox.add_child(scroll)
