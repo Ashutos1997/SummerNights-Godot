@@ -387,7 +387,7 @@ func _ready() -> void:
 		for lbl in [win_loading_lbl, end_prompt_lbl]:
 			if lbl:
 				lbl.modulate.a = 1.0
-	_style_lbl(settings_title, 36, Color(1.0, 0.88, 0.3, 1.0), 4, Color.BLACK, font)
+	_style_lbl(settings_title, 32, Color(1.0, 0.88, 0.3, 1.0), 4, Color.BLACK, font)
 	_style_lbl(credits_title, 32, Color(1.0, 0.88, 0.3, 1.0), 4, Color.BLACK, font)
 	
 	# Close Prompts — Settings and Credits (WCAG 10.7:1 PASS)
@@ -756,7 +756,7 @@ func _apply_language(lang: String) -> void:
 	if settings_title:
 		settings_title.text = "설정" if is_kr else "SETTINGS"
 		if font: settings_title.add_theme_font_override("font", font)
-		settings_title.add_theme_font_size_override("font_size", 36)
+		settings_title.add_theme_font_size_override("font_size", 32)
 		settings_title.add_theme_constant_override("outline_size", 4)
 		settings_title.add_theme_color_override("font_outline_color", Color.BLACK)
 
@@ -913,7 +913,7 @@ func _apply_language(lang: String) -> void:
 	if credits_title:
 		credits_title.text = "크레딧" if is_kr else "CREDITS"
 		if font: credits_title.add_theme_font_override("font", font)
-		credits_title.add_theme_font_size_override("font_size", 36)
+		credits_title.add_theme_font_size_override("font_size", 32)
 		credits_title.add_theme_constant_override("outline_size", 4)
 		credits_title.add_theme_color_override("font_outline_color", Color.BLACK)
 
@@ -1029,6 +1029,10 @@ func _apply_language(lang: String) -> void:
 	if controller_title:
 		controller_title.text = "컨트롤러" if is_kr else "CONTROLLER"
 		if font: controller_title.add_theme_font_override("font", font)
+		controller_title.add_theme_font_size_override("font_size", 32)
+		controller_title.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 1.0))
+		controller_title.add_theme_constant_override("outline_size", 4)
+		controller_title.add_theme_color_override("font_outline_color", Color.BLACK)
 	if controller_prompt:
 		controller_prompt.text = "닫으려면 ESC를 누르세요" if is_kr else "PRESS ESC TO CLOSE"
 		if font: controller_prompt.add_theme_font_override("font", font)
@@ -2101,7 +2105,7 @@ func show_achievements_screen() -> void:
 	
 	var title = achievements_screen.get_node("CenterContainer/VBoxContainer/TitleRow/Title")
 	title.text = "업적" if is_kr else "ACHIEVEMENTS"
-	_style_lbl(title, 36, Color(1.0, 0.85, 0.2, 1.0), 4, Color.BLACK, font)
+	_style_lbl(title, 32, Color(1.0, 0.85, 0.2, 1.0), 4, Color.BLACK, font)
 	
 	var title_icon = achievements_screen.get_node_or_null("CenterContainer/VBoxContainer/TitleRow/TitleIcon")
 	if title_icon:
@@ -2371,7 +2375,7 @@ func show_buffs_screen() -> void:
 	
 	var title = buffs_screen.get_node("CenterContainer/VBoxContainer/TitleRow/Title")
 	title.text = "활성화된 버프" if is_kr else "ACTIVE BUFFS"
-	_style_lbl(title, 36, Color(1.0, 0.85, 0.2, 1.0), 4, Color.BLACK, font)
+	_style_lbl(title, 32, Color(1.0, 0.85, 0.2, 1.0), 4, Color.BLACK, font)
 	
 	var title_icon = buffs_screen.get_node_or_null("CenterContainer/VBoxContainer/TitleRow/TitleIcon")
 	if title_icon:
