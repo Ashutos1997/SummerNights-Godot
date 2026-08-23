@@ -1410,6 +1410,7 @@ func _close_controller() -> void:
 	tw.tween_callback(func():
 		controller_screen.visible = false
 		pause_screen.visible = true
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		if controller_btn: controller_btn.grab_focus()
 	)
 

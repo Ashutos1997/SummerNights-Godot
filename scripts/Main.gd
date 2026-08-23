@@ -2031,7 +2031,7 @@ func _input(event: InputEvent) -> void:
 		return
 	if hud and "lose_screen" in hud and hud.lose_screen != null and hud.lose_screen.visible:
 		return
-	if hud and (hud.settings_screen.visible or hud.credits_screen.visible or hud.pause_screen.visible):
+	if hud and (hud.settings_screen.visible or hud.credits_screen.visible or hud.pause_screen.visible or (hud.get("controller_screen") and hud.controller_screen.visible)):
 		is_shooting = false
 		return # Input guard: ignore gameplay mouse/keyboard input while menus are open
 
