@@ -606,9 +606,6 @@ func _build_lang_row(font: Font) -> void:
 	var vbox = $HUD/SettingsScreen/CenterContainer/VBoxContainer
 	if not vbox: return
 
-	# Hide divider and spacer so language row flows flush with other rows
-	var divider2 = vbox.get_node_or_null("Divider2")
-	if divider2: divider2.visible = false
 	var spacer_prompt = vbox.get_node_or_null("SpacerPrompt")
 	if spacer_prompt: spacer_prompt.visible = false
 
@@ -682,13 +679,18 @@ func _build_lang_row(font: Font) -> void:
 
 	row.add_child(toggle_box)
 
-	# Insert right before BackBtn
-	var back_btn = vbox.get_node_or_null("BackBtn")
-	if back_btn:
+	# Insert right before Divider2 (so the bottom divider stays directly above the BackBtn)
+	var divider2 = vbox.get_node_or_null("Divider2")
+	if divider2:
 		vbox.add_child(row)
-		vbox.move_child(row, back_btn.get_index())
+		vbox.move_child(row, divider2.get_index())
 	else:
-		vbox.add_child(row)
+		var back_btn = vbox.get_node_or_null("BackBtn")
+		if back_btn:
+			vbox.add_child(row)
+			vbox.move_child(row, back_btn.get_index())
+		else:
+			vbox.add_child(row)
 
 func _update_lang_toggle(is_kr: bool) -> void:
 	# Color-only update — styleboxes are baked at build time, no layout reflow
@@ -776,6 +778,20 @@ func _apply_language(lang: String) -> void:
 	if controller_vbox:
 		for sep_name in ["Divider", "Divider2"]:
 			var sep = controller_vbox.get_node_or_null(sep_name)
+			if sep:
+				sep.add_theme_stylebox_override("separator", sep_style)
+
+	var achieves_vbox = achievements_screen.get_node_or_null("CenterContainer/VBoxContainer") if achievements_screen else null
+	if achieves_vbox:
+		for sep_name in ["Divider", "Divider2"]:
+			var sep = achieves_vbox.get_node_or_null(sep_name)
+			if sep:
+				sep.add_theme_stylebox_override("separator", sep_style)
+
+	var buffs_vbox = buffs_screen.get_node_or_null("CenterContainer/VBoxContainer") if buffs_screen else null
+	if buffs_vbox:
+		for sep_name in ["Divider", "Divider2"]:
+			var sep = buffs_vbox.get_node_or_null(sep_name)
 			if sep:
 				sep.add_theme_stylebox_override("separator", sep_style)
 
@@ -2055,6 +2071,11 @@ func _build_achievements_screen() -> void:
 	achievement_list.add_theme_constant_override("separation", 16)
 	list_margin.add_child(achievement_list)
 	
+	var divider2 = HSeparator.new()
+	divider2.name = "Divider2"
+	# It will be styled by _apply_language
+	vbox.add_child(divider2)
+	
 	var back_btn = Button.new()
 	back_btn.name = "BackBtn"
 	back_btn.text = "BACK"
@@ -2318,6 +2339,11 @@ func _build_buffs_screen() -> void:
 	buffs_list = VBoxContainer.new()
 	buffs_list.add_theme_constant_override("separation", 16)
 	list_margin.add_child(buffs_list)
+	
+	var divider2 = HSeparator.new()
+	divider2.name = "Divider2"
+	# It will be styled by _apply_language
+	vbox.add_child(divider2)
 	
 	var back_btn = Button.new()
 	back_btn.name = "BackBtn"
