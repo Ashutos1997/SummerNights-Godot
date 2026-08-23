@@ -32,16 +32,16 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
     <td align="center"><img src="screenshots/13_Weather_Event.png" width="100%"><br><b>Weather Event</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="screenshots/06_Pause_Screen_v1.3.png" width="100%"><br><b>Pause Screen</b></td>
-    <td align="center"><img src="screenshots/14_Active_Buffs_v1.3.png" width="100%"><br><b>Active Buffs</b></td>
+    <td align="center"><img src="screenshots/06_Pause_Screen_EN_v2.png" width="100%"><br><b>Pause Screen</b></td>
+    <td align="center"><img src="screenshots/14_Active_Buffs_EN_v2.png" width="100%"><br><b>Active Buffs</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="screenshots/11_Achievements_v1.3.png" width="100%"><br><b>Achievements Gallery</b></td>
-    <td align="center"><img src="screenshots/12_Settings_v1.3.png" width="100%"><br><b>Settings</b></td>
+    <td align="center"><img src="screenshots/11_Achievements_EN_v2.png" width="100%"><br><b>Achievements Gallery</b></td>
+    <td align="center"><img src="screenshots/12_Settings_EN_v2.png" width="100%"><br><b>Settings</b></td>
   </tr>
   <tr>
+    <td align="center"><img src="screenshots/15_Credits_EN_v2.png" width="100%"><br><b>Credits</b></td>
     <td align="center"><img src="screenshots/07_Controls_EN_v2.png" width="100%"><br><b>Controls</b></td>
-    <td></td>
   </tr>
 </table>
 
