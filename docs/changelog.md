@@ -9,7 +9,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - **PBR Sand Texture:** Replaced the procedurally generated sand noise with a high-quality CC0 PBR texture (Coast Sand 01) from Poly Haven, featuring diffuse, normal, and roughness maps for a smoother, stylized beach aesthetic.
 - **Retro Post-Processing:** Added a global screen shader applying film grain, vignette, and synthwave color grading (S-curve contrast and complementary split-toning) for a cohesive arcade aesthetic.
 - **Cinematic Bloom:** Enabled soft additive bloom in the WorldEnvironment. The sun and all dynamically generated particles (water shots, ice bursts, catastrom) are now emissive, dynamically bleeding light into the atmosphere.
-- **Controller UI Overhaul:** Redesigned the "CONTROLS" menu to use a cleaner, legend-based layout for keybindings. Removed cluttered visual elbow lines, matched highlight colors perfectly, and implemented dynamic language localization for the legend labels.
+- **Controls Menu:** Added a new "CONTROLS" menu accessible from the Pause Screen so players can easily see which keys are mapped to which actions.
 
 ### Fixed
 - **Sand Reflectivity & Weather:** Fixed an issue where the new PBR sand texture looked overly reflective (like wet mud) and stayed brightly lit during dark weather events. The material now uses a completely matte finish (`specular = 0.0`) and dynamically fades its emission during Rainstorms and Eclipses to perfectly match the environment's ambient lighting.
@@ -150,7 +150,7 @@ All notable changes to the Summer Nights project will be documented in this file
 - **PBR 모래 텍스처 (PBR Sand Texture):** 절차적으로 생성되던 모래 노이즈를 Poly Haven의 고품질 CC0 PBR 텍스처(Coast Sand 01)로 교체하여, 디퓨즈, 노멀, 러프니스 맵을 통해 더욱 부드럽고 양식화된 해변 느낌을 구현했습니다.
 - **레트로 포스트 프로세싱 (Retro Post-Processing):** 전반적인 아케이드 감성을 통일하기 위해 필름 그레인, 비네팅, 그리고 신스웨이브 컬러 그레이딩(S 커브 대비 및 보색 스플릿 토닝)을 적용하는 글로벌 화면 셰이더를 추가했습니다.
 - **시네마틱 블룸 (Cinematic Bloom):** WorldEnvironment에서 부드러운 가산 블룸(Bloom) 효과를 활성화했습니다. 이제 태양과 동적으로 생성되는 모든 입자(물줄기, 얼음 폭발, 카타스트롬 등)가 발광하여 주변 환경에 자연스럽게 빛을 뿜어냅니다.
-- **조작법 UI 개편 (Controller UI Overhaul):** "조작법" 메뉴를 깔끔한 범례(Legend) 기반의 레이아웃으로 전면 개편했습니다. 시각적으로 복잡했던 연결선들을 제거하고 키 하이라이트 색상을 완벽하게 일치시켰으며, 범례 라벨에 동적 언어 현지화(영어/한국어)를 적용했습니다.
+- **조작법 메뉴 (Controls Menu):** 플레이어가 어떤 키가 어떤 동작을 하는지 쉽게 확인할 수 있도록 일시정지 화면에 새로운 "조작법" 메뉴를 추가했습니다.
 
 ### 수정됨 (Fixed)
 - **모래 반사율 및 날씨 동기화 (Sand Reflectivity & Weather):** 새로운 PBR 모래 텍스처가 과도하게 반사되어 젖은 진흙처럼 보이고, 어두운 날씨 이벤트 중에도 밝게 빛나던 문제를 수정했습니다. 이제 재질에 완전한 무광 마감(`specular = 0.0`)을 적용하고 비바람이나 일식 이벤트 동안 방출광(emission)을 동적으로 줄여 주변 조명과 완벽하게 일치하도록 만들었습니다.
