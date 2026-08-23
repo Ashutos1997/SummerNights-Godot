@@ -554,10 +554,6 @@ layout_mode = 2
 mouse_filter = 0
 text = "CONTROLLER"
 
-[node name="Divider2" type="HSeparator" parent="HUD/pause_screen/ColorRect/VBoxContainer"]
-layout_mode = 2
-mouse_filter = 2
-
 [node name="MainMenuBtn" type="Button" parent="HUD/pause_screen/ColorRect/VBoxContainer"]
 custom_minimum_size = Vector2(280, 52)
 layout_mode = 2
