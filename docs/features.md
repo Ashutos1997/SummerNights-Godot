@@ -16,7 +16,7 @@ This document serves as the master record for all currently implemented features
     *   **Endless/Survival Mode:** Infinite waves to see how long the player can survive.
 
 ## 2. Weapons & Tools
-*   **Weapon Wheel:** Holding the weapon wheel key slows time and opens a sleek UI to swap weapons. Water tank capacity maintains its current percentage seamlessly across weapon swaps without visual artifacting. To prevent exploits, hazard timers (like Solar Wind or Eclipses) pause entirely while the wheel is open, forcing players to confront the hazards rather than wait them out, while the level timer continues to drain.
+*   **Weapon Wheel:** Holding the weapon wheel key slows time and opens a sleek UI to swap weapons. Fully supports Gamepad thumbstick aiming and release-to-equip mechanics. Water tank capacity maintains its current percentage seamlessly across weapon swaps without visual artifacting. To prevent exploits, hazard timers (like Solar Wind or Eclipses) pause entirely while the wheel is open, forcing players to confront the hazards rather than wait them out, while the level timer continues to drain.
 *   **Available Weapons:**
     *   **Standard Blaster:** Balanced water usage and cooling power. (Unlocked Level 1)
     *   **Precision Stream:** Low capacity, fast drain, but massive critical hit multipliers. (Unlocked Level 2)

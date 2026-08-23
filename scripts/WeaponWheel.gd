@@ -261,8 +261,17 @@ func _process(delta: float) -> void:
 	if not active: return
 	
 	var center = size / 2.0
-	var mouse_pos = get_local_mouse_position()
-	var diff = mouse_pos - center
+	var diff = Vector2.ZERO
+	
+	var aim_dir = Input.get_vector("aim_left", "aim_right", "aim_up", "aim_down")
+	if aim_dir.length() < 0.2:
+		aim_dir = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+		
+	if aim_dir.length() > 0.2:
+		diff = aim_dir * 100.0
+	else:
+		var mouse_pos = get_local_mouse_position()
+		diff = mouse_pos - center
 	
 	# Determine selection
 	if diff.length() > 40.0 and diff.length() <= 260.0:

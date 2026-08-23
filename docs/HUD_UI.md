@@ -53,8 +53,8 @@ These elements sit on top of the Core Gameplay HUD and blur/dim the background w
 
 ### Controller Screen (`ControllerScreen`)
 *   Accessed from the Pause Screen via the "CONTROLS" button.
-*   Displays a large visual graphic of the keyboard layout.
-*   Keys are highlighted with specific colors mapping to abilities (e.g., Yellow for Pause, Lime Green for Weapons, Blue for Ice Blast, Orange for Catastrom).
+*   Features a premium "Sliding Toggle Pill" (matching Language settings) to switch seamlessly between Keyboard and Xbox controller legend graphics.
+*   Displays a large visual graphic of the selected input layout. Keys and buttons are highlighted with specific colors mapping to abilities (e.g., Yellow for Pause, Green for Weapons, Blue for Ice Blast, Orange for Catastrom, Grey for Aiming/Movement).
 *   A vertical legend column sits perfectly aligned to the left of the keyboard graphic, providing clear visual mapping of colors to actions. It utilizes fully translated text in both English and Korean.
 
 ### Weapon Wheel (`WeaponWheel`)
