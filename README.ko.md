@@ -41,6 +41,7 @@ Godot 4로 제작된 3D 아케이드 슈터. 태양을 식히기 전에 열기�
   </tr>
   <tr>
     <td align="center"><img src="screenshots/07_Controls_KR_v2.png" width="100%"><br><b>조작법</b></td>
+    <td></td>
   </tr>
 </table>
 
