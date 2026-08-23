@@ -13,6 +13,12 @@ This document outlines the UI design system, color palette, typography guideline
 - **Cyan Accent (Survival Mode):** `Color(0.2, 0.8, 1.0, 1.0)`
 - **Water UI Bars:** `Color(0.1, 0.65, 0.95, 1.0)` (Features smooth internal value lerping, but must bypass lerp and instantly snap its visual representation whenever the maximum capacity changes to prevent UI flashing).
 
+### Controller Highlights (Keybindings)
+- **Pause / Gold:** `Color(1.0, 0.843, 0.0, 1.0)` (Yellow)
+- **Weapons / Lime:** `Color(0.5, 0.9, 0.1, 1.0)` (Lime Green)
+- **Ice Blast / Cyan:** `Color(0.31, 0.765, 0.969, 1.0)` (Blue)
+- **Catastrom / Orange:** `Color(1.0, 0.427, 0.0, 1.0)` (Orange)
+
 ### Backgrounds & Panels
 - **Global Menu Background:** `Color(0.02, 0.01, 0.05, 0.96)` (Extremely dark, almost solid black for full-screen pause/settings menus)
 - **Dark Panel Background:** `Color(0.05, 0.02, 0.1, 0.85)` (Very dark, slightly purple-tinted black for UI panels)

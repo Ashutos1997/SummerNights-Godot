@@ -1,7 +1,8 @@
-[gd_scene load_steps=18 format=3 uid="uid://d1c2b3a4e5f6g"]
+[gd_scene load_steps=19 format=3 uid="uid://d1c2b3a4e5f6g"]
 
 [ext_resource type="Script" path="res://scripts/HUD.gd" id="1_script"]
 [ext_resource type="FontFile" path="res://assets/ui/fonts/Fonts/Kenney Pixel.ttf" id="2_font"]
+[ext_resource type="Script" path="res://scripts/ControllerKeyboard.gd" id="98_keyboard"]
 [ext_resource type="Texture2D" path="res://assets/ui/ui_adventure/PNG/Default/panel_brown.png" id="3_panel"]
 [ext_resource type="Texture2D" path="res://assets/ui/ui_adventure/PNG/Default/progress_transparent.png" id="4_prog_bg"]
 [ext_resource type="Texture2D" path="res://assets/ui/ui_adventure/PNG/Default/progress_white.png" id="5_prog_fg"]
@@ -18,6 +19,7 @@
 [ext_resource type="Script" path="res://scripts/BrokenBorder.gd" id="90_broken"]
 [ext_resource type="Script" path="res://scripts/PauseSunGraphic.gd" id="91_sun"]
 [ext_resource type="Texture2D" path="res://assets/ui/controller/Keyboard.svg" id="92_keyboard"]
+[ext_resource type="Texture2D" uid="uid://9a7d1fe1f4f14e3383f9fcc44b573c9a" path="res://assets/ui/controller/Keyboard_controls.svg" id="92_keyboard_controls"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_border"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -62,6 +64,67 @@ modulate_color = Color(1, 1, 1, 0.75)
 
 [sub_resource type="Theme" id="Theme_hud"]
 default_font = ExtResource("2_font")
+
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_leg_esc"]
+bg_color = Color(1, 0.843, 0, 0.25)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.843, 0, 0.9)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_leg_tab"]
+bg_color = Color(0.5, 0.9, 0.1, 0.25)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5, 0.9, 0.1, 0.9)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_leg_r"]
+bg_color = Color(0.31, 0.765, 0.969, 0.25)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.31, 0.765, 0.969, 0.9)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_leg_f"]
+bg_color = Color(1, 0.427, 0, 0.25)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.427, 0, 0.9)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_leg_mouse"]
+bg_color = Color(0.6, 0.6, 0.6, 0.25)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.6, 0.6, 0.6, 0.9)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
 
 [node name="CanvasLayer" type="CanvasLayer"]
 layer = 10
@@ -551,7 +614,7 @@ text = "CREDITS"
 custom_minimum_size = Vector2(280, 44)
 layout_mode = 2
 mouse_filter = 0
-text = "CONTROLLER"
+text = "CONTROLS"
 
 [node name="MainMenuBtn" type="Button" parent="HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(280, 44)
@@ -770,7 +833,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
-color = Color(0.02, 0.01, 0.05, 0.96)
+color = Color(0.02, 0.01, 0.05, 1.0)
 
 [node name="BorderPanel" type="Panel" parent="HUD/ControllerScreen"]
 layout_mode = 1
@@ -823,7 +886,7 @@ layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
 theme_override_font_sizes/font_size = 48
-text = "CONTROLLER"
+text = "CONTROLS"
 horizontal_alignment = 0
 vertical_alignment = 1
 
@@ -831,12 +894,105 @@ vertical_alignment = 1
 layout_mode = 2
 mouse_filter = 2
 
-[node name="KeyboardLayout" type="TextureRect" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 231)
+[node name="KeyboardLayout" type="Control" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(559, 231)
 layout_mode = 2
-texture = ExtResource("92_keyboard")
+
+[node name="TextureRect" type="TextureRect" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardLayout"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("92_keyboard_controls")
 expand_mode = 1
 stretch_mode = 5
+
+[node name="LegendRow" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="LegPause" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/LegendRow"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/LegendRow/LegPause"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_leg_esc")
+
+[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/LegendRow/LegPause"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "ESC - PAUSE"
+
+[node name="LegWeapons" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/LegendRow"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/LegendRow/LegWeapons"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_leg_tab")
+
+[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/LegendRow/LegWeapons"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "TAB - WEAPONS"
+
+[node name="LegIceBlast" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/LegendRow"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/LegendRow/LegIceBlast"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_leg_r")
+
+[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/LegendRow/LegIceBlast"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "R - ICE BLAST"
+
+[node name="LegCatastrom" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/LegendRow"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/LegendRow/LegCatastrom"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_leg_f")
+
+[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/LegendRow/LegCatastrom"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "F - CATASTROM"
+
+[node name="LegMouse" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/LegendRow"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/LegendRow/LegMouse"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_leg_mouse")
+
+[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/LegendRow/LegMouse"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "MOUSE - AIM/SHOOT"
 
 [node name="Divider2" type="HSeparator" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
@@ -1410,6 +1566,15 @@ theme_override_colors/font_color = Color(1, 1, 1, 0.85)
 theme_override_font_sizes/font_size = 12
 text = "Menu & Achievement Icons  ·  Game-icons.net  ·  CC BY 3.0"
 horizontal_alignment = 1
+
+[node name="ItmUI1c" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "Keyboard SVG  ·  Oscar Nilsson  ·  CC0"
+horizontal_alignment = 1
+
 
 [node name="ItmUI2" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
 layout_mode = 2

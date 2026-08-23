@@ -1024,10 +1024,35 @@ func _apply_language(lang: String) -> void:
 		settings_btn.text = "설정" if is_kr else "SETTINGS"
 		if font: settings_btn.add_theme_font_override("font", font)
 	if controller_btn:
-		controller_btn.text = "컨트롤러" if is_kr else "CONTROLLER"
+		controller_btn.text = "조작법" if is_kr else "CONTROLS"
 		if font: controller_btn.add_theme_font_override("font", font)
 	if controller_title:
-		controller_title.text = "컨트롤러" if is_kr else "CONTROLLER"
+		controller_title.text = "조작법" if is_kr else "CONTROLS"
+	var leg_pause = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/LegendRow/LegPause/Label")
+	if leg_pause:
+		leg_pause.text = "ESC - 일시정지" if is_kr else "ESC - PAUSE"
+		if font: leg_pause.add_theme_font_override("font", font)
+
+	var leg_weapons = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/LegendRow/LegWeapons/Label")
+	if leg_weapons:
+		leg_weapons.text = "TAB - 무기 변경" if is_kr else "TAB - WEAPONS"
+		if font: leg_weapons.add_theme_font_override("font", font)
+
+	var leg_ice = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/LegendRow/LegIceBlast/Label")
+	if leg_ice:
+		leg_ice.text = "R - 얼음 폭발" if is_kr else "R - ICE BLAST"
+		if font: leg_ice.add_theme_font_override("font", font)
+
+	var leg_catastrom = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/LegendRow/LegCatastrom/Label")
+	if leg_catastrom:
+		leg_catastrom.text = "F - 카타스트롬" if is_kr else "F - CATASTROM"
+		if font: leg_catastrom.add_theme_font_override("font", font)
+
+	var leg_mouse = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/LegendRow/LegMouse/Label")
+	if leg_mouse:
+		leg_mouse.text = "MOUSE - 조준/발사" if is_kr else "MOUSE - AIM/SHOOT"
+		if font: leg_mouse.add_theme_font_override("font", font)
+
 		if font: controller_title.add_theme_font_override("font", font)
 		controller_title.add_theme_font_size_override("font_size", 32)
 		controller_title.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 1.0))

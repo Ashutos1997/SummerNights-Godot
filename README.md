@@ -174,6 +174,7 @@ SummerNights-Godot/
 | Font - Inter (Body Text) | Rasmus Andersson | SIL OFL |
 | Font - Galmuri11 (Korean Support) | quiple | SIL OFL |
 | UI Pack Adventure | Kenney | CC0 |
+| Keyboard SVG | Oscar Nilsson | CC0 |
 | Menu & Achievement Icons | Game-icons.net | CC BY 3.0 |
 | SFX - 40 CC0 Water/Splash/Slime | OpenGameArt | CC0 |
 | SFX - Water Gun Shot | belanhud (Freesound) | CC0 |
