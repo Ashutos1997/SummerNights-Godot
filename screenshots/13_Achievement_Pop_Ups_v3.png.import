@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b2m83t1wkibnu"
-path="res://.godot/imported/01_Title_Screen_EN_v2.png-1fa34c70833904e2ff5f750511245f4d.ctex"
+uid="uid://cjus4rw7x33r1"
+path="res://.godot/imported/13_Achievement_Pop_Ups_v3.png-ef5a1ef69231eb9b4977bc3c5d3c1f07.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://screenshots/01_Title_Screen_EN_v2.png"
-dest_files=["res://.godot/imported/01_Title_Screen_EN_v2.png-1fa34c70833904e2ff5f750511245f4d.ctex"]
+source_file="res://screenshots/13_Achievement_Pop_Ups_v3.png"
+dest_files=["res://.godot/imported/13_Achievement_Pop_Ups_v3.png-ef5a1ef69231eb9b4977bc3c5d3c1f07.ctex"]
 
 [params]
 
