@@ -62,6 +62,7 @@ var last_callout_tier: int = 0
 @onready var pause_title        = $HUD/pause_screen/ColorRect/VBoxContainer/TitleRow/Title
 @onready var pause_resume_btn   = $HUD/pause_screen/ColorRect/VBoxContainer/ResumeBtn
 @onready var settings_btn       = $HUD/pause_screen/ColorRect/VBoxContainer/SettingsBtn
+@onready var controller_btn     = $HUD/pause_screen/ColorRect/VBoxContainer/ControllerBtn
 @onready var credits_btn        = $HUD/pause_screen/ColorRect/VBoxContainer/CreditsBtn
 @onready var pause_menu_btn     = $HUD/pause_screen/ColorRect/VBoxContainer/MainMenuBtn
 @onready var esc_hint_label     = $HUD/esc_hint_label
@@ -75,6 +76,11 @@ var last_callout_tier: int = 0
 @onready var motion_check      = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowMotion/Check
 @onready var fullscreen_check  = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowFullscreen/Check
 @onready var settings_back_btn = $HUD/SettingsScreen/CenterContainer/VBoxContainer/BackBtn
+
+@onready var controller_screen   = $HUD/ControllerScreen
+@onready var controller_title    = $HUD/ControllerScreen/CenterContainer/VBoxContainer/TitleRow/Title
+@onready var controller_prompt   = $HUD/ControllerScreen/CenterContainer/VBoxContainer/ClosePrompt
+@onready var controller_back_btn = $HUD/ControllerScreen/CenterContainer/VBoxContainer/BackBtn
 
 var kenney_font: Font
 var galmuri_font: Font
@@ -256,6 +262,7 @@ func _ready() -> void:
 	pause_screen.visible = false
 	lose_screen.visible = false
 	settings_screen.visible = false
+	if controller_screen: controller_screen.visible = false
 	credits_screen.visible = false
 	end_screen.visible = false
 	if mirage_bar:
@@ -498,7 +505,7 @@ func _ready() -> void:
 	style_focus.content_margin_top = 4
 	style_focus.content_margin_bottom = 4
 
-	for btn in [retry_btn, menu_btn, pause_resume_btn, settings_btn, credits_btn, achievements_btn, buffs_btn, pause_menu_btn, settings_back_btn, credits_back_btn]:
+	for btn in [retry_btn, menu_btn, pause_resume_btn, settings_btn, credits_btn, controller_btn, achievements_btn, buffs_btn, pause_menu_btn, settings_back_btn, credits_back_btn, controller_back_btn]:
 		if btn:
 			if font: btn.add_theme_font_override("font", font)
 			btn.add_theme_font_size_override("font_size", 22)
@@ -567,6 +574,10 @@ func _ready() -> void:
 		settings_back_btn.pressed.connect(_close_settings)
 	if credits_back_btn:
 		credits_back_btn.pressed.connect(_close_credits)
+	if controller_btn:
+		controller_btn.pressed.connect(_on_controller_pressed)
+	if controller_back_btn:
+		controller_back_btn.pressed.connect(_close_controller)
 
 	# Apply initial AudioServer volume (since GameState doesn't manage AudioServer directly)
 	_on_sfx_volume_changed(GameState.sfx_volume)
@@ -989,6 +1000,18 @@ func _apply_language(lang: String) -> void:
 	if settings_btn:
 		settings_btn.text = "설정" if is_kr else "SETTINGS"
 		if font: settings_btn.add_theme_font_override("font", font)
+	if controller_btn:
+		controller_btn.text = "컨트롤러" if is_kr else "CONTROLLER"
+		if font: controller_btn.add_theme_font_override("font", font)
+	if controller_title:
+		controller_title.text = "컨트롤러" if is_kr else "CONTROLLER"
+		if font: controller_title.add_theme_font_override("font", font)
+	if controller_prompt:
+		controller_prompt.text = "닫으려면 ESC를 누르세요" if is_kr else "PRESS ESC TO CLOSE"
+		if font: controller_prompt.add_theme_font_override("font", font)
+	if controller_back_btn:
+		controller_back_btn.text = "뒤로" if is_kr else "BACK"
+		if font: controller_back_btn.add_theme_font_override("font", font)
 	if credits_btn:
 		credits_btn.text = "크레딧" if is_kr else "CREDITS"
 		if font: credits_btn.add_theme_font_override("font", font)
@@ -1256,6 +1279,7 @@ func show_end_screen() -> void:
 	if win_screen: win_screen.visible = false
 	if credits_screen: credits_screen.visible = false
 	if settings_screen: settings_screen.visible = false
+	if controller_screen: controller_screen.visible = false
 	if lose_screen: lose_screen.visible = false
 	
 	if end_level_lbl:
@@ -1295,6 +1319,10 @@ func _input(event: InputEvent) -> void:
 			_close_credits()
 			get_viewport().set_input_as_handled()
 			return
+		elif controller_screen and controller_screen.visible:
+			_close_controller()
+			get_viewport().set_input_as_handled()
+			return
 		elif achievements_screen and achievements_screen.visible:
 			hide_achievements_screen()
 			get_viewport().set_input_as_handled()
@@ -1326,7 +1354,7 @@ func _pause_game() -> void:
 	emit_signal("game_paused")
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	# Set up Tab/arrow key order for pause menu buttons
-	if pause_resume_btn and settings_btn and credits_btn and pause_menu_btn:
+	if pause_resume_btn and settings_btn and credits_btn and controller_btn and pause_menu_btn:
 		pause_resume_btn.focus_neighbor_bottom = pause_resume_btn.get_path_to(settings_btn)
 		settings_btn.focus_neighbor_top = settings_btn.get_path_to(pause_resume_btn)
 		settings_btn.focus_neighbor_bottom = settings_btn.get_path_to(credits_btn)
@@ -1341,8 +1369,10 @@ func _pause_game() -> void:
 			buffs_btn.focus_neighbor_bottom = buffs_btn.get_path_to(pause_menu_btn)
 			pause_menu_btn.focus_neighbor_top = pause_menu_btn.get_path_to(buffs_btn)
 		else:
-			credits_btn.focus_neighbor_bottom = credits_btn.get_path_to(pause_menu_btn)
-			pause_menu_btn.focus_neighbor_top = pause_menu_btn.get_path_to(credits_btn)
+			credits_btn.focus_neighbor_bottom = credits_btn.get_path_to(controller_btn)
+			controller_btn.focus_neighbor_top = controller_btn.get_path_to(credits_btn)
+			controller_btn.focus_neighbor_bottom = controller_btn.get_path_to(pause_menu_btn)
+			pause_menu_btn.focus_neighbor_top = pause_menu_btn.get_path_to(controller_btn)
 	await get_tree().process_frame
 	if pause_resume_btn: pause_resume_btn.grab_focus()
 
@@ -1364,6 +1394,24 @@ func _on_settings_pressed() -> void:
 func _on_credits_pressed() -> void:
 	opened_from_pause = pause_screen.visible
 	_open_credits()
+
+func _on_controller_pressed() -> void:
+	if ui_tick_player: ui_tick_player.play()
+	pause_screen.visible = false
+	controller_screen.visible = true
+	controller_screen.modulate.a = 0.0
+	var tw = create_tween()
+	tw.tween_property(controller_screen, "modulate:a", 1.0, 0.3)
+
+func _close_controller() -> void:
+	if ui_tick_player: ui_tick_player.play()
+	var tw = create_tween()
+	tw.tween_property(controller_screen, "modulate:a", 0.0, 0.2)
+	tw.tween_callback(func():
+		controller_screen.visible = false
+		pause_screen.visible = true
+		if controller_btn: controller_btn.grab_focus()
+	)
 
 
 func _open_settings() -> void:
@@ -1394,6 +1442,7 @@ func _close_settings() -> void:
 func _open_credits() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	if settings_screen: settings_screen.visible = false
+	if controller_screen: controller_screen.visible = false
 	credits_screen.visible = true
 	credits_screen.modulate.a = 0.0
 	
