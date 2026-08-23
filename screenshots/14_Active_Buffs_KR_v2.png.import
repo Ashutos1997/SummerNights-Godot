@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b74yxxyaibn35"
-path="res://.godot/imported/07_Controls_KR_v2.png-74f6583375ed72d63a0bbcfc7a94742f.ctex"
+uid="uid://b5fp5n0566683"
+path="res://.godot/imported/14_Active_Buffs_KR_v2.png-f325a37d0663eb248be132c10d2d1766.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://screenshots/07_Controls_KR_v2.png"
-dest_files=["res://.godot/imported/07_Controls_KR_v2.png-74f6583375ed72d63a0bbcfc7a94742f.ctex"]
+source_file="res://screenshots/14_Active_Buffs_KR_v2.png"
+dest_files=["res://.godot/imported/14_Active_Buffs_KR_v2.png-f325a37d0663eb248be132c10d2d1766.ctex"]
 
 [params]
 
