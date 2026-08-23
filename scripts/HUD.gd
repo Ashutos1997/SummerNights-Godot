@@ -608,6 +608,8 @@ func _ready() -> void:
 	win_screen.set_meta("accessible_name", "Level complete screen")
 	settings_screen.set_meta("accessible_name", "Settings screen")
 	credits_screen.set_meta("accessible_name", "Credits screen")
+	
+	_setup_controls_ui()
 
 # ---------- Language -------------------------------------------------------
 
@@ -1075,6 +1077,16 @@ func _apply_language(lang: String) -> void:
 		if leg_mouse:
 			leg_mouse.text = prefix_mouse
 			if font: leg_mouse.add_theme_font_override("font", font)
+			
+		var row = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/" + row_name)
+		if row and row.has_meta("group_labels"):
+			var grp_labels = row.get_meta("group_labels")
+			for i in range(grp_labels.size()):
+				var lbl = grp_labels[i]
+				if i == 0: lbl.text = "시스템" if is_kr else "SYSTEM"
+				elif i == 1: lbl.text = "전투" if is_kr else "COMBAT"
+				elif i == 2: lbl.text = "능력" if is_kr else "ABILITIES"
+				if font: lbl.add_theme_font_override("font", font)
 
 		if font: controller_title.add_theme_font_override("font", font)
 		controller_title.add_theme_font_size_override("font_size", 32)
@@ -2704,3 +2716,116 @@ func _update_input_toggle_visuals(instant: bool = false) -> void:
 		else:
 			input_toggle_tween.tween_method(func(c): input_lbl_kb.add_theme_color_override("font_color", c), input_lbl_kb.get_theme_color("font_color"), Color(1,0.85,0.2,1), 0.15)
 			input_toggle_tween.tween_method(func(c): input_lbl_xb.add_theme_color_override("font_color", c), input_lbl_xb.get_theme_color("font_color"), Color(0,0,0,1), 0.15)
+
+
+# ---------- Dynamic Controls UI Setup ----------------------------------------
+func _setup_controls_ui() -> void:
+	var font = load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+	var font_kr = load("res://assets/fonts/Galmuri11.ttf")
+	var shader = load("res://assets/shaders/isolate_color_pulse.gdshader")
+	
+	var groups = [
+		{"name_en": "SYSTEM", "name_kr": "시스템", "nodes": ["LegPause"]},
+		{"name_en": "COMBAT", "name_kr": "전투", "nodes": ["LegMouse", "LegWeapons"]},
+		{"name_en": "ABILITIES", "name_kr": "능력", "nodes": ["LegIceBlast", "LegCatastrom"]}
+	]
+	
+	for row_name in ["KeyboardRow", "XboxRow"]:
+		var row = $HUD/ControllerScreen/CenterContainer/VBoxContainer.get_node_or_null(row_name)
+		if not row: continue
+		
+		var tex_rect = row.get_node_or_null("KeyboardLayout/TextureRect")
+		if not tex_rect: tex_rect = row.get_node_or_null("XboxLayout/TextureRect")
+		
+		if tex_rect and shader:
+			var mat = ShaderMaterial.new()
+			mat.shader = shader
+			tex_rect.material = mat
+			
+		var legend = row.get_node_or_null("LegendColumn")
+		if not legend: continue
+		legend.add_theme_constant_override("separation", 8)
+		
+		var is_kr = GameState.language == "KR"
+		var group_labels = []
+		
+		# Move and group
+		for group in groups:
+			var hdr = Label.new()
+			hdr.text = group["name_kr"] if is_kr else group["name_en"]
+			hdr.add_theme_font_override("font", font_kr if is_kr else font)
+			hdr.add_theme_font_size_override("font_size", 14)
+			hdr.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 0.6))
+			hdr.add_theme_constant_override("outline_size", 2)
+			hdr.add_theme_color_override("font_outline_color", Color.BLACK)
+			
+			var m = MarginContainer.new()
+			if group_labels.size() > 0:
+				m.add_theme_constant_override("margin_top", 16)
+			m.add_child(hdr)
+			legend.add_child(m)
+			group_labels.append(hdr)
+			row.set_meta("group_labels", group_labels)
+			
+			for node_name in group["nodes"]:
+				var n = legend.get_node_or_null(node_name)
+				if n:
+					legend.move_child(n, -1)
+					n.focus_mode = Control.FOCUS_ALL
+					
+					var target_color = Color.WHITE
+					var swatch = n.get_node_or_null("Swatch")
+					if swatch and swatch.get("theme_override_styles/panel"):
+						target_color = swatch.get("theme_override_styles/panel").bg_color
+						target_color.a = 1.0
+						
+					var hover_cb = func():
+						if n.has_meta("pulse_tween"):
+							var tw = n.get_meta("pulse_tween")
+							if is_instance_valid(tw): tw.kill()
+						if n.has_meta("dim_tween"):
+							var tw = n.get_meta("dim_tween")
+							if is_instance_valid(tw): tw.kill()
+						
+						var lbl = n.get_node_or_null("Label")
+						if lbl: lbl.add_theme_color_override("font_color", Color.WHITE)
+						
+						if tex_rect and tex_rect.material:
+							tex_rect.material.set_shader_parameter("target_color", target_color)
+							var tw = create_tween().set_loops()
+							tw.tween_method(func(v): tex_rect.material.set_shader_parameter("pulse_multiplier", v), 1.5, 4.0, 0.6).set_trans(Tween.TRANS_SINE)
+							tw.tween_method(func(v): tex_rect.material.set_shader_parameter("pulse_multiplier", v), 4.0, 1.5, 0.6).set_trans(Tween.TRANS_SINE)
+							n.set_meta("pulse_tween", tw)
+							
+							var dim_tw = create_tween()
+							var curr_dim = tex_rect.material.get_shader_parameter("dim_multiplier")
+							if curr_dim == null: curr_dim = 1.0
+							dim_tw.tween_method(func(v): tex_rect.material.set_shader_parameter("dim_multiplier", v), curr_dim, 0.3, 0.2)
+							n.set_meta("dim_tween", dim_tw)
+							
+					var exit_cb = func():
+						if n.has_meta("pulse_tween"):
+							var tw = n.get_meta("pulse_tween")
+							if is_instance_valid(tw): tw.kill()
+							n.remove_meta("pulse_tween")
+						if n.has_meta("dim_tween"):
+							var tw = n.get_meta("dim_tween")
+							if is_instance_valid(tw): tw.kill()
+							n.remove_meta("dim_tween")
+							
+						var lbl = n.get_node_or_null("Label")
+						if lbl: lbl.remove_theme_color_override("font_color")
+						
+						if tex_rect and tex_rect.material:
+							var dim_tw = create_tween()
+							var curr_dim = tex_rect.material.get_shader_parameter("dim_multiplier")
+							if curr_dim == null: curr_dim = 1.0
+							dim_tw.tween_method(func(v): tex_rect.material.set_shader_parameter("dim_multiplier", v), curr_dim, 1.0, 0.2)
+							dim_tw.tween_callback(func(): tex_rect.material.set_shader_parameter("pulse_multiplier", 1.0))
+							n.set_meta("dim_tween", dim_tw)
+					
+					if not n.mouse_entered.is_connected(hover_cb):
+						n.mouse_entered.connect(hover_cb)
+						n.focus_entered.connect(hover_cb)
+						n.mouse_exited.connect(exit_cb)
+						n.focus_exited.connect(exit_cb)
