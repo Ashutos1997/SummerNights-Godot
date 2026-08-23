@@ -59,12 +59,12 @@ var last_callout_tier: int = 0
 
 
 @onready var pause_screen       = $HUD/pause_screen
-@onready var pause_title        = $HUD/pause_screen/ColorRect/VBoxContainer/TitleRow/Title
-@onready var pause_resume_btn   = $HUD/pause_screen/ColorRect/VBoxContainer/ResumeBtn
-@onready var settings_btn       = $HUD/pause_screen/ColorRect/VBoxContainer/SettingsBtn
-@onready var controller_btn     = $HUD/pause_screen/ColorRect/VBoxContainer/ControllerBtn
-@onready var credits_btn        = $HUD/pause_screen/ColorRect/VBoxContainer/CreditsBtn
-@onready var pause_menu_btn     = $HUD/pause_screen/ColorRect/VBoxContainer/MainMenuBtn
+@onready var pause_title        = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/TitleRow/Title
+@onready var pause_resume_btn   = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/ResumeBtn
+@onready var settings_btn       = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/SettingsBtn
+@onready var controller_btn     = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/ControllerBtn
+@onready var credits_btn        = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/CreditsBtn
+@onready var pause_menu_btn     = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/MainMenuBtn
 @onready var esc_hint_label     = $HUD/esc_hint_label
 
 @onready var settings_screen   = $HUD/SettingsScreen
@@ -795,7 +795,7 @@ func _apply_language(lang: String) -> void:
 			if sep:
 				sep.add_theme_stylebox_override("separator", sep_style)
 
-	var pause_vbox = $HUD/pause_screen/ColorRect/VBoxContainer
+	var pause_vbox = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer
 	if pause_vbox:
 		var pause_div = pause_vbox.get_node_or_null("Divider")
 		if pause_div:
@@ -873,7 +873,7 @@ func _apply_language(lang: String) -> void:
 	icon_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
 	icon_style.set_border_width_all(2)
 	for icon_path in [
-		"HUD/pause_screen/ColorRect/VBoxContainer/TitleRow/TitleIcon",
+		"HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/TitleRow/TitleIcon",
 		"HUD/SettingsScreen/CenterContainer/VBoxContainer/TitleRow/TitleIcon",
 		"HUD/CreditsScreen/CenterContainer/VBoxContainer/TitleRow/TitleIcon"
 	]:

@@ -488,29 +488,28 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("91_sun")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HUD/pause_screen/ColorRect"]
+[node name="CenterContainer" type="CenterContainer" parent="HUD/pause_screen/ColorRect"]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -100.0
-offset_top = -120.0
-offset_right = 100.0
-offset_bottom = 120.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/pause_screen/ColorRect/CenterContainer"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
 theme_override_constants/separation = 24
 alignment = 1
 
-[node name="TitleRow" type="HBoxContainer" parent="HUD/pause_screen/ColorRect/VBoxContainer"]
+[node name="TitleRow" type="HBoxContainer" parent="HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 12
 alignment = 1
 
-[node name="TitleIcon" type="TextureRect" parent="HUD/pause_screen/ColorRect/VBoxContainer/TitleRow"]
+[node name="TitleIcon" type="TextureRect" parent="HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/TitleRow"]
 modulate = Color(1, 0.85, 0.2, 1)
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
@@ -520,41 +519,41 @@ texture = ExtResource("13_icon_pause")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Title" type="Label" parent="HUD/pause_screen/ColorRect/VBoxContainer/TitleRow"]
+[node name="Title" type="Label" parent="HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/TitleRow"]
 layout_mode = 2
 horizontal_alignment = 0
 vertical_alignment = 1
 text = "PAUSED"
 
-[node name="Divider" type="HSeparator" parent="HUD/pause_screen/ColorRect/VBoxContainer"]
+[node name="Divider" type="HSeparator" parent="HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="ResumeBtn" type="Button" parent="HUD/pause_screen/ColorRect/VBoxContainer"]
+[node name="ResumeBtn" type="Button" parent="HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(280, 52)
 layout_mode = 2
 mouse_filter = 0
 text = "RESUME"
 
-[node name="SettingsBtn" type="Button" parent="HUD/pause_screen/ColorRect/VBoxContainer"]
+[node name="SettingsBtn" type="Button" parent="HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(280, 52)
 layout_mode = 2
 mouse_filter = 0
 text = "SETTINGS"
 
-[node name="CreditsBtn" type="Button" parent="HUD/pause_screen/ColorRect/VBoxContainer"]
+[node name="CreditsBtn" type="Button" parent="HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(280, 52)
 layout_mode = 2
 mouse_filter = 0
 text = "CREDITS"
 
-[node name="ControllerBtn" type="Button" parent="HUD/pause_screen/ColorRect/VBoxContainer"]
+[node name="ControllerBtn" type="Button" parent="HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(280, 52)
 layout_mode = 2
 mouse_filter = 0
 text = "CONTROLLER"
 
-[node name="MainMenuBtn" type="Button" parent="HUD/pause_screen/ColorRect/VBoxContainer"]
+[node name="MainMenuBtn" type="Button" parent="HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(280, 52)
 layout_mode = 2
 mouse_filter = 0
