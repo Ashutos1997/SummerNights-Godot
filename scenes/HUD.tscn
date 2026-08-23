@@ -17,6 +17,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/menu_icons/credits.png" id="15_icon_credits"]
 [ext_resource type="Script" path="res://scripts/BrokenBorder.gd" id="90_broken"]
 [ext_resource type="Script" path="res://scripts/PauseSunGraphic.gd" id="91_sun"]
+[ext_resource type="Texture2D" path="res://assets/ui/controller/Keyboard.svg" id="92_keyboard"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_border"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -830,6 +831,13 @@ vertical_alignment = 1
 [node name="Divider" type="HSeparator" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
+
+[node name="KeyboardLayout" type="TextureRect" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(500, 250)
+layout_mode = 2
+texture = ExtResource("92_keyboard")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Divider2" type="HSeparator" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
