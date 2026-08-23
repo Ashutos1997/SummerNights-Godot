@@ -781,9 +781,10 @@ func _apply_language(lang: String) -> void:
 
 	var pause_vbox = $HUD/pause_screen/ColorRect/VBoxContainer
 	if pause_vbox:
-		var pause_div = pause_vbox.get_node_or_null("Divider")
-		if pause_div:
-			pause_div.add_theme_stylebox_override("separator", sep_style)
+		for sep_name in ["Divider", "Divider2"]:
+			var sep = pause_vbox.get_node_or_null(sep_name)
+			if sep:
+				sep.add_theme_stylebox_override("separator", sep_style)
 
 	# ── Restyle Lose Screen (fix HDR bleed and match design system) ──
 	if lose_screen:
