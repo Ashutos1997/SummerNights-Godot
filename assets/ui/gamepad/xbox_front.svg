@@ -23,10 +23,10 @@
 <!-- ═══ HIGHLIGHTED KEYS ═══ -->
 <!-- MENU key (Yellow) -->
 <circle cx="286.5" cy="96" r="11" fill="#FFD700" fill-opacity="0.25" stroke="#FFD700" stroke-opacity="0.9" stroke-width="2"/>
-<!-- Y key (Green) -->
-<circle cx="378.5" cy="62" r="17" fill="#80E51A" fill-opacity="0.25" stroke="#80E51A" stroke-opacity="0.9" stroke-width="2"/>
-<!-- LT key (Blue) - precisely closed shoulder shape -->
+<!-- LT key (Blue) - Ice Blast -->
 <path d="M 190 9 C 184.419 9 178.924 7.62625 174 5 C 169.076 2.37375 163.581 1 158 1 H 148.572 C 139.279 1 130.075 2.80605 121.472 6.31768 L 107.936 11.8423 C 93.5978 17.6948 82.2517 29.1208 76.5 43.5 L 90.4089 35.4654 L 118.825 21.6311 C 129.14 16.6095 140.462 14 151.934 14 H 161.115 C 164.672 14 168.197 14.6788 171.5 16 C 174.803 17.3212 178.328 18 181.885 18 Z" fill="#4FC3F7" fill-opacity="0.25" stroke="#4FC3F7" stroke-opacity="0.9" stroke-width="2"/>
+<!-- LB key (Green) - Weapons -->
+<path d="M 181.885 18 C 178.328 18 174.803 17.3212 171.5 16 C 168.197 14.6788 164.672 14 161.115 14 H 151.934 C 140.462 14 129.14 16.6095 118.825 21.6311 L 90.4089 35.4654 L 95 42 L 120 35 L 150 24 H 170 L 181.885 18 Z" fill="#80E51A" fill-opacity="0.25" stroke="#80E51A" stroke-opacity="0.9" stroke-width="2"/>
 <!-- RT key (Grey) - Fire -->
 <path d="M 310.5 9 C 316.081 9 321.576 7.62625 326.5 5 C 331.424 2.37375 336.919 1 342.5 1 H 351.928 C 361.221 1 370.425 2.80605 379.028 6.31768 L 392.564 11.8423 C 406.902 17.6948 418.248 29.1208 424 43.5 L 410.091 35.4654 L 381.675 21.6311 C 371.36 16.6095 360.038 14 348.566 14 H 339.385 C 335.828 14 332.303 14.6788 329 16 C 325.697 17.3212 322.172 18 318.615 18 Z" fill="#999999" fill-opacity="0.25" stroke="#999999" stroke-opacity="0.9" stroke-width="2"/>
 <!-- RB key (Orange) - Catastrom -->
