@@ -607,7 +607,7 @@ custom_minimum_size = Vector2(560, 0)
 layout_mode = 2
 mouse_filter = 2
 alignment = 1
-theme_override_constants/separation = 24
+theme_override_constants/separation = 12
 
 [node name="TitleRow" type="HBoxContainer" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
@@ -738,7 +738,7 @@ layout_mode = 2
 mouse_filter = 2
 
 [node name="BackBtn" type="Button" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(280, 52)
+custom_minimum_size = Vector2(280, 44)
 layout_mode = 2
 size_flags_horizontal = 4
 mouse_filter = 0
@@ -800,7 +800,7 @@ custom_minimum_size = Vector2(560, 0)
 layout_mode = 2
 mouse_filter = 2
 alignment = 1
-theme_override_constants/separation = 24
+theme_override_constants/separation = 12
 
 [node name="TitleRow" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
@@ -843,7 +843,7 @@ layout_mode = 2
 mouse_filter = 2
 
 [node name="BackBtn" type="Button" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(280, 52)
+custom_minimum_size = Vector2(280, 44)
 layout_mode = 2
 size_flags_horizontal = 4
 mouse_filter = 0
@@ -1184,7 +1184,7 @@ mouse_filter = 2
 custom_minimum_size = Vector2(900, 0)
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = 24
+theme_override_constants/separation = 12
 
 [node name="TitleRow" type="HBoxContainer" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
@@ -1526,7 +1526,7 @@ layout_mode = 2
 mouse_filter = 2
 
 [node name="BackBtn" type="Button" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(280, 52)
+custom_minimum_size = Vector2(280, 44)
 layout_mode = 2
 size_flags_horizontal = 4
 mouse_filter = 0

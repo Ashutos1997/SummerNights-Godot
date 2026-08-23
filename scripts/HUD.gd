@@ -523,7 +523,7 @@ func _ready() -> void:
 			btn.add_theme_stylebox_override("disabled", style_menu_btn_disabled)
 			btn.add_theme_stylebox_override("focus", style_focus)
 			btn.focus_mode = Control.FOCUS_ALL
-			btn.custom_minimum_size = Vector2(280, 52)
+			btn.custom_minimum_size = Vector2(280, 44)
 			btn.mouse_entered.connect(_play_ui_tick)
 			
 	if retry_btn:
@@ -2018,7 +2018,7 @@ func _build_achievements_screen() -> void:
 	
 	var vbox = VBoxContainer.new()
 	vbox.name = "VBoxContainer"
-	vbox.add_theme_constant_override("separation", 24)
+	vbox.add_theme_constant_override("separation", 12)
 	center.add_child(vbox)
 	
 	var title_row = HBoxContainer.new()
@@ -2077,7 +2077,7 @@ func _build_achievements_screen() -> void:
 	var back_btn = Button.new()
 	back_btn.name = "BackBtn"
 	back_btn.text = "BACK"
-	back_btn.custom_minimum_size = Vector2(280, 52)
+	back_btn.custom_minimum_size = Vector2(280, 44)
 	back_btn.mouse_entered.connect(_play_ui_tick)
 	
 	var btn_center = CenterContainer.new()
@@ -2287,7 +2287,7 @@ func _build_buffs_screen() -> void:
 	
 	var vbox = VBoxContainer.new()
 	vbox.name = "VBoxContainer"
-	vbox.add_theme_constant_override("separation", 24)
+	vbox.add_theme_constant_override("separation", 12)
 	center.add_child(vbox)
 	
 	var title_row = HBoxContainer.new()
@@ -2346,7 +2346,7 @@ func _build_buffs_screen() -> void:
 	var back_btn = Button.new()
 	back_btn.name = "BackBtn"
 	back_btn.text = "BACK"
-	back_btn.custom_minimum_size = Vector2(280, 52)
+	back_btn.custom_minimum_size = Vector2(280, 44)
 	back_btn.mouse_entered.connect(_play_ui_tick)
 	
 	var btn_center = CenterContainer.new()
