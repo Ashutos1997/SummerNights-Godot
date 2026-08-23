@@ -1409,6 +1409,7 @@ func _update_flares(delta: float) -> void:
 				steam_particles.global_position = node.global_position
 				steam_particles.restart()
 			temperature = min(MAX_TEMP, temperature + 4.0)
+			_vibrate(0.5, 0.0, 0.2)
 			node.queue_free()
 			to_remove.append(flare)
 		else:
@@ -1480,6 +1481,7 @@ func _process(delta: float) -> void:
 			timer_running = false
 			game_over = true
 			is_shooting = false
+			_stop_vibrate()
 			if gun_spray: gun_spray.emitting = false
 			
 			# Supernova Game Over Cinematic
@@ -1801,6 +1803,7 @@ func _process(delta: float) -> void:
 	
 	# Shooting mechanics
 	if is_shooting and can_shoot:
+		_vibrate(0.1, 0.0, 0.1)
 		is_firing = true
 		fire_stop_timer = FIRE_STOP_DELAY
 		if not shoot_loop_sfx.playing:
@@ -2081,6 +2084,7 @@ func _input(event: InputEvent) -> void:
 		if is_catastrom_active and event.is_pressed() and not is_dragging_sun:
 			is_dragging_sun = true
 			is_shooting = false
+			_vibrate(0.3, 0.3, 5.0) # Rumble while dragging
 			if catastrom_sfx:
 				catastrom_sfx.play()
 			if hud and hud.grab_icon:
@@ -2275,6 +2279,13 @@ func _update_sun_face(ratio: float) -> void:
 		sun_face.modulate = target_color
 	
 	sun_face.visible = sun.visible
+
+func _vibrate(weak: float, strong: float, duration: float) -> void:
+	if GameState.vibration_enabled:
+		Input.start_joy_vibration(0, weak, strong, duration)
+
+func _stop_vibrate() -> void:
+	Input.stop_joy_vibration(0)
 
 func shake(duration: float, strength: float) -> void:
 	if reduce_motion:
@@ -2627,6 +2638,7 @@ func _update_sky(instant: bool) -> void:
 	heat_changed.emit(temperature, MAX_TEMP)
 	
 func _trigger_catastrom_dunk() -> void:
+	_vibrate(1.0, 1.0, 0.5) # Massive dunk shockwave
 	shake(1.5, 0.5)
 	GameState.unlock_achievement("slam_dunk")
 	
@@ -2644,6 +2656,7 @@ func _trigger_catastrom_dunk() -> void:
 	GameState.catastrom_charge = 0.0
 	is_dragging_sun = false
 	is_catastrom_active = false
+	_stop_vibrate()
 	if gun: gun.visible = true
 	if GameState.is_survival_mode and active_weather != "none":
 		_reset_weather()
@@ -2665,6 +2678,7 @@ func _win() -> void:
 	active_mirages.clear()
 	game_over = true
 	is_shooting = false # Reset shooting state to prevent auto-firing on next level
+	_stop_vibrate()
 	timer_running = false # Stop the timer so we don't accidentally lose during the win transition
 	gun_spray.emitting = false # Fix water getting stuck on when winning
 
@@ -3036,6 +3050,7 @@ func _shoot_ice() -> void:
 	hud.update_ice_charges(GameState.ice_charges_remaining, total)
 	
 	ice_shoot_sfx.play()
+	_vibrate(0.4, 0.4, 0.25)
 	
 	var tw = create_tween()
 	tw.tween_property(gun, "position:y", gun_base_pos.y - 0.2, 0.05)
@@ -3299,6 +3314,8 @@ func _end_mirage() -> void:
 	sun_mirage_target = 0.0
 
 func _on_game_paused() -> void:
+	if game_over: return
+	_stop_vibrate()
 	timer_running = false
 	shoot_loop_sfx.stream_paused = true
 

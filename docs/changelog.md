@@ -6,6 +6,7 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### Added
 - **Xbox Controller Support:** The game has been fully migrated to Godot’s `InputMap` backend, adding native plug-and-play support for Xbox Controllers. Aiming is handled via the Left Stick, providing smooth analog crosshair movement, while all core abilities (Ice Burst, Catastrom) have been carefully mapped to the triggers and buttons.
+- **Controller Haptics (Vibration):** Added immersive controller vibrations across core gameplay events: firing weapons, detonating Ice Bursts, dragging the sun during Catastrom, dunking the sun, and taking heat damage from solar flares. A new toggle has been added to the Settings menu to disable vibrations.
 - **Controls Menu Overhaul:** The Controls menu now features a premium "Sliding Toggle Pill" (matching the Language settings) to switch seamlessly between the Keyboard and Xbox controller legend graphics. The Xbox graphic features mathematically exact vector highlights to match the keyboard diagram.
 - **Water Shader Overhaul:** Completely rewrote the procedural water shader (`stylized_water.gdshader`) to use physical Gerstner waves, procedural Voronoi surface foam/caustics that scroll across the open ocean, and fake subsurface scattering (SSS) that dynamically highlights wave crests based on height and view angle.
 - **PBR Sand Texture:** Replaced the procedurally generated sand noise with a high-quality CC0 PBR texture (Coast Sand 01) from Poly Haven, featuring diffuse, normal, and roughness maps for a smoother, stylized beach aesthetic.
@@ -149,6 +150,7 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### 추가됨 (Added)
 - **Xbox 컨트롤러 지원:** 게임의 입력 시스템이 Godot의 `InputMap` 백엔드로 완벽하게 마이그레이션되어 Xbox 컨트롤러의 네이티브 플러그 앤 플레이를 지원합니다. 조준은 왼쪽 스틱을 사용하여 부드러운 아날로그 움직임을 제공하며, 핵심 기술(얼음 폭발, 카타스트롬)은 트리거와 버튼에 직관적으로 매핑되었습니다.
+- **컨트롤러 진동 (Haptics):** 무기 발사, 얼음 폭발, 카타스트롬 사용 시 태양 드래그 및 덩크, 태양풍에 피격될 때 등 핵심 게임플레이 이벤트에 몰입감 있는 컨트롤러 진동을 추가했습니다. 설정 메뉴에 진동을 끄고 켤 수 있는 토글이 추가되었습니다.
 - **조작법 메뉴 개편:** 조작법 메뉴에 프리미엄 "슬라이딩 토글(Sliding Toggle Pill)"(언어 설정과 동일한 디자인)이 추가되어 키보드와 Xbox 컨트롤러 조작법을 매끄럽게 전환할 수 있습니다. Xbox 그래픽에는 키보드 다이어그램과 완벽하게 일치하는 벡터 하이라이트가 적용되었습니다.
 - **물 셰이더 전면 개편 (Water Shader Overhaul):** 물 셰이더(`stylized_water.gdshader`)를 완전히 다시 작성하여 물리적인 거스트너 파도(Gerstner waves), 절차적으로 생성되어 먼 바다를 가로지르는 보로노이 표면 거품/코스틱 효과, 그리고 높이와 시야각에 따라 파도 마루를 빛나게 하는 가짜 표면하 산란(Subsurface Scattering, SSS) 효과를 추가했습니다.
 - **PBR 모래 텍스처 (PBR Sand Texture):** 절차적으로 생성되던 모래 노이즈를 Poly Haven의 고품질 CC0 PBR 텍스처(Coast Sand 01)로 교체하여, 디퓨즈, 노멀, 러프니스 맵을 통해 더욱 부드럽고 양식화된 해변 느낌을 구현했습니다.

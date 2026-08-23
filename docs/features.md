@@ -81,6 +81,7 @@ Weather events trigger based on a dynamic probability system tied to the current
 *   **Accessibility & Settings:**
     *   Reduce Motion toggle (disables screen shake and intensive UI flashing).
     *   Mouse Sensitivity slider.
+    *   Vibration toggle (enables/disables controller haptics during combat).
     *   Fullscreen toggle (enabled by default for optimal font legibility).
     *   Language selection (English and Korean).
 

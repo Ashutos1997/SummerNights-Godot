@@ -76,6 +76,7 @@ var last_callout_tier: int = 0
 @onready var sfx_slider        = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowSFX/Slider
 @onready var sens_slider       = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowSens/Slider
 @onready var motion_check      = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowMotion/Check
+@onready var vibration_check   = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowVibration/Check
 @onready var fullscreen_check  = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowFullscreen/Check
 @onready var settings_back_btn = $HUD/SettingsScreen/CenterContainer/VBoxContainer/BackBtn
 
@@ -118,6 +119,7 @@ var hud_weapon_icons: Dictionary = {}  # w_id -> ImageTexture
 var hud_weapon_container: TextureRect
 
 var reduce_motion: bool = false
+var vibration_enabled: bool = true
 var cursor_screen_pos: Vector2 = Vector2.ZERO  # Tracks virtual mouse for captured mode
 var target_heat: float = 100.0
 var target_mirage_hp: float = 100.0
@@ -315,6 +317,7 @@ func _ready() -> void:
 	win_screen.pivot_offset = get_viewport().get_visible_rect().size / 2.0
 	
 	reduce_motion = GameState.reduce_motion
+	vibration_enabled = GameState.vibration_enabled
 	
 	kenney_font = load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
 	galmuri_font = load("res://assets/fonts/Galmuri11.ttf")
@@ -403,7 +406,7 @@ func _ready() -> void:
 				p_lbl.modulate.a = 1.0
  
 	# Row Labels styling (13.4:1 contrast PASS)
-	for row_name in ["RowSFX", "RowSens", "RowMotion", "RowFullscreen"]:
+	for row_name in ["RowSFX", "RowSens", "RowMotion", "RowVibration", "RowFullscreen"]:
 		var r_node = $HUD/SettingsScreen/CenterContainer/VBoxContainer.get_node_or_null(row_name)
 		if r_node:
 			var r_lbl = r_node.get_node_or_null("Label")
@@ -545,7 +548,7 @@ func _ready() -> void:
 	style_btn_on.set_border_width_all(1)
 	style_btn_on.set_corner_radius_all(4)
 
-	for btn in [motion_check, fullscreen_check]:
+	for btn in [motion_check, vibration_check, fullscreen_check]:
 		if btn:
 			if font: btn.add_theme_font_override("font", font)
 			btn.add_theme_font_size_override("font_size", 18)
@@ -563,12 +566,14 @@ func _ready() -> void:
 	sfx_slider.value = GameState.sfx_volume
 	sens_slider.value = GameState.mouse_sensitivity
 	motion_check.button_pressed = GameState.reduce_motion
+	if vibration_check: vibration_check.button_pressed = GameState.vibration_enabled
 	fullscreen_check.button_pressed = GameState.fullscreen
 
 	# Connect control signals
 	sfx_slider.value_changed.connect(_on_sfx_volume_changed)
 	sens_slider.value_changed.connect(_on_sens_changed)
 	motion_check.toggled.connect(_on_motion_toggled)
+	if vibration_check: vibration_check.toggled.connect(_on_vibration_toggled)
 	fullscreen_check.toggled.connect(_on_fullscreen_toggled)
 	
 	if settings_back_btn:
@@ -591,6 +596,7 @@ func _ready() -> void:
 	
 	# Apply initial visual button states without triggering full toggle logic
 	_update_toggle_btn(motion_check, GameState.reduce_motion)
+	if vibration_check: _update_toggle_btn(vibration_check, GameState.vibration_enabled)
 	_update_toggle_btn(fullscreen_check, GameState.fullscreen)
 	
 	
@@ -884,9 +890,9 @@ func _apply_language(lang: String) -> void:
 		if icon_panel:
 			icon_panel.add_theme_stylebox_override("panel", icon_style)
 
-	var row_texts_en := ["Master Volume", "Sensitivity", "Reduce Motion", "Fullscreen", "Language"]
-	var row_texts_kr := ["전체 볼륨", "마우스 감도", "화면 흔들림 감소", "전체 화면", "언어"]
-	var row_names    := ["RowSFX", "RowSens", "RowMotion", "RowFullscreen", "RowLanguage"]
+	var row_texts_en := ["Master Volume", "Sensitivity", "Reduce Motion", "Vibration", "Fullscreen", "Language"]
+	var row_texts_kr := ["전체 볼륨", "마우스 감도", "화면 흔들림 감소", "진동", "전체 화면", "언어"]
+	var row_names    := ["RowSFX", "RowSens", "RowMotion", "RowVibration", "RowFullscreen", "RowLanguage"]
 	if settings_vbox:
 		for i in range(row_names.size()):
 			var r = settings_vbox.get_node_or_null(row_names[i])
@@ -1151,6 +1157,12 @@ func _on_motion_toggled(enabled: bool) -> void:
 	reduce_motion = enabled
 	reduce_motion_changed.emit(enabled)
 	_update_toggle_btn(motion_check, enabled)
+
+func _on_vibration_toggled(enabled: bool) -> void:
+	GameState.vibration_enabled = enabled
+	GameState.save_settings()
+	vibration_enabled = enabled
+	if vibration_check: _update_toggle_btn(vibration_check, enabled)
 
 func _on_fullscreen_toggled(toggled: bool) -> void:
 	GameState.fullscreen = toggled

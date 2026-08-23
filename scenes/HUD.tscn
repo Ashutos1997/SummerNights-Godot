@@ -774,6 +774,29 @@ mouse_filter = 0
 toggle_mode = true
 text = "OFF"
 
+[node name="RowVibration" type="HBoxContainer" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer/RowVibration"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 0.75)
+theme_override_font_sizes/font_size = 24
+text = "VIBRATION"
+vertical_alignment = 1
+
+[node name="Check" type="Button" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer/RowVibration"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+mouse_filter = 0
+toggle_mode = true
+text = "ON"
+
 [node name="RowFullscreen" type="HBoxContainer" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
