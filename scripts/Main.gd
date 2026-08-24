@@ -293,7 +293,10 @@ func _ready() -> void:
 	add_child(flare_intercept_sfx)
 	
 	catastrom_sfx = AudioStreamPlayer.new()
-	catastrom_sfx.stream = preload("res://assets/audio/sfx/catastrom_dunk.mp3")
+	if OS.has_feature("safe_audio"):
+		catastrom_sfx.stream = preload("res://assets/audio/sfx/catastrom_safe.wav")
+	else:
+		catastrom_sfx.stream = preload("res://assets/audio/sfx/catastrom_dunk.mp3")
 	catastrom_sfx.volume_db = 0.0
 	add_child(catastrom_sfx)
 	

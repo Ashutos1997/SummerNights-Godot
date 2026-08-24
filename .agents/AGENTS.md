@@ -21,6 +21,7 @@ Read these files to understand existing patterns before proposing new changes. F
 
 ## Export Guidelines
 **CRITICAL RULE:** Whenever exporting a macOS build, you must ALWAYS export it as a `.dmg` file format instead of a `.zip` file.
+**ITCH.IO EXPORT RULE:** When exporting the game for itch.io, you MUST use Godot export feature tags (e.g., `safe_audio`) to swap out any copyrighted audio (like the ripped Kamen Rider Catastrom ultimate audio) with a safe, royalty-free alternative. The ripped audio should only be kept for the GitHub `main` branch.
 
 ## Scripting & Automation Guidelines
 **CRITICAL SCRIPTING RULE:** NEVER use the `cat << 'EOF'` heredoc method or write scripts inline inside bash commands. Always edit files manually using the native `replace_file_content` or `write_to_file` tools, or write explicit python/bash scripts using `write_to_file`.
