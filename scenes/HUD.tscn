@@ -927,13 +927,17 @@ alignment = 1
 
 [node name="KeyboardRow" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 48
+theme_override_constants/separation = 0
 alignment = 1
 
 [node name="LegendColumn" type="VBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow"]
 layout_mode = 2
 theme_override_constants/separation = 24
 alignment = 1
+
+[node name="Spacer" type="Control" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow"]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="KeyboardLayout" type="Control" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow"]
 custom_minimum_size = Vector2(559, 231)
@@ -1033,7 +1037,7 @@ text = "MOUSE - AIM/SHOOT"
 [node name="XboxRow" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer"]
 visible = false
 layout_mode = 2
-theme_override_constants/separation = 48
+theme_override_constants/separation = 0
 alignment = 1
 
 [node name="LegendColumn" type="VBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow"]
@@ -1041,8 +1045,12 @@ layout_mode = 2
 theme_override_constants/separation = 24
 alignment = 1
 
+[node name="Spacer" type="Control" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
 [node name="XboxLayout" type="Control" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow"]
-custom_minimum_size = Vector2(559, 231)
+custom_minimum_size = Vector2(330, 231)
 layout_mode = 2
 
 [node name="TextureRect" type="TextureRect" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/XboxLayout"]
