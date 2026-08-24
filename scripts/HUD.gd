@@ -2634,7 +2634,7 @@ func _build_input_toggle() -> void:
 	if not row: return
 	
 	var container = Control.new()
-	container.custom_minimum_size = Vector2(440, 50)
+	container.custom_minimum_size = Vector2(880, 50)
 	row.add_child(container)
 	
 	var bg = ColorRect.new()
@@ -2651,7 +2651,7 @@ func _build_input_toggle() -> void:
 	
 	input_highlight = ColorRect.new()
 	input_highlight.color = Color(1.0, 0.85, 0.2, 1.0)
-	input_highlight.size = Vector2(220, 50)
+	input_highlight.size = Vector2(440, 50)
 	input_highlight.position = Vector2(0, 0)
 	container.add_child(input_highlight)
 	
@@ -2689,7 +2689,7 @@ func _on_input_toggle_pressed() -> void:
 	_on_input_select_changed(input_toggle_state)
 
 func _update_input_toggle_visuals(instant: bool = false) -> void:
-	var target_x = 0.0 if input_toggle_state == 0 else 220.0
+	var target_x = 0.0 if input_toggle_state == 0 else 440.0
 	
 	var font = load("res://assets/fonts/Galmuri11.ttf") if GameState.language == "KR" else load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
 	if input_lbl_kb:
