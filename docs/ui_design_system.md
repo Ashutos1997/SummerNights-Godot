@@ -91,6 +91,7 @@ All menus (Pause, Settings, Credits, Achievements, Buffs) follow a strict intern
 *   **Title Separator:** An `HSeparator` sits directly beneath the TitleRow.
     *   **Color:** `Color(1.0, 0.88, 0.3, 0.35)`
     *   **Thickness:** `2px`
+*   **Edge Alignment:** When aligning nested child elements (e.g., the controls graphic and legend) to the outer edges of the main menu boundaries, expanding spacers (`size_flags_horizontal = 3`) are utilized within an HBoxContainer to guarantee perfect, responsive left/right symmetry against the top and bottom dividers.
 
 ### Buttons (StyleBoxFlat)
 

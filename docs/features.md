@@ -76,7 +76,7 @@ Weather events trigger based on a dynamic probability system tied to the current
     *   **Active Buffs Menu:** A dedicated menu accessible from the Pause Screen dynamically displays a real-time list of all currently active perks, stat upgrades, and achievement rewards based on your High Score and progression.
 *   **Startup Sequence:** The Title Screen features a dynamic "tech demo" boot sequence. It plays a custom synth audio that swells over 4 seconds, while a golden border procedurally draws itself around the perimeter. At the peak of the audio swell, the UI aggressively bounces up into place and the audio smoothly fades out while the ambient ocean fades in.
 *   **Menu Overlays:** Standard menus (Pause, Settings, Controls, Credits, Achievements, Buffs) are unified by a sleek golden border (with the Pause Screen uniquely featuring an animated procedurally-drawn sun situated in a broken bottom-right gap), an ultra-dark background dimming effect, consistent left-aligned typography with 96px interior margins, exactly 24px vertical layout separation, uniform title dividers, and dynamic gold-tinted title icons.
-    *   **Controller Keybindings:** The Controls screen displays a visual graphic of a keyboard with cleanly colored keys mapping directly to a fully translated vertical legend column to the left of it, providing an intuitive, at-a-glance reference for all game actions.
+    *   **Controller Keybindings:** The Controls screen displays a visual graphic of a keyboard and Xbox controller that perfectly align symmetrically with the menu using dynamic layout spacers (`size_flags_horizontal = 3`). Cleanly colored keys map directly to a fully translated vertical legend column to the left of the graphic, providing an intuitive, at-a-glance reference for all game actions.
 *   **Lose Screen Exception:** Unlike the standard left-aligned menus, the Lose Screen (Game Over) features a perfectly centered layout to emphasize the dramatic Supernova cinematic transition, but utilizes the exact same 280x52 button styling, typography scaling, and golden borders as the rest of the UI.
 *   **Accessibility & Settings:**
     *   Reduce Motion toggle (disables screen shake and intensive UI flashing).
@@ -90,7 +90,7 @@ Weather events trigger based on a dynamic probability system tied to the current
 *   **Gameplay SFX:** 
     *   Continuous water shooting loop.
     *   Solar flare interception sound.
-    *   Catastrom voice-over and massive water dunk splash.
+    *   Catastrom voice-over (Kamen Rider) for GitHub builds, and a royalty-free cinematic impact sound for itch.io builds (via the `safe_audio` export tag), alongside a massive water dunk splash.
     *   Critical warnings.
 
 ---
