@@ -142,7 +142,7 @@ Transient popups that slide in from the top of the screen to notify the player o
 
 ### Achievement Icons
 
-All achievements utilize thematic, open-source vector graphics from Game-icons.net (CC BY 3.0). These are imported as crisp PNGs to maintain consistency with the arcade aesthetic.
+All achievements utilize thematic, open-source vector graphics from Game-icons.net (CC BY 3.0). These are imported as crisp PNGs to maintain consistency with the arcade aesthetic. Locked achievements and buffs clearly display their full names and unlock conditions, but are visually greyed out using alpha blending (`Color(0.5, 0.5, 0.5, 1.0)`) and dimmed icons (`Color(0.3, 0.3, 0.3, 0.5)`) to indicate their locked status without obfuscation.
 
 ### Sliding Toggle Pill
 
