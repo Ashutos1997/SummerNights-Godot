@@ -2,7 +2,7 @@
 
 All notable changes to the Summer Nights project will be documented in this file.
 
-## [v1.4.0 - WIP]
+## [v1.4.0]
 
 ### Added
 - **Xbox Controller Support:** The game has been fully migrated to Godot’s `InputMap` backend, adding native plug-and-play support for Xbox Controllers. Aiming is handled via the Thumbsticks (Dual-stick), providing smooth analog crosshair movement. Core combat actions have been meticulously mapped for fluid gameplay: Right Trigger (RT) to Shoot, Left Trigger (LT) for Ice Blast, and Right Bumper (RB) for Catastrom. The Weapon Wheel now features native Gamepad support, allowing players to hold the Left Bumper (LB) to slow time, flick either thumbstick to select a weapon, and release the bumper to auto-equip it (DOOM-style).
@@ -153,7 +153,7 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ---
 
-## [v1.4.0 - WIP]
+## [v1.4.0]
 
 ### 추가됨 (Added)
 - **Xbox 컨트롤러 지원:** 게임의 입력 시스템이 Godot의 `InputMap` 백엔드로 완벽하게 마이그레이션되어 Xbox 컨트롤러의 네이티브 플러그 앤 플레이를 지원합니다. 조준은 양쪽 썸스틱(듀얼 스틱)을 사용하여 부드러운 아날로그 움직임을 제공합니다. 핵심 전투 액션은 매끄러운 게임플레이를 위해 세밀하게 매핑되었습니다: 우측 트리거(RT)로 발사, 좌측 트리거(LT)로 얼음 폭발, 우측 범퍼(RB)로 카타스트롬을 사용합니다. 또한 무기 휠에 게임패드 지원이 추가되어, 좌측 범퍼(LB)를 누르고 있는 동안 썸스틱으로 무기를 선택하고 범퍼에서 손을 떼면 즉시 장착할 수 있습니다.
