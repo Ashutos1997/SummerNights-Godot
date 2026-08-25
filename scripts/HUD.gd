@@ -2289,12 +2289,12 @@ func show_achievements_screen() -> void:
 		hbox.add_child(vbox)
 		
 		var ach_title = Label.new()
-		ach_title.text = (ach["title_kr"] if is_kr else ach["title_en"]) if unlocked else "???"
+		ach_title.text = (ach["title_kr"] if is_kr else ach["title_en"])
 		_style_lbl(ach_title, 28, Color(1.0, 0.85, 0.2, 1.0) if unlocked else Color(0.5, 0.5, 0.5, 1.0), 2, Color.BLACK, font)
 		vbox.add_child(ach_title)
 		
 		var ach_desc = Label.new()
-		ach_desc.text = (ach["desc_kr"] if is_kr else ach["desc_en"]) if unlocked else ("잠김" if is_kr else "LOCKED")
+		ach_desc.text = (ach["desc_kr"] if is_kr else ach["desc_en"])
 		ach_desc.custom_minimum_size = Vector2(550, 0)
 		ach_desc.autowrap_mode = TextServer.AUTOWRAP_WORD
 		_style_lbl(ach_desc, 16, Color(1.0, 1.0, 1.0, 0.8) if unlocked else Color(0.4, 0.4, 0.4, 0.8), 1, Color.BLACK, body_font)
@@ -2576,12 +2576,12 @@ func show_buffs_screen() -> void:
 		hbox.add_child(vbox_item)
 		
 		var title_lbl = Label.new()
-		title_lbl.text = (buff["title_kr"] if is_kr else buff["title_en"]) if unlocked else "???"
+		title_lbl.text = (buff["title_kr"] if is_kr else buff["title_en"])
 		_style_lbl(title_lbl, 28, Color(1.0, 0.85, 0.2, 1.0) if unlocked else Color(0.5, 0.5, 0.5, 1.0), 2, Color.BLACK, font)
 		vbox_item.add_child(title_lbl)
 		
 		var desc_lbl = Label.new()
-		desc_lbl.text = (buff["desc_kr"] if is_kr else buff["desc_en"]) if unlocked else ("잠김" if is_kr else "LOCKED")
+		desc_lbl.text = (buff["desc_kr"] if is_kr else buff["desc_en"])
 		desc_lbl.custom_minimum_size = Vector2(550, 0)
 		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
 		_style_lbl(desc_lbl, 16, Color(1.0, 1.0, 1.0, 0.8) if unlocked else Color(0.4, 0.4, 0.4, 0.8), 1, Color.BLACK, body_font)

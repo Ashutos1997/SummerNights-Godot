@@ -21,6 +21,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/controller/Keyboard.svg" id="92_keyboard"]
 [ext_resource type="Texture2D" uid="uid://9a7d1fe1f4f14e3383f9fcc44b573c9a" path="res://assets/ui/controller/Keyboard_controls.svg" id="92_keyboard_controls"]
 [ext_resource type="Texture2D" uid="uid://temp_xbox_front" path="res://assets/ui/gamepad/xbox_front.svg" id="93_xbox_front"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu_icons/console-controller.svg" id="94_icon_controller"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_border"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -901,7 +902,7 @@ custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("14_icon_settings")
+texture = ExtResource("94_icon_controller")
 expand_mode = 1
 stretch_mode = 5
 

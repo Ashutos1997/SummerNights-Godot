@@ -33,18 +33,18 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
   </tr>
   <tr>
     <td align="center"><img src="screenshots/06_Pause_Screen_EN_v2.png" width="100%"><br><b>Pause Screen</b></td>
-    <td align="center"><img src="screenshots/14_Active_Buffs_EN_v2.png" width="100%"><br><b>Active Buffs</b></td>
+    <td align="center"><img src="screenshots/14_Active_Buffs_EN_v3.png" width="100%"><br><b>Active Buffs</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="screenshots/11_Achievements_EN_v2.png" width="100%"><br><b>Achievements Gallery</b></td>
+    <td align="center"><img src="screenshots/11_Achievements_EN_v3.png" width="100%"><br><b>Achievements Gallery</b></td>
     <td align="center"><img src="screenshots/12_Settings_EN_v3.png" width="100%"><br><b>Settings</b></td>
   </tr>
   <tr>
     <td align="center"><img src="screenshots/15_Credits_EN_v2.png" width="100%"><br><b>Credits</b></td>
-    <td align="center"><img src="screenshots/07_Controls_KB_EN_v4.png" width="100%"><br><b>Controls (Keyboard)</b></td>
+    <td align="center"><img src="screenshots/07_Controls_KB_EN_v5.png" width="100%"><br><b>Controls (Keyboard)</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="screenshots/07_Controls_XB_EN_v5.png" width="100%"><br><b>Controls (Xbox)</b></td>
+    <td align="center"><img src="screenshots/07_Controls_XB_EN_v6.png" width="100%"><br><b>Controls (Xbox)</b></td>
     <td align="center"><img src="screenshots/16_Notification_Pop_Up_v3.png" width="100%"><br><b>Notification Pop-Up</b></td>
   </tr>
 </table>

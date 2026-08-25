@@ -589,14 +589,14 @@ func _show_achievements() -> void:
 		hbox.add_child(vbox)
 		
 		var ach_title = Label.new()
-		ach_title.text = (ach["title_kr"] if is_kr else ach["title_en"]) if unlocked else "???"
+		ach_title.text = (ach["title_kr"] if is_kr else ach["title_en"])
 		_style_label(ach_title, 28, Color(1.0, 0.85, 0.2, 1.0) if unlocked else Color(0.5, 0.5, 0.5, 1.0), font)
 		ach_title.add_theme_constant_override("outline_size", 2)
 		ach_title.add_theme_color_override("font_outline_color", Color.BLACK)
 		vbox.add_child(ach_title)
 		
 		var ach_desc = Label.new()
-		ach_desc.text = (ach["desc_kr"] if is_kr else ach["desc_en"]) if unlocked else ("잠김" if is_kr else "LOCKED")
+		ach_desc.text = (ach["desc_kr"] if is_kr else ach["desc_en"])
 		ach_desc.custom_minimum_size = Vector2(550, 0)
 		ach_desc.autowrap_mode = TextServer.AUTOWRAP_WORD
 		_style_label(ach_desc, 16, Color(1.0, 1.0, 1.0, 0.8) if unlocked else Color(0.4, 0.4, 0.4, 0.8), body_font)
