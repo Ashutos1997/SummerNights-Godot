@@ -46,6 +46,7 @@ All notable changes to the Summer Nights project will be documented in this file
 ### Improved
 - **Menu Icons:** Replaced the generic settings gear icon on the Controls menu title with a dedicated controller SVG icon.
 - **Achievements & Buffs Visibility:** Locked achievements and active buffs no longer obfuscate their names and descriptions with "???". They now clearly display their full titles and unlock requirements to help guide players, while remaining visually greyed-out until earned.
+- **Safe Export Fallbacks:** The itch.io safe export build (`safe_audio`) now automatically substitutes the copyrighted Catastrom ultimate UI notification icon with a royalty-free "glowing ball" alternative.
 - **Environment Polish:** The island's foliage (trees and bushes) now aggressively bends and sways when the Solar Wind hazard is active, visually telegraphing the wind direction.
 - **In-Game Achievements:** The Achievements menu is now fully accessible from the in-game Pause Menu, allowing players to check their progress without returning to the Title Screen.
 - **Border Consistency:** Unified the custom animated startup border to mathematically trace the exact 8-pixel corner radius used by the static panels across the rest of the game's UI for a seamless transition.
@@ -196,6 +197,7 @@ All notable changes to the Summer Nights project will be documented in this file
 ### 개선됨 (Improved)
 - **메뉴 아이콘 (Menu Icons):** 조작법 메뉴 타이틀에 사용되던 기본 설정 톱니바퀴 아이콘을 전용 컨트롤러 SVG 아이콘으로 교체했습니다.
 - **업적 및 버프 가시성 (Achievements & Buffs Visibility):** 잠긴 업적과 활성화된 버프의 이름과 설명이 더 이상 "???"로 숨겨지지 않습니다. 플레이어가 목표를 쉽게 파악할 수 있도록 잠금 해제 조건과 제목이 명확히 표시되며, 달성하기 전까지는 시각적으로 회색으로 비활성화되어 나타납니다.
+- **안전한 배포 대체 (Safe Export Fallbacks):** itch.io 안전 빌드(`safe_audio`)에서는 카타스트롬 궁극기 UI 알림에 사용되던 저작권 아이콘이 자동으로 저작권 없는 "빛나는 공(glowing ball)" 아이콘으로 대체됩니다.
 - **환경 폴리싱:** 태양풍(Solar Wind) 위험 요소가 활성화되었을 때 섬의 식물(야자수 및 수풀)이 강하게 구부러지고 흔들리도록 변경하여 풍향을 시각적으로 명확하게 전달합니다.
 - **게임 내 업적 확인:** 이제 게임 내 일시정지 메뉴에서도 업적 갤러리에 접근할 수 있어, 타이틀 화면으로 돌아가지 않고도 달성 진행도를 즉시 확인할 수 있습니다.
 - **테두리 일관성:** 시작 화면의 커스텀 테두리 드로잉 애니메이션이 게임 내 다른 UI 패널들과 동일한 8픽셀의 둥근 모서리를 가지도록 수학적으로 정확하게 일치시켜 자연스러운 전환을 구현했습니다.
