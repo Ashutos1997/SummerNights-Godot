@@ -2,6 +2,11 @@
 
 All notable changes to the Summer Nights project will be documented in this file.
 
+## [v1.5.0 - WIP]
+
+### Added
+- **First-Time Shooting Tutorial:** Added a new floating UI prompt during the first playthrough of Normal Mode to teach new players how to aim and shoot. The tutorial elegantly hovers centered above the weapon model and permanently fades out as soon as you press Left Click or Right Trigger.
+
 ## [v1.4.0]
 
 ### Added
@@ -152,6 +157,11 @@ All notable changes to the Summer Nights project will be documented in this file
   - Immersive sound effects for water spraying, sizzling, bird calls, and wind.
 
 ---
+
+## [v1.5.0 - WIP]
+
+### 추가됨 (Added)
+- **초보자 사격 튜토리얼:** 신규 플레이어가 일반 모드를 처음 플레이할 때 조준 및 사격 방법을 알려주는 새로운 UI 안내문을 추가했습니다. 이 튜토리얼은 화면 중앙 무기 모델 위에 표시되며, 좌클릭이나 우측 트리거(RT)를 눌러 사격하는 즉시 영구적으로 사라지고 진행 상황이 저장됩니다.
 
 ## [v1.4.0]
 

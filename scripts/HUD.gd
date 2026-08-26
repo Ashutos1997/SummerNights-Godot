@@ -9,6 +9,9 @@ signal weapon_changed(weapon_id: String)
 @onready var heat_bar = $HUD/SunHeatBar/BarContainer/HeatBar
 @onready var mirage_bar = $HUD/SunHeatBar/BarContainer/MirageBar
 @onready var heat_label = $HUD/SunHeatBar/Label
+@onready var tutorial_prompt = $HUD/TutorialPrompt
+@onready var tutorial_aim_label = $HUD/TutorialPrompt/VBoxContainer/AimLabel
+@onready var tutorial_shoot_label = $HUD/TutorialPrompt/VBoxContainer/ShootLabel
 @onready var water_bar_container = $HUD/resource_container/water_row
 @onready var water_bar = $HUD/resource_container/water_row/WaterBar
 @onready var water_label = $HUD/resource_container/water_row/Label
@@ -211,6 +214,32 @@ func _process(delta: float) -> void:
 				scroll_area.scroll_vertical += amt
 				credits_scroll_acc -= amt
 		
+func reset() -> void:
+	# Hide prompt on reset by default
+	if tutorial_prompt:
+		tutorial_prompt.hide()
+		tutorial_prompt.modulate.a = 1.0
+
+func show_tutorial_prompt() -> void:
+	if not tutorial_prompt: return
+	
+	var is_kr = GameState.language == "KR"
+	tutorial_aim_label.text = "조준: 마우스 / 우측 스틱" if is_kr else "Aim: Mouse / Right Stick"
+	tutorial_shoot_label.text = "발사: 좌클릭 / RT" if is_kr else "Shoot: Left Click / RT"
+	
+	tutorial_prompt.modulate.a = 0.0
+	tutorial_prompt.show()
+	
+	var t = create_tween()
+	t.tween_property(tutorial_prompt, "modulate:a", 1.0, 0.5)
+
+func hide_tutorial_prompt() -> void:
+	if not tutorial_prompt or not tutorial_prompt.visible: return
+	
+	var t = create_tween()
+	t.tween_property(tutorial_prompt, "modulate:a", 0.0, 0.5)
+	t.tween_callback(tutorial_prompt.hide)
+
 func _ready() -> void:
 
 	heat_label.scale = Vector2(1.0, 1.0)
@@ -745,6 +774,15 @@ func _apply_language(lang: String) -> void:
 		catastrom_label.text = "카타스트롬" if is_kr else "CATASTROM"
 		if font: catastrom_label.add_theme_font_override("font", font)
 		catastrom_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
+
+	if tutorial_aim_label:
+		tutorial_aim_label.text = "조준: 마우스 / 우측 스틱" if is_kr else "Aim: Mouse / Right Stick"
+		if font: tutorial_aim_label.add_theme_font_override("font", font)
+		tutorial_aim_label.add_theme_font_size_override("font_size", 22 if is_kr else 18)
+	if tutorial_shoot_label:
+		tutorial_shoot_label.text = "발사: 좌클릭 / RT" if is_kr else "Shoot: Left Click / RT"
+		if font: tutorial_shoot_label.add_theme_font_override("font", font)
+		tutorial_shoot_label.add_theme_font_size_override("font_size", 24 if is_kr else 20)
 
 	if level_label:
 		if GameState.is_survival_mode:

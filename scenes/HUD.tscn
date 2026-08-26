@@ -128,6 +128,22 @@ corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tutorial"]
+bg_color = Color(0.05, 0.02, 0.1, 0.85)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.9, 0.3, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+expand_margin_left = 24.0
+expand_margin_right = 24.0
+expand_margin_top = 16.0
+expand_margin_bottom = 16.0
+
 [node name="CanvasLayer" type="CanvasLayer"]
 layer = 10
 scale = Vector2(1, 1)
@@ -463,6 +479,45 @@ theme_override_constants/outline_size = 3
 theme_override_font_sizes/font_size = 26
 horizontal_alignment = 2
 text = "SCORE: 0"
+
+[node name="TutorialPrompt" type="PanelContainer" parent="HUD"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -140.0
+offset_top = 90.0
+offset_right = 140.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_tutorial")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/TutorialPrompt"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="AimLabel" type="Label" parent="HUD/TutorialPrompt/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.8)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 18
+text = "Aim: Mouse / Right Stick"
+horizontal_alignment = 1
+
+[node name="ShootLabel" type="Label" parent="HUD/TutorialPrompt/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 20
+text = "Shoot: Left Click / RT"
+horizontal_alignment = 1
 
 text = "00"
 

@@ -138,6 +138,7 @@ const BUFFS: Dictionary = {
 
 var unlocked_achievements: Array[String] = []
 var is_retrying: bool = false
+var has_completed_tutorial: bool = false
 
 const LEVEL_CONFIG = {
 	1: {
@@ -336,6 +337,7 @@ func save_settings() -> void:
 	config.set_value("Stats", "unlocked_achievements", unlocked_achievements)
 	config.set_value("Stats", "seagulls_shooed", seagulls_shooed)
 	config.set_value("Stats", "flares_intercepted", flares_intercepted)
+	config.set_value("Stats", "has_completed_tutorial", has_completed_tutorial)
 	config.save(SETTINGS_FILE_PATH)
 
 func load_settings() -> void:
@@ -351,6 +353,7 @@ func load_settings() -> void:
 		high_score = config.get_value("Stats", "high_score", 0)
 		seagulls_shooed = config.get_value("Stats", "seagulls_shooed", 0)
 		flares_intercepted = config.get_value("Stats", "flares_intercepted", 0)
+		has_completed_tutorial = config.get_value("Stats", "has_completed_tutorial", false)
 		var loaded_achievements = config.get_value("Stats", "unlocked_achievements", [])
 		unlocked_achievements.assign(loaded_achievements)
 		

@@ -575,6 +575,10 @@ func _on_title_start_game(is_survival: bool) -> void:
 	
 	timer_running = true
 	virtual_mouse_pos = get_viewport().get_visible_rect().size / 2.0
+	
+	if GameState.level == 1 and not GameState.is_survival_mode and not GameState.has_completed_tutorial:
+		if hud and hud.has_method("show_tutorial_prompt"):
+			hud.show_tutorial_prompt()
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Build Scene
@@ -2085,6 +2089,13 @@ func _input(event: InputEvent) -> void:
 			return
 
 	if event.is_action("ui_shoot"):
+		if event.is_pressed():
+			if not GameState.has_completed_tutorial:
+				GameState.has_completed_tutorial = true
+				GameState.save_settings()
+				if hud and hud.has_method("hide_tutorial_prompt"):
+					hud.hide_tutorial_prompt()
+		
 		if is_catastrom_active and event.is_pressed() and not is_dragging_sun:
 			is_dragging_sun = true
 			is_shooting = false
