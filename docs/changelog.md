@@ -6,6 +6,7 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### Added
 - **First-Time Shooting Tutorial:** Added a new floating UI prompt during the first playthrough of Normal Mode to teach new players how to aim and shoot. The tutorial elegantly hovers centered above the weapon model and permanently fades out as soon as you press Left Click or Right Trigger.
+- **Auto-Pause on Unfocus:** The game now automatically catches the `NOTIFICATION_APPLICATION_FOCUS_OUT` signal and seamlessly triggers the Pause Menu (while cleanly closing the Weapon Wheel if it was open) whenever the player Alt-Tabs or clicks away from the game window, preventing accidental run failures.
 
 ## [v1.4.0]
 
@@ -162,6 +163,7 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### 추가됨 (Added)
 - **초보자 사격 튜토리얼:** 신규 플레이어가 일반 모드를 처음 플레이할 때 조준 및 사격 방법을 알려주는 새로운 UI 안내문을 추가했습니다. 이 튜토리얼은 화면 중앙 무기 모델 위에 표시되며, 좌클릭이나 우측 트리거(RT)를 눌러 사격하는 즉시 영구적으로 사라지고 진행 상황이 저장됩니다.
+- **창 포커스 해제 시 자동 일시정지:** 플레이어가 Alt-Tab을 누르거나 게임 창 외부를 클릭할 때 게임이 백그라운드 포커스 아웃 신호를 감지하고 즉시 일시정지 메뉴를 띄웁니다 (무기 휠이 열려 있다면 자동으로 닫힘). 이를 통해 의도치 않게 게임을 실패하는 상황을 방지합니다.
 
 ## [v1.4.0]
 

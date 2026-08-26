@@ -43,7 +43,7 @@ The live gameplay HUD is designed to minimize clutter while keeping critical sur
 These elements sit on top of the Core Gameplay HUD and blur/dim the background when active.
 
 ### Pause Screen (`pause_screen`)
-*   Activated by pressing `ESC`.
+*   Activated by pressing `ESC` or automatically triggered when the application window loses focus (e.g., Alt-Tabbing).
 *   Blurs the background and pauses the `get_tree().paused` state.
 *   Contains the `SettingsScreen` (Volume, Sensitivity, Reduce Motion, Vibration, Fullscreen, Language toggles), the `ControllerScreen` (Controls), the `CreditsScreen`, the `AchievementsScreen`, and the `ActiveBuffsScreen`.
     *   All these full-screen menus follow a strict unified layout: left-aligned content with a 96px margin, a 40x40 dynamic gold-tinted title icon, a 2px horizontal separator under the title, and exactly 24px of vertical separation between all primary layout components. Menu buttons (including all BACK buttons) uniformly use a standard size of 280x52 and share identical visual styling across 4 interaction states (Normal, Hover, Pressed, Disabled).

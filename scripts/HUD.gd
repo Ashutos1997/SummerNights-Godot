@@ -2867,3 +2867,10 @@ func _setup_controls_ui() -> void:
 						n.focus_entered.connect(hover_cb)
 						n.mouse_exited.connect(exit_cb)
 						n.focus_exited.connect(exit_cb)
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		if not pause_screen.visible and not (end_screen and end_screen.visible) and not (win_screen and win_screen.visible):
+			if weapon_wheel and weapon_wheel.active:
+				weapon_wheel.close()
+			_pause_game()

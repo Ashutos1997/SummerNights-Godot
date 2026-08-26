@@ -84,6 +84,7 @@ Weather events trigger based on a dynamic probability system tied to the current
     *   Vibration toggle (enables/disables controller haptics during combat).
     *   Fullscreen toggle (enabled by default for optimal font legibility).
     *   Language selection (English and Korean).
+    *   Automatic Pause on Window Unfocus (prevents losing a run when Alt-Tabbing).
 
 ## 7. Audio
 *   **Synthesized UI Sounds:** Programmatically generated sine-wave "ticks" and "whooshes" for UI navigation and the weapon wheel.
