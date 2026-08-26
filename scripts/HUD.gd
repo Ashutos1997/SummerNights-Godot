@@ -1343,6 +1343,9 @@ func _on_water_changed(current: float, max_val: float) -> void:
 			if is_instance_valid(water_tween):
 				water_tween.kill()
 			water_bar.modulate.a = 1.0
+			
+	if crosshair and crosshair.has_method("update_water"):
+		crosshair.update_water(current, max_val)
 
 func _on_crosshair_moved(screen_pos: Vector2, is_behind: bool) -> void:
 	crosshair.visible = not is_behind

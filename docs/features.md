@@ -61,7 +61,7 @@ Weather events trigger based on a dynamic probability system tied to the current
     *   **Cinematic Bloom:** The `WorldEnvironment` utilizes soft additive bloom, causing the sun and emissive particles to visibly bleed light into the environment.
 
 ## 6. UI, Juice, & Game Feel
-*   **Custom Crosshair:** A dynamic cursor that scales up on hits.
+*   **Dynamic Crosshair:** A custom diegetic cursor that scales up on hits. It features a translucent blue radial ring that visually tracks the current water tank capacity. The ring and crosshair instantly flash red when the tank is empty, and flash lime-green when landing critical hits on sunspots.
 *   **Screen Shake:** The camera violently shakes during critical moments (e.g., Phase 2 transitions, high heat, solar flare impacts, Catastrom dunks).
 *   **Hit Feedback:** The crosshair flashes and scales upon successful hits (`projectile_hit` events) and critical hits.
 *   **Dynamic UI Elements:**
