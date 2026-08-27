@@ -1485,6 +1485,7 @@ func _input(event: InputEvent) -> void:
 		if event.is_action_pressed("ui_accept") or event.is_action_pressed("ui_shoot"):
 			GameState.reset()
 			get_viewport().set_input_as_handled()
+			get_tree().paused = false
 			get_tree().change_scene_to_file("res://scenes/Main.tscn")
 			return
 
@@ -1493,6 +1494,7 @@ func _pause_game() -> void:
 	pause_screen.modulate.a = 0.0
 	var tw = create_tween()
 	tw.tween_property(pause_screen, "modulate:a", 1.0, 0.25)
+	get_tree().paused = true
 	emit_signal("game_paused")
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	# Set up Tab/arrow key order for pause menu buttons
@@ -1523,6 +1525,7 @@ func _resume_game() -> void:
 	tw.tween_property(pause_screen, "modulate:a", 0.0, 0.2)
 	await tw.finished
 	pause_screen.visible = false
+	get_tree().paused = false
 	emit_signal("game_resumed")
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
@@ -1861,10 +1864,12 @@ func _on_retry_pressed() -> void:
 	GameState.level = 1
 	GameState.current_wave = 1
 	GameState.is_retrying = true
+	get_tree().paused = false
 	get_tree().reload_current_scene()
 
 func _on_menu_pressed() -> void:
 	GameState.level = 1
+	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/Main.tscn")
 
 func update_ice_charges(charges: int, max_charges: int) -> void:

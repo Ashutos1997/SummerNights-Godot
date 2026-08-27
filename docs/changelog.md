@@ -9,6 +9,9 @@ All notable changes to the Summer Nights project will be documented in this file
 - **Auto-Pause on Unfocus:** The game now automatically catches the `NOTIFICATION_APPLICATION_FOCUS_OUT` signal and seamlessly triggers the Pause Menu (while cleanly closing the Weapon Wheel if it was open) whenever the player Alt-Tabs or clicks away from the game window, preventing accidental run failures.
 - **Dynamic Crosshair Ring:** Rebuilt the crosshair into a dedicated standalone scene. It now features a crisp, procedural vector ring drawn directly around the reticle that visually tracks your water tank capacity in real-time, removing the need to look down at the UI. The ring and crosshair will instantly flash red when the tank is empty, and will flash lime-green upon landing critical hits on sunspots.
 
+### Fixed
+- **Incomplete Pause State:** Fixed an issue where background elements (clouds, ocean wave shaders, physics, particles) continued animating while the game was paused. The pause system now sets `get_tree().paused = true` to freeze the entire scene tree globally, while keeping the HUD interactive via `PROCESS_MODE_ALWAYS`. All exit paths (Resume, Retry, Main Menu) correctly unpause the tree before transitioning.
+
 ## [v1.4.0]
 
 ### Added
@@ -166,6 +169,9 @@ All notable changes to the Summer Nights project will be documented in this file
 - **초보자 사격 튜토리얼:** 신규 플레이어가 일반 모드를 처음 플레이할 때 조준 및 사격 방법을 알려주는 새로운 UI 안내문을 추가했습니다. 이 튜토리얼은 화면 중앙 무기 모델 위에 표시되며, 좌클릭이나 우측 트리거(RT)를 눌러 사격하는 즉시 영구적으로 사라지고 진행 상황이 저장됩니다.
 - **창 포커스 해제 시 자동 일시정지:** 플레이어가 Alt-Tab을 누르거나 게임 창 외부를 클릭할 때 게임이 백그라운드 포커스 아웃 신호를 감지하고 즉시 일시정지 메뉴를 띄웁니다 (무기 휠이 열려 있다면 자동으로 닫힘). 이를 통해 의도치 않게 게임을 실패하는 상황을 방지합니다.
 - **다이내믹 크로스헤어 링:** 크로스헤어를 독립적인 씬으로 재구성했습니다. 이제 조준선 주위에 현재 물탱크 용량을 실시간으로 시각화하는 선명한 벡터 링이 렌더링되어 UI를 내려다볼 필요가 없습니다. 물탱크가 비어있을 때는 링과 조준선이 즉시 붉은색으로 깜박이며, 흑점(Sunspot)에 치명타를 적중시키면 라임 그린색으로 깜박입니다.
+
+### 수정됨 (Fixed)
+- **일시정지 중 배경 요소 미정지 버그:** 게임이 일시정지 상태일 때 구름, 해양 파도 셰이더, 물리, 파티클 등이 계속 움직이던 문제를 수정했습니다. 이제 일시정지 시 `get_tree().paused = true`를 호출하여 전체 씬 트리를 완전히 멈추며, HUD는 `PROCESS_MODE_ALWAYS`를 통해 일시정지 중에도 정상적으로 조작할 수 있도록 했습니다. 모든 종료 경로(재개, 재시작, 메인 메뉴)는 화면 전환 전에 올바르게 트리를 재개합니다.
 
 ## [v1.4.0]
 

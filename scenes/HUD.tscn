@@ -146,6 +146,7 @@ expand_margin_top = 16.0
 expand_margin_bottom = 16.0
 
 [node name="CanvasLayer" type="CanvasLayer"]
+process_mode = 3
 layer = 10
 scale = Vector2(1, 1)
 script = ExtResource("1_script")

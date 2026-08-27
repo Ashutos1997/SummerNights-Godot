@@ -155,7 +155,7 @@ A sleek, modern binary toggle used for premium settings like the Language switch
 
 ### Screen Overlays (Blur / Dim)
 
-When a menu or overlay is shown (e.g., Pause, Weapon Wheel), the screen behind it is blurred and dimmed using a custom screen-reading shader. Note: The Pause overlay is automatically triggered if the game window loses focus (`NOTIFICATION_APPLICATION_FOCUS_OUT`) to prevent unfair progression.
+When a menu or overlay is shown (e.g., Pause, Weapon Wheel), the screen behind it is blurred and dimmed using a custom screen-reading shader. Note: The Pause overlay is automatically triggered if the game window loses focus (`NOTIFICATION_APPLICATION_FOCUS_OUT`) to prevent unfair progression. Pausing sets `get_tree().paused = true`, which fully freezes the entire scene tree (clouds, waves, shaders, physics, animations, particles). The HUD's root `CanvasLayer` uses `PROCESS_MODE_ALWAYS` so that menus remain interactive during the pause.
 
 *   **Shader Parameters:**
     *   `blur_amount`: Transitions from `0.0` to `2.0`

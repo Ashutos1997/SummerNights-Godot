@@ -44,7 +44,7 @@ These elements sit on top of the Core Gameplay HUD and blur/dim the background w
 
 ### Pause Screen (`pause_screen`)
 *   Activated by pressing `ESC` or automatically triggered when the application window loses focus (e.g., Alt-Tabbing).
-*   Blurs the background and pauses the `get_tree().paused` state.
+*   Blurs the background and sets `get_tree().paused = true`, fully freezing the entire scene tree (clouds, ocean waves/shaders, physics, animations, particles). The HUD's root `CanvasLayer` uses `PROCESS_MODE_ALWAYS` to remain interactive. All exit paths (Resume, Retry, Main Menu) correctly unpause the tree before transitioning.
 *   Contains the `SettingsScreen` (Volume, Sensitivity, Reduce Motion, Vibration, Fullscreen, Language toggles), the `ControllerScreen` (Controls), the `CreditsScreen`, the `AchievementsScreen`, and the `ActiveBuffsScreen`.
     *   All these full-screen menus follow a strict unified layout: left-aligned content with a 96px margin, a 40x40 dynamic gold-tinted title icon, a 2px horizontal separator under the title, and exactly 24px of vertical separation between all primary layout components. Menu buttons (including all BACK buttons) uniformly use a standard size of 280x52 and share identical visual styling across 4 interaction states (Normal, Hover, Pressed, Disabled).
     *   The **PauseScreen** features a custom broken-border design with an animated procedurally-drawn vector sun graphic situated perfectly within a 320px gap in the bottom-right corner.
