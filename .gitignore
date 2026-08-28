@@ -14,3 +14,6 @@ builds/
 
 # Local agent notes
 local_notes/
+
+# Ignored assets
+assets/ui/logo/
