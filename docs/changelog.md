@@ -5,6 +5,9 @@ All notable changes to the Summer Nights project will be documented in this file
 ## [v1.5.1 - WIP]
 *(Note: This release corresponds to v1.1 on itch.io)*
 
+### Added
+* **Game Logo:** Integrated the official "Summer Nights" logo as the primary application icon for both Windows `.exe` and macOS `.app` exports.
+
 ### Improved
 * **Water Shader Polish:** Updated the stylized water shader (`stylized_water.gdshader`) to boost wave steepness and increase foam density and thickness, creating a much more dynamic and natural "water-like" feel.
 
@@ -174,6 +177,9 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ## [v1.5.1 - WIP]
 *(참고: 이 릴리스는 itch.io의 v1.1 버전에 해당합니다)*
+
+### 추가됨 (Added)
+* **게임 로고:** 공식 "Summer Nights" 로고를 Windows(`.exe`) 및 macOS(`.app`) 내보내기용 기본 애플리케이션 아이콘으로 통합했습니다.
 
 ### 개선됨 (Improved)
 * **물 셰이더 폴리싱:** 양식화된 물 셰이더(`stylized_water.gdshader`)를 업데이트하여 파도의 가파른 정도를 높이고 거품의 밀도와 두께를 증가시켜 훨씬 더 역동적이고 자연스러운 느낌을 구현했습니다.
