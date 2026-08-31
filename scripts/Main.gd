@@ -19,6 +19,7 @@ const HIT_COOLDOWN: float  = 0.08
 var can_shoot: bool       = true
 var game_over: bool       = false
 var defeat_triggered: bool = false
+var round_start_time: float = 0.0
 signal heat_changed(value: float, max_value: float)
 signal water_changed(value: float, max_value: float)
 signal sun_defeated(level: int)
@@ -274,6 +275,7 @@ var wet_spawn_timer: float = 0.0
 
 
 func _ready() -> void:
+	round_start_time = Time.get_unix_time_from_system()
 	_setup_post_process()
 	catastrom_buff = 1.1 if "slam_dunk" in GameState.unlocked_achievements else 1.0
 	ice_shoot_sfx = AudioStreamPlayer.new()
@@ -1489,6 +1491,7 @@ func _process(delta: float) -> void:
 		if level_timer <= 0.0:
 			timer_running = false
 			game_over = true
+			GameState.log_playtest_round("Loss", Time.get_unix_time_from_system() - round_start_time, GameState.current_weapon_id)
 			is_shooting = false
 			_stop_vibrate()
 			if gun_spray: gun_spray.emitting = false
@@ -2694,6 +2697,7 @@ func _win() -> void:
 	_end_mirage()
 	active_mirages.clear()
 	game_over = true
+	GameState.log_playtest_round("Win", Time.get_unix_time_from_system() - round_start_time, GameState.current_weapon_id)
 	is_shooting = false # Reset shooting state to prevent auto-firing on next level
 	_stop_vibrate()
 	timer_running = false # Stop the timer so we don't accidentally lose during the win transition

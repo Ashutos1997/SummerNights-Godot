@@ -408,3 +408,31 @@ func unlock_achievement(id: String) -> void:
 	unlocked_achievements.append(id)
 	save_settings()
 	emit_signal("achievement_unlocked", id)
+
+func log_playtest_round(outcome: String, time_played: float, current_weapon: String) -> void:
+	var log_data = {
+		"timestamp": Time.get_datetime_string_from_system(),
+		"mode": "Survival" if is_survival_mode else "Normal",
+		"level": level,
+		"score": score,
+		"outcome": outcome,
+		"time_played_seconds": snapped(time_played, 0.1),
+		"weapon_id": current_weapon
+	}
+	
+	var file_path = "user://playtest_logs.json"
+	var existing_logs = []
+	
+	if FileAccess.file_exists(file_path):
+		var file = FileAccess.open(file_path, FileAccess.READ)
+		var content = file.get_as_text()
+		if content.strip_edges() != "":
+			var json = JSON.parse_string(content)
+			if json is Array:
+				existing_logs = json
+	
+	existing_logs.append(log_data)
+	
+	var save_file = FileAccess.open(file_path, FileAccess.WRITE)
+	save_file.store_string(JSON.stringify(existing_logs, "\t"))
+	save_file.close()
