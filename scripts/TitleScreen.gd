@@ -596,7 +596,8 @@ func _show_achievements() -> void:
 		vbox.add_child(ach_title)
 		
 		var ach_desc = Label.new()
-		ach_desc.text = (ach["desc_kr"] if is_kr else ach["desc_en"])
+		var progress_str = "" if unlocked else GameState.get_achievement_progress(ach_id)
+		ach_desc.text = (ach["desc_kr"] if is_kr else ach["desc_en"]) + progress_str
 		ach_desc.custom_minimum_size = Vector2(550, 0)
 		ach_desc.autowrap_mode = TextServer.AUTOWRAP_WORD
 		_style_label(ach_desc, 16, Color(1.0, 1.0, 1.0, 0.8) if unlocked else Color(0.4, 0.4, 0.4, 0.8), body_font)

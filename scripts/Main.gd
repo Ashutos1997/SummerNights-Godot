@@ -2694,6 +2694,8 @@ func _trigger_catastrom_dunk() -> void:
 func _win() -> void:
 	if defeat_triggered: return
 	defeat_triggered = true
+	if active_weather == "eclipse":
+		GameState.unlock_achievement("shadow_walker")
 	_end_mirage()
 	active_mirages.clear()
 	game_over = true
@@ -3412,6 +3414,8 @@ func _end_weather_event() -> void:
 	
 	if active_weather == "rain":
 		weather_rain_particles.emitting = false
+	elif active_weather == "eclipse":
+		GameState.unlock_achievement("shadow_walker")
 		
 	active_weather = "none"
 	hud.update_weather_icon("none")

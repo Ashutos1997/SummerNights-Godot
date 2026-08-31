@@ -6,12 +6,14 @@ All notable changes to the Summer Nights project will be documented in this file
 *(Note: This release corresponds to v1.1 on itch.io)*
 
 ### Added
+* **Achievement Progress UI:** The game's UI will now dynamically show your current progress on locked accumulative achievements (e.g. "Shoo away 50 seagulls. (12/50)"), both on the Title Screen and in the mid-game Pause Menu.
 * **Game Logo:** Integrated the official "Summer Nights" logo as the primary application icon for both Windows `.exe` and macOS `.app` exports.
 
 ### Improved
 * **Water Shader Polish:** Updated the stylized water shader (`stylized_water.gdshader`) to boost wave steepness and increase foam density and thickness, creating a much more dynamic and natural "water-like" feel.
 
 ### Fixed
+* **Shadow Walker Achievement:** Fixed a bug where successfully surviving the Solar Eclipse event and clearing the level would not trigger or unlock the Shadow Walker achievement.
 * **Level Clear Screen Consistency:** The "Next Level" screen (WinScreen) has been completely restyled to follow the global design system. It now features the signature 24px golden border, centered layout, and a dividing line, perfectly matching the visual presentation of the Lose Screen. Additionally, fixed a bug where the level completion text (e.g., "LEVEL 01 COMPLETE") was hardcoded to English and failed to update when Korean was selected.
 
 ## [v1.5.0]
@@ -179,12 +181,14 @@ All notable changes to the Summer Nights project will be documented in this file
 *(참고: 이 릴리스는 itch.io의 v1.1 버전에 해당합니다)*
 
 ### 추가됨 (Added)
+* **업적 진행도 UI:** 타이틀 화면과 일시 정지 메뉴에서 잠금 해제되지 않은 누적 업적(예: "갈매기 50마리를 쫓아내세요. (12/50)")에 대한 현재 진행 상황을 동적으로 표시하도록 UI를 업데이트했습니다.
 * **게임 로고:** 공식 "Summer Nights" 로고를 Windows(`.exe`) 및 macOS(`.app`) 내보내기용 기본 애플리케이션 아이콘으로 통합했습니다.
 
 ### 개선됨 (Improved)
 * **물 셰이더 폴리싱:** 양식화된 물 셰이더(`stylized_water.gdshader`)를 업데이트하여 파도의 가파른 정도를 높이고 거품의 밀도와 두께를 증가시켜 훨씬 더 역동적이고 자연스러운 느낌을 구현했습니다.
 
 ### 수정됨 (Fixed)
+* **그림자 걷는 자 업적:** 일식 이벤트를 성공적으로 생존하고 레벨을 클리어할 때 '그림자 걷는 자' 업적이 정상적으로 해제되지 않던 버그를 수정했습니다.
 * **레벨 클리어 화면 일관성:** "다음 단계" 화면(WinScreen)이 게임의 전체 디자인 시스템에 맞게 완전히 개편되었습니다. 이제 실패(Lose) 화면과 시각적으로 완벽하게 일치하도록 24픽셀의 시그니처 황금색 테두리, 중앙 정렬 레이아웃 및 구분선이 적용되었습니다. 또한, 레벨 완료 텍스트(예: "LEVEL 01 COMPLETE")가 영어로 하드코딩되어 한국어 선택 시 동적으로 번역되지 않던 버그를 수정했습니다.
 
 ## [v1.5.0]

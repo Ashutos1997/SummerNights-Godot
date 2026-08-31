@@ -409,12 +409,23 @@ func unlock_achievement(id: String) -> void:
 	save_settings()
 	emit_signal("achievement_unlocked", id)
 
+func get_achievement_progress(id: String) -> String:
+	match id:
+		"arcade_legend":
+			return " (%d/10000)" % min(high_score, 10000)
+		"bird_watcher":
+			return " (%d/50)" % min(seagulls_shooed, 50)
+		"flare_catcher":
+			return " (%d/10)" % min(flares_intercepted, 10)
+		_:
+			return ""
+
 func log_playtest_round(outcome: String, time_played: float, current_weapon: String) -> void:
 	var log_data = {
 		"timestamp": Time.get_datetime_string_from_system(),
 		"mode": "Survival" if is_survival_mode else "Normal",
 		"level": level,
-		"score": score,
+		"score": current_score,
 		"outcome": outcome,
 		"time_played_seconds": snapped(time_played, 0.1),
 		"weapon_id": current_weapon
