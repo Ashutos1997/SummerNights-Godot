@@ -922,6 +922,56 @@ func _apply_language(lang: String) -> void:
 				# Move it after the titles
 				lose_vbox.move_child(hsep, 2)
 
+	# ── Restyle Win Screen (match design system) ──
+	if win_screen:
+		var win_bg = win_screen.get_node_or_null("ColorRect")
+		if win_bg:
+			win_bg.color = Color(0.02, 0.01, 0.05, 1.0)
+			
+		if not win_screen.has_node("WinBorder"):
+			var win_border = Panel.new()
+			win_border.name = "WinBorder"
+			win_border.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			win_border.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			win_border.offset_left = 24
+			win_border.offset_top = 24
+			win_border.offset_right = -24
+			win_border.offset_bottom = -24
+			
+			var b_style = StyleBoxFlat.new()
+			b_style.bg_color = Color(0, 0, 0, 0)
+			b_style.border_width_left = 2
+			b_style.border_width_top = 2
+			b_style.border_width_right = 2
+			b_style.border_width_bottom = 2
+			b_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
+			b_style.corner_radius_top_left = 8
+			b_style.corner_radius_top_right = 8
+			b_style.corner_radius_bottom_left = 8
+			b_style.corner_radius_bottom_right = 8
+			win_border.add_theme_stylebox_override("panel", b_style)
+			win_screen.add_child(win_border)
+		
+		var win_vbox = win_screen.get_node_or_null("ColorRect/VBoxContainer")
+		if win_vbox:
+			win_vbox.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+			win_vbox.add_theme_constant_override("separation", 24)
+			win_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+			
+			for child in win_vbox.get_children():
+				if child is Label:
+					child.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+				elif child is BoxContainer:
+					child.alignment = BoxContainer.ALIGNMENT_CENTER
+			
+			if not win_vbox.has_node("WinDivider"):
+				var hsep = HSeparator.new()
+				hsep.name = "WinDivider"
+				hsep.add_theme_stylebox_override("separator", sep_style)
+				win_vbox.add_child(hsep)
+				# Move it after the title
+				win_vbox.move_child(hsep, 1)
+
 	# Style TitleIcon panels across all menus
 	var icon_style = StyleBoxFlat.new()
 	icon_style.bg_color = Color(0, 0, 0, 0)
@@ -1022,9 +1072,24 @@ func _apply_language(lang: String) -> void:
 	if win_title_lbl:
 		win_title_lbl.text = "냉각 완료!" if is_kr else "COOLED DOWN!"
 		if font: win_title_lbl.add_theme_font_override("font", font)
+		win_title_lbl.add_theme_font_size_override("font_size", 56)
+		win_title_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+		win_title_lbl.add_theme_constant_override("outline_size", 4)
+		win_title_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+	if win_level_lbl:
+		# Note: The level text itself is usually updated at runtime, but we set font styles here.
+		if font: win_level_lbl.add_theme_font_override("font", font)
+		win_level_lbl.add_theme_font_size_override("font_size", 20 if is_kr else 18)
+		win_level_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.7))
+		win_level_lbl.add_theme_constant_override("outline_size", 4)
+		win_level_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 	if win_loading_lbl:
-		win_loading_lbl.text = "다음 단계 로딩 중..." if is_kr else "Next level loading..."
+		win_loading_lbl.text = "다음 단계 로딩 중..." if is_kr else "NEXT LEVEL LOADING..."
 		if font: win_loading_lbl.add_theme_font_override("font", font)
+		win_loading_lbl.add_theme_font_size_override("font_size", 16 if is_kr else 14)
+		win_loading_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.5))
+		win_loading_lbl.add_theme_constant_override("outline_size", 4)
+		win_loading_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 
 	# ── Lose screen & Phase 2 ─────────────────────────────────────────────────
 	if lose_title_lbl:
@@ -1394,7 +1459,8 @@ func _on_sun_defeated(level: int) -> void:
 	else:
 		level_label.text = "LVL  %02d" % level
 	if win_level_lbl:
-		win_level_lbl.text = "LEVEL %02d COMPLETE" % level
+		var is_kr = TranslationServer.get_locale() == "ko"
+		win_level_lbl.text = "%02d 단계 완료" % level if is_kr else "LEVEL %02d COMPLETE" % level
 	
 	win_screen.visible = true
 	win_screen.modulate.a = 0.0
