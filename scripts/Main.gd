@@ -657,6 +657,8 @@ func _build_scene() -> void:
 	env_res.volumetric_fog_length = 64.0
 	env_res.volumetric_fog_sky_affect = 0.3
 	
+
+	
 	# Color grading
 	env_res.adjustment_enabled = true
 	env_res.adjustment_brightness = 1.0

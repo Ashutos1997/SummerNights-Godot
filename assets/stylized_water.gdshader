@@ -14,18 +14,18 @@ uniform vec4 color_foam    : source_color = vec4(1.0, 1.0, 1.0, 1.0);     // Bri
 
 // ── Depth & Fog ─────────────────────────────────────────────────────────────
 uniform float depth_distance : hint_range(0.1, 10.0, 0.1) = 4.0;
-uniform float foam_amount    : hint_range(0.0, 4.0, 0.05) = 0.8;
+uniform float foam_amount    : hint_range(0.0, 4.0, 0.05) = 1.5;
 
 // ── Waves ───────────────────────────────────────────────────────────────────
 uniform float wave_speed  : hint_range(0.1, 4.0, 0.1) = 1.2;
 
 // Gerstner Wave Parameters
 uniform vec2 gerstner_dir1 = vec2(1.0, 0.5);
-uniform float gerstner_steepness1 : hint_range(0.0, 1.0, 0.05) = 0.3;
+uniform float gerstner_steepness1 : hint_range(0.0, 1.0, 0.05) = 0.45;
 uniform float gerstner_wavelength1 : hint_range(1.0, 50.0, 1.0) = 10.0;
 
 uniform vec2 gerstner_dir2 = vec2(-0.5, 0.8);
-uniform float gerstner_steepness2 : hint_range(0.0, 1.0, 0.05) = 0.2;
+uniform float gerstner_steepness2 : hint_range(0.0, 1.0, 0.05) = 0.35;
 uniform float gerstner_wavelength2 : hint_range(1.0, 50.0, 1.0) = 7.0;
 
 // ── Rogue Waves ─────────────────────────────────────────────────────────────
@@ -138,9 +138,9 @@ void fragment() {
 	vec3 world_pos = (INV_VIEW_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	float v_noise = voronoi(world_pos.xz * 0.4 + vec2(TIME * -0.1, TIME * 0.05));
 	// Sharp, thin foam lines
-	float surface_foam = 1.0 - smoothstep(0.0, 0.15, v_noise);
+	float surface_foam = 1.0 - smoothstep(0.0, 0.25, v_noise);
 	// Fade surface foam out in deep water so it doesn't look overwhelming
-	surface_foam *= clamp(1.0 - depth_factor * 0.5, 0.0, 1.0) * 0.15;
+	surface_foam *= clamp(1.0 - depth_factor * 0.5, 0.0, 1.0) * 0.45;
 	
 	foam_final_mask = clamp(foam_final_mask + surface_foam, 0.0, 1.0);
 	

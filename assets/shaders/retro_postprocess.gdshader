@@ -16,26 +16,32 @@ float rand(vec2 co){
 void fragment() {
     vec2 uv = SCREEN_UV;
     
+    // 1. Heat Haze (Distortion)
+    // Subtle wavy offset to simulate intense summer heat
+    float heat_wave = sin(uv.y * 60.0 + TIME * 4.0) * 0.0015;
+    // Distort more towards the horizon/top of screen
+    vec2 distorted_uv = uv + vec2(heat_wave * (1.0 - uv.y), 0.0);
+    
     // Scale aberration based on distance from center for a lens effect
-    vec2 center_dist = uv - vec2(0.5);
+    vec2 center_dist = distorted_uv - vec2(0.5);
     
-    vec3 color = texture(screen_texture, uv).rgb;
+    vec3 color = texture(screen_texture, distorted_uv).rgb;
     
-    // 2. Film Grain (Noise)
+    // 3. Film Grain (Noise)
     if (noise_amount > 0.0) {
         float noise_val;
         if (reduce_motion) {
             // Static noise to prevent flickering for a11y
-            noise_val = rand(uv) * noise_amount;
+            noise_val = rand(distorted_uv) * noise_amount;
         } else {
             // Animated noise
-            noise_val = rand(uv + vec2(TIME * 0.1, TIME * 0.2)) * noise_amount;
+            noise_val = rand(distorted_uv + vec2(TIME * 0.1, TIME * 0.2)) * noise_amount;
         }
         // Subtract noise to give a darker film grain look
         color -= vec3(noise_val);
     }
     
-    // 3. Color Grading (Improved Contrast & Saturation)
+    // 4. Color Grading (Improved Contrast & Saturation)
     
     // Contrast (S-Curve)
     color = mix(color, smoothstep(0.0, 1.0, color), 0.25);
@@ -53,7 +59,9 @@ void fragment() {
     color = mix(color, color + shadow_color, (1.0 - luma) * 0.3);
     color = mix(color, color * highlight_color, luma * 0.3);
     
-    // 4. Vignette
+
+    
+    // 6. Vignette
     float vignette = smoothstep(0.8, vignette_intensity, length(center_dist));
     color = mix(color, color * vignette, vignette_opacity);
     
