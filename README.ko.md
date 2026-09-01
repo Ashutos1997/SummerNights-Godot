@@ -197,6 +197,7 @@ SummerNights-Godot/
 | VFX - 얼음 폭발 발사체 및 입자 효과 | 절차적 고도(Godot) 기본 도형 | - |
 | VFX - 물리적 마그마 파편 (Physical Magma Debris) | Quaternius Rock Models 및 Godot RigidBody3D | - |
 | 절차적 구름 및 갈매기 | 수작업 GDScript | - |
+| VFX - 반딧불이 및 벌레 (Fireflies & Bugs) | 절차적 GDScript ArrayMesh | - |
 | 태양 표정 (Sun Face) | 절차적 Godot Image draw API | - |
 | 무기 선택 휠 UI | 절차적 GDScript draw API | - |
 | 물줄기 콤보 UI 및 로직 (Stream Combo UI) | 절차적 GDScript 및 Tween | - |

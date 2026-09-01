@@ -1888,6 +1888,14 @@ theme_override_font_sizes/font_size = 12
 text = "Heat Mirage Mechanic  ·  Procedural Translucent Materials  ·  -"
 horizontal_alignment = 1
 
+[node name="ItmFireflies" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "Fireflies & Bugs  ·  Procedural GDScript ArrayMesh  ·  -"
+horizontal_alignment = 1
+
 [node name="Divider2" type="HSeparator" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2

@@ -195,6 +195,7 @@ SummerNights-Godot/
 | VFX - Ice Blast Projectile & Particles | Procedural Godot Primitives | - |
 | VFX - Physical Magma Debris | Quaternius Rock Models & Godot RigidBody3D | - |
 | Procedural Clouds and Seagulls | Hand-crafted GDScript | - |
+| VFX - Fireflies & Bugs | Procedural GDScript ArrayMesh | - |
 | Sun Face Expressions | Procedural Godot Image draw API | - |
 | Weapon Wheel UI | Procedural GDScript draw API | - |
 | Stream Combo UI & Logic | Procedural GDScript & Tweens | - |

@@ -234,6 +234,7 @@ var active_weather: String = "none" # "none", "rain", "eclipse"
 var weather_timer: float = 0.0
 var weather_duration: float = 0.0
 var weather_rain_particles: GPUParticles3D
+var fireflies_particles: GPUParticles3D
 var weather_blend: float = 0.0
 
 var foliage_props: Array[Node3D] = []
@@ -748,6 +749,72 @@ func _build_scene() -> void:
 	camera.add_child(weather_rain_particles)
 	weather_rain_particles.position = Vector3(0, 15, 0)
 	weather_rain_particles.emitting = false
+
+	# ── Fireflies ────────────────────────────────────────────────────────────
+	fireflies_particles = GPUParticles3D.new()
+	fireflies_particles.name = "Fireflies"
+	
+	var ff_mesh = ArrayMesh.new()
+	var st = SurfaceTool.new()
+	
+	# Bug Body
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var body_box = BoxMesh.new()
+	body_box.size = Vector3(0.05, 0.1, 0.05)
+	st.append_from(body_box, 0, Transform3D(Basis(), Vector3(0, 0.03, 0)))
+	st.generate_normals()
+	ff_mesh = st.commit(ff_mesh)
+	var body_mat = StandardMaterial3D.new()
+	body_mat.albedo_color = Color(0.1, 0.1, 0.1)
+	ff_mesh.surface_set_material(0, body_mat)
+	
+	# Glowing Butt
+	st.clear()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var butt_box = BoxMesh.new()
+	butt_box.size = Vector3(0.06, 0.06, 0.06)
+	st.append_from(butt_box, 0, Transform3D(Basis(), Vector3(0, -0.04, 0)))
+	st.generate_normals()
+	ff_mesh = st.commit(ff_mesh)
+	var butt_mat = StandardMaterial3D.new()
+	butt_mat.albedo_color = Color(1.0, 0.8, 0.2)
+	butt_mat.emission_enabled = true
+	butt_mat.emission = Color(1.0, 0.8, 0.2)
+	butt_mat.emission_energy_multiplier = 3.0
+	ff_mesh.surface_set_material(1, butt_mat)
+	
+	var ff_proc = ParticleProcessMaterial.new()
+	ff_proc.particle_flag_align_y = true # Make bugs point in the direction they fly!
+	ff_proc.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	ff_proc.emission_box_extents = Vector3(15.0, 1.0, 10.0) # Spread across the beach
+	ff_proc.direction = Vector3(0, 1, 0)
+	ff_proc.spread = 20.0
+	ff_proc.initial_velocity_min = 0.2
+	ff_proc.initial_velocity_max = 0.6
+	ff_proc.gravity = Vector3(0, 0.1, 0)
+	ff_proc.scale_min = 0.5
+	ff_proc.scale_max = 1.2
+	
+	var ff_gradient = Gradient.new()
+	ff_gradient.add_point(0.0, Color(1.0, 0.9, 0.4, 0.0))
+	ff_gradient.add_point(0.2, Color(1.0, 0.9, 0.4, 1.0))
+	ff_gradient.add_point(0.8, Color(1.0, 0.5, 0.1, 1.0))
+	ff_gradient.add_point(1.0, Color(1.0, 0.5, 0.1, 0.0))
+	var ff_gradient_tex = GradientTexture1D.new()
+	ff_gradient_tex.gradient = ff_gradient
+	ff_proc.color_ramp = ff_gradient_tex
+	
+	fireflies_particles.process_material = ff_proc
+	fireflies_particles.draw_pass_1 = ff_mesh
+	fireflies_particles.amount = 50
+	fireflies_particles.lifetime = 8.0
+	fireflies_particles.explosiveness = 0.0
+	fireflies_particles.randomness = 1.0
+	fireflies_particles.visibility_aabb = AABB(Vector3(-20, -5, -20), Vector3(40, 20, 40))
+	
+	add_child(fireflies_particles)
+	fireflies_particles.position = Vector3(0, -1.0, 5.0) # Down near the sand, slightly back
+	fireflies_particles.emitting = true
 
 
 	# ── Animated Drifting Low-Poly 3D Cloud Layer ───────────────────────────
@@ -1838,8 +1905,7 @@ func _process(delta: float) -> void:
 			if hit_pos.distance_to(sun.position) > 4.5:
 				_spawn_wet_mark(hit_pos, hit_normal)
 				wet_spawn_timer = 0.08
-				if randf() < 0.3:
-					_spawn_splash(hit_pos)
+				_spawn_splash(hit_pos)
 				
 		# Check Seagull Interception
 		if is_instance_valid(seagull_layer):
