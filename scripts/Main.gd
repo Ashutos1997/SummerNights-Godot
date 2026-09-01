@@ -115,6 +115,21 @@ func _load_weapon_model() -> void:
 	_adjust_gun_materials(gun_model)
 	gun.add_child(gun_model)
 	
+	_recalculate_stats()
+	
+	if shoot_loop_sfx:
+		if GameState.current_weapon_id == "heavy":
+			shoot_loop_sfx.pitch_scale = 0.6
+		elif GameState.current_weapon_id == "precision":
+			shoot_loop_sfx.pitch_scale = 1.5
+		elif GameState.current_weapon_id == "tidal":
+			shoot_loop_sfx.pitch_scale = 0.5
+		else:
+			shoot_loop_sfx.pitch_scale = 1.0
+		
+func _recalculate_stats() -> void:
+	var w_cfg = GameState.WEAPONS[GameState.current_weapon_id]
+	var current_config = GameState.WEAPONS[GameState.current_weapon_id]
 	var old_max = MAX_WATER
 	var old_water = water_tank
 	MAX_WATER = w_cfg.water_capacity * GameState.max_water_mult
@@ -131,16 +146,6 @@ func _load_weapon_model() -> void:
 	if current_config.has("water_drain"):
 		base_drain = current_config.water_drain
 	WATER_DRAIN_RATE = base_drain + w_cfg.water_drain
-	
-	if shoot_loop_sfx:
-		if GameState.current_weapon_id == "heavy":
-			shoot_loop_sfx.pitch_scale = 0.6
-		elif GameState.current_weapon_id == "precision":
-			shoot_loop_sfx.pitch_scale = 1.5
-		elif GameState.current_weapon_id == "tidal":
-			shoot_loop_sfx.pitch_scale = 0.5
-		else:
-			shoot_loop_sfx.pitch_scale = 1.0
 
 	if gun_spray:
 		var p_mat = gun_spray.process_material as ParticleProcessMaterial
@@ -568,8 +573,8 @@ func _on_title_start_game(is_survival: bool) -> void:
 		sun_figure8 = GameState.current_wave >= 3
 		solar_wind_enabled = GameState.current_wave >= 4
 		flare_spawn_timer = min(flare_spawn_timer, max(2.5, 8.0 - (GameState.current_wave * 0.5)))
-		sun_sway_amplitude = min(8.0, GameState.current_wave * 1.5)
-		sun_sway_speed = min(2.0, 0.5 + GameState.current_wave * 0.2)
+		sun_sway_amplitude = min(8.0, 3.0 + (GameState.current_wave * 0.6))
+		sun_sway_speed = min(2.0, 0.5 + (GameState.current_wave * 0.2))
 		wind_level_mult = min(2.5, 1.0 + (GameState.current_wave - 4) * 0.15)
 		if GameState.current_wave % 5 == 0:
 			is_two_phase = true
@@ -1685,12 +1690,12 @@ func _process(delta: float) -> void:
 			var spd_mult = 0.0 if is_sun_frozen else 1.0
 			var featherweight_amp = sun_sway_amplitude * (0.6 if "bird_watcher" in GameState.unlocked_achievements else 1.0)
 			sun_move_time += delta * spd_mult
-			var x_offset = sin(sun_move_time * sun_sway_speed) * featherweight_amp
+			var x_offset = sin(sun_move_time * sun_sway_speed * GameState.sun_sway_mult) * featherweight_amp
 			sun_mirage_offset = lerp(sun_mirage_offset, sun_mirage_target, delta * 1.5)
 			sun.position.x = sun_base_pos.x + x_offset + sun_mirage_offset
 			
 			if sun_figure8:
-				var y_offset = sin(sun_move_time * sun_sway_speed * 2.0) * (featherweight_amp * 0.5)
+				var y_offset = sin(sun_move_time * sun_sway_speed * GameState.sun_sway_mult * 2.0) * (featherweight_amp * 0.5)
 				sun.position.y = sun_base_pos.y + y_offset
 				sun.position.z = sun_base_pos.z
 			else:
@@ -1778,7 +1783,7 @@ func _process(delta: float) -> void:
 						var base_x_offset = 0.0
 						if sun_sway_amplitude > 0.0:
 							var featherweight_amp = sun_sway_amplitude * (0.6 if "bird_watcher" in GameState.unlocked_achievements else 1.0)
-							base_x_offset = sin(sun_move_time * sun_sway_speed) * featherweight_amp
+							base_x_offset = sin(sun_move_time * sun_sway_speed * GameState.sun_sway_mult) * featherweight_amp
 						node.position.x = sun_base_pos.x + base_x_offset + m["current_offset"]
 						node.position.y = sun.position.y + sin(sun_time * sun_bob_speed * 1.2) * 2.0
 						node.position.z = sun.position.z + 2.0 # Slightly in front
@@ -1996,7 +2001,7 @@ func _process(delta: float) -> void:
 				# Reward: Instantly refill Water Tank & +2% Catastrom Charge (scaled by buff)!
 				var refill_amount = 0.40 if "flare_catcher" in GameState.unlocked_achievements else 0.30
 				water_tank = min(MAX_WATER, water_tank + (MAX_WATER * refill_amount))
-				GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (0.02 * catastrom_buff))
+				GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (0.02 * catastrom_buff * GameState.catastrom_charge_mult))
 				var c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2)) if combo_active else 1.0
 				GameState.add_score(int(500.0 * c_mult))
 				water_refill_count += 1
@@ -2068,7 +2073,7 @@ func _process(delta: float) -> void:
 			if GameState.is_survival_mode and GameState.current_wave >= 5:
 				damage_mult = 1.0 + (GameState.current_wave - 4) * 0.15
 				
-			var dmg = current_weapon_power * current_weapon_crit * damage_mult * delta
+			var dmg = current_weapon_power * (current_weapon_crit * GameState.crit_damage_mult) * damage_mult * delta
 			if mirage_hp > 0.0:
 				mirage_hp -= dmg
 				if hud and hud.has_method("update_mirage_hp"):
@@ -2156,6 +2161,13 @@ func _process(delta: float) -> void:
 		was_catastrom_charged = false
 
 func _input(event: InputEvent) -> void:
+	# DEBUG: Instant Draft Menu trigger
+	if event is InputEventKey and event.pressed and event.keycode == KEY_F4:
+		if hud and hud.has_method("show_drafting_screen"):
+			get_tree().paused = true
+			hud.show_drafting_screen()
+			return
+			
 	if is_title_screen:
 		return
 	if hud and "lose_screen" in hud and hud.lose_screen != null and hud.lose_screen.visible:
@@ -2491,14 +2503,14 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			damage_mult = 1.0 + (GameState.current_wave - 4) * 0.15 # +15% damage per wave past wave 4
 				
 		if is_critical:
-			var dmg = current_weapon_power * current_weapon_crit * damage_mult * delta
+			var dmg = current_weapon_power * (current_weapon_crit * GameState.crit_damage_mult) * damage_mult * delta
 			if active_mirages.size() == 0:
 				temperature = max(0.0, temperature - dmg)
 				
 			var c_mult = 1.0
 			if combo_active:
 				c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
-			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult * catastrom_buff / 1200.0))
+			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult / 1200.0))
 			GameState.add_score(int(dmg * 10.0 * c_mult))
 			if sizzle_sfx and not sizzle_sfx.playing:
 				sizzle_sfx.play()
@@ -2514,7 +2526,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			var c_mult = 1.0
 			if combo_active:
 				c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
-			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult * catastrom_buff / 1200.0))
+			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult / 1200.0))
 			GameState.add_score(int(dmg * 5.0 * c_mult))
 			projectile_hit.emit()
 			
@@ -2528,7 +2540,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			
 		# Spawn floating number (calculating DPS burst for the popup)
 		var dmg_val = current_weapon_power * damage_mult
-		if is_critical: dmg_val *= current_weapon_crit
+		if is_critical: dmg_val *= (current_weapon_crit * GameState.crit_damage_mult)
 		_spawn_damage_number(dmg_val, is_critical, target_pos)
 		
 	_update_sky(false)
@@ -2567,10 +2579,11 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				GameState.ice_charges_remaining += 1 + GameState.bonus_ice_charges
 				water_changed.emit(water_tank, MAX_WATER)
 				
-				# Temporarily disabled shop logic per user request
-				# if hud:
-				# 	get_tree().paused = true
-				# 	hud.show_shop()
+				# Trigger Rogue-lite Drafting System after Boss Waves
+				if hud:
+					get_tree().paused = true
+					if hud.has_method("show_drafting_screen"):
+						hud.show_drafting_screen()
 				
 			max_survival_ice_charges = max(max_survival_ice_charges, GameState.ice_charges_remaining)
 			if hud:
@@ -3516,14 +3529,6 @@ func _end_weather_event() -> void:
 	_update_sky(false)
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_F12:
-			var img = get_viewport().get_texture().get_image()
-			var time_str = Time.get_datetime_string_from_system().replace(":", "-").replace("T", "_")
-			var path = OS.get_system_dir(OS.SYSTEM_DIR_DESKTOP) + "/SummerNights_" + time_str + ".png"
-			img.save_png(path)
-			print("Screenshot saved to: ", path)
-			
 	if GameState.is_dev_mode and event is InputEventKey and event.pressed and not event.echo:
 		match event.keycode:
 			KEY_R:

@@ -6,11 +6,16 @@ All notable changes to the Summer Nights project will be documented in this file
 *(Note: This release corresponds to v1.1 on itch.io)*
 
 ### Added
+* **Rogue-lite Wave Perks (Drafting):** Endless Mode now features a full drafting system! After surviving every 5th wave (Boss Wave), the game pauses and presents 3 randomized perks (e.g., +15% Water Capacity, +15% Critical Damage). 
+* **Active Perks HUD:** Added a Risk-of-Rain style buff tracker to the top-left HUD that dynamically tracks all drafted perks in real-time. Duplicate perks automatically stack with a gold "x2" or "x3" badge to prevent UI clutter.
+* **Dynamic Builds:** Drafted perks permanently stack for the duration of your run, allowing you to craft unique builds to survive the extreme late-game hazards.
+* **Gravity Anchor Perk:** Added a rare (20% draft rate) "Gravity Anchor" perk that permanently reduces the sun's sway and erratic movement speed by 15%.
 * **Procedural Fireflies:** Added a custom procedural particle system that dynamically generates glowing, low-poly bugs across the foreground beach. They now react dynamically to weather events: fading away to hide during Rainstorms, glowing twice as bright during Eclipses, and being violently blown sideways during Solar Winds to match the swaying foliage.
 * **Achievement Progress UI:** The game's UI will now dynamically show your current progress on locked accumulative achievements (e.g. "Shoo away 50 seagulls. (12/50)"), both on the Title Screen and in the mid-game Pause Menu.
 * **Game Logo:** Integrated the official "Summer Nights" logo as the primary application icon for both Windows `.exe` and macOS `.app` exports.
 
 ### Improved
+* **Drafting Screen UI:** Added a premium, golden-bordered card drafting screen that appears during boss wave transitions with smooth scaling and blurring effects.
 * **Dynamic Sky Aesthetics:** Upgraded the procedural sky shader with multi-layered parallax clouds to create a sense of deep volumetric depth, and introduced a procedural twinkling starfield that dynamically fades into view during dusk, night, and solar eclipses.
 * **Weapon Wheel UX:** Locked weapons in the weapon wheel now explicitly display their exact unlock requirements (e.g., "UNLOCK: SCORE OVER 10,000 POINTS IN A SINGLE RUN.") instead of just showing the achievement title, making progression paths much clearer.
 * **Idle Island Breeze:** Increased the mathematical intensity of the ambient wind sway applied to all tropical foliage (palm trees and bushes) to make the relaxing beach breeze significantly more noticeable during gameplay.
@@ -20,6 +25,8 @@ All notable changes to the Summer Nights project will be documented in this file
 ### Fixed
 * **Shadow Walker Achievement:** Fixed a bug where successfully surviving the Solar Eclipse event and clearing the level would not trigger or unlock the Shadow Walker achievement.
 * **Level Clear Screen Consistency:** The "Next Level" screen (WinScreen) has been completely restyled to follow the global design system. It now features the signature 24px golden border, centered layout, and a dividing line, perfectly matching the visual presentation of the Lose Screen. Additionally, fixed a bug where the level completion text (e.g., "LEVEL 01 COMPLETE") was hardcoded to English and failed to update when Korean was selected.
+* **Screenshot Universality:** Fixed a bug where the `F12` screenshot hotkey wouldn't work while the game was paused (such as during the drafting menu). The logic has been migrated to a global process so you can take screenshots at any time.
+* **Aggressive MacOS Pausing:** Fixed a bug on MacOS where selecting a perk and recapturing the mouse cursor would cause the OS to briefly lose window focus, tricking the game into instantly throwing up the Pause Menu.
 
 ## [v1.5.0]
 
@@ -186,11 +193,16 @@ All notable changes to the Summer Nights project will be documented in this file
 *(참고: 이 릴리스는 itch.io의 v1.1 버전에 해당합니다)*
 
 ### 추가됨 (Added)
+* **로그라이트 웨이브 특성 (드래프팅):** 무한 모드에 새로운 드래프팅 시스템이 추가되었습니다! 매 5번째 웨이브(보스 웨이브)를 클리어할 때마다 게임이 일시 정지되며 3개의 무작위 특성 중 하나를 선택할 수 있습니다 (예: 물탱크 용량 +15%, 치명타 피해량 +15%).
+* **활성 특성 HUD (Active Perks HUD):** 플레이 중 선택한 특성들을 실시간으로 추적할 수 있도록 화면 좌측 상단에 Risk-of-Rain 스타일의 버프 트래커를 추가했습니다. 중복되는 특성은 UI를 번잡하게 만들지 않고 금빛 "x2" 또는 "x3" 배지로 자동 중첩 표시됩니다.
+* **다이내믹 빌드:** 선택한 특성은 해당 게임 동안 영구적으로 중첩되어 극후반부의 위험을 극복하기 위한 독창적인 빌드를 구성할 수 있습니다.
+* **중력 닻 특성 (Gravity Anchor Perk):** 태양의 흔들림과 불규칙한 움직임 속도를 15% 감소시켜주는 희귀 특성 (등장 확률 20%) 인 "중력 닻"이 추가되었습니다.
 * **절차적 반딧불이:** 해변 전경에 빛나는 로우폴리 벌레를 동적으로 생성하는 맞춤형 절차적 파티클 시스템을 추가했습니다. 반딧불이는 이제 기상 이벤트에 동적으로 반응합니다. 폭우 시에는 서서히 사라져 숨고, 일식 중에는 두 배 더 밝게 빛나며, 태양풍이 불 때는 흔들리는 덤불과 함께 강풍에 밀려납니다.
 * **업적 진행도 UI:** 타이틀 화면과 일시 정지 메뉴에서 잠금 해제되지 않은 누적 업적(예: "갈매기 50마리를 쫓아내세요. (12/50)")에 대한 현재 진행 상황을 동적으로 표시하도록 UI를 업데이트했습니다.
 * **게임 로고:** 공식 "Summer Nights" 로고를 Windows(`.exe`) 및 macOS(`.app`) 내보내기용 기본 애플리케이션 아이콘으로 통합했습니다.
 
-### 개선됨 (Improved)
+### 개선됨
+* **드래프팅 화면 UI:** 보스 웨이브 전환 시 나타나는 고급스러운 금빛 테두리의 카드 드래프팅 화면이 추가되었습니다. 부드러운 스케일링과 블러 효과가 적용되어 있습니다.
 * **동적 하늘 시각 효과 (Dynamic Sky Aesthetics):** 절차적 하늘 셰이더를 다층 시차(Parallax) 구름으로 업그레이드하여 깊은 입체감을 주었으며, 황혼, 밤, 일식 중에 동적으로 나타나 반짝이는 절차적 별밭(Starfield)을 도입했습니다.
 * **무기 휠 UX 개선:** 무기 휠에서 잠긴 무기에 마우스를 올렸을 때 이제 업적 제목만 보여주는 것이 아니라 정확한 잠금 해제 조건(예: "조건: 한 게임에서 10,000점 이상을 달성하세요.")을 명확하게 표시하여 진행 경로를 더 쉽게 파악할 수 있도록 했습니다.
 * **섬의 산들바람 (Idle Island Breeze):** 게임 플레이 중 해변의 편안한 산들바람이 훨씬 더 눈에 띄도록 모든 열대 식물(야자수 및 덤불)에 적용되는 주변 바람 흔들림의 수학적 강도를 증가시켰습니다.
@@ -200,6 +212,8 @@ All notable changes to the Summer Nights project will be documented in this file
 ### 수정됨 (Fixed)
 * **그림자 걷는 자 업적:** 일식 이벤트를 성공적으로 생존하고 레벨을 클리어할 때 '그림자 걷는 자' 업적이 정상적으로 해제되지 않던 버그를 수정했습니다.
 * **레벨 클리어 화면 일관성:** "다음 단계" 화면(WinScreen)이 게임의 전체 디자인 시스템에 맞게 완전히 개편되었습니다. 이제 실패(Lose) 화면과 시각적으로 완벽하게 일치하도록 24픽셀의 시그니처 황금색 테두리, 중앙 정렬 레이아웃 및 구분선이 적용되었습니다. 또한, 레벨 완료 텍스트(예: "LEVEL 01 COMPLETE")가 영어로 하드코딩되어 한국어 선택 시 동적으로 번역되지 않던 버그를 수정했습니다.
+* **스크린샷 범용성:** 게임이 일시정지 상태(예: 특성 선택 메뉴가 열렸을 때)일 때 F12 스크린샷 단축키가 작동하지 않던 버그를 수정했습니다. 이제 전역 프로세스에서 처리되므로 언제든지 스크린샷을 찍을 수 있습니다.
+* **MacOS 일시정지 오류:** MacOS 환경에서 특성을 선택한 직후 마우스 포인터를 숨길 때, 운영체제가 잠시 창 포커스를 잃은 것으로 잘못 인식하여 게임이 강제로 일시정지 메뉴를 띄우던 문제를 수정했습니다.
 
 ## [v1.5.0]
 

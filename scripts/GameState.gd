@@ -308,6 +308,59 @@ var heat_resistance: float = 0.0
 var bonus_ice_charges: int = 0
 var catastrom_charge: float = 0.0
 
+const WAVE_PERKS: Dictionary = {
+	"capacity_boost": {
+		"icon": "res://assets/ui/achievements/water-recycling.png",
+		"title_en": "High Capacity",
+		"title_kr": "대용량",
+		"desc_en": "+15% Water Tank Size.",
+		"desc_kr": "물탱크 용량이 15% 증가합니다."
+	},
+	"crit_boost": {
+		"icon": "res://assets/ui/achievements/ball-glow.png",
+		"title_en": "Precision Optics",
+		"title_kr": "정밀 광학",
+		"desc_en": "+15% Critical Hit Damage.",
+		"desc_kr": "치명타 피해량이 15% 증가합니다."
+	},
+	"cooling_boost": {
+		"icon": "res://assets/ui/achievements/water-splash.png",
+		"title_en": "Thermal Insulator",
+		"title_kr": "열 절연체",
+		"desc_en": "+10% Cooling Power.",
+		"desc_kr": "냉각력이 10% 증가합니다."
+	},
+	"catastrom_boost": {
+		"icon": "res://assets/ui/achievements/eclipse.png",
+		"title_en": "Catastrom Flow",
+		"title_kr": "카타스트롬 흐름",
+		"desc_en": "+15% Catastrom charge rate.",
+		"desc_kr": "카타스트롬 충전 속도가 15% 증가합니다."
+	},
+	"heat_shield": {
+		"icon": "res://assets/ui/achievements/fireball.png",
+		"title_en": "Heat Shield",
+		"title_kr": "열 차폐막",
+		"desc_en": "+5% Heat Resistance.",
+		"desc_kr": "열 저항이 5% 증가합니다.",
+		"weight": 100
+	},
+	"slow_sway": {
+		"icon": "res://assets/ui/achievements/sunset.png",
+		"title_en": "Gravity Anchor",
+		"title_kr": "중력 닻",
+		"desc_en": "-15% Sun Sway Speed (Rare).",
+		"desc_kr": "태양의 흔들림 속도가 15% 감소합니다 (희귀).",
+		"weight": 20
+	}
+}
+
+var active_wave_perks: Array[String] = []
+
+var crit_damage_mult: float = 1.0
+var catastrom_charge_mult: float = 1.0
+var sun_sway_mult: float = 1.0
+
 func reset() -> void:
 	level = 1
 	ice_charges_remaining = 0
@@ -320,10 +373,25 @@ func reset() -> void:
 	heat_resistance = 0.0
 	bonus_ice_charges = 0
 	catastrom_charge = 0.0
+	crit_damage_mult = 1.0
+	catastrom_charge_mult = 1.0
+	sun_sway_mult = 1.0
+	active_wave_perks.clear()
+	_evaluate_milestones()
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	load_settings()
 	_evaluate_milestones()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_F12:
+			var img = get_viewport().get_texture().get_image()
+			var time_str = Time.get_datetime_string_from_system().replace(":", "-").replace("T", "_")
+			var path = OS.get_system_dir(OS.SYSTEM_DIR_DESKTOP) + "/SummerNights_" + time_str + ".png"
+			img.save_png(path)
+			print("Screenshot saved to: ", path)
 
 func save_settings() -> void:
 	var config = ConfigFile.new()
@@ -388,6 +456,8 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 	cooling_power_mult = 1.0
 	bonus_ice_charges = 0
 	heat_resistance = 0.05 if "rock_solid" in unlocked_achievements else 0.0
+	crit_damage_mult = 1.0
+	catastrom_charge_mult = 1.0
 	
 	if high_score >= 5000:
 		max_water_mult = 1.1
@@ -400,6 +470,16 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 		if old_high >= 0 and old_high < 20000: emit_signal("buff_unlocked", "ice_upgrade")
 	if high_score >= 50000:
 		if old_high >= 0 and old_high < 50000: emit_signal("buff_unlocked", "gold_weapon")
+
+	# Apply drafted perks
+	for perk_id in active_wave_perks:
+		match perk_id:
+			"capacity_boost": max_water_mult += 0.15
+			"cooling_boost": cooling_power_mult += 0.10
+			"heat_shield": heat_resistance += 0.05
+			"crit_boost": crit_damage_mult += 0.15
+			"catastrom_boost": catastrom_charge_mult += 0.15
+			"slow_sway": sun_sway_mult -= 0.15
 
 func unlock_achievement(id: String) -> void:
 	if id in unlocked_achievements: return

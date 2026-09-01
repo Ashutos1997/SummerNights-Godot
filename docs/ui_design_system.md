@@ -93,6 +93,23 @@ All menus (Pause, Settings, Credits, Achievements, Buffs) follow a strict intern
     *   **Thickness:** `2px`
 *   **Edge Alignment:** When aligning nested child elements (e.g., the controls graphic and legend) to the outer edges of the main menu boundaries, expanding spacers (`size_flags_horizontal = 3`) are utilized within an HBoxContainer to guarantee perfect, responsive left/right symmetry against the top and bottom dividers.
 
+### Drafting Menu (Rogue-lite Perks)
+The mid-game drafting menu adheres strictly to the global menu visual language rather than introducing a completely new aesthetic:
+*   **Background:** Same `Color(0.02, 0.01, 0.05, 0.96)` translucent overlay as the Pause Menu.
+*   **Layout:** Perfectly centered (like the Lose Screen) to focus player attention on the rewards.
+*   **Perk Cards:** Each perk is presented in a horizontal card layout (`HBoxContainer`).
+    *   Icon size: `64x64`
+    *   Padding/Spacing: `16px` separation between icon and text.
+*   **Button Styling:** Standard `StyleBoxFlat` is used for the perk cards to ensure hover interactions trigger the global golden glow effect.
+
+### Active Perks HUD (Tracker)
+*   **Container:** Uses an `HFlowContainer` anchored beneath the Top-Left Wave/Level text, with `8px` horizontal and vertical separation to handle wrapping cleanly during long runs.
+*   **Perk Icons:**
+    *   Base Size: `32x32` panel.
+    *   Background: `Color(0, 0, 0, 0.4)` with `4px` corner radii and a `1px` thin golden border (`Color(1, 0.85, 0.2, 0.6)`).
+    *   Icon Texture: Shrinks inside the panel with a `4px` margin on all sides to provide breathing room.
+    *   Stack Badges: Duplicate perks append a `12px` font "xN" badge anchored to the bottom right, pushed slightly outside the panel (`-24px` left, `-14px` top) for readability against the sky.
+
 ### Buttons (StyleBoxFlat)
 
 Buttons use a sleek, semi-transparent flat style with thick borders.

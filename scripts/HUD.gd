@@ -48,6 +48,8 @@ var buff_toast_container: Control
 @onready var score_label       = $HUD/ScoreLabel
 @onready var combo_label       = $HUD/ComboLabel
 var callout_label: Label
+var active_perks_hud: HFlowContainer
+var _ignore_focus_out_until: int = 0
 var last_callout_tier: int = 0
 @onready var phase2_label      = $HUD/Phase2Label
 @onready var lose_screen       = $HUD/LoseScreen
@@ -138,6 +140,78 @@ var credits_scroll_acc: float = 0.0
 
 var _weather_pulse_tween: Tween
 
+var drafting_screen = null
+
+func show_drafting_screen() -> void:
+	if not drafting_screen:
+		drafting_screen = load("res://scripts/DraftingScreen.gd").new()
+		drafting_screen.name = "DraftingScreen"
+		$HUD.add_child(drafting_screen)
+	drafting_screen.show_draft()
+
+func update_active_perks_hud() -> void:
+	_ignore_focus_out_until = Time.get_ticks_msec() + 500
+	if not active_perks_hud: return
+	
+	for c in active_perks_hud.get_children():
+		c.queue_free()
+		
+	var counts = {}
+	for p in GameState.active_wave_perks:
+		counts[p] = counts.get(p, 0) + 1
+		
+	for p in counts.keys():
+		var p_cfg = GameState.WAVE_PERKS.get(p)
+		if not p_cfg: continue
+		
+		var panel = Panel.new()
+		panel.custom_minimum_size = Vector2(32, 32)
+		var style = StyleBoxFlat.new()
+		style.bg_color = Color(0, 0, 0, 0.4)
+		style.corner_radius_top_left = 4
+		style.corner_radius_top_right = 4
+		style.corner_radius_bottom_left = 4
+		style.corner_radius_bottom_right = 4
+		style.border_width_left = 1
+		style.border_width_right = 1
+		style.border_width_top = 1
+		style.border_width_bottom = 1
+		style.border_color = Color(1, 0.85, 0.2, 0.6)
+		panel.add_theme_stylebox_override("panel", style)
+		
+		var icon = TextureRect.new()
+		icon.texture = load(p_cfg.icon)
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.set_anchors_preset(Control.PRESET_FULL_RECT)
+		icon.offset_left = 4
+		icon.offset_top = 4
+		icon.offset_right = -4
+		icon.offset_bottom = -4
+		panel.add_child(icon)
+		
+		if counts[p] > 1:
+			var badge = Label.new()
+			badge.text = "x" + str(counts[p])
+			var ls = LabelSettings.new()
+			ls.font = load("res://assets/fonts/Galmuri11.ttf") if GameState.language == "KR" else load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+			ls.font_size = 12
+			ls.font_color = Color(1.0, 0.9, 0.3)
+			ls.outline_size = 4
+			ls.outline_color = Color.BLACK
+			badge.label_settings = ls
+			badge.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+			# Small offset to push it slightly outside the box for standard pop
+			badge.offset_left = -24
+			badge.offset_top = -14
+			badge.offset_right = 4
+			badge.offset_bottom = 4
+			badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			badge.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+			panel.add_child(badge)
+			
+		active_perks_hud.add_child(panel)
+
 func update_weather_icon(weather_type: String) -> void:
 	if not weather_icon_container or not weather_icon: return
 	
@@ -219,6 +293,7 @@ func reset() -> void:
 	if tutorial_prompt:
 		tutorial_prompt.hide()
 		tutorial_prompt.modulate.a = 1.0
+	update_active_perks_hud()
 
 func show_tutorial_prompt() -> void:
 	if not tutorial_prompt: return
@@ -246,6 +321,14 @@ func _ready() -> void:
 	phase2_label.visible = false
 	combo_label.visible = false
 	timer_label.text = ""
+	
+	active_perks_hud = HFlowContainer.new()
+	active_perks_hud.position = Vector2(24, 60)
+	active_perks_hud.size = Vector2(240, 200)
+	active_perks_hud.add_theme_constant_override("h_separation", 8)
+	active_perks_hud.add_theme_constant_override("v_separation", 8)
+	$HUD.add_child(active_perks_hud)
+	$HUD.move_child(active_perks_hud, 0)
 	
 	callout_label = Label.new()
 	combo_label.add_sibling(callout_label)
@@ -1535,6 +1618,9 @@ func _input(event: InputEvent) -> void:
 			return
 		elif buffs_screen and buffs_screen.visible:
 			hide_buffs_screen()
+			get_viewport().set_input_as_handled()
+			return
+		elif drafting_screen and drafting_screen.visible:
 			get_viewport().set_input_as_handled()
 			return
 		
@@ -2945,7 +3031,9 @@ func _setup_controls_ui() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT:
-		if not pause_screen.visible and not (end_screen and end_screen.visible) and not (win_screen and win_screen.visible):
+		if Time.get_ticks_msec() < _ignore_focus_out_until:
+			return
+		if not pause_screen.visible and not (end_screen and end_screen.visible) and not (win_screen and win_screen.visible) and not (drafting_screen and drafting_screen.visible):
 			if weapon_wheel and weapon_wheel.active:
 				weapon_wheel.close()
 			_pause_game()

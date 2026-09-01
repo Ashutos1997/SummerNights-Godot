@@ -10,6 +10,7 @@ The live gameplay HUD is designed to minimize clutter while keeping critical sur
 
 ### Top-Left
 *   **`LevelLabel`:** Displays the current game stage (e.g., `LVL 01` for Normal mode, `WAVE 01` for Survival mode).
+*   **`ActivePerksHUD`:** Positioned immediately below the `LevelLabel`. This dynamically generated `HFlowContainer` tracks all Rogue-lite perks the player has drafted in Endless Mode using a grid of 32x32 icons. Duplicate perks stack into a single icon with a small "xN" badge.
 
 ### Top-Center
 *   **`SunHeatBar`:** The most critical UI element. Displays the current temperature of the sun. If this bar fills completely (100%), the player loses.

@@ -24,7 +24,18 @@ This document serves as the master record for all currently implemented features
     *   **Scatter Nozzle:** Wide spread, excellent for intercepting multiple solar flares at once, but lacks pinpoint cooling. (Unlocked Level 4)
     *   **Tidal Gatling:** A massive heavy burst weapon with extreme cooling power and water drain, but a very punishing recharge rate. (Unlocked via "Arcade Legend" Achievement)
 *   **Ice Charges (Secondary Fire):** Powerful, instant-cooling projectiles with limited charges. Earn charges over time or when defeating boss waves.
-*   **Catastrom Ultimate:** Fills up by continuously watering the sun. When at 100% (Level 4+), press [F] to physically grab the sun and violently drag it down into the ocean for an instant wave clear.
+	*   **Catastrom Ultimate:** Fills up by continuously watering the sun. When at 100% (Level 4+), press [F] to physically grab the sun and violently drag it down into the ocean for an instant wave clear.
+
+## 2.5 Rogue-lite Perks & Drafting System
+*   **Drafting Mechanics:** In Endless/Survival Mode, every 5 waves (e.g., Wave 5, Wave 10) triggers a Rogue-lite Draft. The game pauses and presents 3 random perks drawn from a weighted pool.
+*   **Active Perks HUD:** Drafted perks are tracked on-screen in the top-left HUD via a compact icon row. Duplicate perks intelligently stack with a gold "x2" or "x3" badge instead of cluttering the UI.
+*   **Available Perks:**
+    *   **High Capacity** (+15% Water Tank Size)
+    *   **Precision Optics** (+15% Critical Hit Damage)
+    *   **Thermal Insulator** (+10% Cooling Power)
+    *   **Catastrom Flow** (+15% Catastrom charge rate)
+    *   **Heat Shield** (+5% Heat Resistance)
+    *   **Gravity Anchor** (-15% Sun Sway Speed) *[Rare: 20 Weight vs 100 Base Weight]*
 
 ## 3. Sun Mechanics & Threats
 *   **Dynamic Movement:** The Sun sways horizontally. On higher waves, it begins to weave in a "Figure-8" pattern.
@@ -32,8 +43,10 @@ This document serves as the master record for all currently implemented features
 *   **Solar Flares:** The Sun periodically spits fiery projectiles towards the screen. The player must intercept them with the water stream before they hit; otherwise, they cause a massive heat spike. Intercepting a flare spawns physical Magma Debris that crashes onto the beach, scaring away seagulls and persisting until the player evaporates it with their water gun.
 *   **Solar Wind:** A physical force emitted by the Sun that pushes the player's crosshair away, requiring them to actively fight the mouse to maintain aim. The island's foliage (trees and bushes) will violently bend and sway in the direction of the wind to visually telegraph the hazard's intensity.
 *   **Two-Phase Bosses:** Boss waves (e.g., Wave 5) have two phases. Depleting the timer triggers Phase 2, which resets the timer and immediately spikes the heat to a critical level (e.g., 60%).
-*   **Heat Mirage Overshield (Endless Mode):** Every 5th wave in Endless mode, the sun spawns two decoy mirages that scramble positions. The mirages project a collective golden Overshield protecting the main sun from all damage. You must shoot down the mirages (shrinking them with water) to shatter the shield before you can resume cooling the main sun!
-*   **Multi-Flare Shotgun (Endless Mode Wave 10+):** Deep into Endless mode, the sun will begin spitting multiple flares simultaneously in a shotgun spread pattern (2 flares starting at Wave 10, 3 flares starting at Wave 15). This forces the player to rapidly switch targets or strategically use the Scatter Nozzle/Ice Burst.
+*   **Endless/Survival Mode:**
+  *   **Rogue-lite Wave Perks (Drafting):** After surviving every 5th wave (Boss Wave), the game pauses and the player is presented with a choice of 3 randomized perks (e.g., +15% Max Capacity, +15% Critical Damage). These perks permanently stack for the remainder of the Endless run, creating massive strategic build diversity.
+  *   **Heat Mirage Overshield:** Every 5th wave in Endless mode, the sun spawns two decoy mirages that scramble positions. The mirages project a collective golden Overshield protecting the main sun from all damage. You must shoot down the mirages (shrinking them with water) to shatter the shield before you can resume cooling the main sun!
+  *   **Multi-Flare Shotgun:** Starting at Wave 10, the sun spits multiple flares simultaneously in a shotgun spread pattern (2 flares at Wave 10, 3 flares at Wave 15).
 *   **High Heat Steam:** When the sun's temperature exceeds 75%, it begins to furiously boil off thick plumes of steam. The steam visually intensifies as the heat climbs toward 100%, serving as a clear physical warning of impending doom.
 *   **Supernova Cinematic (Game Over):** If the sun reaches 100% heat, the standard Game Over screen is replaced by a dramatic Supernova event. The sun violently expands while the screen shakes, triggering a blinding white evaporation flash that smoothly transitions into the Lose menu.
 
