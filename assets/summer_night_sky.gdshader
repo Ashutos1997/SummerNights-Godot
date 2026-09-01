@@ -127,15 +127,29 @@ void sky() {
 		// Only ~0.8% of cells get a star, giving varied brightness
 		float star_mask = smoothstep(0.992, 1.0, star_noise);
 		
-		// Make the star a soft dot in the center of the cell
+		// Independent seed for size and color
+		float star_seed = hash3(i + vec3(12.3, 45.6, 78.9));
+		
+		// Varied sizing: map seed to a radius (0.15 to 0.45)
+		float star_radius = mix(0.15, 0.45, star_seed);
 		float dist = length(f - vec3(0.5));
-		star_mask *= smoothstep(0.5, 0.2, dist);
+		float shape = smoothstep(star_radius, star_radius * 0.1, dist);
+		
+		// Color variation
+		vec3 color_a = vec3(1.0, 0.75, 0.45); // Subtle Orange
+		vec3 color_b = vec3(0.65, 0.85, 1.0); // Subtle Blue
+		vec3 color_c = vec3(1.0, 0.98, 0.95); // Warm White
+		
+		vec3 star_color = mix(mix(color_a, color_b, step(0.33, star_seed)), color_c, step(0.66, star_seed));
 		
 		float twinkle = sin(TIME * (2.0 + star_noise * 5.0) + star_noise * 100.0) * 0.5 + 0.5;
 		float star_visibility = clamp(cool_factor + eclipse_mix, 0.0, 1.0);
 		float star_horizon_fade = smoothstep(0.1, 0.4, h);
 		
-		sky_col += vec3(1.0, 0.95, 0.8) * star_mask * twinkle * star_visibility * star_horizon_fade * 4.0;
+		// Brightness scales with size for massive pop on the big stars
+		float brightness = mix(2.0, 10.0, star_seed);
+		
+		sky_col += star_color * (star_mask * shape) * twinkle * star_visibility * star_horizon_fade * brightness;
 	}
 
 	// ── Animated clouds (Parallax) ────────────────────────────────────────
