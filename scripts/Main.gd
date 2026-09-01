@@ -2161,13 +2161,6 @@ func _process(delta: float) -> void:
 		was_catastrom_charged = false
 
 func _input(event: InputEvent) -> void:
-	# DEBUG: Instant Draft Menu trigger
-	if event is InputEventKey and event.pressed and event.keycode == KEY_F4:
-		if hud and hud.has_method("show_drafting_screen"):
-			get_tree().paused = true
-			hud.show_drafting_screen()
-			return
-			
 	if is_title_screen:
 		return
 	if hud and "lose_screen" in hud and hud.lose_screen != null and hud.lose_screen.visible:
