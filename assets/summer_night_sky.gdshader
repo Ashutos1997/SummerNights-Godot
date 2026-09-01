@@ -143,7 +143,11 @@ void sky() {
 		vec3 star_color = mix(mix(color_a, color_b, step(0.33, star_seed)), color_c, step(0.66, star_seed));
 		
 		float twinkle = sin(TIME * (2.0 + star_noise * 5.0) + star_noise * 100.0) * 0.5 + 0.5;
-		float star_visibility = clamp(cool_factor + eclipse_mix, 0.0, 1.0);
+		
+		// Map cool_factor (0.0 = hot, 1.0 = cool) so stars are fully visible earlier
+		// At cool_factor 0.6 (Sun 40% heat), stars are fully visible.
+		float star_visibility = clamp(smoothstep(0.2, 0.6, cool_factor) + eclipse_mix, 0.0, 1.0);
+		
 		float star_horizon_fade = smoothstep(0.1, 0.4, h);
 		
 		// Brightness scales with size for massive pop on the big stars
