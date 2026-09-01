@@ -11,6 +11,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * **Game Logo:** Integrated the official "Summer Nights" logo as the primary application icon for both Windows `.exe` and macOS `.app` exports.
 
 ### Improved
+* **Idle Island Breeze:** Increased the mathematical intensity of the ambient wind sway applied to all tropical foliage (palm trees and bushes) to make the relaxing beach breeze significantly more noticeable during gameplay.
 * **Water Splashes:** Refactored the raycast hit logic to spawn satisfying water splash particles 100% of the time whenever the player misses the sun and sprays the environment.
 * **Water Shader Polish:** Updated the stylized water shader (`stylized_water.gdshader`) to boost wave steepness and increase foam density and thickness, creating a much more dynamic and natural "water-like" feel.
 
@@ -188,6 +189,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * **게임 로고:** 공식 "Summer Nights" 로고를 Windows(`.exe`) 및 macOS(`.app`) 내보내기용 기본 애플리케이션 아이콘으로 통합했습니다.
 
 ### 개선됨 (Improved)
+* **섬의 산들바람 (Idle Island Breeze):** 게임 플레이 중 해변의 편안한 산들바람이 훨씬 더 눈에 띄도록 모든 열대 식물(야자수 및 덤불)에 적용되는 주변 바람 흔들림의 수학적 강도를 증가시켰습니다.
 * **물 튀김 효과:** 플레이어가 태양을 빗맞히고 환경을 쏠 때 만족스러운 물 튀김 파티클이 100% 확률로 생성되도록 레이캐스트 적중 로직을 개선했습니다.
 * **물 셰이더 폴리싱:** 양식화된 물 셰이더(`stylized_water.gdshader`)를 업데이트하여 파도의 가파른 정도를 높이고 거품의 밀도와 두께를 증가시켜 훨씬 더 역동적이고 자연스러운 느낌을 구현했습니다.
 

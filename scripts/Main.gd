@@ -1634,8 +1634,8 @@ func _process(delta: float) -> void:
 	for f_prop in foliage_props:
 		if is_instance_valid(f_prop):
 			# Gentle ambient sway
-			var sway_z = sin(wind_t * 1.6 + f_prop.position.x * 0.1) * 0.035
-			var sway_x = cos(wind_t * 1.2 + f_prop.position.z * 0.1) * 0.02
+			var sway_z = sin(wind_t * 1.6 + f_prop.position.x * 0.1) * 0.055
+			var sway_x = cos(wind_t * 1.2 + f_prop.position.z * 0.1) * 0.03
 			
 			# Add violent hazard bend + jitter
 			if hazard_bend != 0.0:
