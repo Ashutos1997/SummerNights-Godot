@@ -119,13 +119,23 @@ void sky() {
 
 	// ── Procedural Stars ─────────────────────────────────────────────────
 	if (h > 0.0) {
-		float star_noise = hash3(dir * 300.0);
-		float star_mask = smoothstep(0.996, 1.0, star_noise);
-		float twinkle = sin(TIME * 3.0 + hash3(dir * 150.0) * 100.0) * 0.5 + 0.5;
+		vec3 p = dir * 600.0;
+		vec3 i = floor(p);
+		vec3 f = fract(p);
+		
+		float star_noise = hash3(i);
+		// Only ~0.8% of cells get a star, giving varied brightness
+		float star_mask = smoothstep(0.992, 1.0, star_noise);
+		
+		// Make the star a soft dot in the center of the cell
+		float dist = length(f - vec3(0.5));
+		star_mask *= smoothstep(0.5, 0.2, dist);
+		
+		float twinkle = sin(TIME * (2.0 + star_noise * 5.0) + star_noise * 100.0) * 0.5 + 0.5;
 		float star_visibility = clamp(cool_factor + eclipse_mix, 0.0, 1.0);
 		float star_horizon_fade = smoothstep(0.1, 0.4, h);
 		
-		sky_col += vec3(1.0, 0.95, 0.8) * star_mask * twinkle * star_visibility * star_horizon_fade * 1.5;
+		sky_col += vec3(1.0, 0.95, 0.8) * star_mask * twinkle * star_visibility * star_horizon_fade * 4.0;
 	}
 
 	// ── Animated clouds (Parallax) ────────────────────────────────────────
