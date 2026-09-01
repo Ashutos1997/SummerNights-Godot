@@ -359,11 +359,11 @@ func _process(delta: float) -> void:
 			stats_label.label_settings.font_color = Color(1.0, 0.3, 0.3, 1.0) # Red warning
 			if w_cfg.has("unlock_achievement"):
 				var ach_id = w_cfg.unlock_achievement
-				var ach_title = GameState.ACHIEVEMENTS[ach_id].title_kr if is_kr else GameState.ACHIEVEMENTS[ach_id].title_en
+				var ach_desc = GameState.ACHIEVEMENTS[ach_id].desc_kr if is_kr else GameState.ACHIEVEMENTS[ach_id].desc_en
 				if is_kr:
-					stats_label.text = "잠금됨: %s" % ach_title
+					stats_label.text = "조건: %s" % ach_desc
 				else:
-					stats_label.text = "LOCKED: %s" % ach_title.to_upper()
+					stats_label.text = "UNLOCK: %s" % ach_desc.to_upper()
 			else:
 				if GameState.is_survival_mode:
 					if is_kr:
