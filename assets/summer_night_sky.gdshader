@@ -130,8 +130,8 @@ void sky() {
 		// Independent seed for size and color
 		float star_seed = hash3(i + vec3(12.3, 45.6, 78.9));
 		
-		// Varied sizing: map seed to a radius (0.15 to 0.45)
-		float star_radius = mix(0.15, 0.45, star_seed);
+		// Varied sizing: map seed to a slightly larger radius (0.2 to 0.6)
+		float star_radius = mix(0.2, 0.6, star_seed);
 		float dist = length(f - vec3(0.5));
 		float shape = smoothstep(star_radius, star_radius * 0.1, dist);
 		
