@@ -11,6 +11,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * **Game Logo:** Integrated the official "Summer Nights" logo as the primary application icon for both Windows `.exe` and macOS `.app` exports.
 
 ### Improved
+* **Dynamic Sky Aesthetics:** Upgraded the procedural sky shader with multi-layered parallax clouds to create a sense of deep volumetric depth, and introduced a procedural twinkling starfield that dynamically fades into view during dusk, night, and solar eclipses.
 * **Weapon Wheel UX:** Locked weapons in the weapon wheel now explicitly display their exact unlock requirements (e.g., "UNLOCK: SCORE OVER 10,000 POINTS IN A SINGLE RUN.") instead of just showing the achievement title, making progression paths much clearer.
 * **Idle Island Breeze:** Increased the mathematical intensity of the ambient wind sway applied to all tropical foliage (palm trees and bushes) to make the relaxing beach breeze significantly more noticeable during gameplay.
 * **Water Splashes:** Refactored the raycast hit logic to spawn satisfying water splash particles 100% of the time whenever the player misses the sun and sprays the environment.
@@ -190,6 +191,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * **게임 로고:** 공식 "Summer Nights" 로고를 Windows(`.exe`) 및 macOS(`.app`) 내보내기용 기본 애플리케이션 아이콘으로 통합했습니다.
 
 ### 개선됨 (Improved)
+* **동적 하늘 시각 효과 (Dynamic Sky Aesthetics):** 절차적 하늘 셰이더를 다층 시차(Parallax) 구름으로 업그레이드하여 깊은 입체감을 주었으며, 황혼, 밤, 일식 중에 동적으로 나타나 반짝이는 절차적 별밭(Starfield)을 도입했습니다.
 * **무기 휠 UX 개선:** 무기 휠에서 잠긴 무기에 마우스를 올렸을 때 이제 업적 제목만 보여주는 것이 아니라 정확한 잠금 해제 조건(예: "조건: 한 게임에서 10,000점 이상을 달성하세요.")을 명확하게 표시하여 진행 경로를 더 쉽게 파악할 수 있도록 했습니다.
 * **섬의 산들바람 (Idle Island Breeze):** 게임 플레이 중 해변의 편안한 산들바람이 훨씬 더 눈에 띄도록 모든 열대 식물(야자수 및 덤불)에 적용되는 주변 바람 흔들림의 수학적 강도를 증가시켰습니다.
 * **물 튀김 효과:** 플레이어가 태양을 빗맞히고 환경을 쏠 때 만족스러운 물 튀김 파티클이 100% 확률로 생성되도록 레이캐스트 적중 로직을 개선했습니다.

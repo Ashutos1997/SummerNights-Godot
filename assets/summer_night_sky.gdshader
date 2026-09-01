@@ -42,6 +42,10 @@ float hash(vec2 p) {
 	return fract(p.x * p.y);
 }
 
+float hash3(vec3 p) {
+	return fract(sin(dot(p, vec3(12.9898, 78.233, 45.164))) * 43758.5453);
+}
+
 float value_noise(vec2 p) {
 	vec2 i = floor(p);
 	vec2 f = fract(p);
@@ -113,42 +117,56 @@ void sky() {
 	float glow_mask = exp(-abs(h) / horizon_glow_size);
 	sky_col += horizon_glow_color.rgb * glow_mask * 0.6 * sun_heat * (1.0 - eclipse_mix);
 
-	// ── Animated clouds ───────────────────────────────────────────────────
+	// ── Procedural Stars ─────────────────────────────────────────────────
+	if (h > 0.0) {
+		float star_noise = hash3(dir * 300.0);
+		float star_mask = smoothstep(0.996, 1.0, star_noise);
+		float twinkle = sin(TIME * 3.0 + hash3(dir * 150.0) * 100.0) * 0.5 + 0.5;
+		float star_visibility = clamp(cool_factor + eclipse_mix, 0.0, 1.0);
+		float star_horizon_fade = smoothstep(0.1, 0.4, h);
+		
+		sky_col += vec3(1.0, 0.95, 0.8) * star_mask * twinkle * star_visibility * star_horizon_fade * 1.5;
+	}
+
+	// ── Animated clouds (Parallax) ────────────────────────────────────────
 	// Only draw clouds in upper hemisphere (h > -0.04)
 	if (h > -0.04) {
-		// Project direction to a 2D plane for cloud sampling
-		// xz gives a top-down-ish view, scaled by 1/max(h,epsilon) for perspective
 		float safe_h = max(h, 0.04);
-		vec2 cloud_uv = (dir.xz / safe_h) * (1.0 / cloud_scale);
+		vec2 base_cloud_uv = (dir.xz / safe_h) * (1.0 / cloud_scale);
 
-		// Animated drift
-		cloud_uv.x += TIME * cloud_speed;
-
-		float noise = fbm(cloud_uv);
-
-		// Threshold and sharpen to form stylized cloud shapes
-		float cloud_mask = smoothstep(
-			cloud_coverage,
-			cloud_coverage + (1.0 / cloud_sharpness),
-			noise
-		);
-
+		// Secondary background clouds (parallax)
+		vec2 bg_cloud_uv = base_cloud_uv * 1.5;
+		bg_cloud_uv.x += TIME * cloud_speed * 0.6;
+		
+		// Primary foreground clouds
+		vec2 fg_cloud_uv = base_cloud_uv;
+		fg_cloud_uv.x += TIME * cloud_speed;
+		
+		float bg_noise = fbm(bg_cloud_uv);
+		float fg_noise = fbm(fg_cloud_uv);
+		
 		// Fade clouds near horizon so they don't float on ground
 		float altitude_fade = smoothstep(cloud_altitude - 0.06, cloud_altitude + 0.15, h);
-		cloud_mask *= altitude_fade;
-
-		// Lit vs shadow based on noise variation
-		float lit = smoothstep(0.45, 0.75, noise);
-		vec3 cloud_col = mix(cloud_color_shadow.rgb, cloud_color_lit.rgb, lit);
-
-		// Cool the cloud colors when sun cools
-		cloud_col = mix(cloud_col, vec3(0.25, 0.3, 0.55), cool_factor * 0.5);
 		
-		// Eclipse clouds
-		vec3 eclipse_cloud = mix(vec3(0.01, 0.0, 0.05), vec3(0.1, 0.02, 0.2), lit);
-		cloud_col = mix(cloud_col, eclipse_cloud, eclipse_mix);
+		// Background Cloud Layer
+		float bg_cloud_mask = smoothstep(cloud_coverage + 0.1, cloud_coverage + 0.1 + (1.0 / cloud_sharpness), bg_noise) * altitude_fade;
+		float bg_lit = smoothstep(0.45, 0.75, bg_noise);
+		vec3 bg_cloud_col = mix(cloud_color_shadow.rgb * 0.7, cloud_color_lit.rgb * 0.8, bg_lit);
+		bg_cloud_col = mix(bg_cloud_col, vec3(0.2, 0.25, 0.45), cool_factor * 0.5);
+		vec3 bg_eclipse_cloud = mix(vec3(0.005, 0.0, 0.02), vec3(0.05, 0.01, 0.1), bg_lit);
+		bg_cloud_col = mix(bg_cloud_col, bg_eclipse_cloud, eclipse_mix);
+		
+		sky_col = mix(sky_col, bg_cloud_col, bg_cloud_mask * 0.5);
 
-		sky_col = mix(sky_col, cloud_col, cloud_mask * 0.88);
+		// Foreground Cloud Layer
+		float fg_cloud_mask = smoothstep(cloud_coverage, cloud_coverage + (1.0 / cloud_sharpness), fg_noise) * altitude_fade;
+		float fg_lit = smoothstep(0.45, 0.75, fg_noise);
+		vec3 fg_cloud_col = mix(cloud_color_shadow.rgb, cloud_color_lit.rgb, fg_lit);
+		fg_cloud_col = mix(fg_cloud_col, vec3(0.25, 0.3, 0.55), cool_factor * 0.5);
+		vec3 fg_eclipse_cloud = mix(vec3(0.01, 0.0, 0.05), vec3(0.1, 0.02, 0.2), fg_lit);
+		fg_cloud_col = mix(fg_cloud_col, fg_eclipse_cloud, eclipse_mix);
+
+		sky_col = mix(sky_col, fg_cloud_col, fg_cloud_mask * 0.88);
 	}
 
 	// ── Final output ─────────────────────────────────────────────────────
