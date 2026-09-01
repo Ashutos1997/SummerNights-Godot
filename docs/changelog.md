@@ -6,7 +6,7 @@ All notable changes to the Summer Nights project will be documented in this file
 *(Note: This release corresponds to v1.1 on itch.io)*
 
 ### Added
-* **Procedural Fireflies:** Added a custom procedural particle system that dynamically generates glowing, low-poly bugs across the foreground beach to enhance the cozy "Summer Nights" aesthetic.
+* **Procedural Fireflies:** Added a custom procedural particle system that dynamically generates glowing, low-poly bugs across the foreground beach. They now react dynamically to weather events: fading away to hide during Rainstorms, glowing twice as bright during Eclipses, and being violently blown sideways during Solar Winds to match the swaying foliage.
 * **Achievement Progress UI:** The game's UI will now dynamically show your current progress on locked accumulative achievements (e.g. "Shoo away 50 seagulls. (12/50)"), both on the Title Screen and in the mid-game Pause Menu.
 * **Game Logo:** Integrated the official "Summer Nights" logo as the primary application icon for both Windows `.exe` and macOS `.app` exports.
 
@@ -184,7 +184,7 @@ All notable changes to the Summer Nights project will be documented in this file
 *(참고: 이 릴리스는 itch.io의 v1.1 버전에 해당합니다)*
 
 ### 추가됨 (Added)
-* **절차적 반딧불이:** 아늑한 "여름 밤(Summer Nights)" 분위기를 향상시키기 위해 해변 배경 전경에 빛나는 로우폴리 벌레를 동적으로 생성하는 맞춤형 절차적 파티클 시스템을 추가했습니다.
+* **절차적 반딧불이:** 해변 전경에 빛나는 로우폴리 벌레를 동적으로 생성하는 맞춤형 절차적 파티클 시스템을 추가했습니다. 반딧불이는 이제 기상 이벤트에 동적으로 반응합니다. 폭우 시에는 서서히 사라져 숨고, 일식 중에는 두 배 더 밝게 빛나며, 태양풍이 불 때는 흔들리는 덤불과 함께 강풍에 밀려납니다.
 * **업적 진행도 UI:** 타이틀 화면과 일시 정지 메뉴에서 잠금 해제되지 않은 누적 업적(예: "갈매기 50마리를 쫓아내세요. (12/50)")에 대한 현재 진행 상황을 동적으로 표시하도록 UI를 업데이트했습니다.
 * **게임 로고:** 공식 "Summer Nights" 로고를 Windows(`.exe`) 및 macOS(`.app`) 내보내기용 기본 애플리케이션 아이콘으로 통합했습니다.
 

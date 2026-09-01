@@ -1644,6 +1644,32 @@ func _process(delta: float) -> void:
 			f_prop.rotation.z = sway_z
 			f_prop.rotation.x = sway_x
 		
+	# Dynamic Firefly Weather Reactions
+	if is_instance_valid(fireflies_particles) and fireflies_particles.process_material:
+		var ff_mat = fireflies_particles.process_material as ParticleProcessMaterial
+		
+		# 1. Rain (Hide)
+		var target_ratio = 1.0
+		if active_weather == "rain":
+			target_ratio = 0.0
+		fireflies_particles.amount_ratio = lerp(fireflies_particles.amount_ratio, target_ratio, delta * 0.5)
+		
+		# 2. Eclipse (Glow Brighter)
+		var target_energy = 3.0
+		if active_weather == "eclipse":
+			target_energy = 8.0
+		var mesh = fireflies_particles.draw_pass_1 as ArrayMesh
+		if mesh:
+			var mat = mesh.surface_get_material(1) as StandardMaterial3D
+			if mat:
+				mat.emission_energy_multiplier = lerp(mat.emission_energy_multiplier, target_energy, delta * 2.0)
+				
+		# 3. Solar Winds (Sway)
+		var target_gravity = Vector3(0, 0.1, 0)
+		if wind_state == 2 and solar_wind_enabled:
+			target_gravity.x = wind_direction * (wind_strength / 20.0) # Blow them sideways
+		ff_mat.gravity = ff_mat.gravity.lerp(target_gravity, delta * 2.0)
+
 	# Increase difficulty based on level
 	var regen_rate = heat_regen_base
 		

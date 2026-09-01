@@ -55,7 +55,7 @@ Weather events trigger based on a dynamic probability system tied to the current
 *   **Decorative Layers:**
     *   **Cloud Layer:** Stylized 3D clouds that float across the sky.
     *   **Seagull Layer:** Flocks of seagulls that fly in the distance.
-    *   **Fireflies:** A procedural particle system that dynamically spawns drifting, glowing low-poly bugs (ArrayMeshes) across the beach foreground to enhance the cozy sunset aesthetic.
+    *   **Fireflies:** A procedural particle system that dynamically spawns drifting, glowing low-poly bugs (ArrayMeshes) across the beach foreground to enhance the cozy sunset aesthetic. They feature dynamic weather reactions, fading away to hide during Rain, glowing intensely during Solar Eclipses, and being violently blown across the screen during Solar Winds.
 *   **Particle Effects:** Splashes for water hitting the sun and the environment (e.g. missing the sun and hitting the sand/ocean 100% of the time), fiery orange sparks for intercepted solar flares, shattered chunks for the Catastrom dunk, shattered ice particles for ice blasts, and steam plumes. All dynamically generated particles are emissive, reacting strongly to the WorldEnvironment.
 *   **Atmospherics & Post-Processing:**
     *   **Retro Shader:** A global screen shader applying film grain, vignette, and synthwave color grading (S-curve contrast and complementary split-toning).
