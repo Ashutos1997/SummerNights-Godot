@@ -1638,7 +1638,7 @@ func _input(event: InputEvent) -> void:
 			GameState.reset()
 			get_viewport().set_input_as_handled()
 			get_tree().paused = false
-			get_tree().change_scene_to_file("res://scenes/Main.tscn")
+			get_tree().call_deferred("change_scene_to_file", "res://scenes/Main.tscn")
 			return
 
 func _pause_game() -> void:
@@ -2017,12 +2017,12 @@ func _on_retry_pressed() -> void:
 	GameState.current_wave = 1
 	GameState.is_retrying = true
 	get_tree().paused = false
-	get_tree().reload_current_scene()
+	get_tree().call_deferred("reload_current_scene")
 
 func _on_menu_pressed() -> void:
 	GameState.level = 1
 	get_tree().paused = false
-	get_tree().change_scene_to_file("res://scenes/Main.tscn")
+	get_tree().call_deferred("change_scene_to_file", "res://scenes/Main.tscn")
 
 func update_ice_charges(charges: int, max_charges: int) -> void:
 	if max_charges <= 0:
