@@ -2,6 +2,10 @@
 
 # Summer Nights
 
+<div align="center">
+  <img src="docs/media/gameplay.gif" alt="Summer Nights Gameplay" width="800">
+</div>
+
 A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhelms you.
 
 ---

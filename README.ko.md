@@ -2,6 +2,10 @@
 
 # 썸머 나이츠
 
+<div align="center">
+  <img src="docs/media/gameplay.gif" alt="Summer Nights Gameplay" width="800">
+</div>
+
 Godot 4로 제작된 3D 아케이드 슈터. 태양을 식히기 전에 열기에 압도당하지 마세요.
 
 ---
