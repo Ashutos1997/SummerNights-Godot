@@ -430,9 +430,9 @@ func load_settings() -> void:
 		var is_currently_fullscreen = (current_mode == DisplayServer.WINDOW_MODE_FULLSCREEN or current_mode == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
 		
 		if fullscreen and not is_currently_fullscreen:
-			call_deferred(\"_apply_window_mode\", DisplayServer.WINDOW_MODE_FULLSCREEN)
+			call_deferred("_apply_window_mode", DisplayServer.WINDOW_MODE_FULLSCREEN)
 		elif not fullscreen and is_currently_fullscreen:
-			call_deferred(\"_apply_window_mode\", DisplayServer.WINDOW_MODE_WINDOWED)
+			call_deferred("_apply_window_mode", DisplayServer.WINDOW_MODE_WINDOWED)
 
 func _apply_window_mode(mode: int) -> void:
 	DisplayServer.window_set_mode(mode)
