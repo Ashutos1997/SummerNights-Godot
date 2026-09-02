@@ -27,7 +27,9 @@ All notable changes to the Summer Nights project will be documented in this file
 * **Level Clear Screen Consistency:** The "Next Level" screen (WinScreen) has been completely restyled to follow the global design system. It now features the signature 24px golden border, centered layout, and a dividing line, perfectly matching the visual presentation of the Lose Screen. Additionally, fixed a bug where the level completion text (e.g., "LEVEL 01 COMPLETE") was hardcoded to English and failed to update when Korean was selected.
 * **Screenshot Universality:** Fixed a bug where the `F12` screenshot hotkey wouldn't work while the game was paused (such as during the drafting menu). The logic has been migrated to a global process so you can take screenshots at any time.
 * **Aggressive MacOS Pausing:** Fixed a bug on MacOS where selecting a perk and recapturing the mouse cursor would cause the OS to briefly lose window focus, tricking the game into instantly throwing up the Pause Menu.
-
+### Fixed
+* **Engine Lockup on Pause/Windowed Mode:** Fixed a critical bug where triggering a camera shake (e.g. from firing or being hit) while the game was paused would cause an infinite loop in `Main.gd`, permanently locking up the Godot engine process. The `shake()` function now correctly yields to the engine's frame processor even when delta time is 0.
+* **macOS Fullscreen Launch Bug:** Fixed an issue on macOS where the game would launch in fullscreen but the Settings UI would incorrectly display "Off", and the game wouldn't restore the saved windowed state. The window mode loaded from `settings.cfg` is now deferred until the OS window server is fully initialized.
 ## [v1.5.0]
 
 ### Added
@@ -214,6 +216,8 @@ All notable changes to the Summer Nights project will be documented in this file
 * **레벨 클리어 화면 일관성:** "다음 단계" 화면(WinScreen)이 게임의 전체 디자인 시스템에 맞게 완전히 개편되었습니다. 이제 실패(Lose) 화면과 시각적으로 완벽하게 일치하도록 24픽셀의 시그니처 황금색 테두리, 중앙 정렬 레이아웃 및 구분선이 적용되었습니다. 또한, 레벨 완료 텍스트(예: "LEVEL 01 COMPLETE")가 영어로 하드코딩되어 한국어 선택 시 동적으로 번역되지 않던 버그를 수정했습니다.
 * **스크린샷 범용성:** 게임이 일시정지 상태(예: 특성 선택 메뉴가 열렸을 때)일 때 F12 스크린샷 단축키가 작동하지 않던 버그를 수정했습니다. 이제 전역 프로세스에서 처리되므로 언제든지 스크린샷을 찍을 수 있습니다.
 * **MacOS 일시정지 오류:** MacOS 환경에서 특성을 선택한 직후 마우스 포인터를 숨길 때, 운영체제가 잠시 창 포커스를 잃은 것으로 잘못 인식하여 게임이 강제로 일시정지 메뉴를 띄우던 문제를 수정했습니다.
+* **일시 정지/창 모드에서 엔진 멈춤 현상:** 게임이 일시 정지된 상태에서 카메라 흔들림(예: 발사 또는 피격)이 발생할 경우 `Main.gd`에서 무한 루프가 발생하여 Godot 엔진 프로세스가 영구적으로 멈추는 치명적인 버그를 수정했습니다. 이제 `shake()` 함수는 델타 시간이 0일 때도 엔진 프레임 프로세서에 정상적으로 실행을 양보합니다.
+* **macOS 전체 화면 실행 버그:** macOS에서 게임이 전체 화면으로 시작되지만 설정 UI에는 "꺼짐"으로 잘못 표시되고, 저장된 창 모드 상태가 복원되지 않던 문제를 수정했습니다. 이제 `settings.cfg`에서 불러온 창 모드는 OS 창 시스템이 완전히 초기화될 때까지 지연 적용됩니다.
 
 ## [v1.5.0]
 

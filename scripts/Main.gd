@@ -2411,6 +2411,8 @@ func shake(duration: float, strength: float) -> void:
 	var origin = camera.position
 	var elapsed = 0.0
 	while elapsed < duration:
+		if get_tree().paused:
+			break
 		var offset = Vector3(
 			randf_range(-strength, strength),
 			randf_range(-strength, strength),
@@ -2419,6 +2421,7 @@ func shake(duration: float, strength: float) -> void:
 		camera.position = origin + offset
 		elapsed += get_process_delta_time()
 		await get_tree().process_frame
+	
 	camera.position = origin
 	is_shaking = false
 
