@@ -3031,6 +3031,8 @@ func _setup_controls_ui() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		if not visible:
+			return
 		if Time.get_ticks_msec() < _ignore_focus_out_until:
 			return
 		if not pause_screen.visible and not (end_screen and end_screen.visible) and not (win_screen and win_screen.visible) and not (drafting_screen and drafting_screen.visible):
