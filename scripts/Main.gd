@@ -37,6 +37,23 @@ var hit_sfx: AudioStreamPlayer
 var sun_defeated_sfx: AudioStreamPlayer
 var water_empty_sfx: AudioStreamPlayer
 var ambient_sfx: AudioStreamPlayer
+var heartbeat_sfx: AudioStreamPlayer
+var is_heat_critical: bool = false
+var heat_warning_tween: Tween
+var master_lp_idx: int = -1
+var heat_vignette_color: Color = Color(0, 0, 0, 0):
+	set(value):
+		heat_vignette_color = value
+		if post_process_mat:
+			post_process_mat.set_shader_parameter("vignette_color", value)
+
+var heat_flash_mix: float = 0.0:
+	set(value):
+		heat_flash_mix = value
+		if post_process_mat:
+			post_process_mat.set_shader_parameter("flash_mix", value)
+
+var flare_impact_sfx: AudioStreamPlayer
 var sun_hit_tween: Tween
 var is_shaking: bool = false
 var level: int            = 1
@@ -484,6 +501,31 @@ func _ready() -> void:
 	sun_defeated_sfx = _create_sfx("res://assets/audio/sfx/sun_defeated.ogg", 0.0, 1, "SFX_UI")
 	water_empty_sfx = _create_sfx("res://assets/audio/sfx/water_empty.ogg", -8.0, 1, "SFX_UI")
 	sizzle_sfx = _create_sfx("res://assets/sizzle.ogg", -4.0, 2, "SFX_WEAPON")
+	
+	flare_impact_sfx = _create_sfx("res://assets/audio/sfx/hit_sun.ogg", -6.0, 3, "SFX_WEAPON")
+	flare_impact_sfx.pitch_scale = 0.4
+	
+	heartbeat_sfx = AudioStreamPlayer.new()
+	# Load real heartbeat audio downloaded from Wikimedia Commons
+	heartbeat_sfx.stream = preload("res://assets/audio/sfx/heartbeat.wav")
+	heartbeat_sfx.volume_db = 5.0
+	heartbeat_sfx.pitch_scale = 1.0
+	heartbeat_sfx.bus = "Master"
+	add_child(heartbeat_sfx)
+	
+	var master_bus = AudioServer.get_bus_index("Master")
+	var has_lp = false
+	for i in range(AudioServer.get_bus_effect_count(master_bus)):
+		if AudioServer.get_bus_effect(master_bus, i) is AudioEffectLowPassFilter:
+			has_lp = true
+			master_lp_idx = i
+			break
+	if not has_lp:
+		var lp = AudioEffectLowPassFilter.new()
+		lp.cutoff_hz = 20500
+		AudioServer.add_bus_effect(master_bus, lp)
+		master_lp_idx = AudioServer.get_bus_effect_count(master_bus) - 1
+		
 	if hud and hud.has_method("_on_critical_hit"):
 		critical_hit.connect(hud._on_critical_hit)
 
@@ -1493,6 +1535,22 @@ func _update_flares(delta: float) -> void:
 				steam_particles.restart()
 			temperature = min(MAX_TEMP, temperature + 4.0)
 			_vibrate(0.5, 0.0, 0.2)
+			
+			# Visceral Consequences
+			shake(0.4, 0.2) # Screen shake (respects reduce_motion)
+			if flare_impact_sfx:
+				flare_impact_sfx.play()
+			
+			var flash_tw = create_tween()
+			if reduce_motion:
+				# Gentle warming
+				heat_flash_mix = 0.15
+				flash_tw.tween_property(self, "heat_flash_mix", 0.0, 0.6).set_trans(Tween.TRANS_SINE)
+			else:
+				# Sharp searing blast
+				heat_flash_mix = 0.6
+				flash_tw.tween_property(self, "heat_flash_mix", 0.0, 0.3).set_trans(Tween.TRANS_EXPO)
+				
 			node.queue_free()
 			to_remove.append(flare)
 		else:
@@ -1503,6 +1561,50 @@ func _update_flares(delta: float) -> void:
 	for f in to_remove:
 		active_flares.erase(f)
 
+func _process_heat_warning(_delta: float) -> void:
+	if is_title_screen or game_over or temperature < 85.0:
+		if is_heat_critical:
+			is_heat_critical = false
+			if is_instance_valid(heat_warning_tween): heat_warning_tween.kill()
+			heat_warning_tween = create_tween().set_parallel(true)
+			heat_warning_tween.tween_property(self, "heat_vignette_color", Color(0, 0, 0, 0), 1.0)
+			if master_lp_idx >= 0:
+				var master_bus = AudioServer.get_bus_index("Master")
+				var lp = AudioServer.get_bus_effect(master_bus, master_lp_idx)
+				heat_warning_tween.tween_property(lp, "cutoff_hz", 20500.0, 1.0)
+		return
+
+	if temperature >= 85.0 and not is_heat_critical:
+		is_heat_critical = true
+		if is_instance_valid(heat_warning_tween): heat_warning_tween.kill()
+		heat_warning_tween = create_tween().set_parallel(true)
+		
+		if master_lp_idx >= 0:
+			var master_bus = AudioServer.get_bus_index("Master")
+			var lp = AudioServer.get_bus_effect(master_bus, master_lp_idx)
+			heat_warning_tween.tween_property(lp, "cutoff_hz", 1500.0, 1.0)
+			
+		if reduce_motion:
+			heat_warning_tween.tween_property(self, "heat_vignette_color", Color(0.8, 0.0, 0.0, 0.6), 1.0)
+		else:
+			# Sequence for pulsing (set_parallel false for this part)
+			heat_warning_tween = create_tween()
+			heat_warning_tween.tween_property(self, "heat_vignette_color", Color(0.8, 0.0, 0.0, 0.6), 0.6).set_trans(Tween.TRANS_SINE)
+			heat_warning_tween.tween_property(self, "heat_vignette_color", Color(0.8, 0.0, 0.0, 0.2), 0.6).set_trans(Tween.TRANS_SINE)
+			heat_warning_tween.set_loops()
+			
+			var master_bus = AudioServer.get_bus_index("Master")
+			var lp = AudioServer.get_bus_effect(master_bus, master_lp_idx)
+			var par_tween = create_tween()
+			par_tween.tween_property(lp, "cutoff_hz", 1500.0, 1.0)
+		
+	# Heartbeat audio logic - trigger every 1.2s when pulsing
+	if is_heat_critical and not reduce_motion and heartbeat_sfx:
+		var time = Time.get_ticks_msec() / 1000.0
+		# Simple modulo check to play roughly every 1.2 seconds (matching the 1.2s total pulse loop)
+		if fmod(time, 1.2) < 0.1 and not heartbeat_sfx.playing:
+			heartbeat_sfx.play()
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Main loop
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1510,6 +1612,8 @@ func _process(delta: float) -> void:
 	if hud and "lose_screen" in hud and hud.lose_screen != null and hud.lose_screen.visible:
 		return
 
+	_process_heat_warning(delta)
+	
 	if game_over:
 		if is_instance_valid(shoot_loop_sfx):
 			shoot_loop_sfx.stop()

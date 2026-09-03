@@ -75,6 +75,10 @@ Weather events trigger based on a dynamic probability system tied to the current
     *   **Cinematic Bloom:** The `WorldEnvironment` utilizes soft additive bloom, causing the sun and emissive particles to visibly bleed light into the environment.
 
 ## 6. UI, Juice, & Game Feel
+*   **Consequences & Stakes:** The game features heavy visceral feedback to emphasize failure and critical states, completely adapting its intensity based on the "Reduce Motion" setting to maintain WCAG accessibility.
+    *   **High Heat Warning (Death's Door):** When the sun exceeds 85% heat, the global vignette tweens to a deep red, the master audio bus is heavily muffled via a Low-Pass Filter, and a thumping heartbeat audio pulses every 1.2s to match the vignette's visual flashing.
+    *   **Solar Flare Impact:** Failing to shoot a Solar Flare triggers a massive screen shake, a blinding orange screen flash, and a heavy, distorted explosion sound.
+    *   **Low Water Warning:** When the water tank drops below 25%, the central dynamic crosshair cleanly interrupts the player's focus by pulsing a high-contrast orange.
 *   **Quit Game Confirmation:** Pressing ESC on the main menu opens a modal confirming if the player wants to quit, preventing accidental exits. Matches the global design system and uses a dedicated secondary visual state for the destructive action.
 *   **Dynamic Crosshair:** A custom diegetic cursor that scales up on hits. It features a translucent blue radial ring that visually tracks the current water tank capacity. The ring and crosshair instantly flash red when the tank is empty, and flash lime-green when landing critical hits on sunspots.
 *   **Screen Shake:** The camera violently shakes during critical moments (e.g., Phase 2 transitions, high heat, solar flare impacts, Catastrom dunks).

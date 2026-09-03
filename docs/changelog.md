@@ -9,6 +9,10 @@ All notable changes to the Summer Nights project will be documented in this file
 * **Quit Game Confirmation:** Added a "Quit Game" confirmation popup to the Title Screen when pressing the ESC key. Matches the global design system and supports full EN/KR localization.
 
 ### Improved
+* **High Heat Warning:** Added a "Death's Door" state when temperature exceeds 85%. The screen vignette tweens to a deep red, the master audio bus is muffled (low-pass filter at 1500Hz), and a heartbeat sound pulses every 1.2s to match the flashing vignette.
+* **Solar Flare Consequences:** Failing to intercept a Solar Flare now results in a massive camera shake, a searing orange screen flash, and a heavy explosion sound to emphasize the impact.
+* **Low Water Warning:** The dynamic crosshair now pulses orange when the water tank drops below 25%, providing localized visual feedback of low resources.
+* **Accessibility Compliance:** All new pulsing animations and screen shakes automatically adapt or disable when "Reduce Motion" is turned on. Pulsing effects switch to gentle, static visual changes to prevent sensory overload and remain WCAG compliant.
 * **Secondary Button States:** Introduced a dedicated secondary button style (dimmer grey border, darker background, muted text) for destructive or secondary actions, applied to the "YES" button in the Quit popup to distinguish it from the safe "NO" option.
 
 ---
@@ -205,11 +209,15 @@ All notable changes to the Summer Nights project will be documented in this file
 ## [v1.5.2 - WIP]
 *(참고: 이 릴리스는 itch.io의 v1.2 버전에 해당합니다)*
 
-### 추가됨 (Added)
+### 추가됨
 * **게임 종료 확인:** 타이틀 화면에서 ESC 키를 누를 때 나타나는 "게임 종료" 확인 팝업을 추가했습니다. 전체 디자인 시스템과 일치하며 EN/KR 완벽 현지화를 지원합니다.
 
-### 개선됨 (Improved)
-* **보조 버튼 상태:** 안전한 "아니요" 옵션과 구별하기 위해 종료 팝업의 "예" 버튼에 적용되는 파괴적이거나 부차적인 작업을 위한 전용 보조 버튼 스타일(어두운 회색 테두리, 더 어두운 배경, 희미한 텍스트)을 도입했습니다.
+### 개선됨
+* **고열 경고:** 온도가 85%를 초과할 때 "죽음의 문턱" 상태가 추가되었습니다. 화면 비네트가 진한 빨간색으로 변하고, 마스터 오디오 버스가 먹먹해지며(1500Hz 로우패스 필터), 비네트 깜빡임에 맞춰 심장 박동 소리가 1.2초마다 울립니다.
+* **태양 플레어 결과:** 태양 플레어 요격에 실패하면 강렬한 화면 흔들림, 주황색 화면 섬광, 묵직한 폭발음이 발생하여 타격감을 강조합니다.
+* **물 부족 경고:** 물탱크가 25% 이하로 떨어지면 동적 조준선이 주황색으로 깜빡여, 부족한 자원에 대한 시각적 피드백을 제공합니다.
+* **접근성 호환:** 모든 새로운 깜빡임 애니메이션 및 화면 흔들림은 "모션 줄이기"가 켜져 있을 때 자동으로 조정되거나 비활성화됩니다. 깜빡이는 효과는 감각 과부하를 방지하고 WCAG를 준수하기 위해 부드럽고 정적인 시각적 변화로 전환됩니다.
+* **보조 버튼 상태:** 파괴적이거나 부차적인 작업을 위한 전용 보조 버튼 스타일(어두운 회색 테두리, 더 어두운 배경, 옅은 텍스트)을 도입했으며, 이를 종료 팝업의 "예" 버튼에 적용하여 안전한 "아니요" 옵션과 구별했습니다.
 
 ---
 
