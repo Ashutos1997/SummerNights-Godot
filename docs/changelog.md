@@ -2,6 +2,17 @@
 
 All notable changes to the Summer Nights project will be documented in this file.
 
+## [v1.5.2 - WIP]
+*(Note: This release corresponds to v1.2 on itch.io)*
+
+### Added
+* **Quit Game Confirmation:** Added a "Quit Game" confirmation popup to the Title Screen when pressing the ESC key. Matches the global design system and supports full EN/KR localization.
+
+### Improved
+* **Secondary Button States:** Introduced a dedicated secondary button style (dimmer grey border, darker background, muted text) for destructive or secondary actions, applied to the "YES" button in the Quit popup to distinguish it from the safe "NO" option.
+
+---
+
 ## [v1.5.1] - 2026-09-02
 *(Note: This release corresponds to v1.1 on itch.io)*
 
@@ -188,6 +199,17 @@ All notable changes to the Summer Nights project will be documented in this file
 - **Audio:** 
   - Procedural UI synthesizer for sci-fi interface ticks and whooshes.
   - Immersive sound effects for water spraying, sizzling, bird calls, and wind.
+
+---
+
+## [v1.5.2 - WIP]
+*(참고: 이 릴리스는 itch.io의 v1.2 버전에 해당합니다)*
+
+### 추가됨 (Added)
+* **게임 종료 확인:** 타이틀 화면에서 ESC 키를 누를 때 나타나는 "게임 종료" 확인 팝업을 추가했습니다. 전체 디자인 시스템과 일치하며 EN/KR 완벽 현지화를 지원합니다.
+
+### 개선됨 (Improved)
+* **보조 버튼 상태:** 안전한 "아니요" 옵션과 구별하기 위해 종료 팝업의 "예" 버튼에 적용되는 파괴적이거나 부차적인 작업을 위한 전용 보조 버튼 스타일(어두운 회색 테두리, 더 어두운 배경, 희미한 텍스트)을 도입했습니다.
 
 ---
 

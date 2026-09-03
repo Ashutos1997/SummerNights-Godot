@@ -137,6 +137,14 @@ Buttons use a sleek, semi-transparent flat style with thick borders.
     *   Border Width: `2px`
     *   Corner Radius: `6px`
 
+*   **Secondary / Destructive Actions (e.g., "YES" to Quit):**
+    *   Normal Background: `Color(0, 0, 0, 0.3)`
+    *   Hover Background: `Color(0.4, 0.4, 0.4, 0.2)`
+    *   Pressed Background: `Color(0.2, 0.2, 0.2, 0.4)`
+    *   Border: `Color(0.6, 0.6, 0.6, 0.4)` (Dim Grey)
+    *   Text Color: `Color(0.7, 0.7, 0.7, 1.0)` (Light Grey)
+    *   Corner Radius: `0px`
+
 ### Panels & Overlays (Weapon Wheel Style)
 
 Panels like the Weapon Wheel info box use a distinct, rounded "sleek" aesthetic.

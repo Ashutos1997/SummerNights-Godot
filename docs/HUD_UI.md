@@ -69,6 +69,7 @@ These elements sit on top of the Core Gameplay HUD and blur/dim the background w
 *   Serves as the main menu and boot sequence.
 *   Features a custom 4-second boot animation where a golden line traces the 8px rounded perimeter of the screen while a PS1 synth swells, hiding the static `BorderPanel` until completion.
 *   Upon completion, the main UI layout aggressively bounces up from the bottom of the screen.
+*   **Quit Popup:** Pressing `ESC` triggers a confirmation modal asking "DO YOU WANT TO QUIT?". Uses a 90% opacity dark overlay, a 24px golden border, and implements the secondary button state for the "YES" action to prevent accidental quitting.
 
 ### End State Screens
 *   **`WinScreen`:** Shown upon completing a wave. Displays level stats and loading text.

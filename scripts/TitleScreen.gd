@@ -22,6 +22,7 @@ var best_time_lbl: Label = null
 var ach_btn: Button
 
 var achievements_screen: Control
+var quit_popup: Control
 var achievement_list: VBoxContainer
 var border_progress: float = -1.0:
 	set(value):
@@ -99,6 +100,7 @@ func _ready() -> void:
 	ach_btn.pressed.connect(_show_achievements)
 	
 	_build_achievements_screen()
+	_build_quit_popup()
 	_update_language()
 
 func _update_language() -> void:
@@ -648,3 +650,201 @@ func _input(event: InputEvent) -> void:
 		if achievements_screen and achievements_screen.visible:
 			_hide_achievements()
 			get_viewport().set_input_as_handled()
+			return
+		
+		if quit_popup and quit_popup.visible:
+			_hide_quit_popup()
+			get_viewport().set_input_as_handled()
+		elif not is_starting:
+			_show_quit_popup()
+			get_viewport().set_input_as_handled()
+
+func _build_quit_popup() -> void:
+	quit_popup = Control.new()
+	quit_popup.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	quit_popup.visible = false
+	quit_popup.z_index = 60 # Above achievements
+	add_child(quit_popup)
+	
+	var overlay = ColorRect.new()
+	overlay.name = "Overlay"
+	overlay.color = Color(0, 0, 0, 0.90)
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	quit_popup.add_child(overlay)
+	
+	var center = CenterContainer.new()
+	center.name = "CenterContainer"
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	quit_popup.add_child(center)
+	
+	var panel = Panel.new()
+	panel.name = "Panel"
+	panel.custom_minimum_size = Vector2(400, 180)
+	var panel_style = StyleBoxFlat.new()
+	panel_style.bg_color = Color(0, 0, 0, 0.96)
+	panel_style.border_width_left = 2
+	panel_style.border_width_top = 2
+	panel_style.border_width_right = 2
+	panel_style.border_width_bottom = 2
+	panel_style.border_color = Color(1.0, 0.85, 0.2, 0.8)
+	panel_style.corner_radius_top_left = 8
+	panel_style.corner_radius_top_right = 8
+	panel_style.corner_radius_bottom_left = 8
+	panel_style.corner_radius_bottom_right = 8
+	panel.add_theme_stylebox_override("panel", panel_style)
+	center.add_child(panel)
+	
+	var margin = MarginContainer.new()
+	margin.name = "MarginContainer"
+	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	margin.add_theme_constant_override("margin_top", 32)
+	margin.add_theme_constant_override("margin_bottom", 24)
+	panel.add_child(margin)
+	
+	var vbox = VBoxContainer.new()
+	vbox.name = "VBoxContainer"
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_theme_constant_override("separation", 32)
+	margin.add_child(vbox)
+	
+	var lbl = Label.new()
+	lbl.name = "Message"
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(lbl)
+	
+	var hbox = HBoxContainer.new()
+	hbox.name = "HBoxContainer"
+	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	hbox.add_theme_constant_override("separation", 24)
+	vbox.add_child(hbox)
+	
+	var yes_btn = Button.new()
+	yes_btn.name = "YesBtn"
+	yes_btn.custom_minimum_size = Vector2(140, 48)
+	hbox.add_child(yes_btn)
+	
+	var no_btn = Button.new()
+	no_btn.name = "NoBtn"
+	no_btn.custom_minimum_size = Vector2(140, 48)
+	hbox.add_child(no_btn)
+	
+	yes_btn.pressed.connect(_quit_game)
+	no_btn.pressed.connect(_hide_quit_popup)
+
+func _show_quit_popup() -> void:
+	if is_starting or not quit_popup: return
+	
+	var is_kr = GameState.language == "KR"
+	var font_path = "res://assets/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
+	var font = load(font_path)
+	
+	var lbl = quit_popup.get_node("CenterContainer/Panel/MarginContainer/VBoxContainer/Message")
+	lbl.text = "게임을 종료하시겠습니까?" if is_kr else "DO YOU WANT TO QUIT?"
+	_style_label(lbl, 22 if is_kr else 20, Color(1.0, 1.0, 1.0, 1.0), font)
+	lbl.add_theme_constant_override("outline_size", 2)
+	
+	var yes_btn = quit_popup.get_node("CenterContainer/Panel/MarginContainer/VBoxContainer/HBoxContainer/YesBtn")
+	var no_btn = quit_popup.get_node("CenterContainer/Panel/MarginContainer/VBoxContainer/HBoxContainer/NoBtn")
+	
+	yes_btn.text = "예 (YES)" if is_kr else "YES"
+	no_btn.text = "아니요 (NO)" if is_kr else "NO"
+	
+	# Apply standard button styles (Primary - NO)
+	var style_menu_btn = StyleBoxFlat.new()
+	style_menu_btn.bg_color = Color(0, 0, 0, 0.4)
+	style_menu_btn.border_color = Color(1.0, 0.85, 0.2, 0.6)
+	style_menu_btn.set_border_width_all(2)
+	style_menu_btn.set_corner_radius_all(0)
+	
+	var style_hover = style_menu_btn.duplicate()
+	style_hover.bg_color = Color(1.0, 0.75, 0.15, 0.2)
+	
+	var style_pressed = style_menu_btn.duplicate()
+	style_pressed.bg_color = Color(1.0, 0.85, 0.2, 0.4)
+	style_pressed.border_color = Color(1.0, 0.9, 0.3, 1.0)
+	
+	var style_focus = StyleBoxFlat.new()
+	style_focus.bg_color = Color(0, 0, 0, 0)
+	style_focus.border_color = Color(1.0, 0.85, 0.2, 1.0)
+	style_focus.set_border_width_all(2)
+	style_focus.set_corner_radius_all(6)
+	
+	# Apply secondary button styles (Secondary - YES)
+	var style_sec_btn = StyleBoxFlat.new()
+	style_sec_btn.bg_color = Color(0, 0, 0, 0.3)
+	style_sec_btn.border_color = Color(0.6, 0.6, 0.6, 0.4)
+	style_sec_btn.set_border_width_all(2)
+	style_sec_btn.set_corner_radius_all(0)
+	
+	var style_sec_hover = style_sec_btn.duplicate()
+	style_sec_hover.bg_color = Color(0.4, 0.4, 0.4, 0.2)
+	style_sec_hover.border_color = Color(0.8, 0.8, 0.8, 0.6)
+	
+	var style_sec_pressed = style_sec_btn.duplicate()
+	style_sec_pressed.bg_color = Color(0.2, 0.2, 0.2, 0.4)
+	style_sec_pressed.border_color = Color(0.5, 0.5, 0.5, 0.8)
+	
+	var style_sec_focus = StyleBoxFlat.new()
+	style_sec_focus.bg_color = Color(0, 0, 0, 0)
+	style_sec_focus.border_color = Color(0.6, 0.6, 0.6, 1.0)
+	style_sec_focus.set_border_width_all(2)
+	style_sec_focus.set_corner_radius_all(6)
+	
+	for btn in [yes_btn, no_btn]:
+		var is_primary = (btn == no_btn)
+		
+		if font: btn.add_theme_font_override("font", font)
+		btn.add_theme_font_size_override("font_size", 18 if is_kr else 16)
+		
+		var txt_color = Color(1.0, 0.85, 0.2, 1.0) if is_primary else Color(0.7, 0.7, 0.7, 1.0)
+		var txt_hover = Color(1.0, 0.85, 0.2, 1.0) if is_primary else Color(0.9, 0.9, 0.9, 1.0)
+		
+		btn.add_theme_color_override("font_color", txt_color)
+		btn.add_theme_color_override("font_hover_color", txt_hover)
+		btn.add_theme_color_override("font_pressed_color", txt_color)
+		btn.add_theme_color_override("font_focus_color", txt_color)
+		btn.add_theme_constant_override("outline_size", 2)
+		btn.add_theme_color_override("font_outline_color", Color.BLACK)
+		
+		btn.add_theme_stylebox_override("normal", style_menu_btn if is_primary else style_sec_btn)
+		btn.add_theme_stylebox_override("hover", style_hover if is_primary else style_sec_hover)
+		btn.add_theme_stylebox_override("pressed", style_pressed if is_primary else style_sec_pressed)
+		btn.add_theme_stylebox_override("focus", style_focus if is_primary else style_sec_focus)
+	
+	quit_popup.visible = true
+	quit_popup.modulate.a = 0.0
+	quit_popup.set_meta("is_hiding", false)
+	
+	var tw = create_tween()
+	tw.tween_property(quit_popup, "modulate:a", 1.0, 0.2)
+	
+	no_btn.grab_focus()
+	
+	var audio = AudioStreamPlayer.new()
+	audio.stream = load("res://assets/sfx/ui_tick.wav")
+	audio.bus = "SFX"
+	add_child(audio)
+	audio.play()
+	audio.finished.connect(audio.queue_free)
+
+func _hide_quit_popup() -> void:
+	if not quit_popup or not quit_popup.visible: return
+	if quit_popup.get_meta("is_hiding", false): return
+	quit_popup.set_meta("is_hiding", true)
+	
+	var audio = AudioStreamPlayer.new()
+	audio.stream = load("res://assets/sfx/ui_tick.wav")
+	audio.bus = "SFX"
+	add_child(audio)
+	audio.play()
+	audio.finished.connect(audio.queue_free)
+	
+	var tw = create_tween()
+	tw.tween_property(quit_popup, "modulate:a", 0.0, 0.15)
+	tw.tween_callback(func(): 
+		quit_popup.visible = false
+		quit_popup.set_meta("is_hiding", false)
+	)
+
+func _quit_game() -> void:
+	get_tree().quit()
