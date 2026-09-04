@@ -197,6 +197,8 @@ SummerNights-Godot/
 | SFX - 얼음 피격음 | antonsoederberg (Freesound) | CC0 |
 | SFX - 갈매기 앰비언스 (Seagull Ambiance) | Half-Life | 모드 에셋 (Mod Asset) |
 | SFX - PS1 스타일 신스 부팅 오디오 (PS1 Style Synth Boot Audio) | nihilanth217 (SampleFocus) | 표준 라이선스 (Standard License) |
+| SFX - 심장 박동음 (죽음의 문턱) (Heartbeat - Death's Door) | Wikimedia Commons | 퍼블릭 도메인 (Public Domain) |
+| SFX - 빈 탱크 클릭음 (Empty Tank Click) | 절차적 파이썬 스크립트 합성 (Procedural Python Script Synthesis) | 오픈소스 (Open Source) |
 | SFX - 초신성 충돌 오디오 (안전 배포용) (Supernova Impact Audio - Safe Export) | Uzbazur (Freesound) | CC0 |
 | VFX - 얼음 폭발 발사체 및 입자 효과 | 절차적 고도(Godot) 기본 도형 | - |
 | VFX - 물리적 마그마 파편 (Physical Magma Debris) | Quaternius Rock Models 및 Godot RigidBody3D | - |

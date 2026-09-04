@@ -24,7 +24,7 @@ The live gameplay HUD is designed to minimize clutter while keeping critical sur
 *   **`ToastContainer`:** Displays transient slide-down notifications (e.g., "Weapon Unlocked") from the top-right corner.
 
 ### Center
-*   **`Crosshair` (`DynamicCrosshair.tscn`):** The aiming reticle. It has been extracted into a standalone scene. It dynamically scales up slightly when successfully landing water hits on the sun. It also features a procedurally drawn vector ring (`_draw()`) that visually tracks the current water tank capacity. The ring and crosshair flash red when empty, and lime-green when landing critical hits on sunspots.
+*   **`Crosshair` (`DynamicCrosshair.tscn`):** The aiming reticle. It has been extracted into a standalone scene. It dynamically scales up slightly when successfully landing water hits on the sun. It also features a procedurally drawn vector ring (`_draw()`) that visually tracks the current water tank capacity. The ring will cleanly pulse a high-contrast orange when the tank drops below 25% to serve as a low water warning. The ring and crosshair flash red when entirely empty, and lime-green when landing critical hits on sunspots.
 *   **`ComboLabel`:** Positioned slightly offset to the right of the crosshair. Appears when a water stream is held on the sun, displaying the active combo multiplier (e.g., `1.15x COMBO!`). It scales up to 3.0x and fades out when the stream is broken.
 *   **`CalloutLabel`:** Positioned just below the ComboLabel. Dynamically injected at runtime to display themed arcade callouts (e.g., "CHILL!", "ICE COLD!") at key combo milestones (1.5x, 2.0x, etc.). Translates text dynamically based on locale.
 

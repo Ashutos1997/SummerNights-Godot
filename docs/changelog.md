@@ -14,6 +14,9 @@ All notable changes to the Summer Nights project will be documented in this file
 * **Low Water Warning:** The dynamic crosshair now pulses orange when the water tank drops below 25%, providing localized visual feedback of low resources.
 * **Accessibility Compliance:** All new pulsing animations and screen shakes automatically adapt or disable when "Reduce Motion" is turned on. Pulsing effects switch to gentle, static visual changes to prevent sensory overload and remain WCAG compliant.
 * **Secondary Button States:** Introduced a dedicated secondary button style (dimmer grey border, darker background, muted text) for destructive or secondary actions, applied to the "YES" button in the Quit popup to distinguish it from the safe "NO" option.
+* **Auditory UX - Empty Tank:** Attempting to shoot while empty triggers a rhythmic, high-frequency plastic clicking sound to audibly communicate the empty state (featuring a custom procedurally synthesized SFX).
+* **Auditory UX - Combo Pitch Shifting:** The pitch of the water stream audio dynamically shifts upward based on the active combo multiplier, providing subconscious auditory feedback of your success.
+* **Controller Aim Assist (Friction):** Intercepts Gamepad analog stick input to apply a "sticky" friction multiplier when the crosshair sweeps over the main body of the sun (0.5x sensitivity) and an even stronger lock-on friction over critical sunspots (0.2x sensitivity), ensuring precise aiming without a mouse.
 
 ---
 
@@ -218,6 +221,9 @@ All notable changes to the Summer Nights project will be documented in this file
 * **물 부족 경고:** 물탱크가 25% 이하로 떨어지면 동적 조준선이 주황색으로 깜빡여, 부족한 자원에 대한 시각적 피드백을 제공합니다.
 * **접근성 호환:** 모든 새로운 깜빡임 애니메이션 및 화면 흔들림은 "모션 줄이기"가 켜져 있을 때 자동으로 조정되거나 비활성화됩니다. 깜빡이는 효과는 감각 과부하를 방지하고 WCAG를 준수하기 위해 부드럽고 정적인 시각적 변화로 전환됩니다.
 * **보조 버튼 상태:** 파괴적이거나 부차적인 작업을 위한 전용 보조 버튼 스타일(어두운 회색 테두리, 더 어두운 배경, 옅은 텍스트)을 도입했으며, 이를 종료 팝업의 "예" 버튼에 적용하여 안전한 "아니요" 옵션과 구별했습니다.
+* **청각적 UX - 빈 물탱크:** 물탱크가 비어 있을 때 발사를 시도하면 리드미컬하고 고주파의 플라스틱 클릭음이 발생하여 비어 있는 상태를 청각적으로 전달합니다(절차적으로 합성된 커스텀 SFX 적용).
+* **청각적 UX - 콤보 피치 시프팅:** 활성 콤보 배수에 따라 물줄기 오디오의 피치가 동적으로 올라가 플레이어의 성공적인 공격에 대해 무의식적인 청각적 피드백을 제공합니다.
+* **컨트롤러 조준 지원 (마찰력):** 게임 패드의 아날로그 스틱 입력을 가로채 조준선이 태양 본체를 지날 때 끈적한 마찰 배수(감도 0.5배)를 적용하고 중요한 흑점에서는 더 강한 잠금 마찰력(감도 0.2배)을 적용하여 마우스 없이도 정밀한 조준을 보장합니다.
 
 ---
 

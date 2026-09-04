@@ -195,6 +195,8 @@ SummerNights-Godot/
 | SFX - Ice Hit | antonsoederberg (Freesound) | CC0 |
 | SFX - Seagull Ambiance | Half-Life | Mod Asset |
 | SFX - PS1 Style Synth Boot Audio | nihilanth217 (SampleFocus) | Standard License |
+| SFX - Heartbeat (Death's Door) | Wikimedia Commons | Public Domain |
+| SFX - Empty Tank Click | Procedural Python Script Synthesis | Open Source |
 | SFX - Supernova Impact Audio (Safe Export) | Uzbazur (Freesound) | CC0 |
 | VFX - Ice Blast Projectile & Particles | Procedural Godot Primitives | - |
 | VFX - Physical Magma Debris | Quaternius Rock Models & Godot RigidBody3D | - |

@@ -54,6 +54,8 @@ var heat_flash_mix: float = 0.0:
 			post_process_mat.set_shader_parameter("flash_mix", value)
 
 var flare_impact_sfx: AudioStreamPlayer
+var empty_sfx_timer: float = 0.0
+var _base_weapon_pitch: float = 1.0
 var sun_hit_tween: Tween
 var is_shaking: bool = false
 var level: int            = 1
@@ -136,13 +138,14 @@ func _load_weapon_model() -> void:
 	
 	if shoot_loop_sfx:
 		if GameState.current_weapon_id == "heavy":
-			shoot_loop_sfx.pitch_scale = 0.6
+			_base_weapon_pitch = 0.6
 		elif GameState.current_weapon_id == "precision":
-			shoot_loop_sfx.pitch_scale = 1.5
+			_base_weapon_pitch = 1.5
 		elif GameState.current_weapon_id == "tidal":
-			shoot_loop_sfx.pitch_scale = 0.5
+			_base_weapon_pitch = 0.5
 		else:
-			shoot_loop_sfx.pitch_scale = 1.0
+			_base_weapon_pitch = 1.0
+		shoot_loop_sfx.pitch_scale = _base_weapon_pitch
 		
 func _recalculate_stats() -> void:
 	var w_cfg = GameState.WEAPONS[GameState.current_weapon_id]
@@ -499,7 +502,7 @@ func _ready() -> void:
 	shoot_loop_sfx = _create_sfx("res://assets/audio/sfx/shoot_loop.ogg", -10.0, 1, "SFX_WEAPON")
 	hit_sfx = _create_sfx("res://assets/audio/sfx/hit_sun.ogg", -2.0, 2, "SFX_WEAPON")
 	sun_defeated_sfx = _create_sfx("res://assets/audio/sfx/sun_defeated.ogg", 0.0, 1, "SFX_UI")
-	water_empty_sfx = _create_sfx("res://assets/audio/sfx/water_empty.ogg", -8.0, 1, "SFX_UI")
+	water_empty_sfx = _create_sfx("res://assets/audio/sfx/water_empty.wav", -8.0, 1, "SFX_UI")
 	sizzle_sfx = _create_sfx("res://assets/sizzle.ogg", -4.0, 2, "SFX_WEAPON")
 	
 	flare_impact_sfx = _create_sfx("res://assets/audio/sfx/hit_sun.ogg", -6.0, 3, "SFX_WEAPON")
@@ -1933,7 +1936,17 @@ func _process(delta: float) -> void:
 		else:
 			var aim_vec = Input.get_vector("aim_left", "aim_right", "aim_up", "aim_down")
 			if aim_vec.length_squared() > 0.01:
-				virtual_mouse_pos += aim_vec * gamepad_sensitivity * mouse_sensitivity * delta
+				var friction = 1.0
+				var r_orig = camera.project_ray_origin(virtual_mouse_pos)
+				var r_norm = camera.project_ray_normal(virtual_mouse_pos)
+				var current_t_pos = r_orig + r_norm * ((sun.position.z - r_orig.z) / r_norm.z)
+				if current_t_pos.distance_to(sun.global_position) < 4.5:
+					friction = 0.5
+					if is_instance_valid(sunspot_node) and sunspot_node.visible:
+						if current_t_pos.distance_to(sunspot_node.global_position) < 2.0:
+							friction = 0.2
+				
+				virtual_mouse_pos += aim_vec * gamepad_sensitivity * mouse_sensitivity * friction * delta
 				var viewport_size = get_viewport().get_visible_rect().size
 				virtual_mouse_pos.x = clamp(virtual_mouse_pos.x, 0, viewport_size.x)
 				virtual_mouse_pos.y = clamp(virtual_mouse_pos.y, 0, viewport_size.y)
@@ -2008,12 +2021,17 @@ func _process(delta: float) -> void:
 	crosshair_moved.emit(virtual_mouse_pos, is_catastrom_active)
 			
 	# Prevent sputtering when empty
+	empty_sfx_timer -= delta
 	if water_tank <= 0.0:
-		if can_shoot and not water_empty_sfx.playing:
-			water_empty_sfx.play()
 		can_shoot = false
 	elif water_tank >= MAX_WATER * 0.25: # Must recharge to 25% before shooting again
 		can_shoot = true
+		
+	if is_shooting and not can_shoot and not is_title_screen and not is_dragging_sun and not (hud and hud.weapon_wheel.active):
+		if empty_sfx_timer <= 0.0:
+			if is_instance_valid(water_empty_sfx):
+				water_empty_sfx.play()
+			empty_sfx_timer = 0.35
 	
 	# Shooting mechanics
 	if is_shooting and can_shoot:
@@ -2235,6 +2253,13 @@ func _process(delta: float) -> void:
 			if c_mult >= 2.0:
 				combo_regen_bonus = 6.0
 		water_tank = min(MAX_WATER, water_tank + (current_weapon_recharge + combo_regen_bonus) * delta)
+			
+	# Update Audio Pitch based on Combo
+	if is_instance_valid(shoot_loop_sfx):
+		var active_mult = 1.0
+		if combo_active:
+			active_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
+		shoot_loop_sfx.pitch_scale = _base_weapon_pitch * (1.0 + (active_mult - 1.0) * 0.15)
 			
 	# Audio loop timer — stop loop layer after 0.12s of no firing
 	if is_firing:

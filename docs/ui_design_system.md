@@ -192,6 +192,8 @@ When a menu or overlay is shown (e.g., Pause, Weapon Wheel), the screen behind i
 ## 5. Animation & Polish
 
 *   **UI Tick Audio:** When clicking buttons or opening menus, a synthesized 1800Hz sine sweep UI tick plays at `-18 dB`.
+*   **Auditory UX (Empty Tank):** Clicking the trigger when the water tank is empty triggers a `0.35s` rhythmic clicking sound to provide localized audio feedback.
+*   **Auditory UX (Combo Pitching):** The water stream SFX dynamically shifts its pitch higher based on the current combo multiplier to deliver subconscious gameplay feedback.
 *   **Prompts (e.g., "Click to Continue"):** Use a Sine ease-in-out tween looping to pulse the alpha between `0.7` and `1.0` over `1.2s`.
 *   **Weapon Wheel:** Selected wedge stroke turns from dark brown (`Color(0.4, 0.35, 0.2, 0.8)`) to bright gold (`Color(1.0, 0.9, 0.3, 1.0)`).
 *   **Combo UI:** The combo multiplier fades in and out dynamically.

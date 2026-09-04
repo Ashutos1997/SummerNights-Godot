@@ -8,7 +8,7 @@ This document serves as the master record for all currently implemented features
 *   **Objective:** Cool the Sun to prevent it from reaching 100% heat before the wave timer runs out.
 *   **Heat Mechanics:** The Sun passively generates heat. If heat reaches 100%, the player loses.
 *   **Water Management:** The player has a limited water tank that drains when shooting. It recharges automatically when not firing.
-*   **Water Stream Combo & Scoring:** Continuously tracking the Sun with water builds a combo multiplier that scales up to 3.0x, significantly boosting Catastrom Ultimate charging speed.
+*   **Water Stream Combo, Scoring & Pitch Shifting:** Continuously tracking the Sun with water builds a combo multiplier that scales up to 3.0x, significantly boosting Catastrom Ultimate charging speed. The pitch of the water stream audio dynamically shifts upward based on the active combo multiplier, providing subconscious auditory feedback of your success.
 *   **Scoring System:** Points are dynamically awarded for continuous hits, intercepting Solar Flares (500 base points), and evaporating Magma Debris (150 base points). All points are heavily multiplied by the active Combo meter, making long, accurate streams extremely lucrative. Your High Score is persistently saved between sessions.
 *   **Wave Progression:** The game progresses through increasingly difficult waves (longer timers, faster heat generation, more aggressive sun movement). Boss waves occur every 5 waves (e.g., Wave 5).
 *   **Game Modes:**
@@ -79,6 +79,8 @@ Weather events trigger based on a dynamic probability system tied to the current
     *   **High Heat Warning (Death's Door):** When the sun exceeds 85% heat, the global vignette tweens to a deep red, the master audio bus is heavily muffled via a Low-Pass Filter, and a thumping heartbeat audio pulses every 1.2s to match the vignette's visual flashing.
     *   **Solar Flare Impact:** Failing to shoot a Solar Flare triggers a massive screen shake, a blinding orange screen flash, and a heavy, distorted explosion sound.
     *   **Low Water Warning:** When the water tank drops below 25%, the central dynamic crosshair cleanly interrupts the player's focus by pulsing a high-contrast orange.
+    *   **Empty Tank Sputter:** Attempting to shoot while empty triggers a rhythmic, high-frequency plastic clicking sound (0.35s cooldown) to audibly communicate the empty state.
+*   **Controller Aim Assist (Friction):** Intercepts Gamepad analog stick input to apply a "sticky" friction multiplier when the crosshair sweeps over the main body of the sun (0.5x sensitivity) and an even stronger lock-on friction over critical sunspots (0.2x sensitivity), ensuring precise aiming without a mouse.
 *   **Quit Game Confirmation:** Pressing ESC on the main menu opens a modal confirming if the player wants to quit, preventing accidental exits. Matches the global design system and uses a dedicated secondary visual state for the destructive action.
 *   **Dynamic Crosshair:** A custom diegetic cursor that scales up on hits. It features a translucent blue radial ring that visually tracks the current water tank capacity. The ring and crosshair instantly flash red when the tank is empty, and flash lime-green when landing critical hits on sunspots.
 *   **Screen Shake:** The camera violently shakes during critical moments (e.g., Phase 2 transitions, high heat, solar flare impacts, Catastrom dunks).
