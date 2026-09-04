@@ -25,6 +25,7 @@ The live gameplay HUD is designed to minimize clutter while keeping critical sur
 
 ### Center
 *   **`Crosshair` (`DynamicCrosshair.tscn`):** The aiming reticle. It has been extracted into a standalone scene. It dynamically scales up slightly when successfully landing water hits on the sun. It also features a procedurally drawn vector ring (`_draw()`) that visually tracks the current water tank capacity. The ring will cleanly pulse a high-contrast orange when the tank drops below 25% to serve as a low water warning. The ring and crosshair flash red when entirely empty, and lime-green when landing critical hits on sunspots.
+    *   **Per-Weapon Crosshair Shapes:** `set_weapon_style(id)` is called from `Main.gd` via `HUD.gd`'s `notify_weapon_style()` on every weapon swap. The PNG `CrosshairImage` node is hidden for all non-standard weapons. Shapes: **Standard** (dot + ring PNG), **Precision** (tight `+` cross + center dot, tight 22px ring), **Heavy** (thick bracket corners at ±18px, wide 34px ring), **Scatter** (3 diverging angled lines at -35°/0°/35°, wide 36px ring), **Tidal Gatling** (8-segment spinning dashed ring, spins at 60°/s idle, 180°/s while firing).
 *   **`ComboLabel`:** Positioned slightly offset to the right of the crosshair. Appears when a water stream is held on the sun, displaying the active combo multiplier (e.g., `1.15x COMBO!`). It scales up to 3.0x and fades out when the stream is broken.
 *   **`CalloutLabel`:** Positioned just below the ComboLabel. Dynamically injected at runtime to display themed arcade callouts (e.g., "CHILL!", "ICE COLD!") at key combo milestones (1.5x, 2.0x, etc.). Translates text dynamically based on locale.
 
@@ -73,6 +74,7 @@ These elements sit on top of the Core Gameplay HUD and blur/dim the background w
 
 ### End State Screens
 *   **`WinScreen`:** Shown upon completing a wave. Displays level stats and loading text.
+    *   **`StatsPanel` (VBoxContainer):** Dynamically injected `HBoxContainer` rows display 4 per-wave stats: Max Combo, Water Used, Flares Caught, and Clear Time. Each row fades in with a 0.12s stagger delay, and each stat value ticks up from 0 to its final value over 0.6s using `TRANS_CIRC` easing. Label keys use muted white (0.6 alpha), values use the primary gold accent. Fully localized via the active `TranslationServer` locale.
 *   **`EndScreen`:** Shown upon beating the entire game.
 *   **`LoseScreen`:** Shown if the Sun hits 100% heat. Instead of an immediate popup, this triggers a dramatic Supernova cinematic (massive sun expansion, screen shake, blinding flash) that fades into the menu. Features a fully opaque background to block HDR bleed, a perfectly centered vertical layout for dramatic emphasis, and offers Retry/Menu buttons styled exactly like the Pause menu.
 
