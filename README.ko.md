@@ -206,6 +206,8 @@ SummerNights-Godot/
 | VFX - 반딧불이 및 벌레 (Fireflies & Bugs) | 절차적 GDScript ArrayMesh | - |
 | 태양 표정 (Sun Face) | 절차적 Godot Image draw API | - |
 | 무기 선택 휠 UI | 절차적 GDScript draw API | - |
+| 동적 무기 조준선 (Dynamic Weapon Crosshairs) | 절차적 GDScript draw API | - |
+| 웨이브 종료 통계 패널 (Post-Match Stats Panel) | 절차적 GDScript 및 Tween | - |
 | 물줄기 콤보 UI 및 로직 (Stream Combo UI) | 절차적 GDScript 및 Tween | - |
 | 합성 UI 오디오 (틱/스와이프 소리) | 절차적 AudioStreamGenerator | - |
 | VFX 및 오디오 - 태양풍 (Solar Wind) | 절차적 파티클 및 AudioStreamGenerator | - |
