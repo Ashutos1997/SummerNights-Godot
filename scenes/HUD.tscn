@@ -1268,15 +1268,6 @@ theme_override_font_sizes/font_size = 13
 text = "Next level loading..."
 horizontal_alignment = 1
 
-[node name="StatsSpacer" type="Control" parent="HUD/WinScreen/ColorRect/VBoxContainer"]
-layout_mode = 2
-mouse_filter = 2
-custom_minimum_size = Vector2(0, 8)
-
-[node name="StatsPanel" type="VBoxContainer" parent="HUD/WinScreen/ColorRect/VBoxContainer"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 4
 
 [node name="EndScreen" type="Control" parent="HUD"]
 layout_mode = 1
@@ -1844,13 +1835,6 @@ theme_override_font_sizes/font_size = 12
 text = "Dynamic Weapon Crosshairs  ·  Procedural GDScript Draw API"
 horizontal_alignment = 1
 
-[node name="ItmUI6" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_colors/font_color = Color(1, 1, 1, 0.85)
-theme_override_font_sizes/font_size = 12
-text = "Post-Match Stats Panel  ·  Procedural GDScript & Tweens"
-horizontal_alignment = 1
 
 [node name="Spacer3" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
 layout_mode = 2

@@ -7,7 +7,6 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### Added
 * **Dynamic Weapon Crosshairs:** Each of the 5 weapons now displays a unique procedurally-drawn crosshair shape rendered via GDScript's `_draw()` API. Standard: dot + ring. Precision: tight `+` cross with scanning center dot. Heavy: wide bracket corners. Scatter: 3 diverging fan lines. Tidal Gatling: spinning dashed ring that accelerates while firing.
-* **Post-Match Statistics Panel:** The wave-clear win screen now shows a staggered animated breakdown of 4 stats (Max Combo, Water Used, Flares Caught, Clear Time). Values animate from 0 to their final numbers with a smooth counter effect. Win screen extended from 2.5s to 4.5s. Fully localized in EN/KR.
 
 ### Improved
 * **High Heat Warning:** Added a "Death's Door" state when temperature exceeds 85%. The screen vignette tweens to a deep red, the master audio bus is muffled (low-pass filter at 1500Hz), and a heartbeat sound pulses every 1.2s to match the flashing vignette.
@@ -215,7 +214,6 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### 추가됨
 * **동적 무기 조준선:** 5가지 무기 각각이 GDScript의 `_draw()` API로 렌더링된 고유한 절차적 조준선 모양을 표시합니다. 스탠다드: 점 + 링. 정밀 스트림: 스캔 중심점이 있는 촘촘한 `+` 십자선. 헤비 캐논: 넓은 브래킷 코너. 스캐터 노즐: 분사 범위를 나타내는 3개의 퍼지는 선. 타이달 개틀링: 발사 중 가속하는 회전 점선 링.
-* **웨이브 종료 통계 패널:** 웨이브 클리어 화면에 4가지 통계(최고 콤보, 물 사용량, 요격한 플레어, 클리어 시간)의 단계적 애니메이션 결과가 표시됩니다. 수치가 0에서 최종 값까지 부드러운 카운터 효과로 표시됩니다. 승리 화면이 2.5초에서 4.5초로 연장되었습니다. EN/KR 완벽 현지화 지원.
 
 ### 개선됨
 * **고열 경고:** 온도가 85%를 초과할 때 "죽음의 문턱" 상태가 추가되었습니다. 화면 비네트가 진한 빨간색으로 변하고, 마스터 오디오 버스가 먹먹해지며(1500Hz 로우패스 필터), 비네트 깜빡임에 맞춰 심장 박동 소리가 1.2초마다 울립니다.

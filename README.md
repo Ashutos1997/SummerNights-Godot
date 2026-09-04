@@ -205,7 +205,6 @@ SummerNights-Godot/
 | Sun Face Expressions | Procedural Godot Image draw API | - |
 | Weapon Wheel UI | Procedural GDScript draw API | - |
 | Dynamic Weapon Crosshairs | Procedural GDScript draw API | - |
-| Post-Match Statistics Panel | Procedural GDScript & Tweens | - |
 | Stream Combo UI & Logic | Procedural GDScript & Tweens | - |
 | Synthesized UI Audio (Ticks/Whoosh) | Procedural AudioStreamGenerator | - |
 | VFX & Audio - Solar Wind Hazard | Procedural Particles & AudioStreamGenerator | - |

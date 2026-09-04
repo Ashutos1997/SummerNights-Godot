@@ -56,11 +56,6 @@ var heat_flash_mix: float = 0.0:
 var flare_impact_sfx: AudioStreamPlayer
 var empty_sfx_timer: float = 0.0
 var _base_weapon_pitch: float = 1.0
-# ─── Per-Wave Session Stats ───────────────────────────────────────────────────
-var session_max_combo: float = 1.0
-var session_water_used: float = 0.0
-var session_flares_this_wave: int = 0
-var session_wave_start_time: float = 0.0
 var sun_hit_tween: Tween
 var is_shaking: bool = false
 var level: int            = 1
@@ -311,7 +306,6 @@ var wet_spawn_timer: float = 0.0
 
 func _ready() -> void:
 	round_start_time = Time.get_unix_time_from_system()
-	session_wave_start_time = round_start_time
 	_setup_post_process()
 	catastrom_buff = 1.1 if "slam_dunk" in GameState.unlocked_achievements else 1.0
 	ice_shoot_sfx = AudioStreamPlayer.new()
@@ -2053,7 +2047,6 @@ func _process(delta: float) -> void:
 			shoot_loop_sfx.play()
 			
 		water_tank -= WATER_DRAIN_RATE * delta
-		session_water_used += WATER_DRAIN_RATE * delta
 		gun_spray.emitting = true
 		
 		# Subtle accessibility-friendly recoil kick (push gun and camera back slightly)
@@ -2142,7 +2135,6 @@ func _process(delta: float) -> void:
 				water_changed.emit(water_tank, MAX_WATER)
 				
 				GameState.flares_intercepted += 1
-				session_flares_this_wave += 1
 				if GameState.flares_intercepted >= 10 and not "flare_catcher" in GameState.unlocked_achievements:
 					GameState.unlock_achievement("flare_catcher")
 				else:
@@ -2225,7 +2217,6 @@ func _process(delta: float) -> void:
 					combo_active = true
 					if hud and hud.has_method("show_combo"): hud.show_combo(true)
 				var current_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
-				session_max_combo = max(session_max_combo, current_mult)
 				if current_mult >= 3.0:
 					GameState.unlock_achievement("untouchable")
 				if hud and hud.has_method("update_combo_text"):
@@ -2241,7 +2232,6 @@ func _process(delta: float) -> void:
 					if hud and hud.has_method("show_combo"): hud.show_combo(true)
 				
 				var current_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
-				session_max_combo = max(session_max_combo, current_mult)
 				if current_mult >= 3.0:
 					GameState.unlock_achievement("untouchable")
 				if hud and hud.has_method("update_combo_text"):
@@ -2956,14 +2946,6 @@ func _win() -> void:
 	
 	sun_defeated_sfx.play()
 	
-	# Snapshot stats before resetting
-	var snap_max_combo: float = session_max_combo
-	var snap_water_used: float = session_water_used
-	var snap_flares: int = session_flares_this_wave
-	var snap_time: float = Time.get_unix_time_from_system() - session_wave_start_time
-	if hud and hud.has_method("show_wave_stats"):
-		hud.show_wave_stats(snap_max_combo, snap_water_used, snap_flares, snap_time)
-	
 	# Bring up ocean ambient during the breather
 	if ambient_sfx:
 		var amb_tw = create_tween()
@@ -2997,11 +2979,6 @@ func _win() -> void:
 			is_catastrom_active = false
 			_end_mirage()
 			active_mirages.clear()
-			# Reset per-wave session stats
-			session_max_combo = 1.0
-			session_water_used = 0.0
-			session_flares_this_wave = 0
-			session_wave_start_time = Time.get_unix_time_from_system()
 			var viewport_size = get_viewport().get_visible_rect().size
 			virtual_mouse_pos = viewport_size * 0.5
 			if gun:
@@ -3065,7 +3042,7 @@ func _win() -> void:
 			if hud and hud.has_method("hide_win_screen"):
 				hud.hide_win_screen()
 			
-		await get_tree().create_timer(4.5).timeout
+		await get_tree().create_timer(2.5).timeout
 		reload.call()
 
 

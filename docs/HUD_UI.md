@@ -73,8 +73,7 @@ These elements sit on top of the Core Gameplay HUD and blur/dim the background w
 *   **Quit Popup:** Pressing `ESC` triggers a confirmation modal asking "DO YOU WANT TO QUIT?". Uses a 90% opacity dark overlay, a 24px golden border, and implements the secondary button state for the "YES" action to prevent accidental quitting.
 
 ### End State Screens
-*   **`WinScreen`:** Shown upon completing a wave. Displays level stats and loading text.
-    *   **`StatsPanel` (VBoxContainer):** Dynamically injected `HBoxContainer` rows display 4 per-wave stats: Max Combo, Water Used, Flares Caught, and Clear Time. Each row fades in with a 0.12s stagger delay, and each stat value ticks up from 0 to its final value over 0.6s using `TRANS_CIRC` easing. Label keys use muted white (0.6 alpha), values use the primary gold accent. Fully localized via the active `TranslationServer` locale.
+*   **`WinScreen`:** Shown upon completing a wave. Displays level complete text and loading text.
 *   **`EndScreen`:** Shown upon beating the entire game.
 *   **`LoseScreen`:** Shown if the Sun hits 100% heat. Instead of an immediate popup, this triggers a dramatic Supernova cinematic (massive sun expansion, screen shake, blinding flash) that fades into the menu. Features a fully opaque background to block HDR bleed, a perfectly centered vertical layout for dramatic emphasis, and offers Retry/Menu buttons styled exactly like the Pause menu.
 

@@ -198,10 +198,6 @@ When a menu or overlay is shown (e.g., Pause, Weapon Wheel), the screen behind i
 *   **Weapon Wheel:** Selected wedge stroke turns from dark brown (`Color(0.4, 0.35, 0.2, 0.8)`) to bright gold (`Color(1.0, 0.9, 0.3, 1.0)`).
 *   **Combo UI:** The combo multiplier fades in and out dynamically.
 *   **Combo Callouts:** Arcade-style floating text callouts for combo milestones. The text rapidly scales up to 1.2x and snaps back with a slight random rotation tilt to emphasize the impact, before fading out.
-*   **Post-Match Stats Panel:** Displayed inside the `WinScreen` after each wave clear.
-    *   **Stat Row Layout:** Each stat is an `HBoxContainer` with a right-aligned key `Label` (`custom_minimum_size.x = 120`, muted white `Color(1,1,1,0.6)`, 9px EN / 10px KR font) and a left-aligned gold value `Label` (`Color(1.0, 0.85, 0.2, 1.0)`, 10px EN / 11px KR font). Both use 2px black outline.
-    *   **Stagger Fade-In:** Each row tweens `modulate:a` from 0 to 1 over 0.25s with a `0.12s * row_index` delay offset.
-    *   **Counter Animation:** Numeric values animate from 0 to their final value over 0.6s using `TRANS_CIRC` easing via `tween_method`.
 *   **Live Score Counter:** When the score increases, the score label rapidly interpolates to the new value. It scales up to `1.2x` and snaps back to `1.0x` over `0.2s`, pivoting from the right edge to prevent the text from scaling off the screen.
 
 ## 6. Global Post-Processing & Screen Effects

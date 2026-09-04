@@ -35,7 +35,7 @@ var buff_toast_container: Control
 @onready var win_title_lbl = $HUD/WinScreen/ColorRect/VBoxContainer/Title
 @onready var win_level_lbl = $HUD/WinScreen/ColorRect/VBoxContainer/LevelLbl
 @onready var win_loading_lbl = $HUD/WinScreen/ColorRect/VBoxContainer/LoadingLbl
-@onready var win_stats_panel = $HUD/WinScreen/ColorRect/VBoxContainer/StatsPanel
+
 @onready var end_screen        = $HUD/EndScreen
 @onready var end_title_lbl     = $HUD/EndScreen/ColorRect/VBoxContainer/Title
 @onready var end_title2_lbl    = $HUD/EndScreen/ColorRect/VBoxContainer/Title2
@@ -1545,82 +1545,6 @@ func _on_critical_hit() -> void:
 	hit_tween.tween_property(crosshair, "scale", Vector2(1.0, 1.0), 0.12)
 	hit_tween.tween_property(crosshair, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.12)
 
-func show_wave_stats(max_combo: float, water_used: float, flares: int, time_sec: float) -> void:
-	if not win_stats_panel:
-		return
-	# Clear any old stat rows
-	for child in win_stats_panel.get_children():
-		child.queue_free()
-	await get_tree().process_frame
-	
-	var is_kr = TranslationServer.get_locale() == "ko"
-	var font = load("res://assets/fonts/Galmuri11.ttf") if is_kr else load("res://assets/fonts/Kenney Future.ttf")
-	
-	var stats = [
-		{"label": "최고 콤보" if is_kr else "MAX COMBO",    "value": "%s" % ("%.2fx" % max_combo),  "tween_float": max_combo,   "fmt": "%.2fx"},
-		{"label": "물 사용량" if is_kr else "WATER USED",    "value": "%s" % ("%.0fL" % water_used), "tween_float": water_used,  "fmt": "%.0fL"},
-		{"label": "요격한 플레어" if is_kr else "FLARES CAUGHT", "value": "%d" % flares,               "tween_int": flares,         "fmt": "%d"},
-		{"label": "클리어 시간" if is_kr else "CLEAR TIME",    "value": "%ds" % int(time_sec),       "tween_float": time_sec,    "fmt": "%ds"},
-	]
-	
-	for stat in stats:
-		var row = HBoxContainer.new()
-		row.alignment = BoxContainer.ALIGNMENT_CENTER
-		row.modulate.a = 0.0
-		win_stats_panel.add_child(row)
-		
-		# Label (key)
-		var lbl = Label.new()
-		lbl.text = stat.label + ":"
-		lbl.custom_minimum_size = Vector2(120 if not is_kr else 130, 0)
-		lbl.add_theme_font_override("font", font)
-		lbl.add_theme_font_size_override("font_size", 10 if is_kr else 9)
-		lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.6))
-		lbl.add_theme_constant_override("outline_size", 2)
-		lbl.add_theme_color_override("font_outline_color", Color.BLACK)
-		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		row.add_child(lbl)
-		
-		# Spacer
-		var spacer = Control.new()
-		spacer.custom_minimum_size = Vector2(8, 0)
-		row.add_child(spacer)
-		
-		# Value (with tween counter)
-		var val_lbl = Label.new()
-		val_lbl.text = "0"
-		val_lbl.add_theme_font_override("font", font)
-		val_lbl.add_theme_font_size_override("font_size", 11 if is_kr else 10)
-		val_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
-		val_lbl.add_theme_constant_override("outline_size", 2)
-		val_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
-		val_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		row.add_child(val_lbl)
-		
-		# Animate row fade-in
-		var idx = win_stats_panel.get_child_count() - 1
-		var fade_tw = create_tween()
-		fade_tw.tween_interval(idx * 0.12)
-		fade_tw.tween_property(row, "modulate:a", 1.0, 0.25).set_trans(Tween.TRANS_SINE)
-		
-		# Animate value counter
-		if stat.has("tween_float"):
-			var target_val = stat.tween_float
-			var fmt = stat.fmt
-			var counter_tw = create_tween()
-			counter_tw.tween_interval(idx * 0.12 + 0.1)
-			counter_tw.tween_method(
-				func(v: float): val_lbl.text = fmt % v,
-				0.0, target_val, 0.6
-			).set_trans(Tween.TRANS_CIRC)
-		elif stat.has("tween_int"):
-			var target_val = stat.tween_int
-			var counter_tw = create_tween()
-			counter_tw.tween_interval(idx * 0.12 + 0.1)
-			counter_tw.tween_method(
-				func(v: float): val_lbl.text = "%d" % int(v),
-				0.0, float(target_val), 0.6
-			).set_trans(Tween.TRANS_CIRC)
 
 func _on_sun_defeated(level: int) -> void:
 	if GameState.is_survival_mode:
@@ -1640,7 +1564,7 @@ func _on_sun_defeated(level: int) -> void:
 	tw.set_trans(Tween.TRANS_SINE)
 	tw.tween_property(win_screen, "modulate:a", 1.0, 0.35)
 		
-	await get_tree().create_timer(4.5).timeout
+	await get_tree().create_timer(2.5).timeout
 	if win_screen.visible:
 		var hide_tw = create_tween()
 		hide_tw.tween_property(win_screen, "modulate:a", 0.0, 0.3)
