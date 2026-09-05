@@ -7,6 +7,7 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### Added
 * **Dynamic Weapon Crosshairs:** Each of the 5 weapons now displays a unique procedurally-drawn crosshair shape rendered via GDScript's `_draw()` API. Standard: dot + ring. Precision: tight `+` cross with scanning center dot. Heavy: wide bracket corners. Scatter: 3 diverging fan lines. Tidal Gatling: spinning dashed ring that accelerates while firing.
+* **Trade-Off Perks:** Added 3 new "corrupted" perks to the Endless Mode draft pool that offer massive buffs at the cost of a penalty: Glass Cannon (+40% Crit Damage, -15% Capacity), Heavy Water (+30% Cooling, -20% Ult Charge), and Reckless Haste (+30% Ult Charge, -10% Heat Resist).
 
 ### Improved
 * **End Screen Aesthetics:** Added the unified golden border overlay to the End, Win, and Lose screens to match the global menu design language. Additionally, improved the text hierarchy on the End Screen by increasing subtitle prominence and adjusting layout grouping.
@@ -216,6 +217,7 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### 추가됨
 * **동적 무기 조준선:** 5가지 무기 각각이 GDScript의 `_draw()` API로 렌더링된 고유한 절차적 조준선 모양을 표시합니다. 스탠다드: 점 + 링. 정밀 스트림: 스캔 중심점이 있는 촘촘한 `+` 십자선. 헤비 캐논: 넓은 브래킷 코너. 스캐터 노즐: 분사 범위를 나타내는 3개의 퍼지는 선. 타이달 개틀링: 발사 중 가속하는 회전 점선 링.
+* **트레이드오프 퍽 (Trade-Off Perks):** 무한 모드 드래프트 풀에 거대한 버프를 제공하는 대신 패널티를 부여하는 3개의 새로운 "타락한" 퍽을 추가했습니다: 유리 대포 (치명타 피해 +40%, 용량 -15%), 중수 (냉각력 +30%, 궁극기 충전 -20%), 무모한 가속 (궁극기 충전 +30%, 열 저항 -10%).
 
 ### 개선됨
 * **종료 화면 미학:** 제목 화면 및 설정 메뉴와 동일한 전역 메뉴 디자인을 따르도록 종료, 승리, 패배 화면에 통일된 황금색 테두리 오버레이를 추가했습니다. 또한 종료 화면의 텍스트 계층 구조를 개선하여 부제목을 강조하고 레이아웃 간격을 조정했습니다.

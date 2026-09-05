@@ -353,6 +353,30 @@ const WAVE_PERKS: Dictionary = {
 		"desc_en": "-15% Sun Sway Speed (Rare).",
 		"desc_kr": "태양의 흔들림 속도가 15% 감소합니다 (희귀).",
 		"weight": 20
+	},
+	"glass_cannon": {
+		"icon": "res://assets/ui/achievements/fireball.png",
+		"title_en": "Glass Cannon",
+		"title_kr": "유리 대포",
+		"desc_en": "+40% Crit Damage, -15% Tank Size.",
+		"desc_kr": "치명타 피해 +40%, 물탱크 용량 -15%.",
+		"weight": 60
+	},
+	"heavy_water": {
+		"icon": "res://assets/ui/achievements/water-splash.png",
+		"title_en": "Heavy Water",
+		"title_kr": "중수",
+		"desc_en": "+30% Cooling Power, -20% Ult Charge.",
+		"desc_kr": "냉각력 +30%, 궁극기 충전 -20%.",
+		"weight": 60
+	},
+	"reckless_haste": {
+		"icon": "res://assets/ui/achievements/eclipse.png",
+		"title_en": "Reckless Haste",
+		"title_kr": "무모한 가속",
+		"desc_en": "+30% Ult Charge, -10% Heat Resist.",
+		"desc_kr": "궁극기 충전 +30%, 열 저항 -10%.",
+		"weight": 60
 	}
 }
 
@@ -486,6 +510,15 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 			"crit_boost": crit_damage_mult += 0.15
 			"catastrom_boost": catastrom_charge_mult += 0.15
 			"slow_sway": sun_sway_mult -= 0.15
+			"glass_cannon":
+				crit_damage_mult += 0.40
+				max_water_mult -= 0.15
+			"heavy_water":
+				cooling_power_mult += 0.30
+				catastrom_charge_mult -= 0.20
+			"reckless_haste":
+				catastrom_charge_mult += 0.30
+				heat_resistance -= 0.10
 
 func unlock_achievement(id: String) -> void:
 	if id in unlocked_achievements: return
