@@ -1363,6 +1363,18 @@ text = "5 LEVELS COMPLETED"
 horizontal_alignment = 1
 
 [node name="Spacer3" type="Control" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="UnlockPrompt" type="Label" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.4, 0.8, 1, 0.75)
+theme_override_font_sizes/font_size = 14
+text = "ENDLESS MODE UNLOCKED!"
+horizontal_alignment = 1
+
+[node name="Spacer4" type="Control" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 

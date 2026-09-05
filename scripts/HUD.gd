@@ -41,6 +41,7 @@ var buff_toast_container: Control
 @onready var end_title2_lbl    = $HUD/EndScreen/ColorRect/VBoxContainer/Title2
 @onready var end_subtitle_lbl  = $HUD/EndScreen/ColorRect/VBoxContainer/Subtitle
 @onready var end_level_lbl     = $HUD/EndScreen/ColorRect/VBoxContainer/LevelCount
+@onready var end_unlock_lbl    = $HUD/EndScreen/ColorRect/VBoxContainer/UnlockPrompt
 @onready var end_prompt_lbl    = $HUD/EndScreen/ColorRect/VBoxContainer/RestartPrompt
 
 @onready var timer_label       = $HUD/TimerLabel
@@ -487,6 +488,9 @@ func _ready() -> void:
 	for lbl in [win_level_lbl, end_subtitle_lbl, lose_subtitle_lbl, end_level_lbl, lose_level_lbl, lose_wave_time_lbl]:
 		if lbl:
 			_style_lbl(lbl, subtitle_size, title_color, 5, Color(0, 0, 0, 1.0), font)
+			
+	if end_unlock_lbl:
+		_style_lbl(end_unlock_lbl, subtitle_size, Color(0.2, 0.8, 1.0, 1.0), 5, Color(0, 0, 0, 1.0), font)
 			
 	# Prompts & small text
 	for lbl in [win_loading_lbl, end_prompt_lbl]:
@@ -1580,6 +1584,9 @@ func show_end_screen() -> void:
 	
 	if end_level_lbl:
 		end_level_lbl.text = "%d 레벨 완료" % GameState.level if GameState.language == "KR" else "%d LEVELS COMPLETED" % GameState.level
+		
+	if end_unlock_lbl:
+		end_unlock_lbl.text = "무한 모드가 해제되었습니다!" if GameState.language == "KR" else "ENDLESS MODE UNLOCKED!"
 		
 	end_screen.visible = true
 	end_screen.modulate.a = 0.0
