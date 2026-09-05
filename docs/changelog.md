@@ -9,6 +9,8 @@ All notable changes to the Summer Nights project will be documented in this file
 * **Dynamic Weapon Crosshairs:** Each of the 5 weapons now displays a unique procedurally-drawn crosshair shape rendered via GDScript's `_draw()` API. Standard: dot + ring. Precision: tight `+` cross with scanning center dot. Heavy: wide bracket corners. Scatter: 3 diverging fan lines. Tidal Gatling: spinning dashed ring that accelerates while firing.
 
 ### Improved
+* **End Screen Aesthetics:** Added the unified golden border overlay to the End, Win, and Lose screens to match the global menu design language. Additionally, improved the text hierarchy on the End Screen by increasing subtitle prominence and adjusting layout grouping.
+* **Endless Mode Reward Feedback:** The End Screen (Normal Mode victory) now explicitly displays an "ENDLESS MODE UNLOCKED!" prompt to clearly communicate the newly available content.
 * **High Heat Warning:** Added a "Death's Door" state when temperature exceeds 85%. A soft translucent red border tweens around the screen, the master audio bus is muffled (low-pass filter at 1500Hz), and a heartbeat sound pulses every 1.2s to match the flashing border.
 * **Solar Flare Consequences:** Failing to intercept a Solar Flare now results in a massive camera shake, a searing orange screen flash, and a heavy explosion sound to emphasize the impact.
 * **Low Water Warning:** The dynamic crosshair now pulses orange when the water tank drops below 25%, providing localized visual feedback of low resources.
@@ -216,6 +218,8 @@ All notable changes to the Summer Nights project will be documented in this file
 * **동적 무기 조준선:** 5가지 무기 각각이 GDScript의 `_draw()` API로 렌더링된 고유한 절차적 조준선 모양을 표시합니다. 스탠다드: 점 + 링. 정밀 스트림: 스캔 중심점이 있는 촘촘한 `+` 십자선. 헤비 캐논: 넓은 브래킷 코너. 스캐터 노즐: 분사 범위를 나타내는 3개의 퍼지는 선. 타이달 개틀링: 발사 중 가속하는 회전 점선 링.
 
 ### 개선됨
+* **종료 화면 미학:** 제목 화면 및 설정 메뉴와 동일한 전역 메뉴 디자인을 따르도록 종료, 승리, 패배 화면에 통일된 황금색 테두리 오버레이를 추가했습니다. 또한 종료 화면의 텍스트 계층 구조를 개선하여 부제목을 강조하고 레이아웃 간격을 조정했습니다.
+* **무한 모드 보상 피드백:** 이제 일반 모드 승리 시 나타나는 종료 화면에서 "무한 모드가 해제되었습니다!" 메시지를 명시적으로 표시하여 새로 잠금 해제된 콘텐츠를 명확하게 전달합니다.
 * **고열 경고:** 온도가 85%를 초과할 때 "죽음의 문턱" 상태가 추가되었습니다. 화면 가장자리에 부드러운 반투명 빨간색 테두리가 나타나며, 마스터 오디오 버스가 먹먹해지고(1500Hz 로우패스 필터), 테두리 깜빡임에 맞춰 심장 박동 소리가 1.2초마다 울립니다.
 * **태양 플레어 결과:** 태양 플레어 요격에 실패하면 강렬한 화면 흔들림, 주황색 화면 섬광, 묵직한 폭발음이 발생하여 타격감을 강조합니다.
 * **물 부족 경고:** 물탱크가 25% 이하로 떨어지면 동적 조준선이 주황색으로 깜빡여, 부족한 자원에 대한 시각적 피드백을 제공합니다.

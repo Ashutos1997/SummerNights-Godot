@@ -59,9 +59,10 @@ To ensure legibility against the bright, 3D sun background, heavy outlines and d
     *   Shadow Offset: `x: 4, y: 4`
     *   Shadow Color: `Color(0, 0, 0, 0.8)`
     *   Shadow Outline Size: `12px`
-*   **Subtitles:**
-    *   Size: `18px` (EN) / `20px` (KR)
-    *   Outline Size: `4px` (Black)
+*   **Subtitles (End Screen, Menus):**
+    *   Size: `18px` (EN) / `20px` (KR) (Standard size for UI sub-headers)
+    *   Highlighted Size: `24px` (EN) / `28px` (KR) (Used for primary screen conclusions like "THE SUN HAS BEEN TAMED")
+    *   Outline Size: `5px` (Black)
 *   **Buttons:**
     *   Size: `18px` (EN) / `20px` (KR)
     *   Outline Size: `2px` (Black)
@@ -75,7 +76,7 @@ To ensure legibility against the bright, 3D sun background, heavy outlines and d
 ## 4. UI Component Styles
 
 ### Global Menu Borders
-All full-screen menus (Title Screen, Pause Screen, Settings, Credits, etc.) are unified by a consistent golden border overlay to tie the visual language together:
+All full-screen menus (Title Screen, Pause Screen, Settings, Credits, End Screen, Win Screen, Lose Screen, etc.) are unified by a consistent golden border overlay to tie the visual language together:
 *   **Padding / Offset:** 24px from all screen edges
 *   **Border Width:** 2px (All sides)
 *   **Border Color:** `Color(1.0, 0.85, 0.2, 0.4)`

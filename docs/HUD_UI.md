@@ -73,8 +73,9 @@ These elements sit on top of the Core Gameplay HUD and blur/dim the background w
 *   **Quit Popup:** Pressing `ESC` triggers a confirmation modal asking "DO YOU WANT TO QUIT?". Uses a 90% opacity dark overlay, a 24px golden border, and implements the secondary button state for the "YES" action to prevent accidental quitting.
 
 ### End State Screens
+*(Note: All end state screens (Win, End, Lose) utilize the unified `StyleBoxFlat_border` golden overlay to align with the global menu aesthetic.)*
 *   **`WinScreen`:** Shown upon completing a wave. Displays level complete text and loading text.
-*   **`EndScreen`:** Shown upon beating the entire game.
+*   **`EndScreen`:** Shown upon beating the entire game (Normal Mode). Features a distinct text hierarchy separating the subtitle, final level statistics, and a bright cyan `UnlockPrompt` that notifies the player they have unlocked Endless Mode.
 *   **`LoseScreen`:** Shown if the Sun hits 100% heat. Instead of an immediate popup, this triggers a dramatic Supernova cinematic (massive sun expansion, screen shake, blinding flash) that fades into the menu. Features a fully opaque background to block HDR bleed, a perfectly centered vertical layout for dramatic emphasis, and offers Retry/Menu buttons styled exactly like the Pause menu.
 
 ---
