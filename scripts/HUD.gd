@@ -485,9 +485,12 @@ func _ready() -> void:
 			lbl.add_theme_constant_override("shadow_outline_size", 12)
 			
 	# Subtitles and Level Labels
-	for lbl in [win_level_lbl, end_subtitle_lbl, lose_subtitle_lbl, end_level_lbl, lose_level_lbl, lose_wave_time_lbl]:
+	for lbl in [win_level_lbl, lose_subtitle_lbl, end_level_lbl, lose_level_lbl, lose_wave_time_lbl]:
 		if lbl:
 			_style_lbl(lbl, subtitle_size, title_color, 5, Color(0, 0, 0, 1.0), font)
+			
+	if end_subtitle_lbl:
+		_style_lbl(end_subtitle_lbl, 28 if is_kr else 24, title_color, 5, Color(0, 0, 0, 1.0), font)
 			
 	if end_unlock_lbl:
 		_style_lbl(end_unlock_lbl, subtitle_size, Color(0.2, 0.8, 1.0, 1.0), 5, Color(0, 0, 0, 1.0), font)

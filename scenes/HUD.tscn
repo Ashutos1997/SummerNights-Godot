@@ -1227,6 +1227,20 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.02, 0.01, 0.05, 0.96)
 
+[node name="BorderPanel" type="Panel" parent="HUD/WinScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_border")
+
 [node name="VBoxContainer" type="VBoxContainer" parent="HUD/WinScreen/ColorRect"]
 layout_mode = 1
 anchors_preset = 8
@@ -1288,6 +1302,20 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(0.03, 0.02, 0.06, 1)
+
+[node name="BorderPanel" type="Panel" parent="HUD/EndScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_border")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HUD/EndScreen/ColorRect"]
 layout_mode = 1
@@ -1351,7 +1379,7 @@ text = "THE SUN HAS BEEN TAMED"
 horizontal_alignment = 1
 
 [node name="Spacer2" type="Control" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
-custom_minimum_size = Vector2(0, 8)
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 
 [node name="LevelCount" type="Label" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
@@ -1363,7 +1391,7 @@ text = "5 LEVELS COMPLETED"
 horizontal_alignment = 1
 
 [node name="Spacer3" type="Control" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
-custom_minimum_size = Vector2(0, 8)
+custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
 
 [node name="UnlockPrompt" type="Label" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
@@ -1405,6 +1433,20 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
 color = Color(0.02, 0.01, 0.05, 0.96)
+
+[node name="BorderPanel" type="Panel" parent="HUD/LoseScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_border")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HUD/LoseScreen/ColorRect"]
 layout_mode = 1
