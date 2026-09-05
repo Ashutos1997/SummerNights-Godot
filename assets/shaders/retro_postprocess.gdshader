@@ -6,6 +6,7 @@ uniform float aberration_amount : hint_range(0.0, 10.0) = 1.0;
 uniform float vignette_intensity : hint_range(0.0, 2.0) = 0.4;
 uniform float vignette_opacity : hint_range(0.0, 1.0) = 0.5;
 uniform vec4 vignette_color : source_color = vec4(0.0, 0.0, 0.0, 1.0);
+uniform vec4 heat_border_color : source_color = vec4(0.0, 0.0, 0.0, 0.0);
 uniform float flash_mix : hint_range(0.0, 1.0) = 0.0;
 uniform float noise_amount : hint_range(0.0, 1.0) = 0.03;
 uniform bool reduce_motion = false;
@@ -68,6 +69,15 @@ void fragment() {
     color = mix(color, color * vignette, vignette_opacity);
     // Tint edges based on vignette_color alpha
     color = mix(color, vignette_color.rgb, (1.0 - vignette) * vignette_color.a);
+    
+    // Heat Warning Border (Tint edges based on heat_border_color alpha)
+    // Create a very soft, thin translucent gradient border
+    vec2 edge_dist = min(uv, 1.0 - uv);
+    float soft_border = 1.0 - (smoothstep(0.0, 0.06, edge_dist.x) * smoothstep(0.0, 0.06, edge_dist.y));
+    
+    // Multiply the base color by a fiery red tint so it meshes perfectly with the scene textures
+    vec3 tinted_border = color * vec3(1.5, 0.2, 0.2); 
+    color = mix(color, tinted_border, soft_border * heat_border_color.a);
     
     // 7. Searing Flash (Damage/Impact)
     vec3 searing_color = vec3(1.0, 0.8, 0.5); // Searing white/orange

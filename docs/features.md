@@ -76,7 +76,7 @@ Weather events trigger based on a dynamic probability system tied to the current
 
 ## 6. UI, Juice, & Game Feel
 *   **Consequences & Stakes:** The game features heavy visceral feedback to emphasize failure and critical states, completely adapting its intensity based on the "Reduce Motion" setting to maintain WCAG accessibility.
-    *   **High Heat Warning (Death's Door):** When the sun exceeds 85% heat, the global vignette tweens to a deep red, the master audio bus is heavily muffled via a Low-Pass Filter, and a thumping heartbeat audio pulses every 1.2s to match the vignette's visual flashing.
+    *   **High Heat Warning (Death's Door):** When the sun exceeds 85% heat, a soft translucent red border tweens around the screen, the master audio bus is heavily muffled via a Low-Pass Filter, and a thumping heartbeat audio pulses every 1.2s to match the visual flashing.
     *   **Solar Flare Impact:** Failing to shoot a Solar Flare triggers a massive screen shake, a blinding orange screen flash, and a heavy, distorted explosion sound.
     *   **Low Water Warning:** When the water tank drops below 25%, the central dynamic crosshair cleanly interrupts the player's focus by pulsing a high-contrast orange.
     *   **Empty Tank Sputter:** Attempting to shoot while empty triggers a rhythmic, high-frequency plastic clicking sound (0.35s cooldown) to audibly communicate the empty state.

@@ -9,7 +9,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * **Dynamic Weapon Crosshairs:** Each of the 5 weapons now displays a unique procedurally-drawn crosshair shape rendered via GDScript's `_draw()` API. Standard: dot + ring. Precision: tight `+` cross with scanning center dot. Heavy: wide bracket corners. Scatter: 3 diverging fan lines. Tidal Gatling: spinning dashed ring that accelerates while firing.
 
 ### Improved
-* **High Heat Warning:** Added a "Death's Door" state when temperature exceeds 85%. The screen vignette tweens to a deep red, the master audio bus is muffled (low-pass filter at 1500Hz), and a heartbeat sound pulses every 1.2s to match the flashing vignette.
+* **High Heat Warning:** Added a "Death's Door" state when temperature exceeds 85%. A soft translucent red border tweens around the screen, the master audio bus is muffled (low-pass filter at 1500Hz), and a heartbeat sound pulses every 1.2s to match the flashing border.
 * **Solar Flare Consequences:** Failing to intercept a Solar Flare now results in a massive camera shake, a searing orange screen flash, and a heavy explosion sound to emphasize the impact.
 * **Low Water Warning:** The dynamic crosshair now pulses orange when the water tank drops below 25%, providing localized visual feedback of low resources.
 * **Accessibility Compliance:** All new pulsing animations and screen shakes automatically adapt or disable when "Reduce Motion" is turned on. Pulsing effects switch to gentle, static visual changes to prevent sensory overload and remain WCAG compliant.
@@ -216,7 +216,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * **동적 무기 조준선:** 5가지 무기 각각이 GDScript의 `_draw()` API로 렌더링된 고유한 절차적 조준선 모양을 표시합니다. 스탠다드: 점 + 링. 정밀 스트림: 스캔 중심점이 있는 촘촘한 `+` 십자선. 헤비 캐논: 넓은 브래킷 코너. 스캐터 노즐: 분사 범위를 나타내는 3개의 퍼지는 선. 타이달 개틀링: 발사 중 가속하는 회전 점선 링.
 
 ### 개선됨
-* **고열 경고:** 온도가 85%를 초과할 때 "죽음의 문턱" 상태가 추가되었습니다. 화면 비네트가 진한 빨간색으로 변하고, 마스터 오디오 버스가 먹먹해지며(1500Hz 로우패스 필터), 비네트 깜빡임에 맞춰 심장 박동 소리가 1.2초마다 울립니다.
+* **고열 경고:** 온도가 85%를 초과할 때 "죽음의 문턱" 상태가 추가되었습니다. 화면 가장자리에 부드러운 반투명 빨간색 테두리가 나타나며, 마스터 오디오 버스가 먹먹해지고(1500Hz 로우패스 필터), 테두리 깜빡임에 맞춰 심장 박동 소리가 1.2초마다 울립니다.
 * **태양 플레어 결과:** 태양 플레어 요격에 실패하면 강렬한 화면 흔들림, 주황색 화면 섬광, 묵직한 폭발음이 발생하여 타격감을 강조합니다.
 * **물 부족 경고:** 물탱크가 25% 이하로 떨어지면 동적 조준선이 주황색으로 깜빡여, 부족한 자원에 대한 시각적 피드백을 제공합니다.
 * **접근성 호환:** 모든 새로운 깜빡임 애니메이션 및 화면 흔들림은 "모션 줄이기"가 켜져 있을 때 자동으로 조정되거나 비활성화됩니다. 깜빡이는 효과는 감각 과부하를 방지하고 WCAG를 준수하기 위해 부드럽고 정적인 시각적 변화로 전환됩니다.

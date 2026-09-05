@@ -45,7 +45,7 @@ var heat_vignette_color: Color = Color(0, 0, 0, 0):
 	set(value):
 		heat_vignette_color = value
 		if post_process_mat:
-			post_process_mat.set_shader_parameter("vignette_color", value)
+			post_process_mat.set_shader_parameter("heat_border_color", value)
 
 var heat_flash_mix: float = 0.0:
 	set(value):
@@ -1592,11 +1592,11 @@ func _process_heat_warning(_delta: float) -> void:
 			heat_warning_tween.tween_property(lp, "cutoff_hz", 1500.0, 1.0)
 			
 		if reduce_motion:
-			heat_warning_tween.tween_property(self, "heat_vignette_color", Color(0.8, 0.0, 0.0, 0.6), 1.0)
+			heat_warning_tween.tween_property(self, "heat_vignette_color", Color(0.8, 0.0, 0.0, 0.45), 1.0)
 		else:
 			# Sequence for pulsing (set_parallel false for this part)
 			heat_warning_tween = create_tween()
-			heat_warning_tween.tween_property(self, "heat_vignette_color", Color(0.8, 0.0, 0.0, 0.6), 0.6).set_trans(Tween.TRANS_SINE)
+			heat_warning_tween.tween_property(self, "heat_vignette_color", Color(0.8, 0.0, 0.0, 0.45), 0.6).set_trans(Tween.TRANS_SINE)
 			heat_warning_tween.tween_property(self, "heat_vignette_color", Color(0.8, 0.0, 0.0, 0.2), 0.6).set_trans(Tween.TRANS_SINE)
 			heat_warning_tween.set_loops()
 			
