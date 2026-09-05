@@ -137,6 +137,7 @@ const BUFFS: Dictionary = {
 }
 
 var unlocked_achievements: Array[String] = []
+var newly_unlocked_endless: bool = false
 var is_retrying: bool = false
 var has_completed_tutorial: bool = false
 
@@ -489,6 +490,9 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 func unlock_achievement(id: String) -> void:
 	if id in unlocked_achievements: return
 	if not ACHIEVEMENTS.has(id): return
+	
+	if id == "dawn_breaks":
+		newly_unlocked_endless = true
 	
 	unlocked_achievements.append(id)
 	save_settings()

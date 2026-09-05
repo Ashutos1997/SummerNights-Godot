@@ -1589,7 +1589,11 @@ func show_end_screen() -> void:
 		end_level_lbl.text = "%d 레벨 완료" % GameState.level if GameState.language == "KR" else "%d LEVELS COMPLETED" % GameState.level
 		
 	if end_unlock_lbl:
-		end_unlock_lbl.text = "무한 모드가 해제되었습니다!" if GameState.language == "KR" else "ENDLESS MODE UNLOCKED!"
+		if GameState.newly_unlocked_endless:
+			end_unlock_lbl.visible = true
+			end_unlock_lbl.text = "무한 모드가 해제되었습니다!" if GameState.language == "KR" else "ENDLESS MODE UNLOCKED!"
+		else:
+			end_unlock_lbl.visible = false
 		
 	end_screen.visible = true
 	end_screen.modulate.a = 0.0
