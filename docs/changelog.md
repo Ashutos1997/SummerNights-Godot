@@ -6,6 +6,7 @@ All notable changes to the Summer Nights project will be documented in this file
 *(Note: This release corresponds to v1.2 on itch.io)*
 
 ### Added
+* **Lifetime Stats Tracking:** Added persistent tracking for Total Water Sprayed and Total Deaths, alongside a new sleek "STATS" menu accessible from the Title Screen to view your lifetime gameplay data.
 * **Dynamic Weapon Crosshairs:** Each of the 5 weapons now displays a unique procedurally-drawn crosshair shape rendered via GDScript's `_draw()` API. Standard: dot + ring. Precision: tight `+` cross with scanning center dot. Heavy: wide bracket corners. Scatter: 3 diverging fan lines. Tidal Gatling: spinning dashed ring that accelerates while firing.
 * **Trade-Off Perks:** Added 3 new "corrupted" perks to the Endless Mode draft pool that offer massive buffs at the cost of a penalty: Glass Cannon (+40% Crit Damage, -15% Capacity), Heavy Water (+30% Cooling, -20% Ult Charge), and Reckless Haste (+30% Ult Charge, -10% Heat Resist).
 
@@ -216,6 +217,7 @@ All notable changes to the Summer Nights project will be documented in this file
 *(참고: 이 릴리스는 itch.io의 v1.2 버전에 해당합니다)*
 
 ### 추가됨
+* **누적 통계 추적:** 총 분사한 물의 양과 총 사망 횟수에 대한 영구적인 추적 기능을 추가했으며, 타이틀 화면에서 누적 플레이 데이터를 확인할 수 있는 세련된 "기록(STATS)" 메뉴를 새로 추가했습니다.
 * **동적 무기 조준선:** 5가지 무기 각각이 GDScript의 `_draw()` API로 렌더링된 고유한 절차적 조준선 모양을 표시합니다. 스탠다드: 점 + 링. 정밀 스트림: 스캔 중심점이 있는 촘촘한 `+` 십자선. 헤비 캐논: 넓은 브래킷 코너. 스캐터 노즐: 분사 범위를 나타내는 3개의 퍼지는 선. 타이달 개틀링: 발사 중 가속하는 회전 점선 링.
 * **트레이드오프 퍽 (Trade-Off Perks):** 무한 모드 드래프트 풀에 거대한 버프를 제공하는 대신 패널티를 부여하는 3개의 새로운 "타락한" 퍽을 추가했습니다: 유리 대포 (치명타 피해 +40%, 용량 -15%), 중수 (냉각력 +30%, 궁극기 충전 -20%), 무모한 가속 (궁극기 충전 +30%, 열 저항 -10%).
 

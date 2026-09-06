@@ -71,6 +71,7 @@ These elements sit on top of the Core Gameplay HUD and blur/dim the background w
 *   Features a custom 4-second boot animation where a golden line traces the 8px rounded perimeter of the screen while a PS1 synth swells, hiding the static `BorderPanel` until completion.
 *   Upon completion, the main UI layout aggressively bounces up from the bottom of the screen.
 *   **Quit Popup:** Pressing `ESC` triggers a confirmation modal asking "DO YOU WANT TO QUIT?". Uses a 90% opacity dark overlay, a 24px golden border, and implements the secondary button state for the "YES" action to prevent accidental quitting.
+*   **Stats Menu:** An interactive overlay matching the `Achievements` menu design, showcasing persistent data like Total Water Sprayed, Solar Flares Intercepted, Seagulls Shooed, Supernovas (deaths), Highest Score, and Unlocked Achievements dynamically pulled from `GameState.gd`.
 
 ### End State Screens
 *(Note: All end state screens (Win, End, Lose) utilize the unified `StyleBoxFlat_border` golden overlay to align with the global menu aesthetic.)*

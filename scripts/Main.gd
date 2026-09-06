@@ -1674,6 +1674,8 @@ func _process(delta: float) -> void:
 		if level_timer <= 0.0:
 			timer_running = false
 			game_over = true
+			GameState.total_deaths += 1
+			GameState.save_settings()
 			GameState.log_playtest_round("Loss", Time.get_unix_time_from_system() - round_start_time, GameState.current_weapon_id)
 			is_shooting = false
 			_stop_vibrate()
@@ -2047,6 +2049,7 @@ func _process(delta: float) -> void:
 			shoot_loop_sfx.play()
 			
 		water_tank -= WATER_DRAIN_RATE * delta
+		GameState.total_water_sprayed += WATER_DRAIN_RATE * delta
 		gun_spray.emitting = true
 		
 		# Subtle accessibility-friendly recoil kick (push gun and camera back slightly)

@@ -299,6 +299,8 @@ var current_score: int = 0
 var high_score: int = 0
 var seagulls_shooed: int = 0
 var flares_intercepted: int = 0
+var total_water_sprayed: float = 0.0
+var total_deaths: int = 0
 
 const SETTINGS_FILE_PATH = "user://settings.cfg"
 
@@ -430,6 +432,8 @@ func save_settings() -> void:
 	config.set_value("Stats", "unlocked_achievements", unlocked_achievements)
 	config.set_value("Stats", "seagulls_shooed", seagulls_shooed)
 	config.set_value("Stats", "flares_intercepted", flares_intercepted)
+	config.set_value("Stats", "total_water_sprayed", total_water_sprayed)
+	config.set_value("Stats", "total_deaths", total_deaths)
 	config.set_value("Stats", "has_completed_tutorial", has_completed_tutorial)
 	config.save(SETTINGS_FILE_PATH)
 
@@ -446,6 +450,8 @@ func load_settings() -> void:
 		high_score = config.get_value("Stats", "high_score", 0)
 		seagulls_shooed = config.get_value("Stats", "seagulls_shooed", 0)
 		flares_intercepted = config.get_value("Stats", "flares_intercepted", 0)
+		total_water_sprayed = config.get_value("Stats", "total_water_sprayed", 0.0)
+		total_deaths = config.get_value("Stats", "total_deaths", 0)
 		has_completed_tutorial = config.get_value("Stats", "has_completed_tutorial", false)
 		var loaded_achievements = config.get_value("Stats", "unlocked_achievements", [])
 		unlocked_achievements.assign(loaded_achievements)

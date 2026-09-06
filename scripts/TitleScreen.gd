@@ -20,8 +20,10 @@ signal show_achievements()
 var is_starting: bool = false
 var best_time_lbl: Label = null
 var ach_btn: Button
+var stats_btn: Button
 
 var achievements_screen: Control
+var stats_screen: Control
 var quit_popup: Control
 var achievement_list: VBoxContainer
 var border_progress: float = -1.0:
@@ -99,7 +101,15 @@ func _ready() -> void:
 	dev_btn.get_parent().add_child(ach_btn)
 	ach_btn.pressed.connect(_show_achievements)
 	
+	# Dynamically add Stats button
+	stats_btn = dev_btn.duplicate()
+	stats_btn.name = "StatsBtn"
+	stats_btn.visible = true
+	dev_btn.get_parent().add_child(stats_btn)
+	stats_btn.pressed.connect(_show_stats)
+	
 	_build_achievements_screen()
+	_build_stats_screen()
 	_build_quit_popup()
 	_update_language()
 
@@ -122,6 +132,7 @@ func _update_language() -> void:
 			survival_btn.text = "무한 모드" if is_kr else "ENDLESS MODE"
 	if dev_btn: dev_btn.text = "DEV"
 	if ach_btn: ach_btn.text = "업적" if is_kr else "ACHIEVEMENTS"
+	if stats_btn: stats_btn.text = "기록" if is_kr else "STATS"
 	
 	if font:
 		var title_color = Color(1.0, 0.75, 0.15, 1.0)
@@ -205,7 +216,7 @@ func _update_language() -> void:
 			
 		# Style buttons
 		if normal_btn and survival_btn and dev_btn:
-			for btn in [normal_btn, survival_btn, dev_btn, lang_btn, ach_btn]:
+			for btn in [normal_btn, survival_btn, dev_btn, lang_btn, ach_btn, stats_btn]:
 				if not btn: continue
 				btn.add_theme_font_override("font", font)
 				btn.add_theme_font_size_override("font_size", 20 if is_kr else 18)
@@ -651,6 +662,11 @@ func _input(event: InputEvent) -> void:
 			_hide_achievements()
 			get_viewport().set_input_as_handled()
 			return
+			
+		if stats_screen and stats_screen.visible:
+			_hide_stats()
+			get_viewport().set_input_as_handled()
+			return
 		
 		if quit_popup and quit_popup.visible:
 			_hide_quit_popup()
@@ -848,3 +864,241 @@ func _hide_quit_popup() -> void:
 
 func _quit_game() -> void:
 	get_tree().quit()
+
+func _build_stats_screen() -> void:
+	stats_screen = Control.new()
+	stats_screen.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	stats_screen.visible = false
+	stats_screen.z_index = 50
+	add_child(stats_screen)
+	
+	var bg = ColorRect.new()
+	bg.color = Color(0, 0, 0, 0.96)
+	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	stats_screen.add_child(bg)
+	
+	var border = Panel.new()
+	border.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	border.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	border.offset_left = 24
+	border.offset_top = 24
+	border.offset_right = -24
+	border.offset_bottom = -24
+	
+	var border_style = StyleBoxFlat.new()
+	border_style.bg_color = Color(0, 0, 0, 0)
+	border_style.border_width_left = 2
+	border_style.border_width_top = 2
+	border_style.border_width_right = 2
+	border_style.border_width_bottom = 2
+	border_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
+	border_style.corner_radius_top_left = 8
+	border_style.corner_radius_top_right = 8
+	border_style.corner_radius_bottom_left = 8
+	border_style.corner_radius_bottom_right = 8
+	border.add_theme_stylebox_override("panel", border_style)
+	stats_screen.add_child(border)
+	
+	var center = CenterContainer.new()
+	center.name = "CenterContainer"
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	stats_screen.add_child(center)
+	
+	var vbox = VBoxContainer.new()
+	vbox.name = "VBoxContainer"
+	vbox.add_theme_constant_override("separation", 24)
+	center.add_child(vbox)
+	
+	var title_row = HBoxContainer.new()
+	title_row.name = "TitleRow"
+	title_row.add_theme_constant_override("separation", 12)
+	title_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_child(title_row)
+	
+	var title_icon = TextureRect.new()
+	title_icon.name = "TitleIcon"
+	title_icon.custom_minimum_size = Vector2(40, 40)
+	title_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title_icon.texture = load("res://assets/ui/menu_icons/achievements.png")
+	title_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	title_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	title_icon.modulate = Color(1.0, 0.85, 0.2, 1.0)
+	title_row.add_child(title_icon)
+	
+	var title = Label.new()
+	title.name = "Title"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	title_row.add_child(title)
+	
+	var divider = HSeparator.new()
+	divider.name = "Divider"
+	var div_style = StyleBoxLine.new()
+	div_style.color = Color(1.0, 0.88, 0.3, 0.35)
+	div_style.grow_begin = 0
+	div_style.grow_end = 0
+	div_style.thickness = 2
+	div_style.content_margin_top = 0
+	div_style.content_margin_bottom = 0
+	divider.add_theme_stylebox_override("separator", div_style)
+	vbox.add_child(divider)
+	
+	var stats_list = VBoxContainer.new()
+	stats_list.name = "StatsList"
+	stats_list.custom_minimum_size = Vector2(500, 250)
+	stats_list.add_theme_constant_override("separation", 16)
+	vbox.add_child(stats_list)
+	
+	var back_btn = Button.new()
+	back_btn.name = "BackBtn"
+	back_btn.text = "BACK"
+	back_btn.custom_minimum_size = Vector2(280, 52)
+	
+	var btn_center = CenterContainer.new()
+	btn_center.name = "CenterContainer"
+	btn_center.add_child(back_btn)
+	vbox.add_child(btn_center)
+	
+	back_btn.pressed.connect(_hide_stats)
+
+func _show_stats() -> void:
+	if is_starting or not stats_screen: return
+	
+	var list = stats_screen.get_node("CenterContainer/VBoxContainer/StatsList")
+	for child in list.get_children():
+		child.queue_free()
+		
+	var is_kr = GameState.language == "KR"
+	var font_path = "res://assets/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
+	var font = load(font_path)
+	
+	var title = stats_screen.get_node("CenterContainer/VBoxContainer/TitleRow/Title")
+	title.text = "기록" if is_kr else "LIFETIME STATS"
+	_style_label(title, 36, Color(1.0, 0.85, 0.2, 1.0), font)
+	title.add_theme_constant_override("outline_size", 4)
+	title.add_theme_color_override("font_outline_color", Color.BLACK)
+	
+	var back_btn = stats_screen.get_node("CenterContainer/VBoxContainer/CenterContainer/BackBtn")
+	back_btn.text = "돌아가기" if is_kr else "BACK"
+	if font: back_btn.add_theme_font_override("font", font)
+	back_btn.add_theme_font_size_override("font_size", 22)
+	back_btn.add_theme_constant_override("letter_spacing", 1)
+	back_btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+	back_btn.add_theme_color_override("font_hover_color", Color(1.0, 0.85, 0.2, 1.0))
+	back_btn.add_theme_color_override("font_pressed_color", Color(1.0, 0.85, 0.2, 1.0))
+	back_btn.add_theme_color_override("font_focus_color", Color(1.0, 0.85, 0.2, 1.0))
+	back_btn.add_theme_color_override("font_disabled_color", Color(1.0, 0.85, 0.2, 1.0))
+	back_btn.add_theme_constant_override("outline_size", 2)
+	back_btn.add_theme_color_override("font_outline_color", Color.BLACK)
+	
+	var style_menu_btn = StyleBoxFlat.new()
+	style_menu_btn.bg_color = Color(0, 0, 0, 0.4)
+	style_menu_btn.border_color = Color(1.0, 0.85, 0.2, 0.6)
+	style_menu_btn.set_border_width_all(2)
+	style_menu_btn.set_corner_radius_all(0)
+	style_menu_btn.content_margin_left = 16
+	style_menu_btn.content_margin_right = 16
+	style_menu_btn.content_margin_top = 8
+	style_menu_btn.content_margin_bottom = 8
+
+	var style_menu_btn_hover = style_menu_btn.duplicate()
+	style_menu_btn_hover.bg_color = Color(1.0, 0.75, 0.15, 0.2)
+	
+	var style_menu_btn_pressed = style_menu_btn.duplicate()
+	style_menu_btn_pressed.bg_color = Color(1.0, 0.85, 0.2, 0.4)
+	style_menu_btn_pressed.border_color = Color(1.0, 0.9, 0.3, 1.0)
+	
+	var style_menu_btn_disabled = style_menu_btn.duplicate()
+	style_menu_btn_disabled.bg_color = Color(0, 0, 0, 0.2)
+	style_menu_btn_disabled.border_color = Color(0.5, 0.5, 0.5, 0.5)
+	
+	var style_focus = StyleBoxFlat.new()
+	style_focus.bg_color = Color(0, 0, 0, 0)
+	style_focus.border_color = Color(1.0, 0.85, 0.2, 1.0)
+	style_focus.set_border_width_all(2)
+	style_focus.set_corner_radius_all(6)
+	style_focus.content_margin_left = 6
+	style_focus.content_margin_right = 6
+	style_focus.content_margin_top = 4
+	style_focus.content_margin_bottom = 4
+	
+	back_btn.add_theme_stylebox_override("normal", style_menu_btn)
+	back_btn.add_theme_stylebox_override("hover", style_menu_btn_hover)
+	back_btn.add_theme_stylebox_override("pressed", style_menu_btn_pressed)
+	back_btn.add_theme_stylebox_override("disabled", style_menu_btn_disabled)
+	back_btn.add_theme_stylebox_override("focus", style_focus)
+
+	var format_int = func(num: int) -> String:
+		var num_str = str(num)
+		var res = ""
+		for i in range(num_str.length()):
+			if i > 0 and i % 3 == 0:
+				res = "," + res
+			res = num_str[num_str.length() - 1 - i] + res
+		return res
+		
+	var stats_data = [
+		{"label_en": "WATER SPRAYED", "label_kr": "분사한 물의 양", "value": format_int.call(int(GameState.total_water_sprayed)) + (" L" if is_kr else " L")},
+		{"label_en": "FLARES INTERCEPTED", "label_kr": "요격한 태양 플레어", "value": format_int.call(GameState.flares_intercepted)},
+		{"label_en": "SEAGULLS SHOOED", "label_kr": "쫓아낸 갈매기 수", "value": format_int.call(GameState.seagulls_shooed)},
+		{"label_en": "SUPERNOVAS", "label_kr": "초신성 폭발 (사망)", "value": format_int.call(GameState.total_deaths)},
+		{"label_en": "HIGHEST SCORE", "label_kr": "최고 점수", "value": format_int.call(GameState.high_score)},
+		{"label_en": "ACHIEVEMENTS", "label_kr": "달성한 업적", "value": str(GameState.unlocked_achievements.size()) + " / " + str(GameState.ACHIEVEMENTS.keys().size())}
+	]
+	
+	for s_data in stats_data:
+		var hbox = HBoxContainer.new()
+		list.add_child(hbox)
+		
+		var name_lbl = Label.new()
+		name_lbl.text = s_data["label_kr"] if is_kr else s_data["label_en"]
+		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		_style_label(name_lbl, 22, Color(1.0, 1.0, 1.0, 0.8), font)
+		name_lbl.add_theme_constant_override("outline_size", 2)
+		hbox.add_child(name_lbl)
+		
+		var spacer = Control.new()
+		spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		hbox.add_child(spacer)
+		
+		var val_lbl = Label.new()
+		val_lbl.text = s_data["value"]
+		val_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		_style_label(val_lbl, 24, Color(1.0, 0.85, 0.2, 1.0), font)
+		val_lbl.add_theme_constant_override("outline_size", 2)
+		hbox.add_child(val_lbl)
+
+	stats_screen.visible = true
+	stats_screen.modulate.a = 0.0
+	stats_screen.set_meta("is_hiding", false)
+	var tw = create_tween()
+	tw.tween_property(stats_screen, "modulate:a", 1.0, 0.25)
+	
+	if back_btn: back_btn.grab_focus()
+	
+	var audio = AudioStreamPlayer.new()
+	audio.stream = load("res://assets/sfx/ui_tick.wav")
+	audio.bus = "SFX"
+	add_child(audio)
+	audio.play()
+	audio.finished.connect(audio.queue_free)
+
+func _hide_stats() -> void:
+	if not stats_screen or not stats_screen.visible: return
+	if stats_screen.get_meta("is_hiding", false): return
+	stats_screen.set_meta("is_hiding", true)
+	
+	var audio = AudioStreamPlayer.new()
+	audio.stream = load("res://assets/sfx/ui_tick.wav")
+	audio.bus = "SFX"
+	add_child(audio)
+	audio.play()
+	audio.finished.connect(audio.queue_free)
+	
+	var tw = create_tween()
+	tw.tween_property(stats_screen, "modulate:a", 0.0, 0.2)
+	tw.tween_callback(func(): 
+		stats_screen.visible = false
+		stats_screen.set_meta("is_hiding", false)
+		if stats_btn: stats_btn.grab_focus()
+	)
