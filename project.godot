@@ -22,6 +22,7 @@ driver/output_latency=30
 [autoload]
 
 GameState="*res://scripts/GameState.gd"
+UIJuice="*res://scripts/UIJuice.gd"
 
 [display]
 

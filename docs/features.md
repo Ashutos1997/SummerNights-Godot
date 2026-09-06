@@ -112,7 +112,7 @@ Weather events trigger based on a dynamic probability system tied to the current
     *   Automatic Pause on Window Unfocus (prevents losing a run when Alt-Tabbing). Pausing fully freezes the entire scene tree (`get_tree().paused`), halting all processing including clouds, wave shaders, physics, animations, and particles.
 
 ## 7. Audio
-*   **Synthesized UI Sounds:** Programmatically generated sine-wave "ticks" and "whooshes" for UI navigation and the weapon wheel.
+*   **Synthesized UI Sounds:** Programmatically generated sine-wave "ticks" and "whooshes" for UI navigation and the weapon wheel. A global Autoload (`UIJuice.gd`) strictly enforces a `-18 dB` 1800Hz sine sweep audio tick across every single interactive element (buttons, sliders, toggles) in the game.
 *   **Gameplay SFX:** 
     *   Continuous water shooting loop.
     *   Solar flare interception sound.

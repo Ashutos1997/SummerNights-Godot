@@ -648,7 +648,7 @@ func _ready() -> void:
 			btn.add_theme_stylebox_override("focus", style_focus)
 			btn.focus_mode = Control.FOCUS_ALL
 			btn.custom_minimum_size = Vector2(280, 44)
-			btn.mouse_entered.connect(_play_ui_tick)
+
 			
 	if retry_btn:
 		retry_btn.pressed.connect(_on_retry_pressed)
@@ -773,7 +773,7 @@ func _build_lang_row(font: Font) -> void:
 	
 	btn_en.add_theme_stylebox_override("focus", lang_focus)
 	btn_en.add_theme_stylebox_override("hover", StyleBoxEmpty.new())
-	btn_en.mouse_entered.connect(_play_ui_tick)
+
 	btn_en.pressed.connect(func(): _on_language_toggle("EN"))
 	toggle_box.add_child(btn_en)
 	lang_btn_en = btn_en
@@ -796,7 +796,7 @@ func _build_lang_row(font: Font) -> void:
 	btn_kr.add_theme_color_override("font_outline_color", Color.BLACK)
 	btn_kr.add_theme_stylebox_override("focus", lang_focus)
 	btn_kr.add_theme_stylebox_override("hover", StyleBoxEmpty.new())
-	btn_kr.mouse_entered.connect(_play_ui_tick)
+
 	btn_kr.pressed.connect(func(): _on_language_toggle("KR"))
 	toggle_box.add_child(btn_kr)
 	lang_btn_kr = btn_kr
@@ -2382,7 +2382,7 @@ func _build_achievements_screen() -> void:
 	back_btn.name = "BackBtn"
 	back_btn.text = "BACK"
 	back_btn.custom_minimum_size = Vector2(280, 44)
-	back_btn.mouse_entered.connect(_play_ui_tick)
+
 	
 	var btn_center = CenterContainer.new()
 	btn_center.name = "CenterContainer"
@@ -2652,7 +2652,7 @@ func _build_buffs_screen() -> void:
 	back_btn.name = "BackBtn"
 	back_btn.text = "BACK"
 	back_btn.custom_minimum_size = Vector2(280, 44)
-	back_btn.mouse_entered.connect(_play_ui_tick)
+
 	
 	var btn_center = CenterContainer.new()
 	btn_center.name = "CenterContainer"
@@ -2901,7 +2901,7 @@ func _build_input_toggle() -> void:
 	btn.flat = true
 	btn.set_anchors_preset(Control.PRESET_FULL_RECT)
 	btn.pressed.connect(_on_input_toggle_pressed)
-	btn.mouse_entered.connect(_play_ui_tick)
+
 	container.add_child(btn)
 	
 	_update_input_toggle_visuals(true)

@@ -11,6 +11,8 @@ All notable changes to the Summer Nights project will be documented in this file
 * **Trade-Off Perks:** Added 3 new "corrupted" perks to the Endless Mode draft pool that offer massive buffs at the cost of a penalty: Glass Cannon (+40% Crit Damage, -15% Capacity), Heavy Water (+30% Cooling, -20% Ult Charge), and Reckless Haste (+30% Ult Charge, -10% Heat Resist).
 
 ### Improved
+* **Global UI Micro-Animations:** Hooked up a global system (`UIJuice.gd`) to dynamically apply "juice" to all menus. Buttons across the entire game now smoothly scale up to 1.03x on hover, and bounce down to 0.97x when pressed.
+* **Universal UI Audio:** Ensured every single interactive element in the game—including language toggles, input selectors, volume sliders, and back buttons—consistently triggers a crisp -18 dB 1800Hz sine sweep audio tick on interaction.
 * **End Screen Aesthetics:** Added the unified golden border overlay to the End, Win, and Lose screens to match the global menu design language. Additionally, improved the text hierarchy on the End Screen by increasing subtitle prominence and adjusting layout grouping.
 * **Endless Mode Reward Feedback:** The End Screen (Normal Mode victory) now explicitly displays an "ENDLESS MODE UNLOCKED!" prompt to clearly communicate the newly available content.
 * **High Heat Warning:** Added a "Death's Door" state when temperature exceeds 85%. A soft translucent red border tweens around the screen, the master audio bus is muffled (low-pass filter at 1500Hz), and a heartbeat sound pulses every 1.2s to match the flashing border.
@@ -222,6 +224,8 @@ All notable changes to the Summer Nights project will be documented in this file
 * **트레이드오프 퍽 (Trade-Off Perks):** 무한 모드 드래프트 풀에 거대한 버프를 제공하는 대신 패널티를 부여하는 3개의 새로운 "타락한" 퍽을 추가했습니다: 유리 대포 (치명타 피해 +40%, 용량 -15%), 중수 (냉각력 +30%, 궁극기 충전 -20%), 무모한 가속 (궁극기 충전 +30%, 열 저항 -10%).
 
 ### 개선됨
+* **전역 UI 마이크로 애니메이션:** 게임 내 모든 메뉴에 동적인 타격감을 전역적으로 적용하는 시스템(`UIJuice.gd`)을 구축했습니다. 이제 게임 전체의 버튼이 마우스를 올릴 때 부드럽게 1.03배 커지고, 누를 때 0.97배로 튕기듯 줄어듭니다.
+* **범용 UI 오디오:** 언어 토글, 입력 선택기, 볼륨 슬라이더 및 뒤로 가기 버튼을 포함한 게임 내 모든 상호작용 요소가 상호작용 시 일관되게 -18 dB 1800Hz 사인파 오디오 틱 소리를 발생시키도록 보장했습니다.
 * **종료 화면 미학:** 제목 화면 및 설정 메뉴와 동일한 전역 메뉴 디자인을 따르도록 종료, 승리, 패배 화면에 통일된 황금색 테두리 오버레이를 추가했습니다. 또한 종료 화면의 텍스트 계층 구조를 개선하여 부제목을 강조하고 레이아웃 간격을 조정했습니다.
 * **무한 모드 보상 피드백:** 이제 일반 모드 승리 시 나타나는 종료 화면에서 "무한 모드가 해제되었습니다!" 메시지를 명시적으로 표시하여 새로 잠금 해제된 콘텐츠를 명확하게 전달합니다.
 * **고열 경고:** 온도가 85%를 초과할 때 "죽음의 문턱" 상태가 추가되었습니다. 화면 가장자리에 부드러운 반투명 빨간색 테두리가 나타나며, 마스터 오디오 버스가 먹먹해지고(1500Hz 로우패스 필터), 테두리 깜빡임에 맞춰 심장 박동 소리가 1.2초마다 울립니다.

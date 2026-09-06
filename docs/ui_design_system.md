@@ -117,6 +117,7 @@ Buttons use a sleek, semi-transparent flat style with thick borders.
 
 *   **Corner Radius:** `0px` (Standard buttons)
 *   **Menu Buttons Sizing:** `custom_minimum_size = Vector2(280, 52)` with font size `22px`
+*   **Dynamic Micro-animations (Juice):** A global Autoload (`UIJuice.gd`) automatically hooks into all buttons to provide consistent spatial feedback: buttons tween to scale `1.03x` on hover, and bounce down to `0.97x` on click, before returning to `1.0x` when resting.
 
 *   **Normal State:**
     *   Background: `Color(0, 0, 0, 0.4)`

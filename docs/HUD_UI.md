@@ -94,3 +94,11 @@ All labels within the HUD are dynamically localized in `HUD.gd` via the `_apply_
 To correctly manage drawing order between the 3D world, global post-processing effects, and the 2D UI, the game utilizes multiple `CanvasLayer` nodes:
 *   **Layer 0 (Post-Processing):** A full-screen `ColorRect` is dynamically injected at runtime behind the HUD. It runs `retro_postprocess.gdshader`, capturing the `SCREEN_TEXTURE` (which is the 3D game world) and applying color grading and film grain.
 *   **Layer 10 (HUD):** The main `HUD.tscn` root operates at layer 10. This ensures that UI elements, crosshairs, and text remain crisp, legible, and completely unaffected by the retro shader.
+
+---
+
+## 5. Global UI Interactions (`UIJuice.gd`)
+
+To prevent the massive procedural UI scripts (`HUD.gd` and `TitleScreen.gd`) from being bloated with hundreds of manual signal connections for hover effects and audio feedback, the project uses a global Autoload (`UIJuice.gd`). 
+*   It operates in `PROCESS_MODE_ALWAYS` and hooks into the `SceneTree.node_added` signal.
+*   Any `Button` or `Slider` that enters the tree automatically receives dynamic scale tweens (1.03x hover, 0.97x press) and an `-18 dB` 1800Hz sine sweep audio tick on interaction. This ensures a consistent, juicy arcade feel across all menus without polluting the layout logic.
