@@ -3059,6 +3059,8 @@ func _notification(what: int) -> void:
 			return
 		if Time.get_ticks_msec() < _ignore_focus_out_until:
 			return
+		if not pause_screen:
+			return
 		if not pause_screen.visible and not (end_screen and end_screen.visible) and not (win_screen and win_screen.visible) and not (drafting_screen and drafting_screen.visible):
 			if weapon_wheel and weapon_wheel.active:
 				weapon_wheel.close()
