@@ -23,7 +23,7 @@ This document serves as the master record for all currently implemented features
     *   **Heavy Cannon:** Huge capacity and high cooling power, but drains water rapidly. (Unlocked Level 3)
     *   **Scatter Nozzle:** Wide spread, excellent for intercepting multiple solar flares at once, but lacks pinpoint cooling. (Unlocked Level 4)
     *   **Tidal Gatling:** A massive heavy burst weapon with extreme cooling power and water drain, but a very punishing recharge rate. (Unlocked via "Arcade Legend" Achievement)
-*   **Ice Charges (Secondary Fire):** Powerful, instant-cooling projectiles with limited charges. Earn charges over time or when defeating boss waves.
+*   **Ice Charges (Secondary Fire):** Powerful, instant-cooling projectiles with limited charges. Earn charges over time or when defeating boss waves. Striking the sun triggers a "Hit-Stop" freeze effect, temporarily turning the sun icy cyan and freezing the screen edges with a frosty blue procedural overlay.
 	*   **Catastrom Ultimate:** Fills up by continuously watering the sun. When at 100% (Level 4+), press [F] to physically grab the sun and violently drag it down into the ocean for an instant wave clear.
 
 ## 2.5 Rogue-lite Perks & Drafting System
@@ -65,7 +65,7 @@ Weather events trigger based on a dynamic probability system tied to the current
 *   **PBR Beach Sand:** The island's ground uses a high-quality CC0 PBR material (diffuse, normal, roughness maps) heavily tinted with a warm sunset tone to maintain a smooth, stylized aesthetic. Its emission dynamically fades to match dark ambient lighting during severe weather events (e.g., Rainstorms, Eclipses) while having a completely matte finish (`specular = 0.0`) for a realistic dry-sand feel.
 *   **Sun Expressions:** The 2D face on the Sun reacts to events (getting angry, taking damage, critical states).
 *   **Heat Distortion:** A screen-space shader applies heat shimmer/refraction over the environment, which intensifies as the Sun gets hotter.
-*   **Seagull Interactions:** Shooting the background seagulls with water causes them to squawk (pitch-shifted SFX), drop a burst of feathers, and rapidly flee higher into the sky.
+*   **Seagull Interactions:** Shooting the background seagulls with water causes them to squawk (pitch-shifted SFX), drop a burst of feathers, and rapidly flee higher into the sky. The flock also dynamically reacts to the weather: during Rainstorms, they rapidly seek shelter by landing on the beach, and during Solar Eclipses, they panic and flee out of sight.
 *   **Decorative Layers:**
     *   **Cloud Layer:** Stylized 3D clouds that float across the sky.
     *   **Seagull Layer:** Flocks of seagulls that fly in the distance.

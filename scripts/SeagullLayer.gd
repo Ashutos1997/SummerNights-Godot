@@ -14,6 +14,7 @@ var body_mat: StandardMaterial3D
 var beak_mat: StandardMaterial3D
 var wingtip_mat: StandardMaterial3D
 var last_squawk_time: float = 0.0
+var current_weather: String = "none"
 
 func _ready() -> void:
 	body_mat = StandardMaterial3D.new()
@@ -250,6 +251,14 @@ func check_scare_at(pos: Vector3, radius: float) -> void:
 
 func _process(delta: float) -> void:
 	var time = Time.get_ticks_msec() * 0.001
+	
+	# Weather overrides
+	if current_weather == "eclipse":
+		for b in birds:
+			var state = b.get("state")
+			if state == "sitting" or state == "landing":
+				scare_bird(b)
+
 	for b in birds:
 		var node = b["node"] as Node3D
 		if not is_instance_valid(node): continue
@@ -281,8 +290,14 @@ func _process(delta: float) -> void:
 			else:
 				flap_rot = 0.05
 				
-			# Randomly decide to land (0.1% chance per frame per bird -> ~6% chance per second at 60fps)
-			if randf() < 0.001: 
+			# Randomly decide to land
+			var landing_chance = 0.001
+			if current_weather == "rain":
+				landing_chance = 0.05 # Seek shelter quickly
+			elif current_weather == "eclipse":
+				landing_chance = 0.0 # Don't land during eclipse
+				
+			if randf() < landing_chance: 
 				b["state"] = "landing"
 				b["start_pos"] = node.position
 				# Narrowed X range (-6 to 6) to keep them strictly on the central beach, avoiding trees

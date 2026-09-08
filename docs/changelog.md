@@ -7,6 +7,8 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### Improved
 * **Dynamic Weather Clouds:** The 3D stylized clouds now dynamically react to weather events. During Rainstorms, they smoothly transition to a moody, dark grey-blue color to match real-world storm clouds, and during Solar Eclipses, they tint to a deep, ominous purple to perfectly match the skybox.
+* **Ice Burst Polish:** Using the Ice Burst ability now freezes the screen edges with an icy blue procedural frost overlay, and forces the Sun's color to temporarily shift from warm orange to a cold cyan to make the impact feel incredibly heavy and satisfying.
+* **Dynamic Seagull AI:** The background seagull flock now reacts intelligently to the weather. During Rainstorms, the random chance for birds to land is increased by 50x, causing the flock to rapidly seek shelter on the beach. During Solar Eclipses, the flock panics—preventing landing and causing any sitting birds to instantly flee into the sky.
 
 ## [v1.5.2] - 2026-09-07
 *(Note: This release corresponds to v1.2 on itch.io)*
@@ -226,6 +228,8 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### 개선됨
 * **동적 날씨 구름:** 3D 양식화된 구름이 이제 날씨 이벤트에 동적으로 반응합니다. 폭우 시 실제 폭풍 구름처럼 어두운 회청색으로 부드럽게 변하며, 일식 중에는 주변 환경과 어울리도록 깊은 보라색으로 물듭니다.
+* **얼음 폭발 시각 효과 개선:** 이제 얼음 폭발 능력을 사용하면 절차적 서리 오버레이로 화면 가장자리가 얼어붙고, 일시적으로 태양의 색상이 따뜻한 주황색에서 차가운 청록색으로 변하여 타격감이 매우 향상됩니다.
+* **동적 갈매기 AI:** 배경의 갈매기 무리가 날씨에 반응합니다. 폭우 시 새들이 해변으로 내려와 피난처를 찾을 확률이 50배 증가합니다. 일식 중에는 갈매기들이 공황 상태에 빠져 착륙이 제한되며, 해변에 앉아 있던 갈매기들은 즉시 하늘로 도망칩니다.
 
 ## [v1.5.2] - 2026-09-07
 *(참고: 이 릴리스는 itch.io의 v1.2 버전에 해당합니다)*

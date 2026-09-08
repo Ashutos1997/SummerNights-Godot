@@ -1658,6 +1658,9 @@ func _process(delta: float) -> void:
 				is_sun_frozen = false
 				if frost_aura:
 					frost_aura.emitting = false
+				if post_process_mat:
+					var tw_frost = create_tween()
+					tw_frost.tween_method(func(v): post_process_mat.set_shader_parameter("frost_mix", v), 1.0, 0.0, 0.5)
 				if sun_mat:
 					var tw = create_tween()
 					tw.tween_property(sun_mat, "albedo_color", Color(1.0, 1.0, 1.0), 0.5)
@@ -2800,6 +2803,9 @@ func _update_sky(instant: bool) -> void:
 		_sky_shader_mat.set_shader_parameter("sun_heat", ratio)
 		_sky_shader_mat.set_shader_parameter("eclipse_mix", weather_blend if active_weather == "eclipse" else 0.0)
 		
+	if seagull_layer and "current_weather" in seagull_layer:
+		seagull_layer.current_weather = active_weather
+		
 	# Drive heat haze screen distortion based on temperature heat ratio
 	if haze_mat:
 		haze_mat.set_shader_parameter("heat_ratio", ratio)
@@ -3491,6 +3497,9 @@ func freeze_sun() -> void:
 	_spawn_ice_nova()
 	if frost_aura:
 		frost_aura.emitting = true
+	if post_process_mat:
+		var tw_frost = create_tween()
+		tw_frost.tween_method(func(v): post_process_mat.set_shader_parameter("frost_mix", v), 0.0, 1.0, 0.3)
 		
 	if sun_mat:
 		var tw = create_tween()

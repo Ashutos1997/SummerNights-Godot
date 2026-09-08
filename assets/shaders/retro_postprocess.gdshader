@@ -8,6 +8,7 @@ uniform float vignette_opacity : hint_range(0.0, 1.0) = 0.5;
 uniform vec4 vignette_color : source_color = vec4(0.0, 0.0, 0.0, 1.0);
 uniform vec4 heat_border_color : source_color = vec4(0.0, 0.0, 0.0, 0.0);
 uniform float flash_mix : hint_range(0.0, 1.0) = 0.0;
+uniform float frost_mix : hint_range(0.0, 1.0) = 0.0;
 uniform float noise_amount : hint_range(0.0, 1.0) = 0.03;
 uniform bool reduce_motion = false;
 
@@ -78,6 +79,10 @@ void fragment() {
     // Multiply the base color by a fiery red tint so it meshes perfectly with the scene textures
     vec3 tinted_border = color * vec3(1.5, 0.2, 0.2); 
     color = mix(color, tinted_border, soft_border * heat_border_color.a);
+    
+    // Frost Border (Tint edges based on frost_mix)
+    vec3 icy_border = color * vec3(0.6, 0.8, 1.5) + vec3(0.0, 0.2, 0.4);
+    color = mix(color, icy_border, soft_border * frost_mix);
     
     // 7. Searing Flash (Damage/Impact)
     vec3 searing_color = vec3(1.0, 0.8, 0.5); // Searing white/orange

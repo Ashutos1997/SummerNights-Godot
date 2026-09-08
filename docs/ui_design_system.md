@@ -180,6 +180,12 @@ A sleek, modern binary toggle used for premium settings like the Language switch
 *   **Highlight Block:** A solid `ColorRect` using the Bright Accent `Color(1.0, 0.85, 0.2, 1.0)` that covers exactly half the toggle.
 *   **Animation:** When clicked, a parallel Tween smoothly interpolates the Highlight Block's `position.x` to the opposite side over `0.25s` with `TRANS_SINE` easing, while simultaneously tweening the font color of the active label to black `Color(0, 0, 0, 1.0)` and the inactive label to gold `Color(1.0, 0.85, 0.2, 1.0)` for high contrast.
 
+### Post-Processing Gameplay Overlays
+
+Dynamic visual feedback is rendered behind the HUD but above the 3D scene using a custom CanvasItem post-processing shader (`retro_postprocess.gdshader`):
+*   **Heat Warning (Death's Door):** A soft, fiery red translucent gradient border that tweens around the screen edges when the temperature exceeds 85%, pulsing to the beat of a heartbeat SFX.
+*   **Frost Border (Ice Burst):** An icy blue `vec3(0.6, 0.8, 1.5)` tint applied to the screen edges dynamically when the Ice Burst "Hit-Stop" freeze effect is active, emphasizing the freezing impact.
+
 ### Screen Overlays (Blur / Dim)
 
 When a menu or overlay is shown (e.g., Pause, Weapon Wheel), the screen behind it is blurred and dimmed using a custom screen-reading shader. Note: The Pause overlay is automatically triggered if the game window loses focus (`NOTIFICATION_APPLICATION_FOCUS_OUT`) to prevent unfair progression. Pausing sets `get_tree().paused = true`, which fully freezes the entire scene tree (clouds, waves, shaders, physics, animations, particles). The HUD's root `CanvasLayer` uses `PROCESS_MODE_ALWAYS` so that menus remain interactive during the pause.

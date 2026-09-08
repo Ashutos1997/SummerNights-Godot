@@ -92,7 +92,7 @@ All labels within the HUD are dynamically localized in `HUD.gd` via the `_apply_
 ## 4. CanvasLayer Hierarchy
 
 To correctly manage drawing order between the 3D world, global post-processing effects, and the 2D UI, the game utilizes multiple `CanvasLayer` nodes:
-*   **Layer 0 (Post-Processing):** A full-screen `ColorRect` is dynamically injected at runtime behind the HUD. It runs `retro_postprocess.gdshader`, capturing the `SCREEN_TEXTURE` (which is the 3D game world) and applying color grading and film grain.
+*   **Layer 0 (Post-Processing):** A full-screen `ColorRect` is dynamically injected at runtime behind the HUD. It runs `retro_postprocess.gdshader`, capturing the `SCREEN_TEXTURE` (which is the 3D game world) and applying color grading, film grain, and dynamic gameplay borders (e.g., Heat Warning, Frost Border).
 *   **Layer 10 (HUD):** The main `HUD.tscn` root operates at layer 10. This ensures that UI elements, crosshairs, and text remain crisp, legible, and completely unaffected by the retro shader.
 
 ---
