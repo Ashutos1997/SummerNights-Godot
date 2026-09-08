@@ -2847,6 +2847,10 @@ func _update_sky(instant: bool) -> void:
 		ground_mat.emission = current_emission_col.lerp(current_emission_col.darkened(0.7), sand_wetness)
 		ground_mat.emission_energy_multiplier = lerp(current_emission_energy, 0.0, sand_wetness)
 
+	var clouds_node = get_node_or_null("CloudLayer")
+	if clouds_node and clouds_node.has_method("set_weather_blend"):
+		clouds_node.set_weather_blend(active_weather, weather_blend)
+
 	# Sun visual phases (Middle states)
 	var sun_base_albedo = Color.WHITE
 	var sun_base_emission = Color(1.0, 0.7, 0.2)

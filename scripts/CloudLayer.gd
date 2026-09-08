@@ -25,6 +25,11 @@ func _ready() -> void:
 	
 	_spawn_clouds()
 
+var target_weather: String = "none"
+
+func set_weather_blend(weather_type: String, blend: float) -> void:
+	target_weather = weather_type
+
 func _spawn_clouds() -> void:
 	var rng = RandomNumberGenerator.new()
 	rng.randomize()
@@ -106,3 +111,21 @@ func _process(delta: float) -> void:
 				sf * randf_range(0.45, 0.85),
 				sf * randf_range(0.75, 1.25)
 			)
+
+	# Smooth color transitions
+	var target_albedo = Color(1.0, 0.84, 0.58, 0.95)
+	var target_emission = Color(0.9, 0.48, 0.15)
+	var target_emission_energy = 0.45
+	
+	if target_weather == "rain":
+		target_albedo = Color(0.3, 0.35, 0.4, 0.95) # Dark greyish blue
+		target_emission = Color(0.0, 0.0, 0.0)
+		target_emission_energy = 0.0
+	elif target_weather == "eclipse":
+		target_albedo = Color(0.1, 0.05, 0.15, 0.95) # Very dark purple
+		target_emission = Color(0.2, 0.0, 0.4)
+		target_emission_energy = 0.2
+		
+	cloud_mat.albedo_color = cloud_mat.albedo_color.lerp(target_albedo, delta * 1.5)
+	cloud_mat.emission = cloud_mat.emission.lerp(target_emission, delta * 1.5)
+	cloud_mat.emission_energy_multiplier = lerp(cloud_mat.emission_energy_multiplier, target_emission_energy, delta * 1.5)

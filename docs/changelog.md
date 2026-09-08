@@ -2,6 +2,12 @@
 
 All notable changes to the Summer Nights project will be documented in this file.
 
+## [v1.5.3 - WIP]
+*(Note: This release corresponds to v1.3 on itch.io)*
+
+### Improved
+* **Dynamic Weather Clouds:** The 3D stylized clouds now dynamically react to weather events. During Rainstorms, they smoothly transition to a moody, dark grey-blue color to match real-world storm clouds, and during Solar Eclipses, they tint to a deep, ominous purple to perfectly match the skybox.
+
 ## [v1.5.2] - 2026-09-07
 *(Note: This release corresponds to v1.2 on itch.io)*
 
@@ -214,6 +220,12 @@ All notable changes to the Summer Nights project will be documented in this file
   - Immersive sound effects for water spraying, sizzling, bird calls, and wind.
 
 ---
+
+## [v1.5.3 - WIP]
+*(참고: 이 릴리스는 itch.io의 v1.3 버전에 해당합니다)*
+
+### 개선됨
+* **동적 날씨 구름:** 3D 양식화된 구름이 이제 날씨 이벤트에 동적으로 반응합니다. 폭우 시 실제 폭풍 구름처럼 어두운 회청색으로 부드럽게 변하며, 일식 중에는 주변 환경과 어울리도록 깊은 보라색으로 물듭니다.
 
 ## [v1.5.2] - 2026-09-07
 *(참고: 이 릴리스는 itch.io의 v1.2 버전에 해당합니다)*
