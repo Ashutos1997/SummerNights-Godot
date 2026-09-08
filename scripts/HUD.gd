@@ -1141,6 +1141,31 @@ func _apply_language(lang: String) -> void:
 	if scroll_area:
 		var credits_list = scroll_area.get_node_or_null("CreditsList")
 		if credits_list:
+			# Translate headers and specific roles
+			var hdr_core = credits_list.get_node_or_null("HdrCore")
+			if hdr_core: hdr_core.text = "주요 팀원" if is_kr else "CORE TEAM"
+			var hdr_3d = credits_list.get_node_or_null("Hdr3D")
+			if hdr_3d: hdr_3d.text = "3D 모델" if is_kr else "3D MODELS"
+			var hdr_tex = credits_list.get_node_or_null("HdrTextures")
+			if hdr_tex: hdr_tex.text = "텍스처" if is_kr else "TEXTURES"
+			var hdr_audio = credits_list.get_node_or_null("HdrAudio")
+			if hdr_audio: hdr_audio.text = "오디오" if is_kr else "AUDIO"
+			var hdr_engine = credits_list.get_node_or_null("HdrEngine")
+			if hdr_engine: hdr_engine.text = "엔진" if is_kr else "ENGINE"
+			var hdr_ui = credits_list.get_node_or_null("HdrUI")
+			if hdr_ui: hdr_ui.text = "UI 및 폰트" if is_kr else "UI & FONT"
+			var hdr_env = credits_list.get_node_or_null("HdrEnv")
+			if hdr_env: hdr_env.text = "환경" if is_kr else "ENVIRONMENT"
+			var hdr_special = credits_list.get_node_or_null("HdrSpecial")
+			if hdr_special: hdr_special.text = "특별한 감사" if is_kr else "SPECIAL THANKS"
+
+			var itm_core1 = credits_list.get_node_or_null("ItmCore1")
+			if itm_core1: itm_core1.text = "Ashutos1997  ·  게임 기획 및 디렉션" if is_kr else "Ashutos1997  ·  Product Design & Direction"
+			var itm_core2 = credits_list.get_node_or_null("ItmCore2")
+			if itm_core2: itm_core2.text = "Ivy  ·  UI 및 시각 디자인" if is_kr else "Ivy  ·  UI & Visual Designer"
+			var itm_special1 = credits_list.get_node_or_null("ItmSpecial1")
+			if itm_special1: itm_special1.text = "Yodi (요디님) & Kakao based Design Club  ·  초기 콘셉트 영감 제공" if is_kr else "Yodi (요디님) & Kakao based Design Club  ·  Original Concept Inspiration"
+
 			for child in credits_list.get_children():
 					if child is Label:
 						var is_header = child.name.begins_with("Hdr")
