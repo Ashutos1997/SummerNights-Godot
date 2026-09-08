@@ -78,6 +78,7 @@ var sun_figure8: bool = false
 var sun_move_time: float = 0.0
 var level_timer: float = 0.0
 var wave_timer: float = 0.0
+var ocean_wave_timer: Timer
 var sand_wetness: float = 0.0
 var timer_running: bool = false
 var max_survival_ice_charges: int = 3
@@ -368,11 +369,12 @@ func _ready() -> void:
 	_sync_light_to_sun()
 	
 	# Occasional Rogue Wave Spawner
-	var wave_timer = Timer.new()
-	wave_timer.wait_time = randf_range(8.0, 18.0)
-	wave_timer.autostart = true
-	wave_timer.one_shot = false
-	wave_timer.timeout.connect(func():
+	ocean_wave_timer = Timer.new()
+	ocean_wave_timer.name = "OceanWaveTimer"
+	ocean_wave_timer.wait_time = randf_range(8.0, 18.0)
+	ocean_wave_timer.autostart = true
+	ocean_wave_timer.one_shot = false
+	ocean_wave_timer.timeout.connect(func():
 		if water_mat and water_mat is ShaderMaterial:
 			var target_height = randf_range(5.0, 8.0)
 			var target_curl = randf_range(0.7, 0.95)
@@ -398,7 +400,7 @@ func _ready() -> void:
 			# Slowly collapse after passing the island
 			swell_tween.tween_method(func(v): water_mat.set_shader_parameter("pulse_height", v), target_height, 0.0, duration * 0.3).set_delay(duration * 0.2)
 			
-			wave_timer.wait_time = randf_range(20.0, 35.0)
+			ocean_wave_timer.wait_time = randf_range(20.0, 35.0)
 			
 			# Wet sand effect
 			if ground_mat:
@@ -412,7 +414,7 @@ func _ready() -> void:
 				# Stay wet briefly, then slowly dry off (fade back to matte)
 				t.tween_property(self, "sand_wetness", 0.0, 8.0).set_delay(1.5)
 	)
-	add_child(wave_timer)
+	add_child(ocean_wave_timer)
 
 
 	level = GameState.level
@@ -2953,6 +2955,7 @@ func _win() -> void:
 	_stop_vibrate()
 	timer_running = false # Stop the timer so we don't accidentally lose during the win transition
 	gun_spray.emitting = false # Fix water getting stuck on when winning
+	if ocean_wave_timer: ocean_wave_timer.paused = true
 
 	if is_measuring:
 		is_measuring = false
@@ -2965,8 +2968,13 @@ func _win() -> void:
 		amb_tw.tween_property(ambient_sfx, "volume_db", -5.0, 1.0).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
 		
 	var tween = create_tween()
-	tween.tween_property(sun_mat, "albedo_color", Color(0.1, 0.5, 1.0), 1.0)
-	tween.parallel().tween_property(sun_mat, "emission", Color(0.0, 0.2, 1.0), 1.0)
+	tween.tween_property(sun_mat, "albedo_color", Color(0.2, 0.05, 0.05), 1.0)
+	tween.parallel().tween_property(sun_mat, "emission", Color(0.0, 0.0, 0.0), 1.0)
+	
+	if steam_particles:
+		steam_particles.global_position = sun.global_position
+		steam_particles.amount = 40
+		steam_particles.restart()
 	
 	if GameState.level >= 5 and not GameState.is_survival_mode:
 		GameState.unlock_achievement("dawn_breaks")
@@ -2974,12 +2982,6 @@ func _win() -> void:
 	if GameState.level >= 6:
 		game_complete.emit()
 	else:
-		GameState.level += 1
-		level = GameState.level
-		if level == 4:
-			GameState.catastrom_charge = 1.0
-		sun_defeated.emit(level - 1)
-		
 		# Seamless reload
 		var reload = func():
 			temperature = MAX_TEMP
@@ -2988,7 +2990,7 @@ func _win() -> void:
 			defeat_triggered = false
 			cooldown_timer = 0.0
 			water_refill_count = 0
-			is_measuring = true
+			is_measuring = false
 			is_catastrom_active = false
 			_end_mirage()
 			active_mirages.clear()
@@ -3026,7 +3028,7 @@ func _win() -> void:
 				if wind_sfx: wind_sfx.stop()
 			
 			level_timer = cfg.timer
-			timer_running = true
+			timer_running = false
 			emit_signal("level_config_loaded", cfg.timer)
 			
 			# Duck ocean ambient back down
@@ -3037,26 +3039,68 @@ func _win() -> void:
 			GameState.ice_charges_remaining = cfg.ice_charges + GameState.bonus_ice_charges
 			if hud:
 				hud.update_ice_charges(GameState.ice_charges_remaining, cfg.ice_charges + GameState.bonus_ice_charges)
-				if GameState.level == 2:
-					hud.show_weapon_unlock()
-				if GameState.level == 3:
-					hud.show_weapon_unlock()
-					hud.show_ice_unlock()
-				if GameState.level == 4:
-					hud.show_weapon_unlock()
 			
 			if sun_mat:
 				sun_mat.albedo_color = Color(1.0, 1.0, 1.0)
 				sun_mat.emission = Color(1.0, 0.7, 0.2)
 				sun_mat.emission_energy_multiplier = 1.8
+			if steam_particles:
+				steam_particles.amount = 15 # reset to default amount
 			if haze_mat:
 				haze_mat.set_shader_parameter("heat_ratio", 1.0)
 			_update_sky(true) # force update visuals back to scorching
 			if hud and hud.has_method("hide_win_screen"):
 				hud.hide_win_screen()
 			
-		await get_tree().create_timer(2.5).timeout
+		# 1. Wait for player to see the sun die
+		await get_tree().create_timer(0.8).timeout
+		
+		# 2. Fade to black
+		if hud and hud.has_method("fade_to_black"):
+			await hud.fade_to_black(0.5)
+			
+		# 3. Emit sun_defeated to show WinScreen text behind the black overlay
+		sun_defeated.emit(level)
+		
+		# 4. Fade from black, revealing the WinScreen (keep it visible)
+		if hud and hud.has_method("fade_from_black"):
+			await hud.fade_from_black(0.5, false)
+			
+		# 5. Let player read the WinScreen
+		await get_tree().create_timer(1.5).timeout
+		
+		# 6. Fade to black again for the actual reset
+		if hud and hud.has_method("fade_to_black"):
+			await hud.fade_to_black(0.6)
+		else:
+			await get_tree().create_timer(0.6).timeout
+			
+		# NOW increment the level
+		GameState.level += 1
+		level = GameState.level
+		if level == 4:
+			GameState.catastrom_charge = 1.0
+			
+		# 7. Seamless reload while black
 		reload.call()
+		
+		# 8. Fade from black, hiding the WinScreen and revealing the new level
+		if hud and hud.has_method("fade_from_black"):
+			await hud.fade_from_black(0.8, true)
+			
+		is_measuring = true
+		timer_running = true
+		if ocean_wave_timer: ocean_wave_timer.paused = false
+		
+		# 9. Trigger unlock popups NOW that the level has fully started
+		if hud:
+			if GameState.level == 2:
+				hud.show_weapon_unlock()
+			if GameState.level == 3:
+				hud.show_weapon_unlock()
+				hud.show_ice_unlock()
+			if GameState.level == 4:
+				hud.show_weapon_unlock()
 
 
 func _create_sfx(path: String, vol: float, poly: int, bus_name: String = "SFX_WEAPON") -> AudioStreamPlayer:

@@ -21,7 +21,7 @@ The live gameplay HUD is designed to minimize clutter while keeping critical sur
 *   **`ScoreLabel`:** Located directly beneath the Timer. Displays the live arcade score (e.g., `SCORE: 1,500`). When points are scored, this label scales up and snaps back smoothly, pivoting from the right edge to avoid extending off-screen.
 *   **`WeatherIconContainer`:** A persistent, stylized circular icon container located directly beneath the Score. Displays a yellow star for normal weather, and animated exclamation marks for active weather events (Rain / Eclipse).
 *   **`WeatherTimerLabel`:** Positioned just below the WeatherIconContainer. Appears during an Eclipse if the "Shadow Walker" achievement is unlocked, displaying a precise countdown until the eclipse ends in a striking red font with a black outline.
-*   **`ToastContainer`:** Displays transient slide-down notifications (e.g., "Weapon Unlocked") from the top-right corner.
+*   **`ToastContainer`:** Displays transient slide-down notifications (e.g., "Weapon Unlocked") from the top-right corner. During level transitions, these notifications are deferred and will only appear after the next level has fully loaded and the screen has faded in.
 
 ### Center
 *   **`Crosshair` (`DynamicCrosshair.tscn`):** The aiming reticle. It has been extracted into a standalone scene. It dynamically scales up slightly when successfully landing water hits on the sun. It also features a procedurally drawn vector ring (`_draw()`) that visually tracks the current water tank capacity. The ring will cleanly pulse a high-contrast orange when the tank drops below 25% to serve as a low water warning. The ring and crosshair flash red when entirely empty, and lime-green when landing critical hits on sunspots.
@@ -75,7 +75,7 @@ These elements sit on top of the Core Gameplay HUD and blur/dim the background w
 
 ### End State Screens
 *(Note: All end state screens (Win, End, Lose) utilize the unified `StyleBoxFlat_border` golden overlay to align with the global menu aesthetic.)*
-*   **`WinScreen`:** Shown upon completing a wave. Displays level complete text and loading text.
+*   **`WinScreen`:** Shown upon completing a wave. Displays level complete text and loading text. The presentation now uses a multi-stage cinematic fade sequence: the screen fades to black, the WinScreen loads behind the overlay, the overlay fades out to reveal the menu, the player reads it, and then the screen fades to black again for the environment reset before finally fading into the next level.
 *   **`EndScreen`:** Shown upon beating the entire game (Normal Mode). Features a distinct text hierarchy separating the subtitle, final level statistics, and a bright cyan `UnlockPrompt` that notifies the player they have unlocked Endless Mode.
 *   **`LoseScreen`:** Shown if the Sun hits 100% heat. Instead of an immediate popup, this triggers a dramatic Supernova cinematic (massive sun expansion, screen shake, blinding flash) that fades into the menu. Features a fully opaque background to block HDR bleed, a perfectly centered vertical layout for dramatic emphasis, and offers Retry/Menu buttons styled exactly like the Pause menu.
 

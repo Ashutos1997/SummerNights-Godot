@@ -160,7 +160,7 @@ Panels like the Weapon Wheel info box use a distinct, rounded "sleek" aesthetic.
 
 ### Toast Notifications (Catastrom Popup)
 
-Transient popups that slide in from the top of the screen to notify the player of critical events (e.g., Catastrom Ultimate ready).
+Transient popups that slide in from the top of the screen to notify the player of critical events (e.g., Catastrom Ultimate ready). During level transitions, these notifications are explicitly deferred and will wait in queue until the next level has fully loaded and the screen has faded in.
 
 *   **Background & Borders:** Inherits the "Panels & Overlays" style.
 *   **Icon:** Includes a `32x32` pixel icon (e.g., Catastrom logo).

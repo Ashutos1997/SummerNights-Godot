@@ -9,6 +9,15 @@ All notable changes to the Summer Nights project will be documented in this file
 * **Dynamic Weather Clouds:** The 3D stylized clouds now dynamically react to weather events. During Rainstorms, they smoothly transition to a moody, dark grey-blue color to match real-world storm clouds, and during Solar Eclipses, they tint to a deep, ominous purple to perfectly match the skybox.
 * **Ice Burst Polish:** Using the Ice Burst ability now freezes the screen edges with an icy blue procedural frost overlay, and forces the Sun's color to temporarily shift from warm orange to a cold cyan to make the impact feel incredibly heavy and satisfying.
 * **Dynamic Seagull AI:** The background seagull flock now reacts intelligently to the weather. During Rainstorms, the random chance for birds to land is increased by 50x, causing the flock to rapidly seek shelter on the beach. During Solar Eclipses, the flock panics—preventing landing and causing any sitting birds to instantly flee into the sky.
+* **Cinematic Level Transitions:** Completing a level now triggers a multi-stage cinematic fade sequence instead of an instant cut. The sun dies with a "Dying Ember" visual (smoothly draining to a dark maroon with a massive steam plume), the screen fades to black, the clear menu loads behind the overlay, and the screen gracefully reveals the menu. After a reading period, the screen fades to black again for a seamless environment reset before fading into the new level.
+* **Dying Ember Sun Visual:** Replaced the old cyan sun-freeze on level completion with a thematic "Dying Ember" effect. The sun's fiery emission smoothly drains to zero while its color shifts to a deep maroon, accompanied by a burst of 40 steam particles erupting from its surface.
+* **Deferred Unlock Popups:** Weapon unlock, Ice Burst unlock, and Catastrom meter notifications now only appear after the next level has fully loaded and the transition fade-in is complete, preventing UI elements from popping up prematurely during the black screen.
+
+### Fixed
+* **Level Clear Menu Spacing:** Fixed a font rendering issue where the "LEVEL 01 COMPLETE" text on the clear menu appeared with no visible space between the level number and "COMPLETE" due to the pixel font's narrow space glyph. Added double-spacing for both English and Korean text.
+* **Transition Background Bleed:** Fixed a bug where the next level's 3D environment would briefly flash visible for a split second between the fade-out and the clear menu appearing, caused by the WinScreen fading in with transparency while the overlay was simultaneously fading out.
+* **Ocean Waves During Transitions:** Fixed an issue where rogue ocean waves could randomly spawn and crash onto the beach during the level transition's black screen. The ocean wave timer is now explicitly paused during the entire transition and only resumes when the new level fully starts.
+* **Premature Level Start:** Fixed a bug where the game timer and gameplay systems would begin running before the transition fade-in completed, causing waves and hazards to already be active when the new level appeared.
 
 ## [v1.5.2] - 2026-09-07
 *(Note: This release corresponds to v1.2 on itch.io)*
@@ -230,6 +239,15 @@ All notable changes to the Summer Nights project will be documented in this file
 * **동적 날씨 구름:** 3D 양식화된 구름이 이제 날씨 이벤트에 동적으로 반응합니다. 폭우 시 실제 폭풍 구름처럼 어두운 회청색으로 부드럽게 변하며, 일식 중에는 주변 환경과 어울리도록 깊은 보라색으로 물듭니다.
 * **얼음 폭발 시각 효과 개선:** 이제 얼음 폭발 능력을 사용하면 절차적 서리 오버레이로 화면 가장자리가 얼어붙고, 일시적으로 태양의 색상이 따뜻한 주황색에서 차가운 청록색으로 변하여 타격감이 매우 향상됩니다.
 * **동적 갈매기 AI:** 배경의 갈매기 무리가 날씨에 반응합니다. 폭우 시 새들이 해변으로 내려와 피난처를 찾을 확률이 50배 증가합니다. 일식 중에는 갈매기들이 공황 상태에 빠져 착륙이 제한되며, 해변에 앉아 있던 갈매기들은 즉시 하늘로 도망칩니다.
+* **시네마틱 레벨 전환:** 레벨 클리어 시 즉각적인 장면 전환 대신 다단계 시네마틱 페이드 시퀀스가 재생됩니다. 태양이 "잔불" 시각 효과로 서서히 꺼지며(짙은 적갈색으로 변하고 대량의 증기가 분출), 화면이 암전된 후 클리어 메뉴가 오버레이 뒤에서 로드됩니다. 메뉴가 부드럽게 드러난 후 잠시 표시된 다음, 다시 암전되어 환경이 원활하게 초기화되고 새 레벨이 페이드 인됩니다.
+* **잔불 태양 시각 효과 (Dying Ember):** 레벨 클리어 시 기존의 청록색 얼음 효과를 테마에 맞는 "잔불" 효과로 교체했습니다. 태양의 방출 에너지가 부드럽게 0으로 줄어들면서 색상이 짙은 적갈색으로 변하며, 표면에서 40개의 증기 입자가 분출됩니다.
+* **지연된 잠금 해제 알림:** 무기 잠금 해제, 아이스 버스트 잠금 해제, 카타스트롬 미터 알림이 이제 다음 레벨이 완전히 로드되고 전환 페이드 인이 완료된 후에만 나타나며, 검은 화면 중에 UI 요소가 조기에 표시되는 것을 방지합니다.
+
+### 수정됨
+* **레벨 클리어 메뉴 간격:** 클리어 메뉴의 "LEVEL 01 COMPLETE" 텍스트에서 레벨 번호와 "COMPLETE" 사이에 가시적인 공간이 없던 픽셀 폰트의 좁은 공백 문자 문제를 수정했습니다. 영어 및 한국어 텍스트 모두에 이중 간격을 추가했습니다.
+* **전환 배경 노출:** 페이드 아웃과 클리어 메뉴 표시 사이에 다음 레벨의 3D 환경이 순간적으로 깜빡이며 보이던 버그를 수정했습니다. WinScreen이 투명도가 있는 상태로 페이드 인되는 동시에 오버레이가 페이드 아웃되면서 발생했습니다.
+* **전환 중 파도:** 레벨 전환의 검은 화면 동안 불량 파도가 무작위로 생성되어 해변에 밀려올 수 있던 문제를 수정했습니다. 파도 타이머가 전환 중 명시적으로 일시정지되며 새 레벨이 완전히 시작될 때만 재개됩니다.
+* **조기 레벨 시작:** 전환 페이드 인이 완료되기 전에 게임 타이머와 게임플레이 시스템이 실행되기 시작하여 새 레벨이 나타날 때 파도와 위험 요소가 이미 활성화되어 있던 버그를 수정했습니다.
 
 ## [v1.5.2] - 2026-09-07
 *(참고: 이 릴리스는 itch.io의 v1.2 버전에 해당합니다)*

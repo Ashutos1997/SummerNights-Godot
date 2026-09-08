@@ -31,6 +31,7 @@ var achievement_toast_container: Control
 var buff_toast_container: Control
 @onready var crosshair = $HUD/Crosshair
 @onready var win_screen = $HUD/WinScreen
+var transition_overlay: ColorRect
 @onready var level_label = $HUD/LevelLabel
 @onready var win_title_lbl = $HUD/WinScreen/ColorRect/VBoxContainer/Title
 @onready var win_level_lbl = $HUD/WinScreen/ColorRect/VBoxContainer/LevelLbl
@@ -376,6 +377,15 @@ func _ready() -> void:
 	
 	# Hide all screens initially except for crosshair and HUD elements
 	win_screen.visible = false
+	
+	transition_overlay = ColorRect.new()
+	transition_overlay.name = "TransitionOverlay"
+	transition_overlay.color = Color(0, 0, 0, 0)
+	transition_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	transition_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	$HUD.add_child(transition_overlay)
+	# Ensure it is absolutely on top
+	$HUD.move_child(transition_overlay, -1)
 	pause_screen.visible = false
 	lose_screen.visible = false
 	settings_screen.visible = false
@@ -1320,7 +1330,10 @@ func _apply_language(lang: String) -> void:
 		end_subtitle_lbl.text = "태양이 길들여졌다" if is_kr else "THE SUN HAS BEEN TAMED"
 		if font: end_subtitle_lbl.add_theme_font_override("font", font)
 	if end_level_lbl:
-		end_level_lbl.text = "%d 레벨 완료" % GameState.level if is_kr else "%d LEVELS COMPLETED" % GameState.level
+		if is_kr:
+			end_level_lbl.text = "%d 레벨 완료" % GameState.level
+		else:
+			end_level_lbl.text = "%d LEVELS COMPLETED" % GameState.level
 		if font: end_level_lbl.add_theme_font_override("font", font)
 	if end_prompt_lbl:
 		end_prompt_lbl.text = "클릭하거나 스페이스를 눌러 재시작" if is_kr else "CLICK OR PRESS SPACE TO RESTART"
@@ -1560,22 +1573,28 @@ func _on_sun_defeated(level: int) -> void:
 		level_label.text = "LVL  %02d" % level
 	if win_level_lbl:
 		var is_kr = TranslationServer.get_locale() == "ko"
-		win_level_lbl.text = "%02d 단계 완료" % level if is_kr else "LEVEL %02d COMPLETE" % level
+		if is_kr:
+			win_level_lbl.text = "%02d  단계 완료" % level
+		else:
+			win_level_lbl.text = "LEVEL %02d  COMPLETE" % level
 	
 	win_screen.visible = true
-	win_screen.modulate.a = 0.0
+	win_screen.modulate.a = 1.0
 	win_screen.scale = Vector2(1.0, 1.0)
 	
+	# Auto-hide logic is now handled explicitly by Main.gd via fade_to_black
+	
+func fade_to_black(duration: float = 1.0) -> Signal:
 	var tw = create_tween()
-	tw.set_ease(Tween.EASE_OUT)
-	tw.set_trans(Tween.TRANS_SINE)
-	tw.tween_property(win_screen, "modulate:a", 1.0, 0.35)
-		
-	await get_tree().create_timer(2.5).timeout
-	if win_screen.visible:
-		var hide_tw = create_tween()
-		hide_tw.tween_property(win_screen, "modulate:a", 0.0, 0.3)
-		hide_tw.tween_callback(func(): win_screen.visible = false)
+	tw.tween_property(transition_overlay, "color:a", 1.0, duration)
+	return tw.finished
+
+func fade_from_black(duration: float = 1.0, hide_win: bool = true) -> Signal:
+	if win_screen and hide_win:
+		win_screen.visible = false
+	var tw = create_tween()
+	tw.tween_property(transition_overlay, "color:a", 0.0, duration)
+	return tw.finished
 
 func show_end_screen() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -1586,7 +1605,10 @@ func show_end_screen() -> void:
 	if lose_screen: lose_screen.visible = false
 	
 	if end_level_lbl:
-		end_level_lbl.text = "%d 레벨 완료" % GameState.level if GameState.language == "KR" else "%d LEVELS COMPLETED" % GameState.level
+		if GameState.language == "KR":
+			end_level_lbl.text = "%d 레벨 완료" % GameState.level
+		else:
+			end_level_lbl.text = "%d LEVELS COMPLETED" % GameState.level
 		
 	if end_unlock_lbl:
 		if GameState.newly_unlocked_endless:
