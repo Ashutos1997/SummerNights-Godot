@@ -1976,6 +1976,28 @@ theme_override_font_sizes/font_size = 12
 text = "Fireflies & Bugs  ·  Procedural GDScript ArrayMesh  ·  -"
 horizontal_alignment = 1
 
+[node name="SpacerSpecial" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+custom_minimum_size = Vector2(0, 8)
+
+[node name="HdrSpecial" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = "SPECIAL THANKS"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="ItmSpecial1" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "Yodi (요디님) & Designed Minds Club  ·  Original Concept Inspiration"
+horizontal_alignment = 1
+
 [node name="Divider2" type="HSeparator" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
