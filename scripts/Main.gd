@@ -3078,6 +3078,12 @@ func _win() -> void:
 		# NOW increment the level
 		GameState.level += 1
 		level = GameState.level
+		if hud:
+			if GameState.is_survival_mode:
+				hud.level_label.text = ("웨이브 %02d" if GameState.language == "KR" else "WAVE %02d") % GameState.current_wave
+			else:
+				hud.level_label.text = ("%02d 단계" if GameState.language == "KR" else "LVL  %02d") % GameState.level
+
 		if level == 4:
 			GameState.catastrom_charge = 1.0
 			
