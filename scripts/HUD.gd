@@ -1164,7 +1164,7 @@ func _apply_language(lang: String) -> void:
 			var itm_core2 = credits_list.get_node_or_null("ItmCore2")
 			if itm_core2: itm_core2.text = "Ivy  ·  UI 및 시각 디자인" if is_kr else "Ivy  ·  UI & Visual Designer"
 			var itm_special1 = credits_list.get_node_or_null("ItmSpecial1")
-			if itm_special1: itm_special1.text = "Yodi (요디님) & Kakao based Design Club  ·  초기 콘셉트 영감 제공" if is_kr else "Yodi (요디님) & Kakao based Design Club  ·  Original Concept Inspiration"
+			if itm_special1: itm_special1.text = "Yodi (요디님) & 카카오톡 디자인 클럽  ·  초기 콘셉트 영감 제공" if is_kr else "Yodi (요디님) & Kakao based Design Club  ·  Original Concept Inspiration"
 
 			for child in credits_list.get_children():
 					if child is Label:
