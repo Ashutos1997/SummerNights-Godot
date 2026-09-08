@@ -1995,7 +1995,7 @@ layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.85)
 theme_override_font_sizes/font_size = 12
-text = "Yodi (요디님) & Designed Minds Club  ·  Original Concept Inspiration"
+text = "Yodi (요디님) & Kakao based Design Club  ·  Original Concept Inspiration"
 horizontal_alignment = 1
 
 [node name="Divider2" type="HSeparator" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]

@@ -171,6 +171,9 @@ SummerNights-Godot/
 *   **Ashutos1997** - Product Design & Direction
 *   **Ivy** - UI & Visual Designer
 
+### Special Thanks
+*   **Yodi (요디님) & Kakao based Design Club** - Original Concept Inspiration
+
 ### Third-Party Assets
 
 | Asset | Author | License |
