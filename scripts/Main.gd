@@ -252,7 +252,7 @@ var active_flares: Array[Dictionary] = []
 var flare_spawn_timer: float = 8.0
 var flare_mat: StandardMaterial3D
 var flare_intercept_sfx: AudioStreamPlayer
-
+var audio_duck_timer: float = 0.0
 
 # Weather system
 var is_dragging_sun: bool = false
@@ -458,6 +458,12 @@ func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	hud = load("res://scenes/HUD.tscn").instantiate()
 	add_child(hud)
+	
+	var flare_rings = Control.new()
+	flare_rings.set_script(preload("res://scripts/FlareRings.gd"))
+	flare_rings.set("main_scene", self)
+	hud.add_child(flare_rings)
+	
 	hud.visible = false
 	gun.visible = false
 	
@@ -1461,6 +1467,8 @@ func _spawn_solar_flare() -> void:
 			mesh_inst.position = offset
 			flare_root.add_child(mesh_inst)
 			
+		flare_root.visible = false
+			
 		var flare_spin_speed = Vector3(randf_range(-2.0, 2.0), randf_range(1.0, 3.0), randf_range(-2.0, 2.0))
 	
 		# Fiery OmniLight Aura
@@ -1517,7 +1525,8 @@ func _spawn_solar_flare() -> void:
 			"progress": 0.0,
 			"duration": duration,
 			"spin": flare_spin_speed,
-			"hp": 1.0
+			"hp": 1.0,
+			"charge_timer": 0.6
 		})
 		
 	if sizzle_sfx and not sizzle_sfx.playing:
@@ -1529,6 +1538,14 @@ func _update_flares(delta: float) -> void:
 		var node = flare["node"] as Node3D
 		if not is_instance_valid(node):
 			to_remove.append(flare)
+			continue
+			
+		if "charge_timer" in flare and flare["charge_timer"] > 0.0:
+			flare["charge_timer"] -= delta
+			node.global_position = sun.global_position
+			if flare["charge_timer"] <= 0.0:
+				node.visible = true
+				flare["start_pos"] = sun.global_position
 			continue
 			
 		flare["progress"] += delta / (flare["duration"] as float)
@@ -1549,6 +1566,7 @@ func _update_flares(delta: float) -> void:
 			shake(0.4, 0.2) # Screen shake (respects reduce_motion)
 			if flare_impact_sfx:
 				flare_impact_sfx.play()
+			audio_duck_timer = 1.0
 			
 			var flash_tw = create_tween()
 			if reduce_motion:
@@ -1620,6 +1638,14 @@ func _process_heat_warning(_delta: float) -> void:
 func _process(delta: float) -> void:
 	if hud and "lose_screen" in hud and hud.lose_screen != null and hud.lose_screen.visible:
 		return
+
+	if audio_duck_timer > 0.0:
+		audio_duck_timer -= delta
+		AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), -12.0)
+	else:
+		var current_db = AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master"))
+		if current_db < 0.0:
+			AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), lerp(current_db, 0.0, delta * 3.0))
 
 	_process_heat_warning(delta)
 	
@@ -2911,6 +2937,7 @@ func _update_sky(instant: bool) -> void:
 func _trigger_catastrom_dunk() -> void:
 	_vibrate(1.0, 1.0, 0.5) # Massive dunk shockwave
 	shake(1.5, 0.5)
+	audio_duck_timer = 1.5
 	GameState.unlock_achievement("slam_dunk")
 	
 	if sun_face:

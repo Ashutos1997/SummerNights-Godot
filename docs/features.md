@@ -41,7 +41,7 @@ This document serves as the master record for all currently implemented features
 ## 3. Sun Mechanics & Threats
 *   **Dynamic Movement:** The Sun sways horizontally. On higher waves, it begins to weave in a "Figure-8" pattern.
 *   **Sunspots (Critical Heat Vents):** Periodically, a glowing white-hot sunspot will appear on the Sun's surface. Hitting this specific point with the water stream (especially with the Precision Stream) grants massive critical cooling bonuses and huge score multipliers.
-*   **Solar Flares:** The Sun periodically spits fiery projectiles towards the screen. The player must intercept them with the water stream before they hit; otherwise, they cause a massive heat spike. Intercepting a flare spawns physical Magma Debris that crashes onto the beach, scaring away seagulls and persisting until the player evaporates it with their water gun.
+*   **Solar Flares:** The Sun periodically spits fiery projectiles towards the screen. The player must intercept them with the water stream before they hit; otherwise, they cause a massive heat spike. Intercepting a flare spawns physical Magma Debris that crashes onto the beach, scaring away seagulls and persisting until the player evaporates it with their water gun. Flares visually telegraph their attack using a dynamic 2D UI loading ring that perfectly outlines the sun on the HUD and fills up over 0.6 seconds before launching.
 *   **Solar Wind:** A physical force emitted by the Sun that pushes the player's crosshair away, requiring them to actively fight the mouse to maintain aim. The island's foliage (trees and bushes) will violently bend and sway in the direction of the wind to visually telegraph the hazard's intensity.
 *   **Two-Phase Bosses:** Boss waves (e.g., Wave 5) have two phases. Depleting the timer triggers Phase 2, which resets the timer and immediately spikes the heat to a critical level (e.g., 60%).
 *   **Endless/Survival Mode:**
@@ -114,6 +114,7 @@ Weather events trigger based on a dynamic probability system tied to the current
     *   Automatic Pause on Window Unfocus (prevents losing a run when Alt-Tabbing). Pausing fully freezes the entire scene tree (`get_tree().paused`), halting all processing including clouds, wave shaders, physics, animations, and particles.
 
 ## 7. Audio
+*   **Audio Ducking:** Massive visceral events trigger dynamic audio ducking. When a Solar Flare violently impacts the screen, or when the player successfully dunks the sun via the Catastrom ability, the master audio bus drops by 12dB and smoothly fades back in, creating a massive "vacuum" shockwave effect.
 *   **Synthesized UI Sounds:** Programmatically generated sine-wave "ticks" and "whooshes" for UI navigation and the weapon wheel. A global Autoload (`UIJuice.gd`) strictly enforces a `-18 dB` 1800Hz sine sweep audio tick across every single interactive element (buttons, sliders, toggles) in the game.
 *   **Gameplay SFX:** 
     *   Continuous water shooting loop.

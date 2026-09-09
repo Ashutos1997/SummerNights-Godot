@@ -12,6 +12,8 @@ All notable changes to the Summer Nights project will be documented in this file
 * **Cinematic Level Transitions:** Completing a level now triggers a multi-stage cinematic fade sequence instead of an instant cut. The sun dies with a "Dying Ember" visual (smoothly draining to a dark maroon with a massive steam plume), the screen fades to black, the clear menu loads behind the overlay, and the screen gracefully reveals the menu. After a reading period, the screen fades to black again for a seamless environment reset before fading into the new level.
 * **Dying Ember Sun Visual:** Replaced the old cyan sun-freeze on level completion with a thematic "Dying Ember" effect. The sun's fiery emission smoothly drains to zero while its color shifts to a deep maroon, accompanied by a burst of 40 steam particles erupting from its surface.
 * **Deferred Unlock Popups:** Weapon unlock, Ice Burst unlock, and Catastrom meter notifications now only appear after the next level has fully loaded and the transition fade-in is complete, preventing UI elements from popping up prematurely during the black screen.
+* **Flare Telegraphs:** Solar flares now visually telegraph their attack. A dynamic 2D HUD ring elegantly outlines the physical sun in 3D space, perfectly scaling to the sun's size and distance. The bright orange ring fills up over 0.6 seconds before snapping into a fiery projectile and launching at the player, ensuring attacks never feel unfair.
+* **Audio Ducking:** Massive visceral events now hit significantly harder with dynamic audio ducking. When a Solar Flare violently impacts the screen, or when the player successfully dunks the sun via the Catastrom ability, the master audio bus drops by 12dB and smoothly fades back in, creating a massive "vacuum" shockwave effect.
 
 ### Fixed
 * **Level Clear Menu Spacing:** Fixed a font rendering issue where the "LEVEL 01 COMPLETE" text on the clear menu appeared with no visible space between the level number and "COMPLETE" due to the pixel font's narrow space glyph. Added double-spacing for both English and Korean text.
@@ -242,6 +244,8 @@ All notable changes to the Summer Nights project will be documented in this file
 * **시네마틱 레벨 전환:** 레벨 클리어 시 즉각적인 장면 전환 대신 다단계 시네마틱 페이드 시퀀스가 재생됩니다. 태양이 "잔불" 시각 효과로 서서히 꺼지며(짙은 적갈색으로 변하고 대량의 증기가 분출), 화면이 암전된 후 클리어 메뉴가 오버레이 뒤에서 로드됩니다. 메뉴가 부드럽게 드러난 후 잠시 표시된 다음, 다시 암전되어 환경이 원활하게 초기화되고 새 레벨이 페이드 인됩니다.
 * **잔불 태양 시각 효과 (Dying Ember):** 레벨 클리어 시 기존의 청록색 얼음 효과를 테마에 맞는 "잔불" 효과로 교체했습니다. 태양의 방출 에너지가 부드럽게 0으로 줄어들면서 색상이 짙은 적갈색으로 변하며, 표면에서 40개의 증기 입자가 분출됩니다.
 * **지연된 잠금 해제 알림:** 무기 잠금 해제, 아이스 버스트 잠금 해제, 카타스트롬 미터 알림이 이제 다음 레벨이 완전히 로드되고 전환 페이드 인이 완료된 후에만 나타나며, 검은 화면 중에 UI 요소가 조기에 표시되는 것을 방지합니다.
+* **태양 플레어 전조 증상:** 이제 태양 플레어가 공격을 시각적으로 예고합니다. 동적인 2D HUD 링이 3D 공간의 물리적 태양 윤곽을 우아하게 감싸며 태양의 크기와 거리에 맞춰 완벽하게 크기가 조정됩니다. 밝은 주황색 링이 0.6초에 걸쳐 차오른 후 화염 투사체로 변하여 플레이어에게 발사되므로 공격이 불합리하게 느껴지지 않습니다.
+* **오디오 더킹 (Audio Ducking):** 거대한 시각적 이벤트가 발생할 때 동적 오디오 더킹을 통해 타격감이 크게 향상됩니다. 태양 플레어가 화면에 격렬하게 충돌하거나 플레이어가 카타스트롬 능력으로 태양을 성공적으로 덩크할 때, 마스터 오디오 버스가 12dB 감소한 후 부드럽게 원래 볼륨으로 돌아와 거대한 "진공" 충격파 효과를 만들어냅니다.
 
 ### 수정됨
 * **레벨 클리어 메뉴 간격:** 클리어 메뉴의 "LEVEL 01 COMPLETE" 텍스트에서 레벨 번호와 "COMPLETE" 사이에 가시적인 공간이 없던 픽셀 폰트의 좁은 공백 문자 문제를 수정했습니다. 영어 및 한국어 텍스트 모두에 이중 간격을 추가했습니다.
