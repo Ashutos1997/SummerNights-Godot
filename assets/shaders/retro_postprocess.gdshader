@@ -11,10 +11,29 @@ uniform float flash_mix : hint_range(0.0, 1.0) = 0.0;
 uniform float frost_mix : hint_range(0.0, 1.0) = 0.0;
 uniform float noise_amount : hint_range(0.0, 1.0) = 0.03;
 uniform bool reduce_motion = false;
+uniform bool color_reduction_enabled = false;
+uniform float color_levels : hint_range(4.0, 64.0) = 8.0;
+uniform bool dither_enabled = false;
+uniform float dither_strength : hint_range(0.0, 2.0) = 1.0;
+uniform float dither_pixel_size : hint_range(1.0, 8.0) = 3.0;
 
 // Simple random function based on UV
 float rand(vec2 co){
     return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+// 4x4 Ordered Bayer Matrix for retro dithering [0.0, 15.0 / 16.0]
+float bayer4x4(vec2 coord) {
+    int x = int(coord.x) & 3;
+    int y = int(coord.y) & 3;
+    int index = x + y * 4;
+    float bayer[16] = float[16](
+        0.0 / 16.0,  8.0 / 16.0,  2.0 / 16.0, 10.0 / 16.0,
+       12.0 / 16.0,  4.0 / 16.0, 14.0 / 16.0,  6.0 / 16.0,
+        3.0 / 16.0, 11.0 / 16.0,  1.0 / 16.0,  9.0 / 16.0,
+       15.0 / 16.0,  7.0 / 16.0, 13.0 / 16.0,  5.0 / 16.0
+    );
+    return bayer[index];
 }
 
 void fragment() {
@@ -63,6 +82,17 @@ void fragment() {
     color = mix(color, color + shadow_color, (1.0 - luma) * 0.3);
     color = mix(color, color * highlight_color, luma * 0.3);
     
+    // 5. Color Depth Reduction & Bayer Dithering (PS1-style)
+    if (color_reduction_enabled || dither_enabled) {
+        float levels = color_reduction_enabled ? color_levels : 8.0;
+        if (dither_enabled) {
+            float b = bayer4x4(floor(FRAGCOORD.xy / dither_pixel_size));
+            // Canonical ordered Bayer dithering: shift threshold by (bayer - 0.5) scaled by strength
+            color += vec3((b - 0.5) * (dither_strength / levels));
+            color = clamp(color, 0.0, 1.0);
+        }
+        color = floor(color * levels + 0.5) / levels;
+    }
 
     
     // 6. Vignette

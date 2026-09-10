@@ -510,6 +510,12 @@ func _ready() -> void:
 			sunspot_tween.kill()
 			if sunspot_node: sunspot_node.scale = Vector3(1.0, 1.0, 1.0)
 	)
+	hud.filter_color_depth_changed.connect(func(_enabled):
+		_update_post_process_settings()
+	)
+	hud.filter_dithering_changed.connect(func(_enabled):
+		_update_post_process_settings()
+	)
 	mouse_sensitivity = GameState.mouse_sensitivity
 	reduce_motion = GameState.reduce_motion
 	heat_changed.emit(temperature, MAX_TEMP)
@@ -1661,7 +1667,7 @@ func _process(delta: float) -> void:
 		if is_instance_valid(shoot_loop_sfx):
 			shoot_loop_sfx.stop()
 		return
-	if hud and (hud.settings_screen.visible or hud.credits_screen.visible or hud.pause_screen.visible):
+	if hud and (hud.settings_screen.visible or (hud.get("filters_screen") and hud.filters_screen.visible) or hud.credits_screen.visible or hud.pause_screen.visible):
 		if gun_spray: gun_spray.emitting = false
 		is_shooting = false
 		timer_running = false
@@ -2358,7 +2364,7 @@ func _input(event: InputEvent) -> void:
 		return
 	if hud and "lose_screen" in hud and hud.lose_screen != null and hud.lose_screen.visible:
 		return
-	if hud and (hud.settings_screen.visible or hud.credits_screen.visible or hud.pause_screen.visible or (hud.get("controller_screen") and hud.controller_screen.visible)):
+	if hud and (hud.settings_screen.visible or (hud.get("filters_screen") and hud.filters_screen.visible) or hud.credits_screen.visible or hud.pause_screen.visible or (hud.get("controller_screen") and hud.controller_screen.visible)):
 		is_shooting = false
 		return # Input guard: ignore gameplay mouse/keyboard input while menus are open
 
@@ -4007,3 +4013,5 @@ func _setup_post_process() -> void:
 func _update_post_process_settings() -> void:
 	if post_process_mat:
 		post_process_mat.set_shader_parameter("reduce_motion", GameState.reduce_motion)
+		post_process_mat.set_shader_parameter("color_reduction_enabled", GameState.filter_color_depth)
+		post_process_mat.set_shader_parameter("dither_enabled", GameState.filter_dithering)

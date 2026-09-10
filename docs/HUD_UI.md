@@ -48,11 +48,18 @@ These elements sit on top of the Core Gameplay HUD and blur/dim the background w
 ### Pause Screen (`pause_screen`)
 *   Activated by pressing `ESC` or automatically triggered when the application window loses focus (e.g., Alt-Tabbing).
 *   Blurs the background and sets `get_tree().paused = true`, fully freezing the entire scene tree (clouds, ocean waves/shaders, physics, animations, particles). The HUD's root `CanvasLayer` uses `PROCESS_MODE_ALWAYS` to remain interactive. All exit paths (Resume, Retry, Main Menu) correctly unpause the tree before transitioning.
-*   Contains the `SettingsScreen` (Volume, Sensitivity, Reduce Motion, Vibration, Fullscreen, Language toggles), the `ControllerScreen` (Controls), the `CreditsScreen`, the `AchievementsScreen`, and the `ActiveBuffsScreen`.
+*   Contains the `SettingsScreen` (Volume, Sensitivity, Reduce Motion, Vibration, Fullscreen, Language toggles), the `FiltersScreen` (Retro Colors and visual filter toggles), the `ControllerScreen` (Controls), the `CreditsScreen`, the `AchievementsScreen`, and the `ActiveBuffsScreen`.
     *   All these full-screen menus follow a strict unified layout: left-aligned content with a 96px margin, a 40x40 dynamic gold-tinted title icon, a 2px horizontal separator under the title, and exactly 24px of vertical separation between all primary layout components. Menu buttons (including all BACK buttons) uniformly use a standard size of 280x52 and share identical visual styling across 4 interaction states (Normal, Hover, Pressed, Disabled).
     *   The **PauseScreen** features a custom broken-border design with an animated procedurally-drawn vector sun graphic situated perfectly within a 320px gap in the bottom-right corner.
     *   The **CreditsScreen** uses a vertically scrolling `ScrollContainer` with a cinematic auto-scroll effect that can be overridden by manual mouse scrolling.
     *   The **AchievementsScreen** uses a vertically scrolling `ScrollContainer` displaying dynamically built panels for all configured achievements, utilizing custom icons sourced from Game-icons.net. Locked achievements clearly display their full titles and unlock descriptions but are visually greyed out to indicate their locked status. It operates completely independently of the game's pause state (PROCESS_MODE_ALWAYS) to ensure its internal UI scrolling physics and animations never freeze when accessed from the Pause menu.
+
+### Filters Screen (`FiltersScreen`)
+*   Accessed from the Pause Screen via the "FILTERS" button. Uses the same gold-tinted settings gear icon in its title.
+*   Houses visual post-processing toggles, separating graphic customization from the core Settings screen. Filter toggles are mutually exclusive (only one can be active at a time):
+    *   **Retro Colors:** PS1-style 15-bit color depth reduction posterization (32 levels per RGB channel).
+    *   **Dithering:** 4x4 Bayer ordered cross-hatch dithering matrix for classic vintage console shading.
+*   Adheres strictly to the unified layout: 40x40 gold title icon, 2px horizontal divider, high-contrast toggle buttons (OFF/ON states), standard 280x44 BACK button, and animated "PRESS ESC TO CLOSE" prompt. Fully translated in English and Korean.
 
 ### Controller Screen (`ControllerScreen`)
 *   Accessed from the Pause Screen via the "CONTROLS" button. Uses a dedicated `console-controller.svg` icon in its title.

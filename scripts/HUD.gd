@@ -2,6 +2,8 @@ extends CanvasLayer
 
 signal sensitivity_changed(value: float)
 signal reduce_motion_changed(enabled: bool)
+signal filter_color_depth_changed(enabled: bool)
+signal filter_dithering_changed(enabled: bool)
 signal weapon_changed(weapon_id: String)
 
 
@@ -70,6 +72,7 @@ var last_callout_tier: int = 0
 @onready var pause_title        = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/TitleRow/Title
 @onready var pause_resume_btn   = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/ResumeBtn
 @onready var settings_btn       = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/SettingsBtn
+@onready var filters_btn        = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/FiltersBtn
 @onready var controller_btn     = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/ControllerBtn
 @onready var keyboard_row = $HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow
 @onready var xbox_row = $HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow
@@ -87,6 +90,14 @@ var last_callout_tier: int = 0
 @onready var vibration_check   = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowVibration/Check
 @onready var fullscreen_check  = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowFullscreen/Check
 @onready var settings_back_btn = $HUD/SettingsScreen/CenterContainer/VBoxContainer/BackBtn
+
+@onready var filters_screen    = $HUD/FiltersScreen
+@onready var filters_bg        = $HUD/FiltersScreen/BG
+@onready var filters_title     = $HUD/FiltersScreen/CenterContainer/VBoxContainer/TitleRow/Title
+@onready var filters_prompt    = $HUD/FiltersScreen/CenterContainer/VBoxContainer/ClosePrompt
+@onready var color_depth_check = $HUD/FiltersScreen/CenterContainer/VBoxContainer/RowColorDepth/Check
+@onready var dithering_check   = $HUD/FiltersScreen/CenterContainer/VBoxContainer/RowDithering/Check
+@onready var filters_back_btn  = $HUD/FiltersScreen/CenterContainer/VBoxContainer/BackBtn
 
 @onready var controller_screen   = $HUD/ControllerScreen
 @onready var controller_title    = $HUD/ControllerScreen/CenterContainer/VBoxContainer/TitleRow/Title
@@ -392,6 +403,7 @@ func _ready() -> void:
 	pause_screen.visible = false
 	lose_screen.visible = false
 	settings_screen.visible = false
+	if filters_screen: filters_screen.visible = false
 	if controller_screen: controller_screen.visible = false
 	credits_screen.visible = false
 	end_screen.visible = false
@@ -525,10 +537,11 @@ func _ready() -> void:
 			if lbl:
 				lbl.modulate.a = 1.0
 	_style_lbl(settings_title, 32, Color(1.0, 0.88, 0.3, 1.0), 4, Color.BLACK, font)
+	if filters_title: _style_lbl(filters_title, 32, Color(1.0, 0.88, 0.3, 1.0), 4, Color.BLACK, font)
 	_style_lbl(credits_title, 32, Color(1.0, 0.88, 0.3, 1.0), 4, Color.BLACK, font)
 	
-	# Close Prompts — Settings and Credits (WCAG 10.7:1 PASS)
-	for p_lbl in [settings_prompt, credits_prompt]:
+	# Close Prompts — Settings, Filters, and Credits (WCAG 10.7:1 PASS)
+	for p_lbl in [settings_prompt, filters_prompt, credits_prompt]:
 		if p_lbl:
 			_style_lbl(p_lbl, 14, Color(1.0, 0.88, 0.3, 0.85), 1, Color.BLACK, font)
 			if not reduce_motion:
@@ -547,6 +560,14 @@ func _ready() -> void:
 				_style_lbl(r_lbl, 20, Color(1.0, 0.85, 0.2, 1.0), 2, Color.BLACK, font)
 				r_lbl.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 
+	for row_name in ["RowColorDepth", "RowDithering"]:
+		var filter_r_node = $HUD/FiltersScreen/CenterContainer/VBoxContainer.get_node_or_null(row_name)
+		if filter_r_node:
+			var r_lbl = filter_r_node.get_node_or_null("Label")
+			if r_lbl:
+				_style_lbl(r_lbl, 20, Color(1.0, 0.85, 0.2, 1.0), 2, Color.BLACK, font)
+				r_lbl.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+
 	# Build language row programmatically (below RowFullscreen)
 	_build_lang_row(font)
 
@@ -554,6 +575,8 @@ func _ready() -> void:
 		pause_resume_btn.pressed.connect(_on_pause_resume_pressed)
 	if settings_btn:
 		settings_btn.pressed.connect(_on_settings_pressed)
+	if filters_btn:
+		filters_btn.pressed.connect(_on_filters_pressed)
 	if credits_btn:
 		credits_btn.pressed.connect(_on_credits_pressed)
 	if pause_menu_btn:
@@ -642,7 +665,7 @@ func _ready() -> void:
 	style_focus.content_margin_top = 4
 	style_focus.content_margin_bottom = 4
 
-	for btn in [retry_btn, menu_btn, pause_resume_btn, settings_btn, credits_btn, controller_btn, achievements_btn, buffs_btn, pause_menu_btn, settings_back_btn, credits_back_btn, controller_back_btn]:
+	for btn in [retry_btn, menu_btn, pause_resume_btn, settings_btn, filters_btn, credits_btn, controller_btn, achievements_btn, buffs_btn, pause_menu_btn, settings_back_btn, filters_back_btn, credits_back_btn, controller_back_btn]:
 		if btn:
 			if font: btn.add_theme_font_override("font", font)
 			btn.add_theme_font_size_override("font_size", 22)
@@ -681,7 +704,7 @@ func _ready() -> void:
 	style_btn_on.set_border_width_all(1)
 	style_btn_on.set_corner_radius_all(4)
 
-	for btn in [motion_check, vibration_check, fullscreen_check]:
+	for btn in [motion_check, vibration_check, fullscreen_check, color_depth_check, dithering_check]:
 		if btn:
 			if font: btn.add_theme_font_override("font", font)
 			btn.add_theme_font_size_override("font_size", 18)
@@ -701,6 +724,10 @@ func _ready() -> void:
 	motion_check.button_pressed = GameState.reduce_motion
 	if vibration_check: vibration_check.button_pressed = GameState.vibration_enabled
 	fullscreen_check.button_pressed = GameState.fullscreen
+	if GameState.filter_color_depth and GameState.filter_dithering:
+		GameState.filter_color_depth = false
+	if color_depth_check: color_depth_check.button_pressed = GameState.filter_color_depth
+	if dithering_check: dithering_check.button_pressed = GameState.filter_dithering
 
 	# Connect control signals
 	sfx_slider.value_changed.connect(_on_sfx_volume_changed)
@@ -708,9 +735,13 @@ func _ready() -> void:
 	motion_check.toggled.connect(_on_motion_toggled)
 	if vibration_check: vibration_check.toggled.connect(_on_vibration_toggled)
 	fullscreen_check.toggled.connect(_on_fullscreen_toggled)
+	if color_depth_check: color_depth_check.toggled.connect(_on_color_depth_toggled)
+	if dithering_check: dithering_check.toggled.connect(_on_dithering_toggled)
 	
 	if settings_back_btn:
 		settings_back_btn.pressed.connect(_close_settings)
+	if filters_back_btn:
+		filters_back_btn.pressed.connect(_close_filters)
 	if credits_back_btn:
 		credits_back_btn.pressed.connect(_close_credits)
 	if controller_btn:
@@ -731,6 +762,8 @@ func _ready() -> void:
 	_update_toggle_btn(motion_check, GameState.reduce_motion)
 	if vibration_check: _update_toggle_btn(vibration_check, GameState.vibration_enabled)
 	_update_toggle_btn(fullscreen_check, GameState.fullscreen)
+	if color_depth_check: _update_toggle_btn(color_depth_check, GameState.filter_color_depth)
+	if dithering_check: _update_toggle_btn(dithering_check, GameState.filter_dithering)
 	
 	
 	# Accessibility Metadata
@@ -740,6 +773,7 @@ func _ready() -> void:
 	crosshair.set_meta("accessible_name", "Crosshair")
 	win_screen.set_meta("accessible_name", "Level complete screen")
 	settings_screen.set_meta("accessible_name", "Settings screen")
+	if filters_screen: filters_screen.set_meta("accessible_name", "Filters screen")
 	credits_screen.set_meta("accessible_name", "Credits screen")
 	
 	_setup_controls_ui()
@@ -1084,6 +1118,7 @@ func _apply_language(lang: String) -> void:
 	for icon_path in [
 		"HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/TitleRow/TitleIcon",
 		"HUD/SettingsScreen/CenterContainer/VBoxContainer/TitleRow/TitleIcon",
+		"HUD/FiltersScreen/CenterContainer/VBoxContainer/TitleRow/TitleIcon",
 		"HUD/CreditsScreen/CenterContainer/VBoxContainer/TitleRow/TitleIcon"
 	]:
 		var icon_panel = get_node_or_null(icon_path)
@@ -1117,6 +1152,47 @@ func _apply_language(lang: String) -> void:
 
 	if settings_prompt:
 		if font: settings_prompt.add_theme_font_override("font", font)
+
+	# ── Filters panel ─────────────────────────────────────────────────────────
+	if filters_title:
+		filters_title.text = "필터" if is_kr else "FILTERS"
+		if font: filters_title.add_theme_font_override("font", font)
+		filters_title.add_theme_font_size_override("font_size", 32)
+		filters_title.add_theme_constant_override("outline_size", 4)
+		filters_title.add_theme_color_override("font_outline_color", Color.BLACK)
+	if filters_prompt:
+		filters_prompt.text = "닫으려면 ESC를 누르세요" if is_kr else "PRESS ESC TO CLOSE"
+		if font: filters_prompt.add_theme_font_override("font", font)
+	if filters_back_btn:
+		filters_back_btn.text = "뒤로" if is_kr else "BACK"
+		if font: filters_back_btn.add_theme_font_override("font", font)
+
+	var filter_vbox = filters_screen.get_node_or_null("CenterContainer/VBoxContainer") if filters_screen else null
+	if filter_vbox:
+		var filter_labels = {
+			"RowColorDepth": "레트로 색상" if is_kr else "Retro Colors",
+			"RowDithering": "디더링" if is_kr else "Dithering"
+		}
+		for r_name in filter_labels:
+			var r = filter_vbox.get_node_or_null(r_name)
+			if r:
+				var r_lbl = r.get_node_or_null("Label")
+				if r_lbl:
+					r_lbl.text = filter_labels[r_name]
+					if font: r_lbl.add_theme_font_override("font", font)
+					r_lbl.add_theme_font_size_override("font_size", 20)
+					r_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+					r_lbl.add_theme_color_override("font_hover_color", Color(1.0, 0.85, 0.2, 1.0))
+					r_lbl.add_theme_color_override("font_pressed_color", Color(1.0, 0.85, 0.2, 1.0))
+					r_lbl.add_theme_color_override("font_focus_color", Color(1.0, 0.85, 0.2, 1.0))
+					r_lbl.add_theme_color_override("font_disabled_color", Color(1.0, 0.85, 0.2, 1.0))
+					r_lbl.add_theme_constant_override("outline_size", 2)
+					r_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+
+		for sep_name in ["Divider", "Divider2"]:
+			var sep = filter_vbox.get_node_or_null(sep_name)
+			if sep:
+				sep.add_theme_stylebox_override("separator", sep_style)
 
 	# ── Credits panel ─────────────────────────────────────────────────────────
 	if credits_title:
@@ -1272,6 +1348,9 @@ func _apply_language(lang: String) -> void:
 	if settings_btn:
 		settings_btn.text = "설정" if is_kr else "SETTINGS"
 		if font: settings_btn.add_theme_font_override("font", font)
+	if filters_btn:
+		filters_btn.text = "필터" if is_kr else "FILTERS"
+		if font: filters_btn.add_theme_font_override("font", font)
 	if controller_btn:
 		controller_btn.text = "조작법" if is_kr else "CONTROLS"
 		if font: controller_btn.add_theme_font_override("font", font)
@@ -1331,6 +1410,9 @@ func _apply_language(lang: String) -> void:
 	if controller_back_btn:
 		controller_back_btn.text = "뒤로" if is_kr else "BACK"
 		if font: controller_back_btn.add_theme_font_override("font", font)
+	if filters_btn:
+		filters_btn.text = "필터" if is_kr else "FILTERS"
+		if font: filters_btn.add_theme_font_override("font", font)
 	if credits_btn:
 		credits_btn.text = "크레딧" if is_kr else "CREDITS"
 		if font: credits_btn.add_theme_font_override("font", font)
@@ -1416,6 +1498,30 @@ func _on_vibration_toggled(enabled: bool) -> void:
 	GameState.save_settings()
 	vibration_enabled = enabled
 	if vibration_check: _update_toggle_btn(vibration_check, enabled)
+
+func _on_color_depth_toggled(enabled: bool) -> void:
+	GameState.filter_color_depth = enabled
+	if enabled and GameState.filter_dithering:
+		GameState.filter_dithering = false
+		if dithering_check:
+			dithering_check.set_pressed_no_signal(false)
+			_update_toggle_btn(dithering_check, false)
+		filter_dithering_changed.emit(false)
+	GameState.save_settings()
+	filter_color_depth_changed.emit(enabled)
+	if color_depth_check: _update_toggle_btn(color_depth_check, enabled)
+
+func _on_dithering_toggled(enabled: bool) -> void:
+	GameState.filter_dithering = enabled
+	if enabled and GameState.filter_color_depth:
+		GameState.filter_color_depth = false
+		if color_depth_check:
+			color_depth_check.set_pressed_no_signal(false)
+			_update_toggle_btn(color_depth_check, false)
+		filter_color_depth_changed.emit(false)
+	GameState.save_settings()
+	filter_dithering_changed.emit(enabled)
+	if dithering_check: _update_toggle_btn(dithering_check, enabled)
 
 func _on_fullscreen_toggled(toggled: bool) -> void:
 	GameState.fullscreen = toggled
@@ -1629,6 +1735,7 @@ func show_end_screen() -> void:
 	if win_screen: win_screen.visible = false
 	if credits_screen: credits_screen.visible = false
 	if settings_screen: settings_screen.visible = false
+	if filters_screen: filters_screen.visible = false
 	if controller_screen: controller_screen.visible = false
 	if lose_screen: lose_screen.visible = false
 	
@@ -1678,6 +1785,10 @@ func _input(event: InputEvent) -> void:
 			_close_settings()
 			get_viewport().set_input_as_handled()
 			return
+		elif filters_screen and filters_screen.visible:
+			_close_filters()
+			get_viewport().set_input_as_handled()
+			return
 		elif credits_screen and credits_screen.visible:
 			_close_credits()
 			get_viewport().set_input_as_handled()
@@ -1724,11 +1835,13 @@ func _pause_game() -> void:
 	emit_signal("game_paused")
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	# Set up Tab/arrow key order for pause menu buttons
-	if pause_resume_btn and settings_btn and credits_btn and controller_btn and pause_menu_btn:
+	if pause_resume_btn and settings_btn and filters_btn and credits_btn and controller_btn and pause_menu_btn:
 		pause_resume_btn.focus_neighbor_bottom = pause_resume_btn.get_path_to(settings_btn)
 		settings_btn.focus_neighbor_top = settings_btn.get_path_to(pause_resume_btn)
-		settings_btn.focus_neighbor_bottom = settings_btn.get_path_to(credits_btn)
-		credits_btn.focus_neighbor_top = credits_btn.get_path_to(settings_btn)
+		settings_btn.focus_neighbor_bottom = settings_btn.get_path_to(filters_btn)
+		filters_btn.focus_neighbor_top = filters_btn.get_path_to(settings_btn)
+		filters_btn.focus_neighbor_bottom = filters_btn.get_path_to(credits_btn)
+		credits_btn.focus_neighbor_top = credits_btn.get_path_to(filters_btn)
 		if achievements_btn and buffs_btn:
 			credits_btn.focus_neighbor_bottom = credits_btn.get_path_to(achievements_btn)
 			achievements_btn.focus_neighbor_top = achievements_btn.get_path_to(credits_btn)
@@ -1736,8 +1849,10 @@ func _pause_game() -> void:
 			achievements_btn.focus_neighbor_bottom = achievements_btn.get_path_to(buffs_btn)
 			buffs_btn.focus_neighbor_top = buffs_btn.get_path_to(achievements_btn)
 			
-			buffs_btn.focus_neighbor_bottom = buffs_btn.get_path_to(pause_menu_btn)
-			pause_menu_btn.focus_neighbor_top = pause_menu_btn.get_path_to(buffs_btn)
+			buffs_btn.focus_neighbor_bottom = buffs_btn.get_path_to(controller_btn)
+			controller_btn.focus_neighbor_top = controller_btn.get_path_to(buffs_btn)
+			controller_btn.focus_neighbor_bottom = controller_btn.get_path_to(pause_menu_btn)
+			pause_menu_btn.focus_neighbor_top = pause_menu_btn.get_path_to(controller_btn)
 		else:
 			credits_btn.focus_neighbor_bottom = credits_btn.get_path_to(controller_btn)
 			controller_btn.focus_neighbor_top = controller_btn.get_path_to(credits_btn)
@@ -1762,12 +1877,17 @@ func _on_settings_pressed() -> void:
 	opened_from_pause = pause_screen.visible
 	_open_settings()
 
+func _on_filters_pressed() -> void:
+	opened_from_pause = pause_screen.visible
+	_open_filters()
+
 func _on_credits_pressed() -> void:
 	opened_from_pause = pause_screen.visible
 	_open_credits()
 
 func _on_controller_pressed() -> void:
 	if ui_tick_player: ui_tick_player.play()
+	if filters_screen: filters_screen.visible = false
 	controller_screen.visible = true
 	controller_screen.modulate.a = 0.0
 	var tw = create_tween()
@@ -1788,6 +1908,7 @@ func _close_controller() -> void:
 
 func _open_settings() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	if filters_screen: filters_screen.visible = false
 	if credits_screen: credits_screen.visible = false
 	settings_screen.visible = true
 	settings_screen.modulate.a = 0.0
@@ -1805,7 +1926,39 @@ func _close_settings() -> void:
 		if opened_from_pause:
 			pause_screen.visible = true
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-			if pause_resume_btn: pause_resume_btn.grab_focus()
+			if settings_btn: settings_btn.grab_focus()
+		else:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	)
+
+
+func _open_filters() -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	if settings_screen: settings_screen.visible = false
+	if credits_screen: credits_screen.visible = false
+	if controller_screen: controller_screen.visible = false
+	filters_screen.visible = true
+	filters_screen.modulate.a = 0.0
+	if color_depth_check and dithering_check and filters_back_btn:
+		color_depth_check.focus_neighbor_bottom = color_depth_check.get_path_to(dithering_check)
+		dithering_check.focus_neighbor_top = dithering_check.get_path_to(color_depth_check)
+		dithering_check.focus_neighbor_bottom = dithering_check.get_path_to(filters_back_btn)
+		filters_back_btn.focus_neighbor_top = filters_back_btn.get_path_to(dithering_check)
+	var tw = create_tween()
+	tw.set_ease(Tween.EASE_OUT)
+	tw.tween_property(filters_screen, "modulate:a", 1.0, 0.3)
+	await get_tree().process_frame
+	if color_depth_check: color_depth_check.grab_focus()
+
+func _close_filters() -> void:
+	var tw = create_tween()
+	tw.tween_property(filters_screen, "modulate:a", 0.0, 0.2)
+	tw.tween_callback(func():
+		filters_screen.visible = false
+		if opened_from_pause:
+			pause_screen.visible = true
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+			if filters_btn: filters_btn.grab_focus()
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	)
@@ -1814,6 +1967,7 @@ func _close_settings() -> void:
 func _open_credits() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	if settings_screen: settings_screen.visible = false
+	if filters_screen: filters_screen.visible = false
 	if controller_screen: controller_screen.visible = false
 	credits_screen.visible = true
 	credits_screen.modulate.a = 0.0
@@ -1837,7 +1991,7 @@ func _close_credits() -> void:
 		if opened_from_pause:
 			pause_screen.visible = true
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-			if pause_resume_btn: pause_resume_btn.grab_focus()
+			if credits_btn: credits_btn.grab_focus()
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	)

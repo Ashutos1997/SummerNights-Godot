@@ -649,6 +649,12 @@ layout_mode = 2
 mouse_filter = 0
 text = "SETTINGS"
 
+[node name="FiltersBtn" type="Button" parent="HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(280, 44)
+layout_mode = 2
+mouse_filter = 0
+text = "FILTERS"
+
 [node name="CreditsBtn" type="Button" parent="HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(280, 44)
 layout_mode = 2
@@ -876,6 +882,150 @@ mouse_filter = 0
 text = "BACK"
 
 [node name="ClosePrompt" type="Label" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 0.35)
+theme_override_font_sizes/font_size = 14
+text = "PRESS ESC TO CLOSE"
+horizontal_alignment = 1
+
+[node name="FiltersScreen" type="Control" parent="HUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+visible = false
+mouse_filter = 0
+
+[node name="BG" type="ColorRect" parent="HUD/FiltersScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.02, 0.01, 0.05, 0.96)
+
+[node name="BorderPanel" type="Panel" parent="HUD/FiltersScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_border")
+
+[node name="CenterContainer" type="CenterContainer" parent="HUD/FiltersScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/FiltersScreen/CenterContainer"]
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+mouse_filter = 2
+alignment = 1
+theme_override_constants/separation = 16
+
+[node name="TitleRow" type="HBoxContainer" parent="HUD/FiltersScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="TitleIcon" type="TextureRect" parent="HUD/FiltersScreen/CenterContainer/VBoxContainer/TitleRow"]
+modulate = Color(1, 0.8, 0.2, 1)
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("14_icon_settings")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Title" type="Label" parent="HUD/FiltersScreen/CenterContainer/VBoxContainer/TitleRow"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
+theme_override_font_sizes/font_size = 48
+text = "FILTERS"
+horizontal_alignment = 0
+vertical_alignment = 1
+
+[node name="Divider" type="HSeparator" parent="HUD/FiltersScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="RowColorDepth" type="HBoxContainer" parent="HUD/FiltersScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="HUD/FiltersScreen/CenterContainer/VBoxContainer/RowColorDepth"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 0.75)
+theme_override_font_sizes/font_size = 24
+text = "RETRO COLORS"
+vertical_alignment = 1
+
+[node name="Check" type="Button" parent="HUD/FiltersScreen/CenterContainer/VBoxContainer/RowColorDepth"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+mouse_filter = 0
+toggle_mode = true
+text = "OFF"
+
+[node name="RowDithering" type="HBoxContainer" parent="HUD/FiltersScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="HUD/FiltersScreen/CenterContainer/VBoxContainer/RowDithering"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 0.75)
+theme_override_font_sizes/font_size = 24
+text = "DITHERING"
+vertical_alignment = 1
+
+[node name="Check" type="Button" parent="HUD/FiltersScreen/CenterContainer/VBoxContainer/RowDithering"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+mouse_filter = 0
+toggle_mode = true
+text = "OFF"
+
+[node name="Divider2" type="HSeparator" parent="HUD/FiltersScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="BackBtn" type="Button" parent="HUD/FiltersScreen/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(280, 44)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 0
+text = "BACK"
+
+[node name="ClosePrompt" type="Label" parent="HUD/FiltersScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.8, 0.2, 0.35)

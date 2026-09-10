@@ -288,6 +288,8 @@ var mouse_sensitivity: float = 1.0
 var reduce_motion: bool = false
 var vibration_enabled: bool = true
 var fullscreen: bool = true
+var filter_color_depth: bool = false
+var filter_dithering: bool = false
 var language: String = "EN"  # "EN" or "KR"
 var ice_charges_remaining: int = 0
 var is_survival_mode: bool = false
@@ -427,6 +429,8 @@ func save_settings() -> void:
 	config.set_value("Accessibility", "reduce_motion", reduce_motion)
 	config.set_value("Accessibility", "vibration_enabled", vibration_enabled)
 	config.set_value("Video", "fullscreen", fullscreen)
+	config.set_value("Filters", "color_depth", filter_color_depth)
+	config.set_value("Filters", "dithering", filter_dithering)
 	config.set_value("Localization", "language", language)
 	config.set_value("Stats", "high_score", high_score)
 	config.set_value("Stats", "unlocked_achievements", unlocked_achievements)
@@ -445,6 +449,8 @@ func load_settings() -> void:
 		reduce_motion = config.get_value("Accessibility", "reduce_motion", false)
 		vibration_enabled = config.get_value("Accessibility", "vibration_enabled", true)
 		fullscreen = config.get_value("Video", "fullscreen", true)
+		filter_color_depth = config.get_value("Filters", "color_depth", false)
+		filter_dithering = config.get_value("Filters", "dithering", false)
 		language = config.get_value("Localization", "language", "EN")
 		best_survival_time = config.get_value("Stats", "best_survival_time", 0.0)
 		high_score = config.get_value("Stats", "high_score", 0)

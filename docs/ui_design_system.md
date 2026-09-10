@@ -85,7 +85,7 @@ All full-screen menus (Title Screen, Pause Screen, Settings, Credits, End Screen
 *   **Startup Animation:** The Title Screen border features a custom `_draw()` sequence that procedurally traces the 8px rounded rectangle perimeter over 4.0 seconds to sync with the boot audio, perfectly matching the final `StyleBoxFlat`.
 
 ### Menu Interiors
-All menus (Pause, Settings, Credits, Achievements, Buffs, Stats) follow a strict internal layout logic:
+All menus (Pause, Settings, Filters, Credits, Achievements, Buffs, Stats) follow a strict internal layout logic:
 *   **Alignment:** Content is always left-aligned (anchored to the left) with a `96px` margin from the global border. *(Exception: The Lose Screen features a perfectly centered layout to emphasize the dramatic Game Over Supernova cinematic transition.)*
 *   **Vertical Flow:** All primary interior components (e.g., Title Row, Divider, Body Content) are separated by exactly `24px` of vertical spacing to ensure perfect visual rhythm across all menus.
 *   **Title Icons:** Each menu title is preceded by a `40x40` icon (`TextureRect` using Game-icons.net SVGs/PNGs) wrapped in a `TitleRow` HBoxContainer (separation `12px`). The icons are dynamically tinted to exactly match the gold color of their respective titles.
