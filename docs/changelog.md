@@ -15,6 +15,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * **Flare Telegraphs:** Solar flares now visually telegraph their attack. A dynamic 2D HUD ring elegantly outlines the physical sun in 3D space, perfectly scaling to the sun's size and distance. The bright orange ring fills up over 0.6 seconds before snapping into a fiery projectile and launching at the player, ensuring attacks never feel unfair.
 * **Endless Boss Cinematic:** Endless mode boss wave transitions now use the same cinematic Dying Ember fade-to-black sequence as the normal mode level clear, instead of an instant pause pop-up.
 * **Audio Ducking:** Massive visceral events now hit significantly harder with dynamic audio ducking. When a Solar Flare violently impacts the screen, or when the player successfully dunks the sun via the Catastrom ability, the master audio bus drops by 12dB and smoothly fades back in, creating a massive "vacuum" shockwave effect.
+* **Dynamic Sun Pain & Situational Expressions:** The Sun's procedural facial expression system now features dynamic situational reaction states during gameplay. When sprayed with the water stream, the Sun squints shut in pain (`wince`) with kinetic micro-shake feedback; blasting the white-hot Sunspot weakpoint triggers an intense agony scream (`crit_pain`) with a brilliant white-hot flash; telegraphing Solar Flares prompts a wide-eyed power gathering strain (`charging`) with a fiery solar glow; and the Catastrom Ultimate drag triggers a look of pure terror (`dread`). Base expressions (`happy`, `neutral`, `annoyed`, `angry`) resume smoothly when not under duress.
 
 ### Fixed
 * **Solar Wind Particle Coverage:** Fixed an issue where the Solar Wind GPU particle streaks only spawned from the center of the screen, covering only half the viewport. The emission box has been widened to span the entire screen, and particle density has been increased to match.
@@ -249,6 +250,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * **태양 플레어 전조 증상:** 이제 태양 플레어가 공격을 시각적으로 예고합니다. 동적인 2D HUD 링이 3D 공간의 물리적 태양 윤곽을 우아하게 감싸며 태양의 크기와 거리에 맞춰 완벽하게 크기가 조정됩니다. 밝은 주황색 링이 0.6초에 걸쳐 차오른 후 화염 투사체로 변하여 플레이어에게 발사되므로 공격이 불합리하게 느껴지지 않습니다.
 * **무한 모드 보스 시네마틱 전환 (Endless Boss Cinematic):** 무한 모드 보스 웨이브 전환 시 즉각적인 일시정지 팝업 대신, 일반 모드 레벨 클리어와 동일한 시네마틱 "잔불" 암전 시퀀스를 사용하도록 변경되었습니다.
 * **오디오 더킹 (Audio Ducking):** 거대한 시각적 이벤트가 발생할 때 동적 오디오 더킹을 통해 타격감이 크게 향상됩니다. 태양 플레어가 화면에 격렬하게 충돌하거나 플레이어가 카타스트롬 능력으로 태양을 성공적으로 덩크할 때, 마스터 오디오 버스가 12dB 감소한 후 부드럽게 원래 볼륨으로 돌아와 거대한 "진공" 충격파 효과를 만들어냅니다.
+* **동적 태양 피격 및 상황별 표정 (Dynamic Sun Pain Expressions):** 게임플레이 중 태양의 절차적 표정 시스템에 상황별 반응 상태가 동적으로 추가되었습니다. 물줄기로 타격 시 태양이 고통스럽게 눈을 찡그리는 피격 표정(`wince`)과 미세 진동 효과가 연출되며, 과열된 흑점 약점 타격 시 비명을 지르는 극심한 고통 표정(`crit_pain`)과 순백의 섬광이 번쩍입니다. 태양 플레어 충전 중에는 눈을 크게 부릅뜨고 에너지를 모으는 표정(`charging`)과 타오르는 황금빛 광채가 적용되며, 카타스트롬 궁극기 발동 시 공포에 질린 표정(`dread`)이 나타납니다. 공격이 멈추면 기존 온도 기반 표정(`happy`, `neutral`, `annoyed`, `angry`)으로 자연스럽게 복귀합니다.
 
 ### 수정됨
 * **태양풍 입자 범위 수정 (Solar Wind Particle Coverage):** 태양풍 GPU 입자 궤적이 화면 중앙에서만 생성되어 화면의 절반만 덮던 문제를 수정했습니다. 방출 상자의 너비를 화면 전체에 걸치도록 확장했으며, 이에 맞춰 입자 밀도도 증가시켰습니다.

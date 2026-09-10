@@ -226,6 +226,10 @@ var sun_ray_mat: StandardMaterial3D
 var sun_rays_node: Node3D
 var sun_face:    Sprite3D
 var face_textures: Dictionary = {}
+const SUN_FACE_BASE_POS: Vector3 = Vector3(0, 0, 3.4)
+var sun_hit_reaction_timer: float = 0.0
+var sun_hit_was_crit: bool = false
+var sun_face_shake: float = 0.0
 var gun:         Node3D
 var frost_aura:  GPUParticles3D
 var muzzle:      Marker3D
@@ -993,11 +997,15 @@ func _build_scene() -> void:
 	sun_face = face_sprite
 	
 	face_textures = {
-		"angry":   _draw_face("angry"),
-		"annoyed": _draw_face("annoyed"),
-		"neutral": _draw_face("neutral"),
-		"happy":   _draw_face("happy"),
-		"dizzy":   _draw_face("dizzy"),
+		"angry":     _draw_face("angry"),
+		"annoyed":   _draw_face("annoyed"),
+		"neutral":   _draw_face("neutral"),
+		"happy":     _draw_face("happy"),
+		"dizzy":     _draw_face("dizzy"),
+		"wince":     _draw_face("wince"),
+		"crit_pain": _draw_face("crit_pain"),
+		"charging":  _draw_face("charging"),
+		"dread":     _draw_face("dread"),
 	}
 	sun_face.texture = face_textures["angry"]
 	
@@ -1880,6 +1888,22 @@ func _process(delta: float) -> void:
 		if is_instance_valid(m["node"]):
 			m["node"].scale = sun.scale
 	
+	# Decay hit reaction timer
+	if sun_hit_reaction_timer > 0.0:
+		sun_hit_reaction_timer = max(0.0, sun_hit_reaction_timer - delta)
+		
+	# Kinetic face shake / jitter decay
+	if sun_face_shake > 0.0:
+		sun_face_shake = max(0.0, sun_face_shake - delta * 4.0)
+		if is_instance_valid(sun_face) and not reduce_motion:
+			sun_face.position = SUN_FACE_BASE_POS + Vector3(
+				randf_range(-sun_face_shake, sun_face_shake),
+				randf_range(-sun_face_shake, sun_face_shake),
+				0.0
+			)
+	elif is_instance_valid(sun_face):
+		sun_face.position = SUN_FACE_BASE_POS
+		
 	_update_sun_face(ratio)
 	
 	# High Heat Steam Visual Warning
@@ -2407,11 +2431,15 @@ func _draw_face(expression: String) -> ImageTexture:
 	var cx = FACE_SIZE / 2
 	var cy = FACE_SIZE / 2
 	match expression:
-		"angry": _draw_angry(img, cx, cy)
-		"annoyed": _draw_annoyed(img, cx, cy)
-		"neutral": _draw_neutral(img, cx, cy)
-		"happy": _draw_happy(img, cx, cy)
-		"dizzy": _draw_dizzy(img, cx, cy)
+		"angry":     _draw_angry(img, cx, cy)
+		"annoyed":   _draw_annoyed(img, cx, cy)
+		"neutral":   _draw_neutral(img, cx, cy)
+		"happy":     _draw_happy(img, cx, cy)
+		"dizzy":     _draw_dizzy(img, cx, cy)
+		"wince":     _draw_wince(img, cx, cy)
+		"crit_pain": _draw_crit_pain(img, cx, cy)
+		"charging":  _draw_charging(img, cx, cy)
+		"dread":     _draw_dread(img, cx, cy)
 		
 	# Add the dark orange outer stroke procedurally
 	_add_outline_to_image(img, 4, Color(0.6, 0.2, 0.0, 1.0))
@@ -2537,10 +2565,75 @@ func _draw_dizzy(img: Image, cx: int, cy: int):
 	_draw_line_on_image(img, cx, cy + 24, cx + 8, cy + 16, 6, FACE_COLOR)
 	_draw_line_on_image(img, cx + 8, cy + 16, cx + 16, cy + 24, 6, FACE_COLOR)
 
+# ── Dynamic Situational Face Expressions ─────────────────────────────────────
+
+func _draw_wince(img: Image, cx: int, cy: int):
+	# Squinting shut eyes (> <)
+	# Left eye >
+	_draw_line_on_image(img, cx - 34, cy - 8, cx - 16, cy - 1, 6, FACE_COLOR)
+	_draw_line_on_image(img, cx - 34, cy + 7, cx - 16, cy - 1, 6, FACE_COLOR)
+	# Right eye <
+	_draw_line_on_image(img, cx + 34, cy - 8, cx + 16, cy - 1, 6, FACE_COLOR)
+	_draw_line_on_image(img, cx + 34, cy + 7, cx + 16, cy - 1, 6, FACE_COLOR)
+	# Furrowed brows (positioned high with plenty of room)
+	_draw_line_on_image(img, cx - 38, cy - 32, cx - 14, cy - 22, 6, FACE_COLOR)
+	_draw_line_on_image(img, cx + 38, cy - 32, cx + 14, cy - 22, 6, FACE_COLOR)
+	# Clenched wavy grimace
+	_draw_line_on_image(img, cx - 18, cy + 24, cx - 9, cy + 20, 6, FACE_COLOR)
+	_draw_line_on_image(img, cx - 9, cy + 20, cx, cy + 24, 6, FACE_COLOR)
+	_draw_line_on_image(img, cx, cy + 24, cx + 9, cy + 20, 6, FACE_COLOR)
+	_draw_line_on_image(img, cx + 9, cy + 20, cx + 18, cy + 24, 6, FACE_COLOR)
+	# Water splash / sweat bead floating at temple
+	_draw_circle_on_image(img, cx + 46, cy - 14, 4, FACE_COLOR)
+
+func _draw_crit_pain(img: Image, cx: int, cy: int):
+	# Intense agony: eyes clamped shut with extra tension creases (> < with center bar)
+	_draw_line_on_image(img, cx - 34, cy - 8, cx - 16, cy - 1, 7, FACE_COLOR)
+	_draw_line_on_image(img, cx - 34, cy + 7, cx - 16, cy - 1, 7, FACE_COLOR)
+	_draw_line_on_image(img, cx - 36, cy - 1, cx - 16, cy - 1, 4, FACE_COLOR) # Center crease
+	
+	_draw_line_on_image(img, cx + 34, cy - 8, cx + 16, cy - 1, 7, FACE_COLOR)
+	_draw_line_on_image(img, cx + 34, cy + 7, cx + 16, cy - 1, 7, FACE_COLOR)
+	_draw_line_on_image(img, cx + 36, cy - 1, cx + 16, cy - 1, 4, FACE_COLOR) # Center crease
+	
+	# Deeply angled brows pressing down
+	_draw_line_on_image(img, cx - 40, cy - 34, cx - 14, cy - 22, 8, FACE_COLOR)
+	_draw_line_on_image(img, cx + 40, cy - 34, cx + 14, cy - 22, 8, FACE_COLOR)
+	
+	# Wide open shouting/screaming mouth (D-shaped frown/open oval in agony)
+	_draw_half_circle_top(img, cx, cy + 30, 16, FACE_COLOR)
+	# Splash beads on both sides floating free
+	_draw_circle_on_image(img, cx - 46, cy - 14, 4, FACE_COLOR)
+	_draw_circle_on_image(img, cx + 46, cy - 14, 4, FACE_COLOR)
+
+func _draw_charging(img: Image, cx: int, cy: int):
+	# Wide round eyes with pupils (straining / gathering solar energy / panic)
+	_draw_circle_on_image(img, cx - 24, cy - 6, 12, FACE_COLOR)
+	_draw_circle_on_image(img, cx + 24, cy - 6, 12, FACE_COLOR)
+	# Cut out pupil centers
+	_draw_circle_on_image(img, cx - 24, cy - 6, 5, Color(0, 0, 0, 0))
+	_draw_circle_on_image(img, cx + 24, cy - 6, 5, Color(0, 0, 0, 0))
+	# Intense sharp brows angled inward
+	_draw_line_on_image(img, cx - 38, cy - 32, cx - 12, cy - 22, 8, FACE_COLOR)
+	_draw_line_on_image(img, cx + 38, cy - 32, cx + 12, cy - 22, 8, FACE_COLOR)
+	# Strained gritted teeth / horizontal grimace mouth
+	_draw_line_on_image(img, cx - 12, cy + 26, cx + 12, cy + 26, 8, FACE_COLOR)
+
+func _draw_dread(img: Image, cx: int, cy: int):
+	# Catastrom ultimate: eyes looking downward in terror
+	_draw_pill_on_image(img, cx - 24, cy - 4, 14, 26, FACE_COLOR)
+	_draw_pill_on_image(img, cx + 24, cy - 4, 14, 26, FACE_COLOR)
+	# High worried eyebrows (slanted upward toward center)
+	_draw_line_on_image(img, cx - 38, cy - 22, cx - 12, cy - 32, 7, FACE_COLOR)
+	_draw_line_on_image(img, cx + 38, cy - 22, cx + 12, cy - 32, 7, FACE_COLOR)
+	# Small shivering round open mouth
+	_draw_circle_on_image(img, cx, cy + 24, 12, FACE_COLOR)
+	_draw_circle_on_image(img, cx, cy + 24, 5, Color(0, 0, 0, 0))
+
 func _update_sun_face(ratio: float) -> void:
 	if not is_instance_valid(sun_face): return
 	var expression: String
-	var target_color: Color
+	var target_color: Color = Color(2.0, 2.0, 2.0, 0.7) # Bright glowing white face (semi-transparent)
 	
 	if ratio >= 0.75: 
 		expression = "angry"
@@ -2551,8 +2644,28 @@ func _update_sun_face(ratio: float) -> void:
 	else: 
 		expression = "happy"
 		
-	target_color = Color(2.0, 2.0, 2.0, 0.7) # Bright glowing white face (semi-transparent to blend with sun)
-	
+	# Dynamic situational reaction overrides (hierarchical priority)
+	# 1. Sustained water hit / critical hit on weakpoint
+	if sun_hit_reaction_timer > 0.0:
+		if sun_hit_was_crit:
+			expression = "crit_pain"
+		else:
+			expression = "wince"
+			
+	# 2. Solar Flare charging / telegraph
+	var has_charging_flare: bool = false
+	for flare in active_flares:
+		if "charge_timer" in flare and flare["charge_timer"] > 0.0:
+			has_charging_flare = true
+			break
+	if has_charging_flare:
+		expression = "charging"
+		
+	# 3. Catastrom black hole grab
+	if is_catastrom_active:
+		expression = "dread"
+		
+	# 4. Sun Frozen / Defeated (highest priority)
 	if is_sun_frozen:
 		expression = "dizzy"
 
@@ -2561,6 +2674,10 @@ func _update_sun_face(ratio: float) -> void:
 	
 	if is_sun_frozen:
 		sun_face.modulate = Color(0.2, 0.5, 2.5) # Deep icy blue flash
+	elif has_charging_flare:
+		sun_face.modulate = Color(2.5, 1.4, 0.6, 0.95) # Fiery solar charge glow
+	elif sun_hit_reaction_timer > 0.0 and sun_hit_was_crit:
+		sun_face.modulate = Color(2.8, 2.8, 3.2, 0.95) # Brilliant white-hot critical flash
 	else:
 		sun_face.modulate = target_color
 	
@@ -2722,6 +2839,16 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 	# Game Feel: Gun Recoil (Push gun back towards camera)
 	gun.position.z += 0.05 
 	gun.position.y += 0.02
+	
+	# Game Feel: Sun Hit Reaction & Kinetic Shake
+	sun_hit_reaction_timer = 0.22
+	sun_hit_was_crit = is_critical
+	if is_critical:
+		sun_face_shake = 0.08
+	elif GameState.current_weapon_id == "heavy":
+		sun_face_shake = 0.06
+	else:
+		sun_face_shake = 0.03
 			
 	# Game Feel: Hit Flashing (Sun flashes white/blue briefly)
 	if not is_sun_frozen:

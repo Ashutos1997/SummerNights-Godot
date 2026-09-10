@@ -186,6 +186,27 @@ Dynamic visual feedback is rendered behind the HUD but above the 3D scene using 
 *   **Heat Warning (Death's Door):** A soft, fiery red translucent gradient border that tweens around the screen edges when the temperature exceeds 85%, pulsing to the beat of a heartbeat SFX.
 *   **Frost Border (Ice Burst):** An icy blue `vec3(0.6, 0.8, 1.5)` tint applied to the screen edges dynamically when the Ice Burst "Hit-Stop" freeze effect is active, emphasizing the freezing impact.
 
+### Procedural Sun Facial Expressions & Diegetic Reactions
+
+The Sun's 2D billboarded face (`Sprite3D`) is rasterized procedurally at runtime into a 128x128 RGBA8 texture (`FACE_SIZE = 128`) without using external raster assets. It strictly adheres to the game's stylized cartoon aesthetic:
+*   **Color & Line Weight:** Features a base white fill (`Color(1.0, 1.0, 1.0, 1.0)`) with a 4px procedural dark-orange outline (`Color(0.6, 0.2, 0.0, 1.0)`) applied via flood dilation to maintain perfect contrast against the bright emissive sun mesh.
+*   **Modulate Tinting:**
+    *   *Default State:* `Color(2.0, 2.0, 2.0, 0.7)` (Bright glowing semi-transparent white).
+    *   *Solar Flare Telegraph:* `Color(2.5, 1.4, 0.6, 0.95)` (Fiery solar charge glow).
+    *   *Critical Weakpoint Hit:* `Color(2.8, 2.8, 3.2, 0.95)` (White-hot brilliance flash).
+    *   *Frozen / Defeated:* `Color(0.2, 0.5, 2.5)` (Deep icy cyan flash).
+*   **Kinetic Impact Jitter:** Water hits trigger decaying positional micro-offsets (`sun_face_shake`: `0.08` for crits, `0.06` for Heavy blaster, `0.03` for normal hits). Decays at 4.0x/sec. Automatically disabled when `reduce_motion` accessibility is turned on.
+*   **Expression Catalog:**
+    *   `happy`: Wide pill eyes, broad D-smile, soft blush circles (<25% heat).
+    *   `neutral`: Standard pill eyes, small dot mouth (25–50% heat).
+    *   `annoyed`: Half-closed flat-bottom eyes, flat mouth (50–75% heat).
+    *   `angry`: Angled pill eyes, thick downward brows, top-half circle frown (>75% heat).
+    *   `wince`: Squinting closed `> <` eyes, furrowed brows, wavy grimace, temple droplet (active water hit).
+    *   `crit_pain`: Creased clamped eyes, downward heavy brows, wide screaming mouth, dual sweat beads (sunspot crit).
+    *   `charging`: Wide shock eyes with pinpoint pupils, inward angled brows, horizontal gritted grimace (0.6s flare charge).
+    *   `dread`: Downward-looking pill eyes, high worried brows, shivering open O-mouth (Catastrom drag).
+    *   `dizzy`: X-eyes, zigzag squiggly mouth (freeze/defeat).
+
 ### Screen Overlays (Blur / Dim)
 
 When a menu or overlay is shown (e.g., Pause, Weapon Wheel), the screen behind it is blurred and dimmed using a custom screen-reading shader. Note: The Pause overlay is automatically triggered if the game window loses focus (`NOTIFICATION_APPLICATION_FOCUS_OUT`) to prevent unfair progression. Pausing sets `get_tree().paused = true`, which fully freezes the entire scene tree (clouds, waves, shaders, physics, animations, particles). The HUD's root `CanvasLayer` uses `PROCESS_MODE_ALWAYS` so that menus remain interactive during the pause.
