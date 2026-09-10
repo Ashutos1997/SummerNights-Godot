@@ -2,6 +2,8 @@ extends ColorRect
 
 class_name DraftingScreen
 
+signal perk_selected(perk_id: String)
+
 var blur_mat: ShaderMaterial
 var card_container: VBoxContainer
 var title_lbl: Label
@@ -222,18 +224,12 @@ func _on_perk_selected(perk_id: String) -> void:
 	GameState.active_wave_perks.append(perk_id)
 	GameState._evaluate_milestones() # Recalculate stats
 	
-	# Resume game
+	# Apply stats immediately
 	var main_scene = get_tree().current_scene
 	if main_scene and main_scene.has_method("_recalculate_stats"):
 		main_scene._recalculate_stats()
 		if main_scene.get("hud") and main_scene.hud.has_method("update_active_perks_hud"):
 			main_scene.hud.update_active_perks_hud()
-			
-	get_tree().paused = false
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	
-	var tw = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-	tw.tween_property(self, "modulate:a", 0.0, 0.2)
-	tw.tween_callback(func():
-		hide()
-	)
+	# Emit signal so Main.gd can orchestrate the cinematic resume transition
+	perk_selected.emit(perk_id)

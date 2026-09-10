@@ -13,9 +13,11 @@ All notable changes to the Summer Nights project will be documented in this file
 * **Dying Ember Sun Visual:** Replaced the old cyan sun-freeze on level completion with a thematic "Dying Ember" effect. The sun's fiery emission smoothly drains to zero while its color shifts to a deep maroon, accompanied by a burst of 40 steam particles erupting from its surface.
 * **Deferred Unlock Popups:** Weapon unlock, Ice Burst unlock, and Catastrom meter notifications now only appear after the next level has fully loaded and the transition fade-in is complete, preventing UI elements from popping up prematurely during the black screen.
 * **Flare Telegraphs:** Solar flares now visually telegraph their attack. A dynamic 2D HUD ring elegantly outlines the physical sun in 3D space, perfectly scaling to the sun's size and distance. The bright orange ring fills up over 0.6 seconds before snapping into a fiery projectile and launching at the player, ensuring attacks never feel unfair.
+* **Endless Boss Cinematic:** Endless mode boss wave transitions now use the same cinematic Dying Ember fade-to-black sequence as the normal mode level clear, instead of an instant pause pop-up.
 * **Audio Ducking:** Massive visceral events now hit significantly harder with dynamic audio ducking. When a Solar Flare violently impacts the screen, or when the player successfully dunks the sun via the Catastrom ability, the master audio bus drops by 12dB and smoothly fades back in, creating a massive "vacuum" shockwave effect.
 
 ### Fixed
+* **Solar Wind Particle Coverage:** Fixed an issue where the Solar Wind GPU particle streaks only spawned from the center of the screen, covering only half the viewport. The emission box has been widened to span the entire screen, and particle density has been increased to match.
 * **Level Clear Menu Spacing:** Fixed a font rendering issue where the "LEVEL 01 COMPLETE" text on the clear menu appeared with no visible space between the level number and "COMPLETE" due to the pixel font's narrow space glyph. Added double-spacing for both English and Korean text.
 * **Transition Background Bleed:** Fixed a bug where the next level's 3D environment would briefly flash visible for a split second between the fade-out and the clear menu appearing, caused by the WinScreen fading in with transparency while the overlay was simultaneously fading out.
 * **Ocean Waves During Transitions:** Fixed an issue where rogue ocean waves could randomly spawn and crash onto the beach during the level transition's black screen. The ocean wave timer is now explicitly paused during the entire transition and only resumes when the new level fully starts.
@@ -245,9 +247,11 @@ All notable changes to the Summer Nights project will be documented in this file
 * **잔불 태양 시각 효과 (Dying Ember):** 레벨 클리어 시 기존의 청록색 얼음 효과를 테마에 맞는 "잔불" 효과로 교체했습니다. 태양의 방출 에너지가 부드럽게 0으로 줄어들면서 색상이 짙은 적갈색으로 변하며, 표면에서 40개의 증기 입자가 분출됩니다.
 * **지연된 잠금 해제 알림:** 무기 잠금 해제, 아이스 버스트 잠금 해제, 카타스트롬 미터 알림이 이제 다음 레벨이 완전히 로드되고 전환 페이드 인이 완료된 후에만 나타나며, 검은 화면 중에 UI 요소가 조기에 표시되는 것을 방지합니다.
 * **태양 플레어 전조 증상:** 이제 태양 플레어가 공격을 시각적으로 예고합니다. 동적인 2D HUD 링이 3D 공간의 물리적 태양 윤곽을 우아하게 감싸며 태양의 크기와 거리에 맞춰 완벽하게 크기가 조정됩니다. 밝은 주황색 링이 0.6초에 걸쳐 차오른 후 화염 투사체로 변하여 플레이어에게 발사되므로 공격이 불합리하게 느껴지지 않습니다.
+* **무한 모드 보스 시네마틱 전환 (Endless Boss Cinematic):** 무한 모드 보스 웨이브 전환 시 즉각적인 일시정지 팝업 대신, 일반 모드 레벨 클리어와 동일한 시네마틱 "잔불" 암전 시퀀스를 사용하도록 변경되었습니다.
 * **오디오 더킹 (Audio Ducking):** 거대한 시각적 이벤트가 발생할 때 동적 오디오 더킹을 통해 타격감이 크게 향상됩니다. 태양 플레어가 화면에 격렬하게 충돌하거나 플레이어가 카타스트롬 능력으로 태양을 성공적으로 덩크할 때, 마스터 오디오 버스가 12dB 감소한 후 부드럽게 원래 볼륨으로 돌아와 거대한 "진공" 충격파 효과를 만들어냅니다.
 
 ### 수정됨
+* **태양풍 입자 범위 수정 (Solar Wind Particle Coverage):** 태양풍 GPU 입자 궤적이 화면 중앙에서만 생성되어 화면의 절반만 덮던 문제를 수정했습니다. 방출 상자의 너비를 화면 전체에 걸치도록 확장했으며, 이에 맞춰 입자 밀도도 증가시켰습니다.
 * **레벨 클리어 메뉴 간격:** 클리어 메뉴의 "LEVEL 01 COMPLETE" 텍스트에서 레벨 번호와 "COMPLETE" 사이에 가시적인 공간이 없던 픽셀 폰트의 좁은 공백 문자 문제를 수정했습니다. 영어 및 한국어 텍스트 모두에 이중 간격을 추가했습니다.
 * **전환 배경 노출:** 페이드 아웃과 클리어 메뉴 표시 사이에 다음 레벨의 3D 환경이 순간적으로 깜빡이며 보이던 버그를 수정했습니다. WinScreen이 투명도가 있는 상태로 페이드 인되는 동시에 오버레이가 페이드 아웃되면서 발생했습니다.
 * **전환 중 파도:** 레벨 전환의 검은 화면 동안 불량 파도가 무작위로 생성되어 해변에 밀려올 수 있던 문제를 수정했습니다. 파도 타이머가 전환 중 명시적으로 일시정지되며 새 레벨이 완전히 시작될 때만 재개됩니다.

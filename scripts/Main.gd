@@ -2744,11 +2744,9 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				GameState.ice_charges_remaining += 1 + GameState.bonus_ice_charges
 				water_changed.emit(water_tank, MAX_WATER)
 				
-				# Trigger Rogue-lite Drafting System after Boss Waves
+				# Trigger Rogue-lite Drafting System after Boss Waves (cinematic transition)
 				if hud:
-					get_tree().paused = true
-					if hud.has_method("show_drafting_screen"):
-						hud.show_drafting_screen()
+					_cinematic_boss_draft()
 				
 			max_survival_ice_charges = max(max_survival_ice_charges, GameState.ice_charges_remaining)
 			if hud:
@@ -2969,6 +2967,87 @@ func _trigger_catastrom_dunk() -> void:
 	# Trigger wave cleared logic
 	temperature = 0.0
 	_on_hit(0.01, sun.global_position)
+
+func _cinematic_boss_draft() -> void:
+	game_over = true
+	is_shooting = false
+	gun_spray.emitting = false
+	_stop_vibrate()
+	timer_running = false
+	if ocean_wave_timer: ocean_wave_timer.paused = true
+	
+	# Bring up ocean ambient during the breather
+	if ambient_sfx:
+		var amb_tw = create_tween()
+		amb_tw.tween_property(ambient_sfx, "volume_db", -5.0, 1.0).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
+	
+	# Dying Ember: sun drains to dark maroon with steam burst
+	var ember_tw = create_tween()
+	ember_tw.tween_property(sun_mat, "albedo_color", Color(0.2, 0.05, 0.05), 1.0)
+	ember_tw.parallel().tween_property(sun_mat, "emission", Color(0.0, 0.0, 0.0), 1.0)
+	if steam_particles:
+		steam_particles.global_position = sun.global_position
+		steam_particles.amount = 40
+		steam_particles.restart()
+	
+	# 1. Watch the ember die
+	await get_tree().create_timer(0.8).timeout
+	
+	# 2. Fade to black
+	if hud and hud.has_method("fade_to_black"):
+		await hud.fade_to_black(0.5)
+	
+	# 3. Show drafting screen behind the black overlay
+	get_tree().paused = true
+	if hud.has_method("show_drafting_screen"):
+		hud.show_drafting_screen()
+	
+	# 4. Fade from black, revealing the drafting screen (pause-aware)
+	if hud.transition_overlay:
+		var fb_tw = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		fb_tw.tween_property(hud.transition_overlay, "color:a", 0.0, 0.5)
+		await fb_tw.finished
+	
+	# 5. Wait for player to pick a perk
+	if hud.drafting_screen:
+		await hud.drafting_screen.perk_selected
+	
+	# 6. Fade to black for the reset (pause-aware)
+	if hud.transition_overlay:
+		var ftb_tw = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		ftb_tw.tween_property(hud.transition_overlay, "color:a", 1.0, 0.5)
+		await ftb_tw.finished
+	
+	# Hide drafting screen while black
+	if hud.drafting_screen:
+		hud.drafting_screen.hide()
+	
+	# 7. Reset sun visuals while black
+	if sun_mat:
+		sun_mat.albedo_color = Color(1.0, 1.0, 1.0)
+		sun_mat.emission = Color(1.0, 0.7, 0.2)
+		sun_mat.emission_energy_multiplier = 1.8
+	if steam_particles:
+		steam_particles.amount = 15
+	if haze_mat:
+		haze_mat.set_shader_parameter("heat_ratio", 1.0)
+	_update_sky(true)
+	
+	# 8. Resume and fade from black
+	game_over = false
+	get_tree().paused = false
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	timer_running = true
+	if ocean_wave_timer: ocean_wave_timer.paused = false
+	
+	# Duck ocean ambient back down
+	if ambient_sfx:
+		var amb_tw2 = create_tween()
+		amb_tw2.tween_property(ambient_sfx, "volume_db", -20.0, 1.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	
+	if hud and hud.has_method("fade_from_black"):
+		await hud.fade_from_black(0.8, false)
+
 func _win() -> void:
 	if defeat_triggered: return
 	defeat_triggered = true
@@ -3332,7 +3411,7 @@ func _setup_solar_wind_visuals() -> void:
 	mesh.material = mat
 	wind_particles.draw_pass_1 = mesh
 	
-	wind_particles.amount = 60
+	wind_particles.amount = 100 # Increased amount since the volume is much larger
 	wind_particles.lifetime = 0.8
 	wind_particles.explosiveness = 0.0
 	wind_particles.emitting = false
@@ -3341,7 +3420,9 @@ func _setup_solar_wind_visuals() -> void:
 	var pmat2 = wind_particles.process_material as ParticleProcessMaterial
 	if pmat2:
 		pmat2.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
-		pmat2.emission_box_extents = Vector3(0.5, 6.0, 8.0)
+		# Use a wide X extent (15.0) so particles spawn uniformly across the whole screen,
+		# rather than just the center point.
+		pmat2.emission_box_extents = Vector3(15.0, 6.0, 8.0)
 	add_child(wind_particles)
 	
 	# Synthesized wind SFX

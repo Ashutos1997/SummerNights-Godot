@@ -150,6 +150,9 @@ func show_drafting_screen() -> void:
 		drafting_screen = load("res://scripts/DraftingScreen.gd").new()
 		drafting_screen.name = "DraftingScreen"
 		$HUD.add_child(drafting_screen)
+		# Keep transition overlay on top for fade-to-black during cinematic
+		if transition_overlay:
+			$HUD.move_child(transition_overlay, -1)
 	drafting_screen.show_draft()
 
 func update_active_perks_hud() -> void:
