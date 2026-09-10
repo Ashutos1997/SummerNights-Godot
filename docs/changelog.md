@@ -6,7 +6,7 @@ All notable changes to the Summer Nights project will be documented in this file
 *(Note: This release corresponds to v1.3 on itch.io)*
 
 ### Added
-* **Dedicated Retro Filters Menu:** Added a dedicated "FILTERS" screen to the Pause Menu to manage visual post-processing effects separately from core system settings. Features mutually exclusive toggles for "Retro Colors" (PS1-style 15-bit color depth reduction) and "Dithering" (4x4 Bayer ordered cross-hatch shading), ensuring only one retro filter can be active at a time. Both settings are fully persisted in `settings.cfg` under `[Filters]`.
+* **Dedicated Retro Filters Menu:** Added a dedicated "FILTERS" screen to the Pause Menu to manage visual post-processing effects separately from core system settings. Features mutually exclusive toggles for "Retro Colors" (PS1-style 15-bit color depth reduction), "Dithering" (4x4 Bayer ordered cross-hatch shading), and "Heatwave 1984" (sun-bleached 35mm / Kodachrome vintage film with warm halation and analog celluloid grain), ensuring only one retro filter can be active at a time. All settings are fully persisted in `settings.cfg` under `[Filters]`.
 
 ### Improved
 * **Dynamic Weather Clouds:** The 3D stylized clouds now dynamically react to weather events. During Rainstorms, they smoothly transition to a moody, dark grey-blue color to match real-world storm clouds, and during Solar Eclipses, they tint to a deep, ominous purple to perfectly match the skybox.
@@ -21,6 +21,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * **Dynamic Sun Pain & Situational Expressions:** The Sun's procedural facial expression system now features dynamic situational reaction states during gameplay. When sprayed with the water stream, the Sun squints shut in pain (`wince`) with kinetic micro-shake feedback; blasting the white-hot Sunspot weakpoint triggers an intense agony scream (`crit_pain`) with a brilliant white-hot flash; telegraphing Solar Flares prompts a wide-eyed power gathering strain (`charging`) with a fiery solar glow; and the Catastrom Ultimate drag triggers a look of pure terror (`dread`). Base expressions (`happy`, `neutral`, `annoyed`, `angry`) resume smoothly when not under duress.
 
 ### Fixed
+* **Flare Telegraph Menu Clipping:** Fixed a visual clipping bug where pausing the game while a Solar Flare was charging caused the 2D HUD telegraph ring to remain frozen on screen on top of the Pause and Settings menus. The telegraph ring now automatically suppresses its drawing during pause or when any menu is open, and is ordered behind overlay screens in the HUD hierarchy.
 * **Solar Wind Particle Coverage:** Fixed an issue where the Solar Wind GPU particle streaks only spawned from the center of the screen, covering only half the viewport. The emission box has been widened to span the entire screen, and particle density has been increased to match.
 * **Level Clear Menu Spacing:** Fixed a font rendering issue where the "LEVEL 01 COMPLETE" text on the clear menu appeared with no visible space between the level number and "COMPLETE" due to the pixel font's narrow space glyph. Added double-spacing for both English and Korean text.
 * **Transition Background Bleed:** Fixed a bug where the next level's 3D environment would briefly flash visible for a split second between the fade-out and the clear menu appearing, caused by the WinScreen fading in with transparency while the overlay was simultaneously fading out.
@@ -244,7 +245,7 @@ All notable changes to the Summer Nights project will be documented in this file
 *(참고: 이 릴리스는 itch.io의 v1.3 버전에 해당합니다)*
 
 ### 추가됨
-* **전용 레트로 필터 메뉴 (Dedicated Retro Filters Menu):** 핵심 시스템 설정과 별도로 시각적 후처리 효과를 관리할 수 있도록 일시정지 메뉴에 전용 "필터(FILTERS)" 화면을 추가했습니다. PS1 스타일의 15비트 색 심도를 재현하는 "레트로 색상(Retro Colors)"과 고전 콘솔 특유의 크로스해치 음영을 구현하는 4x4 베이어 "디더링(Dithering)"을 상호 배타적 토글 방식으로 제공하여 한 번에 하나의 필터만 활성화되도록 지원하며, `settings.cfg`의 `[Filters]` 섹션에 안전하게 저장됩니다.
+* **전용 레트로 필터 메뉴 (Dedicated Retro Filters Menu):** 핵심 시스템 설정과 별도로 시각적 후처리 효과를 관리할 수 있도록 일시정지 메뉴에 전용 "필터(FILTERS)" 화면을 추가했습니다. PS1 스타일의 15비트 색 심도를 재현하는 "레트로 색상(Retro Colors)", 고전 콘솔 특유의 크로스해치 음영을 구현하는 4x4 베이어 "디더링(Dithering)", 그리고 태양에 바랜 35mm 코다크롬 빈티지 필름 질감과 온화한 할레이션을 연출하는 "폭염 1984(Heatwave 1984)"를 상호 배타적 토글 방식으로 제공하여 한 번에 하나의 필터만 활성화되도록 지원하며, `settings.cfg`의 `[Filters]` 섹션에 안전하게 저장됩니다.
 
 ### 개선됨
 * **동적 날씨 구름:** 3D 양식화된 구름이 이제 날씨 이벤트에 동적으로 반응합니다. 폭우 시 실제 폭풍 구름처럼 어두운 회청색으로 부드럽게 변하며, 일식 중에는 주변 환경과 어울리도록 깊은 보라색으로 물듭니다.
@@ -259,6 +260,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * **동적 태양 피격 및 상황별 표정 (Dynamic Sun Pain Expressions):** 게임플레이 중 태양의 절차적 표정 시스템에 상황별 반응 상태가 동적으로 추가되었습니다. 물줄기로 타격 시 태양이 고통스럽게 눈을 찡그리는 피격 표정(`wince`)과 미세 진동 효과가 연출되며, 과열된 흑점 약점 타격 시 비명을 지르는 극심한 고통 표정(`crit_pain`)과 순백의 섬광이 번쩍입니다. 태양 플레어 충전 중에는 눈을 크게 부릅뜨고 에너지를 모으는 표정(`charging`)과 타오르는 황금빛 광채가 적용되며, 카타스트롬 궁극기 발동 시 공포에 질린 표정(`dread`)이 나타납니다. 공격이 멈추면 기존 온도 기반 표정(`happy`, `neutral`, `annoyed`, `angry`)으로 자연스럽게 복귀합니다.
 
 ### 수정됨
+* **태양 플레어 전조 링 메뉴 겹침 버그 수정 (Flare Telegraph Menu Clipping):** 태양 플레어 충전 중 게임을 일시정지하면 2D HUD 전조 링이 일시정지 및 설정 메뉴 위에 겹쳐 멈춰있던 시각적 버그를 수정했습니다. 이제 일시정지 상태이거나 메뉴가 열려 있을 때 전조 링 그리기가 자동으로 억제되며, HUD 계층 구조에서 오버레이 메뉴 뒤에 렌더링되도록 배치되었습니다.
 * **태양풍 입자 범위 수정 (Solar Wind Particle Coverage):** 태양풍 GPU 입자 궤적이 화면 중앙에서만 생성되어 화면의 절반만 덮던 문제를 수정했습니다. 방출 상자의 너비를 화면 전체에 걸치도록 확장했으며, 이에 맞춰 입자 밀도도 증가시켰습니다.
 * **레벨 클리어 메뉴 간격:** 클리어 메뉴의 "LEVEL 01 COMPLETE" 텍스트에서 레벨 번호와 "COMPLETE" 사이에 가시적인 공간이 없던 픽셀 폰트의 좁은 공백 문자 문제를 수정했습니다. 영어 및 한국어 텍스트 모두에 이중 간격을 추가했습니다.
 * **전환 배경 노출:** 페이드 아웃과 클리어 메뉴 표시 사이에 다음 레벨의 3D 환경이 순간적으로 깜빡이며 보이던 버그를 수정했습니다. WinScreen이 투명도가 있는 상태로 페이드 인되는 동시에 오버레이가 페이드 아웃되면서 발생했습니다.

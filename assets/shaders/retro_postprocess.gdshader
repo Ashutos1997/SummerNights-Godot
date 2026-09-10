@@ -16,6 +16,7 @@ uniform float color_levels : hint_range(4.0, 64.0) = 8.0;
 uniform bool dither_enabled = false;
 uniform float dither_strength : hint_range(0.0, 2.0) = 1.0;
 uniform float dither_pixel_size : hint_range(1.0, 8.0) = 3.0;
+uniform bool heatwave_1984_enabled = false;
 
 // Simple random function based on UV
 float rand(vec2 co){
@@ -92,6 +93,34 @@ void fragment() {
             color = clamp(color, 0.0, 1.0);
         }
         color = floor(color * levels + 0.5) / levels;
+    }
+
+    // 5b. "Heatwave 1984" Vintage Kodachrome Grade
+    if (heatwave_1984_enabled) {
+        // Film S-Curve contrast boost
+        color = color * color * (3.0 - 2.0 * color);
+        
+        // Kodachrome color matrix: warm golden highlights, rich teal-olive shadows
+        float h_luma = dot(color, vec3(0.299, 0.587, 0.114));
+        vec3 warm_gold = vec3(1.10, 0.94, 0.78);
+        vec3 film_shadow = vec3(0.05, 0.09, 0.08);
+        
+        // Sun-bleached warm highlights and deep rich shadows
+        color = mix(color + film_shadow, color * warm_gold, smoothstep(0.15, 0.85, h_luma));
+        
+        // Film Halation: soft reddish-orange bleeding around extreme bright spots (Sun, flares, water gleams)
+        float halation_factor = smoothstep(0.70, 1.0, h_luma);
+        vec3 halation_glow = vec3(1.0, 0.28, 0.08) * (halation_factor * 0.26);
+        color += halation_glow;
+        
+        // Warm 1980s lens optical falloff (amber vignette)
+        float lens_vignette = smoothstep(0.9, 0.35, length(center_dist));
+        color = mix(color * vec3(0.86, 0.80, 0.72), color, lens_vignette);
+        
+        // Analog warm film grain
+        float film_grain = (rand(uv + vec2(TIME * 0.05, TIME * 0.1)) - 0.5) * 0.05;
+        color += vec3(film_grain * 1.2, film_grain * 0.8, film_grain * 0.4);
+        color = clamp(color, 0.0, 1.0);
     }
 
     

@@ -3,8 +3,21 @@ extends Control
 var main_scene: Node = null
 var _was_drawing: bool = false
 
+func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
+
 func _process(_delta: float) -> void:
 	if not main_scene:
+		return
+	
+	var is_suppressed = get_tree().paused or main_scene.game_over
+	if not is_suppressed and main_scene.hud and main_scene.hud.pause_screen:
+		is_suppressed = main_scene.hud.pause_screen.visible
+	
+	if is_suppressed:
+		if _was_drawing:
+			_was_drawing = false
+			queue_redraw()
 		return
 	
 	var has_charging = false
@@ -22,10 +35,12 @@ func _process(_delta: float) -> void:
 		queue_redraw()
 
 func _draw() -> void:
-	if not main_scene or not main_scene.camera or not main_scene.sun:
+	if not main_scene or not main_scene.camera or not main_scene.sun or main_scene.game_over:
 		return
-	if not _was_drawing:
+	if get_tree().paused or not _was_drawing:
 		return  # Nothing to draw — canvas is clean
+	if main_scene.hud and main_scene.hud.pause_screen and main_scene.hud.pause_screen.visible:
+		return
 
 	for flare in main_scene.active_flares:
 		if "charge_timer" in flare and flare["charge_timer"] > 0.0:

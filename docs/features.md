@@ -113,6 +113,7 @@ Weather events trigger based on a dynamic probability system tied to the current
 *   **Retro Filters Menu:** A dedicated Filters menu accessible from the Pause Screen allows players to customize visual post-processing shaders independently of core system settings. Filters operate with mutual exclusivity (enabling one automatically disables any other active filter):
     *   **Retro Colors:** Simulates PS1-style 15-bit color depth posterization (32 discrete levels per RGB channel).
     *   **Dithering:** Applies authentic 4x4 Bayer ordered dithering (cross-hatch pattern) for vintage console stippling and shading.
+    *   **Heatwave 1984:** Simulates sun-bleached 35mm / Kodachrome vintage film with overexposed golden highlights, crushed teal-olive shadows, soft reddish-orange film halation around the Sun and water speculars, warm lens falloff, and analog celluloid grain.
     *   Filter preferences are fully persisted in `settings.cfg` under `[Filters]`.
 
 *   **Accessibility & Settings:**

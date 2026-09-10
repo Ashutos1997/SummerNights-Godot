@@ -464,9 +464,17 @@ func _ready() -> void:
 	add_child(hud)
 	
 	var flare_rings = Control.new()
+	flare_rings.name = "FlareRings"
 	flare_rings.set_script(preload("res://scripts/FlareRings.gd"))
 	flare_rings.set("main_scene", self)
-	hud.add_child(flare_rings)
+	var hud_control = hud.get_node_or_null("HUD")
+	if hud_control:
+		hud_control.add_child(flare_rings)
+		var pause_screen_node = hud_control.get_node_or_null("pause_screen")
+		if pause_screen_node:
+			hud_control.move_child(flare_rings, pause_screen_node.get_index())
+	else:
+		hud.add_child(flare_rings)
 	
 	hud.visible = false
 	gun.visible = false
@@ -514,6 +522,9 @@ func _ready() -> void:
 		_update_post_process_settings()
 	)
 	hud.filter_dithering_changed.connect(func(_enabled):
+		_update_post_process_settings()
+	)
+	hud.filter_heatwave_changed.connect(func(_enabled):
 		_update_post_process_settings()
 	)
 	mouse_sensitivity = GameState.mouse_sensitivity
@@ -4015,3 +4026,4 @@ func _update_post_process_settings() -> void:
 		post_process_mat.set_shader_parameter("reduce_motion", GameState.reduce_motion)
 		post_process_mat.set_shader_parameter("color_reduction_enabled", GameState.filter_color_depth)
 		post_process_mat.set_shader_parameter("dither_enabled", GameState.filter_dithering)
+		post_process_mat.set_shader_parameter("heatwave_1984_enabled", GameState.filter_heatwave)

@@ -290,6 +290,7 @@ var vibration_enabled: bool = true
 var fullscreen: bool = true
 var filter_color_depth: bool = false
 var filter_dithering: bool = false
+var filter_heatwave: bool = false
 var language: String = "EN"  # "EN" or "KR"
 var ice_charges_remaining: int = 0
 var is_survival_mode: bool = false
@@ -431,6 +432,7 @@ func save_settings() -> void:
 	config.set_value("Video", "fullscreen", fullscreen)
 	config.set_value("Filters", "color_depth", filter_color_depth)
 	config.set_value("Filters", "dithering", filter_dithering)
+	config.set_value("Filters", "heatwave", filter_heatwave)
 	config.set_value("Localization", "language", language)
 	config.set_value("Stats", "high_score", high_score)
 	config.set_value("Stats", "unlocked_achievements", unlocked_achievements)
@@ -451,7 +453,14 @@ func load_settings() -> void:
 		fullscreen = config.get_value("Video", "fullscreen", true)
 		filter_color_depth = config.get_value("Filters", "color_depth", false)
 		filter_dithering = config.get_value("Filters", "dithering", false)
-		language = config.get_value("Localization", "language", "EN")
+		filter_heatwave = config.get_value("Filters", "heatwave", false)
+		var active_count = int(filter_color_depth) + int(filter_dithering) + int(filter_heatwave)
+		if active_count > 1:
+			if filter_heatwave:
+				filter_color_depth = false
+				filter_dithering = false
+			elif filter_dithering:
+				filter_color_depth = false
 		best_survival_time = config.get_value("Stats", "best_survival_time", 0.0)
 		high_score = config.get_value("Stats", "high_score", 0)
 		seagulls_shooed = config.get_value("Stats", "seagulls_shooed", 0)
