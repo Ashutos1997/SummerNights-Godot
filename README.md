@@ -8,6 +8,16 @@
 
 A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhelms you.
 
+<div align="center">
+
+![Views](https://img.shields.io/badge/Views-174-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
+![Downloads](https://img.shields.io/badge/Downloads-20-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
+![Followers](https://img.shields.io/badge/Followers-0-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
+
+*Last updated: September 2026 · [Play on itch.io](https://ashu1997.itch.io/summer-nights)*
+
+</div>
+
 ---
 
 ## Gameplay Video
