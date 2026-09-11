@@ -12,10 +12,10 @@ uniform float frost_mix : hint_range(0.0, 1.0) = 0.0;
 uniform float noise_amount : hint_range(0.0, 1.0) = 0.03;
 uniform bool reduce_motion = false;
 uniform bool color_reduction_enabled = false;
-uniform float color_levels : hint_range(4.0, 64.0) = 32.0;
+uniform float color_levels : hint_range(4.0, 32.0) = 10.0;
 uniform bool dither_enabled = false;
 uniform float dither_strength : hint_range(0.0, 2.0) = 1.0;
-uniform float dither_pixel_size : hint_range(1.0, 8.0) = 2.0;
+uniform float dither_pixel_size : hint_range(1.0, 8.0) = 3.0;
 uniform bool heatwave_1984_enabled = false;
 
 // Simple random function based on UV
@@ -23,22 +23,22 @@ float rand(vec2 co){
     return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
 }
 
-// 8x8 Ordered Bayer Matrix for silky retro cross-hatching [0.0, 63.0 / 64.0]
-float bayer8x8(vec2 coord) {
-    int x = int(coord.x) & 7;
-    int y = int(coord.y) & 7;
-    int index = x + y * 8;
-    float bayer[64] = float[64](
-         0.0/64.0, 32.0/64.0,  8.0/64.0, 40.0/64.0,  2.0/64.0, 34.0/64.0, 10.0/64.0, 42.0/64.0,
-        48.0/64.0, 16.0/64.0, 56.0/64.0, 24.0/64.0, 50.0/64.0, 18.0/64.0, 58.0/64.0, 26.0/64.0,
-        12.0/64.0, 44.0/64.0,  4.0/64.0, 36.0/64.0, 14.0/64.0, 46.0/64.0,  6.0/64.0, 38.0/64.0,
-        60.0/64.0, 28.0/64.0, 52.0/64.0, 20.0/64.0, 62.0/64.0, 30.0/64.0, 54.0/64.0, 22.0/64.0,
-         3.0/64.0, 35.0/64.0, 11.0/64.0, 43.0/64.0,  1.0/64.0, 33.0/64.0,  9.0/64.0, 41.0/64.0,
-        51.0/64.0, 19.0/64.0, 59.0/64.0, 27.0/64.0, 49.0/64.0, 17.0/64.0, 57.0/64.0, 25.0/64.0,
-        15.0/64.0, 47.0/64.0,  7.0/64.0, 39.0/64.0, 13.0/64.0, 45.0/64.0,  5.0/64.0, 37.0/64.0,
-        63.0/64.0, 31.0/64.0, 55.0/64.0, 23.0/64.0, 61.0/64.0, 29.0/64.0, 53.0/64.0, 21.0/64.0
-    );
-    return bayer[index];
+
+// 4x4 Ordered Bayer Matrix for retro dithering [0.0, 15.0 / 16.0]
+// Implemented via constant vectors for 100% universal compatibility across all GPU platforms
+float bayer4x4(vec2 coord) {
+    int x = int(abs(coord.x)) & 3;
+    int y = int(abs(coord.y)) & 3;
+    vec4 row;
+    if (y == 0) row = vec4(0.0, 8.0, 2.0, 10.0);
+    else if (y == 1) row = vec4(12.0, 4.0, 14.0, 6.0);
+    else if (y == 2) row = vec4(3.0, 11.0, 1.0, 9.0);
+    else row = vec4(15.0, 7.0, 13.0, 5.0);
+    
+    if (x == 0) return row.x / 16.0;
+    if (x == 1) return row.y / 16.0;
+    if (x == 2) return row.z / 16.0;
+    return row.w / 16.0;
 }
 
 void fragment() {
@@ -49,6 +49,15 @@ void fragment() {
     float heat_wave = sin(uv.y * 60.0 + TIME * 4.0) * 0.0015;
     // Distort more towards the horizon/top of screen
     vec2 distorted_uv = uv + vec2(heat_wave * (1.0 - uv.y), 0.0);
+    
+    // Robust pixel size calculator for multi-tap kernels (supports variable DPI and headless viewports)
+    vec2 px = fwidth(distorted_uv);
+    if (px.x <= 0.0 || px.y <= 0.0) {
+        px = SCREEN_PIXEL_SIZE;
+    }
+    if (px.x <= 0.0 || px.y <= 0.0) {
+        px = vec2(1.0 / 1280.0, 1.0 / 720.0);
+    }
     
     // Scale aberration based on distance from center for a lens effect
     vec2 center_dist = distorted_uv - vec2(0.5);
@@ -87,83 +96,58 @@ void fragment() {
     color = mix(color, color + shadow_color, (1.0 - luma) * 0.3);
     color = mix(color, color * highlight_color, luma * 0.3);
     
-    // 5a. "Retro Colors" (PS1 15-bit color reduction + NTSC composite chroma bleed + CRT micro-scanlines)
+    // 5a. "Retro Colors" (PS1 / Arcade 10-level color reduction + NTSC composite chroma bleed + CRT scanlines)
     if (color_reduction_enabled) {
-        float levels = color_levels; // 32.0 levels per RGB channel (15-bit / 32,768 colors)
+        float r_bleed = texture(screen_texture, distorted_uv - vec2(px.x * 2.5, 0.0)).r;
+        float b_bleed = texture(screen_texture, distorted_uv + vec2(px.x * 2.5, 0.0)).b;
+        color.r = mix(color.r, r_bleed, 0.25);
+        color.b = mix(color.b, b_bleed, 0.25);
         
-        // NTSC Composite Chroma Delay / Bleed:
-        // Simulates analog composite video bandwidth limits where chroma shifts slightly horizontally
-        vec2 px = SCREEN_PIXEL_SIZE;
-        float r_bleed = texture(screen_texture, distorted_uv - vec2(px.x * 1.5, 0.0)).r;
-        float b_bleed = texture(screen_texture, distorted_uv + vec2(px.x * 1.5, 0.0)).b;
-        color.r = mix(color.r, r_bleed, 0.20);
-        color.b = mix(color.b, b_bleed, 0.20);
+        color = floor(color * color_levels + 0.5) / color_levels;
         
-        // 15-bit quantization
-        color = floor(color * levels + 0.5) / levels;
-        
-        // Subtle CRT Aperture Grille Micro-Scanlines (3.5% alternating line modulation)
-        float scanline = (int(FRAGCOORD.y) % 2 == 0) ? 0.965 : 1.0;
+        // Crisp 10% CRT scanline modulation (2-pixel cadence)
+        float scanline = (int(floor(FRAGCOORD.y / 2.0)) % 2 == 0) ? 0.90 : 1.0;
         color *= scanline;
         color = clamp(color, 0.0, 1.0);
     }
 
-    // 5b. "Dithering" (8x8 Bayer matrix stippling + resolution-independent virtual retro grid)
+    // 5b. "Dithering" (Classic 4x4 Bayer matrix stippling with 8-level quantization)
     if (dither_enabled) {
-        // Virtual retro resolution scaling: anchors the dither pattern to ~540p virtual raster
-        // Ensures identical cross-hatching scale across 720p, 1080p, 1440p, and 4K displays
-        float ref_scale = max(1.0, round(1.0 / (SCREEN_PIXEL_SIZE.y * 540.0)));
-        vec2 dither_coord = floor(FRAGCOORD.xy / (ref_scale * dither_pixel_size * 0.5));
-        float b = bayer8x8(dither_coord);
-        
-        float d_levels = 16.0; // Rich 16-level palette for classic 90s console / FMV stippling
-        float cur_luma = dot(color, vec3(0.299, 0.587, 0.114));
-        // Luma-weighted dither modulation: preserves crisp specular hot spots while stippling midtones & sky
-        float luma_weight = clamp(1.2 - cur_luma * 0.5, 0.35, 1.15);
-        
-        color += vec3((b - 0.5) * (dither_strength / d_levels) * luma_weight);
+        float b = bayer4x4(floor(FRAGCOORD.xy / dither_pixel_size));
+        float d_levels = 8.0;
+        color += vec3((b - 0.5) * (dither_strength / d_levels));
         color = clamp(color, 0.0, 1.0);
         color = floor(color * d_levels + 0.5) / d_levels;
     }
 
     // 5c. "Heatwave 1984" Vintage Kodachrome Grade & Optical Halation Diffusion
     if (heatwave_1984_enabled) {
-        // Film tone shoulder curve (smooth highlight compression, preserves facial expressions and cloud volume)
-        color = color / (vec3(1.0) + color * 0.22);
+        // Film S-Curve contrast boost
+        color = color * color * (3.0 - 2.0 * color);
         
         // Kodachrome color matrix: warm golden highlights, rich teal-olive shadows
         float h_luma = dot(color, vec3(0.299, 0.587, 0.114));
-        vec3 warm_gold = vec3(1.12, 0.96, 0.76);
-        vec3 film_shadow = vec3(0.04, 0.07, 0.06);
+        vec3 warm_gold = vec3(1.15, 0.96, 0.78);
+        vec3 film_shadow = vec3(0.06, 0.09, 0.08);
+        color = mix(color + film_shadow, color * warm_gold, smoothstep(0.12, 0.85, h_luma));
         
-        // Sun-bleached warm highlights and deep rich shadows
-        color = mix(color + film_shadow, color * warm_gold, smoothstep(0.12, 0.82, h_luma));
-        
-        // True Optical Halation Diffusion (4-tap radial cross kernel in screen UV)
-        // Light penetrates film emulsion and scatters horizontally & vertically around intense highlights
-        vec2 halo_step = SCREEN_PIXEL_SIZE * 5.0;
-        vec3 s0 = texture(screen_texture, distorted_uv + vec2( halo_step.x,  0.0)).rgb;
-        vec3 s1 = texture(screen_texture, distorted_uv - vec2( halo_step.x,  0.0)).rgb;
-        vec3 s2 = texture(screen_texture, distorted_uv + vec2( 0.0,  halo_step.y)).rgb;
-        vec3 s3 = texture(screen_texture, distorted_uv - vec2( 0.0,  halo_step.y)).rgb;
-        
-        float l0 = dot(s0, vec3(0.299, 0.587, 0.114));
-        float l1 = dot(s1, vec3(0.299, 0.587, 0.114));
-        float l2 = dot(s2, vec3(0.299, 0.587, 0.114));
-        float l3 = dot(s3, vec3(0.299, 0.587, 0.114));
-        
-        float halo_luma = (l0 + l1 + l2 + l3) * 0.25;
-        float halo_scatter = smoothstep(0.68, 0.98, halo_luma);
-        // Halation color: warm amber-red emulsion back-scatter
-        vec3 halation_glow = vec3(1.0, 0.26, 0.06) * (halo_scatter * 0.28);
+        // Optical Halation Diffusion using robust pixel radius
+        vec2 halo_step = px * 6.0;
+        vec3 s0 = texture(screen_texture, distorted_uv + vec2( halo_step.x, 0.0)).rgb;
+        vec3 s1 = texture(screen_texture, distorted_uv - vec2( halo_step.x, 0.0)).rgb;
+        vec3 s2 = texture(screen_texture, distorted_uv + vec2( 0.0, halo_step.y)).rgb;
+        vec3 s3 = texture(screen_texture, distorted_uv - vec2( 0.0, halo_step.y)).rgb;
+        float halo_luma = (dot(s0, vec3(0.299, 0.587, 0.114)) + dot(s1, vec3(0.299, 0.587, 0.114)) + dot(s2, vec3(0.299, 0.587, 0.114)) + dot(s3, vec3(0.299, 0.587, 0.114))) * 0.25;
+        float halation_factor = max(smoothstep(0.60, 0.95, h_luma), smoothstep(0.55, 0.90, halo_luma) * 0.8);
+        vec3 halation_glow = vec3(1.0, 0.28, 0.08) * (halation_factor * 0.35);
         color += halation_glow;
         
-        // Vintage 1980s lens optical warmth & radial falloff
-        float lens_vignette = smoothstep(0.95, 0.35, length(center_dist));
-        color = mix(color * vec3(0.88, 0.82, 0.74), color, lens_vignette);
+        // Warm 1980s lens optical falloff (amber vignette)
+        float lens_vignette = smoothstep(0.9, 0.35, length(center_dist));
+        color = mix(color * vec3(0.86, 0.80, 0.72), color, lens_vignette);
         
         // Analog celluloid film grain
-        float film_grain = (rand(uv + vec2(TIME * 0.05, TIME * 0.1)) - 0.5) * 0.035;
+        float film_grain = (rand(uv + vec2(TIME * 0.05, TIME * 0.1)) - 0.5) * 0.04;
         color += vec3(film_grain * 1.2, film_grain * 0.8, film_grain * 0.4);
         color = clamp(color, 0.0, 1.0);
     }

@@ -2034,17 +2034,26 @@ func _open_filters() -> void:
 	filters_screen.visible = true
 	filters_screen.modulate.a = 0.0
 	if color_depth_check and dithering_check and heatwave_check and filters_back_btn:
+		color_depth_check.focus_neighbor_top = color_depth_check.get_path_to(filters_back_btn)
 		color_depth_check.focus_neighbor_bottom = color_depth_check.get_path_to(dithering_check)
 		dithering_check.focus_neighbor_top = dithering_check.get_path_to(color_depth_check)
 		dithering_check.focus_neighbor_bottom = dithering_check.get_path_to(heatwave_check)
 		heatwave_check.focus_neighbor_top = heatwave_check.get_path_to(dithering_check)
 		heatwave_check.focus_neighbor_bottom = heatwave_check.get_path_to(filters_back_btn)
 		filters_back_btn.focus_neighbor_top = filters_back_btn.get_path_to(heatwave_check)
+		filters_back_btn.focus_neighbor_bottom = filters_back_btn.get_path_to(color_depth_check)
 	var tw = create_tween()
 	tw.set_ease(Tween.EASE_OUT)
 	tw.tween_property(filters_screen, "modulate:a", 1.0, 0.3)
 	await get_tree().process_frame
-	if color_depth_check: color_depth_check.grab_focus()
+	if GameState.filter_color_depth and color_depth_check:
+		color_depth_check.grab_focus()
+	elif GameState.filter_dithering and dithering_check:
+		dithering_check.grab_focus()
+	elif GameState.filter_heatwave and heatwave_check:
+		heatwave_check.grab_focus()
+	elif filters_back_btn:
+		filters_back_btn.grab_focus()
 
 func _close_filters() -> void:
 	var tw = create_tween()
