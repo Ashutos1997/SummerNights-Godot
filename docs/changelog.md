@@ -9,6 +9,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * **Dedicated Retro Filters Menu:** Added a dedicated "FILTERS" screen to the Pause Menu to manage visual post-processing effects separately from core system settings. Features mutually exclusive toggles for "Retro Colors" (PS1-style 15-bit color depth reduction), "Dithering" (4x4 Bayer ordered cross-hatch shading), and "Heatwave 1984" (sun-bleached 35mm / Kodachrome vintage film with warm halation and analog celluloid grain), ensuring only one retro filter can be active at a time. All settings are fully persisted in `settings.cfg` under `[Filters]`.
 
 ### Improved
+* **Filters Icon:** Replaced the generic settings gear icon on the Filters menu title with a custom 3D glasses icon to better match the retro theme.
 * **Dynamic Weather Clouds:** The 3D stylized clouds now dynamically react to weather events. During Rainstorms, they smoothly transition to a moody, dark grey-blue color to match real-world storm clouds, and during Solar Eclipses, they tint to a deep, ominous purple to perfectly match the skybox.
 * **Ice Burst Polish:** Using the Ice Burst ability now freezes the screen edges with an icy blue procedural frost overlay, and forces the Sun's color to temporarily shift from warm orange to a cold cyan to make the impact feel incredibly heavy and satisfying.
 * **Dynamic Seagull AI:** The background seagull flock now reacts intelligently to the weather. During Rainstorms, the random chance for birds to land is increased by 50x, causing the flock to rapidly seek shelter on the beach. During Solar Eclipses, the flock panics—preventing landing and causing any sitting birds to instantly flee into the sky.
@@ -248,6 +249,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * **전용 레트로 필터 메뉴 (Dedicated Retro Filters Menu):** 핵심 시스템 설정과 별도로 시각적 후처리 효과를 관리할 수 있도록 일시정지 메뉴에 전용 "필터(FILTERS)" 화면을 추가했습니다. PS1 스타일의 15비트 색 심도를 재현하는 "레트로 색상(Retro Colors)", 고전 콘솔 특유의 크로스해치 음영을 구현하는 4x4 베이어 "디더링(Dithering)", 그리고 태양에 바랜 35mm 코다크롬 빈티지 필름 질감과 온화한 할레이션을 연출하는 "폭염 1984(Heatwave 1984)"를 상호 배타적 토글 방식으로 제공하여 한 번에 하나의 필터만 활성화되도록 지원하며, `settings.cfg`의 `[Filters]` 섹션에 안전하게 저장됩니다.
 
 ### 개선됨
+* **필터 아이콘 (Filters Icon):** 필터 메뉴 제목의 일반적인 설정 톱니바퀴 아이콘을 레트로 테마에 더 잘 어울리는 커스텀 3D 안경 아이콘으로 교체했습니다.
 * **동적 날씨 구름:** 3D 양식화된 구름이 이제 날씨 이벤트에 동적으로 반응합니다. 폭우 시 실제 폭풍 구름처럼 어두운 회청색으로 부드럽게 변하며, 일식 중에는 주변 환경과 어울리도록 깊은 보라색으로 물듭니다.
 * **얼음 폭발 시각 효과 개선:** 이제 얼음 폭발 능력을 사용하면 절차적 서리 오버레이로 화면 가장자리가 얼어붙고, 일시적으로 태양의 색상이 따뜻한 주황색에서 차가운 청록색으로 변하여 타격감이 매우 향상됩니다.
 * **동적 갈매기 AI:** 배경의 갈매기 무리가 날씨에 반응합니다. 폭우 시 새들이 해변으로 내려와 피난처를 찾을 확률이 50배 증가합니다. 일식 중에는 갈매기들이 공황 상태에 빠져 착륙이 제한되며, 해변에 앉아 있던 갈매기들은 즉시 하늘로 도망칩니다.

@@ -15,6 +15,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/grab_closed.png" id="12_grab_closed"]
 [ext_resource type="Texture2D" path="res://assets/ui/menu_icons/pause.png" id="13_icon_pause"]
 [ext_resource type="Texture2D" path="res://assets/ui/menu_icons/settings.png" id="14_icon_settings"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu_icons/3d-glasses.png" id="16_icon_filter"]
 [ext_resource type="Texture2D" path="res://assets/ui/menu_icons/credits.png" id="15_icon_credits"]
 [ext_resource type="Script" path="res://scripts/BrokenBorder.gd" id="90_broken"]
 [ext_resource type="Script" path="res://scripts/PauseSunGraphic.gd" id="91_sun"]
@@ -951,7 +952,7 @@ custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("14_icon_settings")
+texture = ExtResource("16_icon_filter")
 expand_mode = 1
 stretch_mode = 5
 
