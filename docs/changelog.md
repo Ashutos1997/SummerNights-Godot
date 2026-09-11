@@ -6,7 +6,7 @@ All notable changes to the Summer Nights project will be documented in this file
 *(Note: This release corresponds to v1.3 on itch.io)*
 
 ### Added
-* **Dedicated Retro Filters Menu:** Added a dedicated "FILTERS" screen to the Pause Menu to manage visual post-processing effects separately from core system settings. Features mutually exclusive toggles for "Retro Colors" (PS1-style 15-bit color depth reduction), "Dithering" (4x4 Bayer ordered cross-hatch shading), "Heatwave 1984" (sun-bleached 35mm / Kodachrome vintage film with warm halation and analog celluloid grain), and "Neon Dusk" (Synthwave / Outrun aesthetic with indigo shadows, cyan ocean tones, hot magenta highlights, chromatic halation, and VHS grain), ensuring only one retro filter can be active at a time. All settings are fully persisted in `settings.cfg` under `[Filters]`.
+* **Dedicated Retro Filters Menu:** Added a dedicated "FILTERS" screen to the Pause Menu to manage visual post-processing effects separately from core system settings. Features mutually exclusive toggles for "Retro Colors" (PS1-style 15-bit color depth reduction), "Dithering" (4x4 Bayer ordered cross-hatch shading), and "Heatwave 1984" (sun-bleached 35mm / Kodachrome vintage film with warm halation and analog celluloid grain), ensuring only one retro filter can be active at a time. All settings are fully persisted in `settings.cfg` under `[Filters]`.
 
 ### Improved
 * **Dynamic Weather Clouds:** The 3D stylized clouds now dynamically react to weather events. During Rainstorms, they smoothly transition to a moody, dark grey-blue color to match real-world storm clouds, and during Solar Eclipses, they tint to a deep, ominous purple to perfectly match the skybox.
@@ -245,7 +245,7 @@ All notable changes to the Summer Nights project will be documented in this file
 *(참고: 이 릴리스는 itch.io의 v1.3 버전에 해당합니다)*
 
 ### 추가됨
-* **전용 레트로 필터 메뉴 (Dedicated Retro Filters Menu):** 핵심 시스템 설정과 별도로 시각적 후처리 효과를 관리할 수 있도록 일시정지 메뉴에 전용 "필터(FILTERS)" 화면을 추가했습니다. PS1 스타일의 15비트 색 심도를 재현하는 "레트로 색상(Retro Colors)", 고전 콘솔 특유의 크로스해치 음영을 구현하는 4x4 베이어 "디더링(Dithering)", 태양에 바랜 35mm 코다크롬 빈티지 필름 질감과 온화한 할레이션을 연출하는 "폭염 1984(Heatwave 1984)", 그리고 짙은 남보라색 그림자와 청록색 바다 및 네온 마젠타 하이라이트가 어우러지는 신스웨이브 감성의 "네온 황혼(Neon Dusk)"을 상호 배타적 토글 방식으로 제공하여 한 번에 하나의 필터만 활성화되도록 지원하며, `settings.cfg`의 `[Filters]` 섹션에 안전하게 저장됩니다.
+* **전용 레트로 필터 메뉴 (Dedicated Retro Filters Menu):** 핵심 시스템 설정과 별도로 시각적 후처리 효과를 관리할 수 있도록 일시정지 메뉴에 전용 "필터(FILTERS)" 화면을 추가했습니다. PS1 스타일의 15비트 색 심도를 재현하는 "레트로 색상(Retro Colors)", 고전 콘솔 특유의 크로스해치 음영을 구현하는 4x4 베이어 "디더링(Dithering)", 그리고 태양에 바랜 35mm 코다크롬 빈티지 필름 질감과 온화한 할레이션을 연출하는 "폭염 1984(Heatwave 1984)"를 상호 배타적 토글 방식으로 제공하여 한 번에 하나의 필터만 활성화되도록 지원하며, `settings.cfg`의 `[Filters]` 섹션에 안전하게 저장됩니다.
 
 ### 개선됨
 * **동적 날씨 구름:** 3D 양식화된 구름이 이제 날씨 이벤트에 동적으로 반응합니다. 폭우 시 실제 폭풍 구름처럼 어두운 회청색으로 부드럽게 변하며, 일식 중에는 주변 환경과 어울리도록 깊은 보라색으로 물듭니다.

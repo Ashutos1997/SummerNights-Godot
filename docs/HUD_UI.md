@@ -60,7 +60,6 @@ These elements sit on top of the Core Gameplay HUD and blur/dim the background w
     *   **Retro Colors:** PS1-style 15-bit color depth reduction posterization (32 levels per RGB channel).
     *   **Dithering:** 4x4 Bayer ordered cross-hatch dithering matrix for classic vintage console shading.
     *   **Heatwave 1984:** Sun-bleached 35mm / Kodachrome vintage film simulation with warm halation and analog celluloid grain.
-    *   **Neon Dusk:** Synthwave / Outrun aesthetic with indigo shadows, cyan ocean tones, hot magenta highlights, and chromatic halation.
 *   Adheres strictly to the unified layout: 40x40 gold title icon, 2px horizontal divider, high-contrast toggle buttons (OFF/ON states), standard 280x44 BACK button, and animated "PRESS ESC TO CLOSE" prompt. Fully translated in English and Korean.
 
 ### Controller Screen (`ControllerScreen`)

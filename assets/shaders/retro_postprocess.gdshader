@@ -17,7 +17,6 @@ uniform bool dither_enabled = false;
 uniform float dither_strength : hint_range(0.0, 2.0) = 1.0;
 uniform float dither_pixel_size : hint_range(1.0, 8.0) = 3.0;
 uniform bool heatwave_1984_enabled = false;
-uniform bool neon_dusk_enabled = false;
 
 // Simple random function based on UV
 float rand(vec2 co){
@@ -121,47 +120,6 @@ void fragment() {
         // Analog warm film grain
         float film_grain = (rand(uv + vec2(TIME * 0.05, TIME * 0.1)) - 0.5) * 0.05;
         color += vec3(film_grain * 1.2, film_grain * 0.8, film_grain * 0.4);
-        color = clamp(color, 0.0, 1.0);
-    }
-
-    // 5c. "Neon Dusk" Synthwave / Outrun Retro Grade
-    if (neon_dusk_enabled) {
-        // High-contrast synthwave S-curve
-        color = color * color * (3.0 - 2.0 * color);
-        
-        float nd_luma = dot(color, vec3(0.299, 0.587, 0.114));
-        
-        // Synthwave palette colors:
-        // Deep indigo/violet shadow
-        vec3 neon_shadow = vec3(0.12, 0.04, 0.28);
-        // Retrowave cyan/teal for midtones / water
-        vec3 neon_teal = vec3(0.0, 0.95, 0.95);
-        // Electric hot pink / magenta for highlights
-        vec3 neon_magenta = vec3(1.0, 0.12, 0.65);
-        
-        // Split-toning: tint shadows into deep indigo-violet, midtones toward vibrant cyan-purple, highlights toward electric hot magenta
-        vec3 mid_tint = mix(neon_shadow, neon_teal, smoothstep(0.15, 0.55, nd_luma));
-        vec3 graded = mix(mid_tint, neon_magenta, smoothstep(0.55, 0.92, nd_luma));
-        
-        // Blend graded tone with original color to preserve scene details while saturating neon colorways
-        color = mix(color * vec3(0.4, 0.7, 1.2), graded, 0.48);
-        
-        // Dual-color chromatic halation around intense light sources (Sun, flares, water gleam)
-        float sun_flare_factor = smoothstep(0.68, 1.0, nd_luma);
-        if (sun_flare_factor > 0.0) {
-            vec3 neon_glow = mix(vec3(0.0, 0.9, 1.0), vec3(1.0, 0.08, 0.75), smoothstep(0.75, 1.0, nd_luma));
-            color += neon_glow * (sun_flare_factor * 0.35);
-        }
-        
-        // Retrowave deep violet-black optical edge vignette
-        float dusk_vignette = smoothstep(0.95, 0.3, length(center_dist));
-        vec3 edge_dusk = vec3(0.10, 0.02, 0.20);
-        color = mix(color * edge_dusk * 1.5, color, dusk_vignette);
-        
-        // Subtle electric purple VHS noise grain
-        float dusk_grain = (rand(uv + vec2(TIME * 0.06, -TIME * 0.08)) - 0.5) * 0.04;
-        color += vec3(dusk_grain * 0.9, dusk_grain * 0.2, dusk_grain * 1.4);
-        
         color = clamp(color, 0.0, 1.0);
     }
 

@@ -5,7 +5,6 @@ signal reduce_motion_changed(enabled: bool)
 signal filter_color_depth_changed(enabled: bool)
 signal filter_dithering_changed(enabled: bool)
 signal filter_heatwave_changed(enabled: bool)
-signal filter_neon_dusk_changed(enabled: bool)
 signal weapon_changed(weapon_id: String)
 
 
@@ -100,7 +99,6 @@ var last_callout_tier: int = 0
 @onready var color_depth_check = $HUD/FiltersScreen/CenterContainer/VBoxContainer/RowColorDepth/Check
 @onready var dithering_check   = $HUD/FiltersScreen/CenterContainer/VBoxContainer/RowDithering/Check
 @onready var heatwave_check    = $HUD/FiltersScreen/CenterContainer/VBoxContainer/RowHeatwave/Check
-@onready var neon_dusk_check   = $HUD/FiltersScreen/CenterContainer/VBoxContainer/RowNeonDusk/Check
 @onready var filters_back_btn  = $HUD/FiltersScreen/CenterContainer/VBoxContainer/BackBtn
 
 @onready var controller_screen   = $HUD/ControllerScreen
@@ -564,7 +562,7 @@ func _ready() -> void:
 				_style_lbl(r_lbl, 20, Color(1.0, 0.85, 0.2, 1.0), 2, Color.BLACK, font)
 				r_lbl.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 
-	for row_name in ["RowColorDepth", "RowDithering", "RowHeatwave", "RowNeonDusk"]:
+	for row_name in ["RowColorDepth", "RowDithering", "RowHeatwave"]:
 		var filter_r_node = $HUD/FiltersScreen/CenterContainer/VBoxContainer.get_node_or_null(row_name)
 		if filter_r_node:
 			var r_lbl = filter_r_node.get_node_or_null("Label")
@@ -708,7 +706,7 @@ func _ready() -> void:
 	style_btn_on.set_border_width_all(1)
 	style_btn_on.set_corner_radius_all(4)
 
-	for btn in [motion_check, vibration_check, fullscreen_check, color_depth_check, dithering_check, heatwave_check, neon_dusk_check]:
+	for btn in [motion_check, vibration_check, fullscreen_check, color_depth_check, dithering_check, heatwave_check]:
 		if btn:
 			if font: btn.add_theme_font_override("font", font)
 			btn.add_theme_font_size_override("font_size", 18)
@@ -731,7 +729,6 @@ func _ready() -> void:
 	if color_depth_check: color_depth_check.button_pressed = GameState.filter_color_depth
 	if dithering_check: dithering_check.button_pressed = GameState.filter_dithering
 	if heatwave_check: heatwave_check.button_pressed = GameState.filter_heatwave
-	if neon_dusk_check: neon_dusk_check.button_pressed = GameState.filter_neon_dusk
 
 	# Connect control signals
 	sfx_slider.value_changed.connect(_on_sfx_volume_changed)
@@ -742,7 +739,6 @@ func _ready() -> void:
 	if color_depth_check: color_depth_check.toggled.connect(_on_color_depth_toggled)
 	if dithering_check: dithering_check.toggled.connect(_on_dithering_toggled)
 	if heatwave_check: heatwave_check.toggled.connect(_on_heatwave_toggled)
-	if neon_dusk_check: neon_dusk_check.toggled.connect(_on_neon_dusk_toggled)
 	
 	if settings_back_btn:
 		settings_back_btn.pressed.connect(_close_settings)
@@ -771,7 +767,6 @@ func _ready() -> void:
 	if color_depth_check: _update_toggle_btn(color_depth_check, GameState.filter_color_depth)
 	if dithering_check: _update_toggle_btn(dithering_check, GameState.filter_dithering)
 	if heatwave_check: _update_toggle_btn(heatwave_check, GameState.filter_heatwave)
-	if neon_dusk_check: _update_toggle_btn(neon_dusk_check, GameState.filter_neon_dusk)
 	
 	
 	# Accessibility Metadata
@@ -1180,8 +1175,7 @@ func _apply_language(lang: String) -> void:
 		var filter_labels = {
 			"RowColorDepth": "레트로 색상" if is_kr else "Retro Colors",
 			"RowDithering": "디더링" if is_kr else "Dithering",
-			"RowHeatwave": "폭염 1984" if is_kr else "Heatwave 1984",
-			"RowNeonDusk": "네온 황혼" if is_kr else "Neon Dusk"
+			"RowHeatwave": "폭염 1984" if is_kr else "Heatwave 1984"
 		}
 		for r_name in filter_labels:
 			var r = filter_vbox.get_node_or_null(r_name)
@@ -1524,12 +1518,6 @@ func _on_color_depth_toggled(enabled: bool) -> void:
 				heatwave_check.set_pressed_no_signal(false)
 				_update_toggle_btn(heatwave_check, false)
 			filter_heatwave_changed.emit(false)
-		if GameState.filter_neon_dusk:
-			GameState.filter_neon_dusk = false
-			if neon_dusk_check:
-				neon_dusk_check.set_pressed_no_signal(false)
-				_update_toggle_btn(neon_dusk_check, false)
-			filter_neon_dusk_changed.emit(false)
 	GameState.save_settings()
 	filter_color_depth_changed.emit(enabled)
 	if color_depth_check: _update_toggle_btn(color_depth_check, enabled)
@@ -1549,12 +1537,6 @@ func _on_dithering_toggled(enabled: bool) -> void:
 				heatwave_check.set_pressed_no_signal(false)
 				_update_toggle_btn(heatwave_check, false)
 			filter_heatwave_changed.emit(false)
-		if GameState.filter_neon_dusk:
-			GameState.filter_neon_dusk = false
-			if neon_dusk_check:
-				neon_dusk_check.set_pressed_no_signal(false)
-				_update_toggle_btn(neon_dusk_check, false)
-			filter_neon_dusk_changed.emit(false)
 	GameState.save_settings()
 	filter_dithering_changed.emit(enabled)
 	if dithering_check: _update_toggle_btn(dithering_check, enabled)
@@ -1574,40 +1556,9 @@ func _on_heatwave_toggled(enabled: bool) -> void:
 				dithering_check.set_pressed_no_signal(false)
 				_update_toggle_btn(dithering_check, false)
 			filter_dithering_changed.emit(false)
-		if GameState.filter_neon_dusk:
-			GameState.filter_neon_dusk = false
-			if neon_dusk_check:
-				neon_dusk_check.set_pressed_no_signal(false)
-				_update_toggle_btn(neon_dusk_check, false)
-			filter_neon_dusk_changed.emit(false)
 	GameState.save_settings()
 	filter_heatwave_changed.emit(enabled)
 	if heatwave_check: _update_toggle_btn(heatwave_check, enabled)
-
-func _on_neon_dusk_toggled(enabled: bool) -> void:
-	GameState.filter_neon_dusk = enabled
-	if enabled:
-		if GameState.filter_color_depth:
-			GameState.filter_color_depth = false
-			if color_depth_check:
-				color_depth_check.set_pressed_no_signal(false)
-				_update_toggle_btn(color_depth_check, false)
-			filter_color_depth_changed.emit(false)
-		if GameState.filter_dithering:
-			GameState.filter_dithering = false
-			if dithering_check:
-				dithering_check.set_pressed_no_signal(false)
-				_update_toggle_btn(dithering_check, false)
-			filter_dithering_changed.emit(false)
-		if GameState.filter_heatwave:
-			GameState.filter_heatwave = false
-			if heatwave_check:
-				heatwave_check.set_pressed_no_signal(false)
-				_update_toggle_btn(heatwave_check, false)
-			filter_heatwave_changed.emit(false)
-	GameState.save_settings()
-	filter_neon_dusk_changed.emit(enabled)
-	if neon_dusk_check: _update_toggle_btn(neon_dusk_check, enabled)
 
 func _on_fullscreen_toggled(toggled: bool) -> void:
 	GameState.fullscreen = toggled
@@ -2025,15 +1976,13 @@ func _open_filters() -> void:
 	if controller_screen: controller_screen.visible = false
 	filters_screen.visible = true
 	filters_screen.modulate.a = 0.0
-	if color_depth_check and dithering_check and heatwave_check and neon_dusk_check and filters_back_btn:
+	if color_depth_check and dithering_check and heatwave_check and filters_back_btn:
 		color_depth_check.focus_neighbor_bottom = color_depth_check.get_path_to(dithering_check)
 		dithering_check.focus_neighbor_top = dithering_check.get_path_to(color_depth_check)
 		dithering_check.focus_neighbor_bottom = dithering_check.get_path_to(heatwave_check)
 		heatwave_check.focus_neighbor_top = heatwave_check.get_path_to(dithering_check)
-		heatwave_check.focus_neighbor_bottom = heatwave_check.get_path_to(neon_dusk_check)
-		neon_dusk_check.focus_neighbor_top = neon_dusk_check.get_path_to(heatwave_check)
-		neon_dusk_check.focus_neighbor_bottom = neon_dusk_check.get_path_to(filters_back_btn)
-		filters_back_btn.focus_neighbor_top = filters_back_btn.get_path_to(neon_dusk_check)
+		heatwave_check.focus_neighbor_bottom = heatwave_check.get_path_to(filters_back_btn)
+		filters_back_btn.focus_neighbor_top = filters_back_btn.get_path_to(heatwave_check)
 	var tw = create_tween()
 	tw.set_ease(Tween.EASE_OUT)
 	tw.tween_property(filters_screen, "modulate:a", 1.0, 0.3)
