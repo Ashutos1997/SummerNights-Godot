@@ -16,6 +16,7 @@ uniform float color_levels : hint_range(4.0, 32.0) = 10.0;
 uniform bool dither_enabled = false;
 uniform float dither_strength : hint_range(0.0, 2.0) = 1.0;
 uniform float dither_pixel_size : hint_range(1.0, 8.0) = 3.0;
+uniform bool ps1_shading_enabled = false;
 uniform bool heatwave_1984_enabled = false;
 
 // Simple random function based on UV
@@ -120,7 +121,36 @@ void fragment() {
         color = floor(color * d_levels + 0.5) / d_levels;
     }
 
-    // 5c. "Heatwave 1984" Vintage Kodachrome Grade & Optical Halation Diffusion
+    // 5c. "PS1 Shading" (384x216 virtual low-res raster + 15-bit stepped shading + hardware 4x4 Bayer dither + composite bleed)
+    if (ps1_shading_enabled) {
+        vec2 retro_res = vec2(384.0, 216.0);
+        vec2 retro_uv = floor(distorted_uv * retro_res) / retro_res;
+        vec2 retro_px = vec2(1.0) / retro_res;
+        
+        // Re-sample color from the downsampled 384x216 virtual framebuffer
+        vec3 ps1_c = texture(screen_texture, retro_uv).rgb;
+        
+        // Analog composite NTSC chroma delay / horizontal bleed across neighboring virtual texels
+        float r_bleed = texture(screen_texture, retro_uv - vec2(retro_px.x * 1.5, 0.0)).r;
+        float b_bleed = texture(screen_texture, retro_uv + vec2(retro_px.x * 1.5, 0.0)).b;
+        ps1_c.r = mix(ps1_c.r, r_bleed, 0.30);
+        ps1_c.b = mix(ps1_c.b, b_bleed, 0.30);
+        
+        // Authentic PS1 hardware 4x4 Bayer dither on the virtual pixel raster
+        vec2 dither_pos = floor(distorted_uv * retro_res);
+        float b = bayer4x4(dither_pos);
+        float ps1_levels = 16.0; // 15-bit / high-contrast console stepped lighting
+        ps1_c += vec3((b - 0.5) * (1.0 / ps1_levels));
+        ps1_c = clamp(ps1_c, 0.0, 1.0);
+        ps1_c = floor(ps1_c * ps1_levels + 0.5) / ps1_levels;
+        
+        // CRT 240p alternating micro-scanlines (2-pixel cadence on physical screen)
+        float scanline = (int(floor(FRAGCOORD.y / 2.0)) % 2 == 0) ? 0.88 : 1.0;
+        ps1_c *= scanline;
+        color = clamp(ps1_c, 0.0, 1.0);
+    }
+
+    // 5d. "Heatwave 1984" Vintage Kodachrome Grade & Optical Halation Diffusion
     if (heatwave_1984_enabled) {
         // Film S-Curve contrast boost
         color = color * color * (3.0 - 2.0 * color);

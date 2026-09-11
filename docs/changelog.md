@@ -6,12 +6,13 @@ All notable changes to the Summer Nights project will be documented in this file
 *(Note: This release corresponds to v1.3 on itch.io)*
 
 ### Added
-* **Dedicated Retro Filters Menu:** Added a dedicated "FILTERS" screen to the Pause Menu to manage visual post-processing effects separately from core system settings. Features mutually exclusive toggles for "Retro Colors" (PS1-style 15-bit color depth reduction), "Dithering" (8x8 Bayer ordered cross-hatch shading), and "Heatwave 1984" (sun-bleached 35mm / Kodachrome vintage film with warm halation and analog celluloid grain), ensuring only one retro filter can be active at a time. All settings are fully persisted in `settings.cfg` under `[Filters]`.
+* **Dedicated Retro Filters Menu & PS1 Shading Filter:** Added a dedicated "FILTERS" screen to the Pause Menu to manage visual post-processing effects separately from core system settings. Features 4 mutually exclusive toggles: "Retro Colors" (arcade 10-level color reduction with NTSC composite delay), "Dithering" (4x4 Bayer ordered cross-hatch stippling), "PS1 Shading" (authentic 384×216 virtual low-res rasterization, 15-bit stepped shading, raster-aligned 4×4 Bayer dithering, composite chroma bleed, and 240p CRT scanlines), and "Heatwave 1984" (sun-bleached 35mm / Kodachrome vintage film with warm halation and analog celluloid grain). All settings are fully persisted in `settings.cfg` under `[Filters]`.
 
 ### Improved
-* **Retro Post-Processing Filters Overhaul:** Substantially elevated the visual fidelity, stability, and shader mathematics of all 3 in-game retro filters:
+* **Retro Post-Processing Filters Overhaul:** Substantially elevated the visual fidelity, stability, and shader mathematics of all in-game retro filters:
   * **Retro Colors:** Upgraded quantization to arcade/console 10-level color reduction per RGB channel, paired with an analog NTSC composite horizontal chroma delay/bleed (`px.x * 2.5`) and crisp 10% CRT aperture grille scanline modulation across alternating 2-pixel rows.
   * **Dithering:** High-contrast 4x4 Bayer matrix stippling with 8-level quantization, providing authentic 90s console and arcade cross-hatching without GPU array allocation bottlenecks.
+  * **PS1 Shading:** Authentic 5th-generation console visual simulation featuring 384×216 low-res virtual framebuffer rasterization (downsampling the 3D beach world while keeping HUD elements crisp at native 1080p), 15-bit stepped shading (16 levels), low-res grid-aligned 4×4 Bayer matrix dithering, NTSC composite horizontal chroma delay, and 240p alternating 2-pixel CRT scanlines.
   * **Heatwave 1984:** Vintage 35mm / Kodachrome cinematography simulation featuring true multi-tap optical halation diffusion (4-tap radial cross kernel in screen UV) that realistically scatters warm amber-red light around the Sun's silhouette and intense flares into adjacent pixels, film S-curve contrast boost, warm 1980s anamorphic lens falloff, and organic celluloid grain.
 * **HUD Resource Meters & Retro Flat Plates:** Overhauled the bottom-right resource meter presentation with retro flat dark plates (matching the Active Perks Tracker design with 4px corner radii, semi-transparent black backing, and dedicated accent borders: cyan for Water, crystal frost for Ice, and purple for Catastrom). Low water (<20%) now dynamically flashes the water plate border and droplet red for immediate peripheral feedback, and depleting all ice charges dims the ice meter to 0.45 alpha.
 * **Discrete Ice Burst Charge Cells:** Replaced the ambiguous continuous fractional progress bar for Ice Burst with discrete segmented charge cells (tinted crystal frost white/cyan) dividing the meter width equally per charge, providing instantaneous at-a-glance charge readability.
@@ -255,12 +256,13 @@ All notable changes to the Summer Nights project will be documented in this file
 *(참고: 이 릴리스는 itch.io의 v1.3 버전에 해당합니다)*
 
 ### 추가됨
-* **전용 레트로 필터 메뉴 (Dedicated Retro Filters Menu):** 핵심 시스템 설정과 별도로 시각적 후처리 효과를 관리할 수 있도록 일시정지 메뉴에 전용 "필터(FILTERS)" 화면을 추가했습니다. PS1 스타일의 15비트 색 심도를 재현하는 "레트로 색상(Retro Colors)", 고전 콘솔 특유의 크로스해치 음영을 구현하는 8x8 베이어 "디더링(Dithering)", 그리고 태양에 바랜 35mm 코다크롬 빈티지 필름 질감과 온화한 할레이션을 연출하는 "폭염 1984(Heatwave 1984)"를 상호 배타적 토글 방식으로 제공하여 한 번에 하나의 필터만 활성화되도록 지원하며, `settings.cfg`의 `[Filters]` 섹션에 안전하게 저장됩니다.
+* **전용 레트로 필터 메뉴 및 PS1 셰이딩 필터 (Dedicated Retro Filters Menu & PS1 Shading Filter):** 핵심 시스템 설정과 별도로 시각적 후처리 효과를 관리할 수 있도록 일시정지 메뉴에 전용 "필터(FILTERS)" 화면을 추가했습니다. 총 4종의 상호 배타적 토글 필터를 제공합니다: "레트로 색상(Retro Colors)", 고전 콘솔 크로스해치 음영을 연출하는 "디더링(Dithering)", 384×216 가상 저해상도 래스터화와 15비트 계단식 음영, 래스터 정렬 4×4 베이어 디더링 및 컴포지트 크로마 번짐을 재현하는 신규 "PS1 셰이딩(PS1 Shading)", 그리고 태양에 바랜 35mm 코다크롬 빈티지 필름 질감과 온화한 할레이션을 연출하는 "폭염 1984(Heatwave 1984)". 한 번에 하나의 필터만 활성화되도록 지원하며, `settings.cfg`의 `[Filters]` 섹션에 안전하게 저장됩니다.
 
 ### 개선됨
-* **레트로 후처리 필터 전면 개편 (Retro Post-Processing Filters Overhaul):** 게임 내 3종의 레트로 시각 필터의 안정성 및 셰이더 수학, 렌더링 품질을 대폭 향상했습니다:
+* **레트로 후처리 필터 전면 개편 (Retro Post-Processing Filters Overhaul):** 게임 내 레트로 시각 필터의 안정성 및 셰이더 수학, 렌더링 품질을 대폭 향상했습니다:
   * **레트로 색상 (Retro Colors):** 아케이드/콘솔 스타일의 RGB 채널당 10단계 색상 양자화와 아날로그 NTSC 컴포지트 수평 크로마 번짐 지연(`px.x * 2.5`), 그리고 2픽셀 주기의 선명한 10% CRT 스캔라인 변조를 적용하여 클래식 디스플레이 감성을 완벽히 구현했습니다.
   * **디더링 (Dithering):** GPU 드라이버 호환성을 극대화한 고대비 4x4 베이어 행렬과 8단계 양자화를 결합하여, 거친 인공물 없이 90년대 콘솔 및 PC 게임 특유의 뚜렷한 크로스해치 음영을 연출합니다.
+  * **PS1 셰이딩 (PS1 Shading):** 5세대 32비트 콘솔 특유의 레트로 그래픽 감성을 재현한 시각 필터로, 384×216 가상 저해상도 프레임버퍼 래스터화(UI 및 텍스트는 선명한 1080p를 유지하며 3D 배경 및 태양만 픽셀화), 15비트 계단식 컬러 음영(16단계), 저해상도 픽셀 격자에 1:1 정렬된 4×4 베이어 행렬 디더링, 아날로그 NTSC 컴포지트 수평 크로마 번짐, 2픽셀 주기의 240p CRT 스캔라인을 결합하여 완벽한 고전 3D 콘솔 비주얼을 제공합니다.
   * **폭염 1984 (Heatwave 1984):** 실제 다중 샘플 광학 할레이션 확산(화면 UV 기준 4방향 십자 방사 커널)을 통해 태양 실루엣과 강한 플레어 주변으로 온화한 호박색-붉은빛이 자연스럽게 번지도록 구현했으며, 필름 S-커브 대비 부스트, 코다크롬 하이라이트/그림자 틴트, 빈티지 아나모픽 렌즈 감쇠 및 유기적 셀룰로이드 그레인을 완성했습니다.
 * **HUD 자원 미터 및 레트로 플랫 플레이트 (HUD Resource Meters & Retro Flat Plates):** 화면 우측 하단의 자원 HUD를 액티브 퍽 트래커의 레트로 아케이드 조형 언어(4px 둥근 모서리, 반투명 블랙 배경, 물/얼음/카타스트롬 전용 액센트 테두리)와 일치하는 레트로 플랫 다크 플레이트(`IconPlate`)로 전면 개편했습니다. 물 부족 상태(20% 미만) 시 플레이트 테두리와 물방울 아이콘이 고대비 경고 빨간색으로 깜빡여 주변 시야 피드백을 제공하며, 얼음 폭발 충전량이 소진되면 미터가 0.45 투명도로 어두워집니다.
 * **개별 얼음 폭발 충전 셀 (Discrete Ice Burst Charge Cells):** 얼음 폭발의 모호한 연속형 분수식 게이지를 보유한 충전 횟수당 균등하게 분할되는 개별 세그먼트 충전 셀(크리스탈 프로스트 시안 틴트)로 전면 교체하여 한눈에 남은 충전 수를 직관적으로 파악할 수 있도록 개선했습니다.

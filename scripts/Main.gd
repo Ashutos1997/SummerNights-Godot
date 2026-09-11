@@ -524,6 +524,9 @@ func _ready() -> void:
 	hud.filter_dithering_changed.connect(func(_enabled):
 		_update_post_process_settings()
 	)
+	hud.filter_ps1_changed.connect(func(_enabled):
+		_update_post_process_settings()
+	)
 	hud.filter_heatwave_changed.connect(func(_enabled):
 		_update_post_process_settings()
 	)
@@ -4026,4 +4029,5 @@ func _update_post_process_settings() -> void:
 		post_process_mat.set_shader_parameter("reduce_motion", GameState.reduce_motion)
 		post_process_mat.set_shader_parameter("color_reduction_enabled", GameState.filter_color_depth)
 		post_process_mat.set_shader_parameter("dither_enabled", GameState.filter_dithering)
+		post_process_mat.set_shader_parameter("ps1_shading_enabled", GameState.filter_ps1)
 		post_process_mat.set_shader_parameter("heatwave_1984_enabled", GameState.filter_heatwave)

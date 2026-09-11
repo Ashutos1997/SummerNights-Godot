@@ -290,6 +290,7 @@ var vibration_enabled: bool = true
 var fullscreen: bool = true
 var filter_color_depth: bool = false
 var filter_dithering: bool = false
+var filter_ps1: bool = false
 var filter_heatwave: bool = false
 var language: String = "EN"  # "EN" or "KR"
 var ice_charges_remaining: int = 0
@@ -432,6 +433,7 @@ func save_settings() -> void:
 	config.set_value("Video", "fullscreen", fullscreen)
 	config.set_value("Filters", "color_depth", filter_color_depth)
 	config.set_value("Filters", "dithering", filter_dithering)
+	config.set_value("Filters", "ps1_shading", filter_ps1)
 	config.set_value("Filters", "heatwave", filter_heatwave)
 	config.set_value("Localization", "language", language)
 	config.set_value("Stats", "high_score", high_score)
@@ -453,14 +455,22 @@ func load_settings() -> void:
 		fullscreen = config.get_value("Video", "fullscreen", true)
 		filter_color_depth = config.get_value("Filters", "color_depth", false)
 		filter_dithering = config.get_value("Filters", "dithering", false)
+		filter_ps1 = config.get_value("Filters", "ps1_shading", false)
 		filter_heatwave = config.get_value("Filters", "heatwave", false)
-		var active_count = int(filter_color_depth) + int(filter_dithering) + int(filter_heatwave)
+		var active_count = int(filter_color_depth) + int(filter_dithering) + int(filter_ps1) + int(filter_heatwave)
 		if active_count > 1:
 			if filter_heatwave:
 				filter_color_depth = false
 				filter_dithering = false
+				filter_ps1 = false
+			elif filter_ps1:
+				filter_color_depth = false
+				filter_dithering = false
+				filter_heatwave = false
 			elif filter_dithering:
 				filter_color_depth = false
+				filter_ps1 = false
+				filter_heatwave = false
 		best_survival_time = config.get_value("Stats", "best_survival_time", 0.0)
 		high_score = config.get_value("Stats", "high_score", 0)
 		seagulls_shooed = config.get_value("Stats", "seagulls_shooed", 0)
