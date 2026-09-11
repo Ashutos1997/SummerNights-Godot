@@ -62,9 +62,9 @@ These elements sit on top of the Core Gameplay HUD and blur/dim the background w
 ### Filters Screen (`FiltersScreen`)
 *   Accessed from the Pause Screen via the "FILTERS" button. Uses a gold-tinted 3D glasses icon (`3d-glasses.png`) in its title.
 *   Houses visual post-processing toggles, separating graphic customization from the core Settings screen. Filter toggles are mutually exclusive (only one can be active at a time):
-    *   **Retro Colors:** PS1-style 15-bit color depth reduction posterization (32 levels per RGB channel).
-    *   **Dithering:** 4x4 Bayer ordered cross-hatch dithering matrix for classic vintage console shading.
-    *   **Heatwave 1984:** Sun-bleached 35mm / Kodachrome vintage film simulation with warm halation and analog celluloid grain.
+    *   **Retro Colors:** Authentic PS1/Saturn 15-bit color depth reduction (32 levels per RGB channel), horizontal NTSC composite chroma delay, and subtle 3.5% CRT aperture grille scanlines.
+    *   **Dithering:** High-fidelity 8x8 Bayer ordered dithering matrix (64 threshold levels) with resolution-independent virtual retro grid scaling (`SCREEN_PIXEL_SIZE`) and luma-weighted amplitude modulation.
+    *   **Heatwave 1984:** Vintage 35mm / Kodachrome cinematography simulation with 4-tap spatial optical halation diffusion, film tone shoulder compression curve, warm anamorphic lens falloff, and analog celluloid grain.
 *   Adheres strictly to the unified layout: 40x40 gold title icon, 2px horizontal divider, high-contrast toggle buttons (OFF/ON states), standard 280x44 BACK button, and animated "PRESS ESC TO CLOSE" prompt. Fully translated in English and Korean.
 
 ### Controller Screen (`ControllerScreen`)
