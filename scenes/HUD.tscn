@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://d1c2b3a4e5f6g"]
+[gd_scene load_steps=23 format=3 uid="uid://d1c2b3a4e5f6g"]
 
 [ext_resource type="Script" path="res://scripts/HUD.gd" id="1_script"]
 [ext_resource type="FontFile" path="res://assets/ui/fonts/Fonts/Kenney Pixel.ttf" id="2_font"]
@@ -21,9 +21,49 @@
 [ext_resource type="Script" path="res://scripts/PauseSunGraphic.gd" id="91_sun"]
 [ext_resource type="Texture2D" path="res://assets/ui/controller/Keyboard.svg" id="92_keyboard"]
 [ext_resource type="Texture2D" uid="uid://9a7d1fe1f4f14e3383f9fcc44b573c9a" path="res://assets/ui/controller/Keyboard_controls.svg" id="92_keyboard_controls"]
-[ext_resource type="Texture2D" uid="uid://temp_xbox_front" path="res://assets/ui/gamepad/xbox_front.svg" id="93_xbox_front"]
+[ext_resource type="Texture2D" path="res://assets/ui/gamepad/xbox_front.svg" id="93_xbox_front"]
 [ext_resource type="Texture2D" path="res://assets/ui/menu_icons/console-controller.svg" id="94_icon_controller"]
 [ext_resource type="PackedScene" path="res://scenes/DynamicCrosshair.tscn" id="99_crosshair"]
+[ext_resource type="Texture2D" uid="uid://cuisbqls6msh6" path="res://assets/ui/hud_elements/meter_water.svg" id="20_icon_water"]
+[ext_resource type="Texture2D" uid="uid://cg18ulfjacuna" path="res://assets/ui/hud_elements/meter_ice.svg" id="21_icon_ice"]
+[ext_resource type="Texture2D" uid="uid://ba0r3btoibuoc" path="res://assets/ui/hud_elements/meter_catastrom.svg" id="22_icon_catastrom"]
+[ext_resource type="FontFile" path="res://assets/ui/fonts/Fonts/Kenney Future.ttf" id="23_font_future"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_plate_water"]
+bg_color = Color(0, 0, 0, 0.45)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2, 0.8, 1, 0.6)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_plate_ice"]
+bg_color = Color(0, 0, 0, 0.45)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.55, 0.9, 1, 0.6)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_plate_catastrom"]
+bg_color = Color(0, 0, 0, 0.45)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.8, 0.4, 1, 0.6)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_border"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -260,8 +300,8 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -332.0
-offset_top = -100.0
+offset_left = -340.0
+offset_top = -160.0
 offset_right = -24.0
 offset_bottom = -24.0
 grow_horizontal = 0
@@ -272,20 +312,35 @@ alignment = 2
 [node name="water_row" type="HBoxContainer" parent="HUD/resource_container"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
-[node name="Label" type="Label" parent="HUD/resource_container/water_row"]
-custom_minimum_size = Vector2(100, 0)
+[node name="IconPlate" type="Panel" parent="HUD/resource_container/water_row"]
+custom_minimum_size = Vector2(38, 38)
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
-vertical_alignment = 2
-text = "💧 WATER"
-horizontal_alignment = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_plate_water")
+
+[node name="Icon" type="TextureRect" parent="HUD/resource_container/water_row/IconPlate"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = -6.0
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("20_icon_water")
+expand_mode = 1
+stretch_mode = 5
+modulate = Color(0.4, 0.9, 1, 1)
 
 [node name="WaterBar" type="TextureProgressBar" parent="HUD/resource_container/water_row"]
-custom_minimum_size = Vector2(200, 20)
+custom_minimum_size = Vector2(200, 24)
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4
 value = 50.0
 nine_patch_stretch = true
 stretch_margin_left = 10
@@ -299,56 +354,85 @@ texture_progress = ExtResource("8_prog_blue")
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
-[node name="Label" type="Label" parent="HUD/resource_container/ice_row"]
-custom_minimum_size = Vector2(100, 0)
+[node name="IconPlate" type="Panel" parent="HUD/resource_container/ice_row"]
+custom_minimum_size = Vector2(38, 38)
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
-vertical_alignment = 2
-text = "❄ ICE BURST"
-horizontal_alignment = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_plate_ice")
+
+[node name="Icon" type="TextureRect" parent="HUD/resource_container/ice_row/IconPlate"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = -6.0
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("21_icon_ice")
+expand_mode = 1
+stretch_mode = 5
+modulate = Color(0.5, 0.85, 1, 1)
 
 [node name="IceBarContainer" type="HBoxContainer" parent="HUD/resource_container/ice_row"]
+custom_minimum_size = Vector2(200, 24)
 layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="ChargeDots" type="HBoxContainer" parent="HUD/resource_container/ice_row/IceBarContainer"]
-layout_mode = 2
 size_flags_vertical = 4
 theme_override_constants/separation = 4
 
 [node name="IceBar" type="TextureProgressBar" parent="HUD/resource_container/ice_row/IceBarContainer"]
-custom_minimum_size = Vector2(200, 20)
+custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4
 value = 100.0
 nine_patch_stretch = true
-stretch_margin_left = 10
-stretch_margin_top = 10
-stretch_margin_right = 10
-stretch_margin_bottom = 10
+stretch_margin_left = 6
+stretch_margin_top = 6
+stretch_margin_right = 6
+stretch_margin_bottom = 6
 texture_under = ExtResource("4_prog_bg")
-texture_progress = ExtResource("8_prog_blue")
+texture_progress = ExtResource("5_prog_fg")
+tint_progress = Color(0.55, 0.9, 1, 1)
 
 [node name="catastrom_row" type="HBoxContainer" parent="HUD/resource_container"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
-[node name="Label" type="Label" parent="HUD/resource_container/catastrom_row"]
-custom_minimum_size = Vector2(100, 0)
+[node name="IconPlate" type="Panel" parent="HUD/resource_container/catastrom_row"]
+custom_minimum_size = Vector2(38, 38)
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
-vertical_alignment = 2
-text = "CATASTROM"
-horizontal_alignment = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_plate_catastrom")
+
+[node name="Icon" type="TextureRect" parent="HUD/resource_container/catastrom_row/IconPlate"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = -6.0
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("22_icon_catastrom")
+expand_mode = 1
+stretch_mode = 5
+modulate = Color(0.8, 0.4, 1, 1)
 
 [node name="CatastromBar" type="TextureProgressBar" parent="HUD/resource_container/catastrom_row"]
-custom_minimum_size = Vector2(200, 20)
+custom_minimum_size = Vector2(200, 24)
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4
 max_value = 1.0
 step = 0.01
 nine_patch_stretch = true
@@ -359,6 +443,23 @@ stretch_margin_bottom = 10
 texture_under = ExtResource("4_prog_bg")
 texture_progress = ExtResource("7_prog_red")
 tint_progress = Color(0.6, 0, 1, 1)
+
+[node name="ReadyLabel" type="Label" parent="HUD/resource_container/catastrom_row/CatastromBar"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("23_font_future")
+theme_override_font_sizes/font_size = 13
+text = "MAX READY!"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="GrabIcon" type="TextureRect" parent="HUD"]
 visible = false
@@ -2029,6 +2130,14 @@ mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.85)
 theme_override_font_sizes/font_size = 12
 text = "Menu & Achievement Icons  ·  Game-icons.net  ·  CC BY 3.0"
+horizontal_alignment = 1
+
+[node name="ItmUI1d" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "HUD Meter Icons  ·  Yudhi Restu Pebriyanto, Jaya99, balyanbinmalkan (Noun Project)  ·  CC BY 3.0"
 horizontal_alignment = 1
 
 [node name="ItmUI1c" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]

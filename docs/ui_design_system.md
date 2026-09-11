@@ -36,6 +36,7 @@ This document outlines the UI design system, color palette, typography guideline
 To maintain a consistent shape language across the game, corner rounding follows strict rules based on component size and function:
 
 *   **Small / Standard Buttons:** `0px` (Square corners, used for Main Menu buttons, simple prompts)
+*   **Retro Flat Plates & Badges:** `4px` (Subtle corner radius, used for Active Perks icons and Resource Meter Icon Plates to maintain consistent arcade styling)
 *   **Large Panels & Cards:** `16px` (Highly rounded corners, used for Weapon Wheel, large UI overlays, etc. to create a sleek and premium aesthetic)
 
 ---
@@ -114,8 +115,13 @@ The mid-game drafting menu adheres strictly to the global menu visual language r
 ### HUD Right-Edge Alignment & Resource Layout
 To ensure mathematical visual alignment across the right side of the screen during live combat, all elements along the right edge adhere to a strict coordinate hierarchy:
 *   **Top-Right Container (`TopRightInfo`):** The `TimerLabel` and `ScoreLabel` are unified within a dedicated `VBoxContainer` anchored to the top-right corner with a `24px` screen edge margin (`offset_right = -24.0`, `offset_left = -300.0`). Both labels utilize `horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT` so their right text boundaries remain perfectly flush with one another.
-*   **Standardized Resource Rows:** In `resource_container` (anchored bottom-right with a matching `24px` margin), all resource row labels (Water, Ice, Catastrom) specify a uniform `custom_minimum_size = Vector2(100, 0)`.
-*   **Charge Dots Placement:** Inside `IceBarContainer`, `ChargeDots` are positioned on the left side of the `IceBar` progress bar (`[ChargeDots, IceBar]`), ensuring the progress bar itself can expand flush to the right boundary alongside the Water and Catastrom bars without being offset inwards by charge pips.
+*   **Resource Row Retro Flat Plates (`IconPlate`):** In `resource_container` (anchored bottom-right with a matching `24px` margin), resource meters are anchored by `38x38` retro flat dark plates (`Panel` with `Color(0, 0, 0, 0.45)`, `4px` corner radii, `1px` accent border) housing tightly framed vector icons with a `6px` internal offset (reducing icon size to 26x26 inside the 38x38 plate to provide balanced breathing room and avoid visual claustrophobia):
+    *   **Water Meter Plate:** Cyan border (`Color(0.2, 0.8, 1.0, 0.6)`) and `meter_water.svg` (Water Droplet) modulated with `Color(0.4, 0.9, 1.0)`. During low water (<20%), both the plate border and droplet flash warning red (`Color(1.0, 0.3, 0.3, 0.9)`) for immediate peripheral feedback.
+    *   **Ice Burst Plate:** Crystal frost border (`Color(0.55, 0.9, 1.0, 0.6)`) and `meter_ice.svg` (Snowflake) modulated with `Color(0.5, 0.85, 1.0)`. Dims to `0.45` alpha when all charges are spent.
+    *   **Catastrom Plate:** Catastrom purple border (`Color(0.8, 0.4, 1.0, 0.6)`) and `meter_catastrom.svg` (Sun Drag) modulated with `Color(0.8, 0.4, 1.0)`. Pulses bright gold (`Color(1.0, 0.85, 0.2)`) when the gauge reaches 100%.
+    Using identical 38x38 icon footprints eliminates cross-language string length differences (EN vs KR) and guarantees that all progress bars begin at the exact same horizontal coordinate and expand to the same right-aligned screen boundary.
+*   **Discrete Ice Charge Cells:** Inside `IceBarContainer`, integer charges are represented by discrete segmented cells (`progress_white.png` tinted `Color(0.55, 0.9, 1.0)` with a 4px gap) dividing the 200px width equally, eliminating fractional percentage ambiguities.
+*   **Catastrom "MAX READY!" Feedback:** When Catastrom reaches 100%, an animated arcade label (`ReadyLabel` with 3px black outline) pulses inside the purple bar ("MAX READY!" in EN / "준비 완료!" in KR).
 
 ### Buttons (StyleBoxFlat)
 

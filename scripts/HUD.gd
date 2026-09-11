@@ -16,17 +16,24 @@ signal weapon_changed(weapon_id: String)
 @onready var tutorial_aim_label = $HUD/TutorialPrompt/VBoxContainer/AimLabel
 @onready var tutorial_shoot_label = $HUD/TutorialPrompt/VBoxContainer/ShootLabel
 @onready var water_bar_container = $HUD/resource_container/water_row
+@onready var water_plate = $HUD/resource_container/water_row/IconPlate
 @onready var water_bar = $HUD/resource_container/water_row/WaterBar
-@onready var water_label = $HUD/resource_container/water_row/Label
+@onready var water_icon = $HUD/resource_container/water_row/IconPlate/Icon
+var water_label: Label = null
 
 @onready var ice_row = $HUD/resource_container/ice_row
-@onready var ice_label = $HUD/resource_container/ice_row/Label
+@onready var ice_plate = $HUD/resource_container/ice_row/IconPlate
+@onready var ice_icon = $HUD/resource_container/ice_row/IconPlate/Icon
+@onready var ice_bar_container = $HUD/resource_container/ice_row/IceBarContainer
 @onready var ice_bar = $HUD/resource_container/ice_row/IceBarContainer/IceBar
-@onready var charge_dots = $HUD/resource_container/ice_row/IceBarContainer/ChargeDots
+var ice_label: Label = null
 
 @onready var catastrom_row = $HUD/resource_container/catastrom_row
-@onready var catastrom_label = $HUD/resource_container/catastrom_row/Label
+@onready var catastrom_plate = $HUD/resource_container/catastrom_row/IconPlate
+@onready var catastrom_icon = $HUD/resource_container/catastrom_row/IconPlate/Icon
 @onready var catastrom_bar = $HUD/resource_container/catastrom_row/CatastromBar
+@onready var ready_label = $HUD/resource_container/catastrom_row/CatastromBar/ReadyLabel
+var catastrom_label: Label = null
 @onready var grab_icon = $HUD/GrabIcon
 
 @onready var toast_container = $HUD/ToastContainer
@@ -290,11 +297,26 @@ func _process(delta: float) -> void:
 			catastrom_bar.value = lerp(catastrom_bar.value, float(target_catastrom), 12.0 * delta)
 			
 		if catastrom_bar.value >= 0.99:
+			if ready_label:
+				ready_label.visible = true
+				var pulse = (sin(Time.get_ticks_msec() * 0.008) * 0.5 + 0.5)
+				ready_label.modulate.a = 0.75 + pulse * 0.25
+			if is_instance_valid(catastrom_plate):
+				var p_sb = catastrom_plate.get_theme_stylebox("panel") as StyleBoxFlat
+				if p_sb:
+					var gold_pulse = (sin(Time.get_ticks_msec() * 0.008) * 0.5 + 0.5)
+					p_sb.border_color = Color(1.0, 0.85, 0.2, 0.6 + gold_pulse * 0.4)
 			if Engine.get_frames_drawn() % 30 == 0:
 				catastrom_bar.tint_progress = Color(0.8, 0.4, 1.0, 1.0)
 			elif Engine.get_frames_drawn() % 30 == 15:
 				catastrom_bar.tint_progress = Color(0.6, 0, 1, 1)
 		else:
+			if ready_label:
+				ready_label.visible = false
+			if is_instance_valid(catastrom_plate):
+				var p_sb = catastrom_plate.get_theme_stylebox("panel") as StyleBoxFlat
+				if p_sb:
+					p_sb.border_color = Color(0.8, 0.4, 1.0, 0.6)
 			catastrom_bar.tint_progress = Color(0.6, 0, 1, 1)
 			
 
@@ -454,6 +476,17 @@ func _ready() -> void:
 	if water_bar:
 		water_bar.material = null
 		
+	# Duplicate plate StyleBoxes so runtime animations/flashes do not mutate shared scene resources
+	if water_plate:
+		var w_orig = water_plate.get_theme_stylebox("panel")
+		if w_orig: water_plate.add_theme_stylebox_override("panel", w_orig.duplicate())
+	if ice_plate:
+		var i_orig = ice_plate.get_theme_stylebox("panel")
+		if i_orig: ice_plate.add_theme_stylebox_override("panel", i_orig.duplicate())
+	if catastrom_plate:
+		var c_orig = catastrom_plate.get_theme_stylebox("panel")
+		if c_orig: catastrom_plate.add_theme_stylebox_override("panel", c_orig.duplicate())
+		
 	# Connect to Global signals
 	win_screen.pivot_offset = get_viewport().get_visible_rect().size / 2.0
 	
@@ -463,6 +496,12 @@ func _ready() -> void:
 	kenney_font = load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
 	galmuri_font = load("res://assets/fonts/Galmuri11.ttf")
 	var font = kenney_font
+	
+	if ready_label:
+		ready_label.visible = false
+		var ready_font = galmuri_font if is_kr else kenney_font
+		_style_lbl(ready_label, 14 if is_kr else 13, Color(1.0, 0.85, 0.2, 1.0), 3, Color.BLACK, ready_font)
+		ready_label.text = "준비 완료!" if is_kr else "MAX READY!"
 	
 	_style_lbl(heat_label, 22, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
 	_style_lbl(water_label, 22, Color(0.4, 0.9, 1.0, 1.0), 3, Color.BLACK, font)
@@ -915,6 +954,10 @@ func _apply_language(lang: String) -> void:
 		catastrom_label.text = "카타스트롬" if is_kr else "CATASTROM"
 		if font: catastrom_label.add_theme_font_override("font", font)
 		catastrom_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
+	if ready_label:
+		ready_label.text = "준비 완료!" if is_kr else "MAX READY!"
+		if font: ready_label.add_theme_font_override("font", font)
+		ready_label.add_theme_font_size_override("font_size", 14 if is_kr else 13)
 
 	if tutorial_aim_label:
 		tutorial_aim_label.text = "조준: 마우스 / 우측 스틱" if is_kr else "Aim: Mouse / Right Stick"
@@ -1248,6 +1291,8 @@ func _apply_language(lang: String) -> void:
 			if itm_core2: itm_core2.text = "Ivy  ·  UI 및 시각 디자인" if is_kr else "Ivy  ·  UI & Visual Designer"
 			var itm_special1 = credits_list.get_node_or_null("ItmSpecial1")
 			if itm_special1: itm_special1.text = "Yodi (요디님) & 카카오톡 디자인 클럽  ·  초기 콘셉트 영감 제공" if is_kr else "Yodi (요디님) & Kakao based Design Club  ·  Original Concept Inspiration"
+			var itm_ui1d = credits_list.get_node_or_null("ItmUI1d")
+			if itm_ui1d: itm_ui1d.text = "HUD 미터 아이콘  ·  Yudhi Restu Pebriyanto, Jaya99, balyanbinmalkan (Noun Project)  ·  CC BY 3.0" if is_kr else "HUD Meter Icons  ·  Yudhi Restu Pebriyanto, Jaya99, balyanbinmalkan (Noun Project)  ·  CC BY 3.0"
 
 			for child in credits_list.get_children():
 					if child is Label:
@@ -1668,6 +1713,12 @@ func _on_water_changed(current: float, max_val: float) -> void:
 		target_water = current
 			
 		if current < max_val * 0.2:
+			if is_instance_valid(water_plate):
+				var w_sb = water_plate.get_theme_stylebox("panel") as StyleBoxFlat
+				if w_sb:
+					w_sb.border_color = Color(1.0, 0.3, 0.3, 0.9)
+			if is_instance_valid(water_icon):
+				water_icon.modulate = Color(1.0, 0.4, 0.4, 1.0)
 			if reduce_motion:
 				water_bar.tint_progress = Color(1.0, 0.3, 0.3)
 				water_bar.modulate.a = 1.0
@@ -1679,6 +1730,12 @@ func _on_water_changed(current: float, max_val: float) -> void:
 					water_tween.tween_property(water_bar, "modulate:a", 0.4, 0.4)
 					water_tween.tween_property(water_bar, "modulate:a", 1.0, 0.4)
 		else:
+			if is_instance_valid(water_plate):
+				var w_sb = water_plate.get_theme_stylebox("panel") as StyleBoxFlat
+				if w_sb:
+					w_sb.border_color = Color(0.2, 0.8, 1.0, 0.6)
+			if is_instance_valid(water_icon):
+				water_icon.modulate = Color(0.4, 0.9, 1.0, 1.0)
 			water_bar.tint_progress = Color(0.3, 0.75, 1.0)
 			if is_instance_valid(water_tween):
 				water_tween.kill()
@@ -2294,9 +2351,54 @@ func _on_menu_pressed() -> void:
 func update_ice_charges(charges: int, max_charges: int) -> void:
 	if max_charges <= 0:
 		ice_row.visible = false
-	else:
-		ice_row.visible = true
-		ice_bar.value = (float(charges) / float(max_charges)) * 100.0
+		return
+
+	ice_row.visible = true
+
+	# Dim plate and container when completely empty
+	var is_depleted = (charges == 0)
+	if is_instance_valid(ice_plate):
+		ice_plate.modulate.a = 0.45 if is_depleted else 1.0
+		var i_sb = ice_plate.get_theme_stylebox("panel") as StyleBoxFlat
+		if i_sb:
+			i_sb.border_color = Color(0.55, 0.9, 1.0, 0.25 if is_depleted else 0.6)
+	if is_instance_valid(ice_bar_container):
+		ice_bar_container.modulate.a = 0.45 if is_depleted else 1.0
+
+	# Discrete charge cells inside ice_bar_container
+	if is_instance_valid(ice_bar_container):
+		var cells: Array[TextureProgressBar] = []
+		for child in ice_bar_container.get_children():
+			if child is TextureProgressBar:
+				cells.append(child)
+
+		# Spawn additional cells if needed
+		while cells.size() < max_charges:
+			var new_cell = TextureProgressBar.new()
+			new_cell.custom_minimum_size = Vector2(0, 24)
+			new_cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			new_cell.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+			new_cell.nine_patch_stretch = true
+			new_cell.stretch_margin_left = 6
+			new_cell.stretch_margin_top = 6
+			new_cell.stretch_margin_right = 6
+			new_cell.stretch_margin_bottom = 6
+			new_cell.texture_under = preload("res://assets/ui/ui_adventure/PNG/Default/progress_transparent.png")
+			new_cell.texture_progress = preload("res://assets/ui/ui_adventure/PNG/Default/progress_white.png")
+			new_cell.tint_progress = Color(0.55, 0.9, 1.0, 1.0)
+			new_cell.max_value = 100.0
+			ice_bar_container.add_child(new_cell)
+			cells.append(new_cell)
+
+		# Remove extra cells if max_charges decreased
+		while cells.size() > max_charges:
+			var extra = cells.pop_back()
+			if extra != ice_bar:
+				extra.queue_free()
+
+		# Update values: full if index < charges, empty if index >= charges
+		for i in range(cells.size()):
+			cells[i].value = 100.0 if i < charges else 0.0
 
 func show_toast(title: String, description: String, icon_path: String, color: Color) -> void:
 	if not toast_container: return
@@ -2401,7 +2503,7 @@ func show_ice_unlock() -> void:
 	var is_kr = GameState.language == "KR"
 	var title = "아이스 버스트 해금" if is_kr else "ICE BURST UNLOCKED"
 	var desc = "태양을 얼려라 [RMB / R]" if is_kr else "FREEZE THE SUN [RMB / R]"
-	show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_white.png", Color(0.5, 0.85, 1.0, 1.0))
+	show_toast(title, desc, "res://assets/ui/hud_elements/meter_ice.svg", Color(0.5, 0.85, 1.0, 1.0))
 
 func show_weapon_unlock() -> void:
 	var is_kr = GameState.language == "KR"

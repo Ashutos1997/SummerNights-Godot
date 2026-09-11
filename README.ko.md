@@ -203,6 +203,7 @@ SummerNights-Godot/
 | UI Pack Adventure | Kenney | CC0 |
 | 컨트롤러 SVGs (Controller SVGs) | Oscar Nilsson | CC0 |
 | 메뉴 및 업적 아이콘 (Menu & Achievement Icons) | Game-icons.net | CC BY 3.0 |
+| HUD 미터 아이콘 (HUD Meter Icons) | Yudhi Restu Pebriyanto, Jaya99, balyanbinmalkan (Noun Project) | CC BY 3.0 |
 | SFX - 40가지 CC0 물/물결 효과음 | OpenGameArt | CC0 |
 | SFX - 물총 발사음 | belanhud (Freesound) | CC0 |
 | SFX - UI 오디오 팩 | Kenney | CC0 |

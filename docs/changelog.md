@@ -9,6 +9,10 @@ All notable changes to the Summer Nights project will be documented in this file
 * **Dedicated Retro Filters Menu:** Added a dedicated "FILTERS" screen to the Pause Menu to manage visual post-processing effects separately from core system settings. Features mutually exclusive toggles for "Retro Colors" (PS1-style 15-bit color depth reduction), "Dithering" (4x4 Bayer ordered cross-hatch shading), and "Heatwave 1984" (sun-bleached 35mm / Kodachrome vintage film with warm halation and analog celluloid grain), ensuring only one retro filter can be active at a time. All settings are fully persisted in `settings.cfg` under `[Filters]`.
 
 ### Improved
+* **HUD Resource Meters & Retro Flat Plates:** Overhauled the bottom-right resource meter presentation with retro flat dark plates (matching the Active Perks Tracker design with 4px corner radii, semi-transparent black backing, and dedicated accent borders: cyan for Water, crystal frost for Ice, and purple for Catastrom). Low water (<20%) now dynamically flashes the water plate border and droplet red for immediate peripheral feedback, and depleting all ice charges dims the ice meter to 0.45 alpha.
+* **Discrete Ice Burst Charge Cells:** Replaced the ambiguous continuous fractional progress bar for Ice Burst with discrete segmented charge cells (tinted crystal frost white/cyan) dividing the meter width equally per charge, providing instantaneous at-a-glance charge readability.
+* **Catastrom "MAX READY!" Arcade Feedback:** When Catastrom reaches 100%, its icon plate border smoothly pulses gold, and an animated, bold arcade "MAX READY!" label (localized as "준비 완료!" in Korean) flashes directly inside the glowing purple bar.
+* **Ice Burst Unlock Notification Icon:** Updated the "ICE BURST UNLOCKED" toast notification icon from the generic white star to the crisp snowflake vector icon (`meter_ice.svg`), matching the bottom-right resource meter HUD.
 * **Filters Icon:** Replaced the generic settings gear icon on the Filters menu title with a custom 3D glasses icon to better match the retro theme.
 * **Dynamic Weather Clouds:** The 3D stylized clouds now dynamically react to weather events. During Rainstorms, they smoothly transition to a moody, dark grey-blue color to match real-world storm clouds, and during Solar Eclipses, they tint to a deep, ominous purple to perfectly match the skybox.
 * **Ice Burst Polish:** Using the Ice Burst ability now freezes the screen edges with an icy blue procedural frost overlay, and forces the Sun's color to temporarily shift from warm orange to a cold cyan to make the impact feel incredibly heavy and satisfying.
@@ -250,6 +254,10 @@ All notable changes to the Summer Nights project will be documented in this file
 * **전용 레트로 필터 메뉴 (Dedicated Retro Filters Menu):** 핵심 시스템 설정과 별도로 시각적 후처리 효과를 관리할 수 있도록 일시정지 메뉴에 전용 "필터(FILTERS)" 화면을 추가했습니다. PS1 스타일의 15비트 색 심도를 재현하는 "레트로 색상(Retro Colors)", 고전 콘솔 특유의 크로스해치 음영을 구현하는 4x4 베이어 "디더링(Dithering)", 그리고 태양에 바랜 35mm 코다크롬 빈티지 필름 질감과 온화한 할레이션을 연출하는 "폭염 1984(Heatwave 1984)"를 상호 배타적 토글 방식으로 제공하여 한 번에 하나의 필터만 활성화되도록 지원하며, `settings.cfg`의 `[Filters]` 섹션에 안전하게 저장됩니다.
 
 ### 개선됨
+* **HUD 자원 미터 및 레트로 플랫 플레이트 (HUD Resource Meters & Retro Flat Plates):** 화면 우측 하단의 자원 HUD를 액티브 퍽 트래커의 레트로 아케이드 조형 언어(4px 둥근 모서리, 반투명 블랙 배경, 물/얼음/카타스트롬 전용 액센트 테두리)와 일치하는 레트로 플랫 다크 플레이트(`IconPlate`)로 전면 개편했습니다. 물 부족 상태(20% 미만) 시 플레이트 테두리와 물방울 아이콘이 고대비 경고 빨간색으로 깜빡여 주변 시야 피드백을 제공하며, 얼음 폭발 충전량이 소진되면 미터가 0.45 투명도로 어두워집니다.
+* **개별 얼음 폭발 충전 셀 (Discrete Ice Burst Charge Cells):** 얼음 폭발의 모호한 연속형 분수식 게이지를 보유한 충전 횟수당 균등하게 분할되는 개별 세그먼트 충전 셀(크리스탈 프로스트 시안 틴트)로 전면 교체하여 한눈에 남은 충전 수를 직관적으로 파악할 수 있도록 개선했습니다.
+* **카타스트롬 "MAX READY!" 아케이드 연출:** 카타스트롬 게이지가 100%에 도달하면 아이콘 플레이트 테두리가 황금빛으로 부드럽게 깜빡이며, 보라색 게이지 내부에 굵은 아케이드 "MAX READY!" (한국어 설정 시 "준비 완료!") 라벨이 동적으로 펄스 점멸하여 궁극기 사용 가능 상태를 강렬하게 전달합니다.
+* **아이스 버스트 해금 알림 아이콘 (Ice Burst Unlock Notification Icon):** "아이스 버스트 해금" 토스트 알림의 아이콘을 기존의 범용 흰색 별에서 화면 우측 하단의 자원 미터 HUD와 일치하는 선명한 눈송이 벡터 아이콘(`meter_ice.svg`)으로 업데이트했습니다.
 * **필터 아이콘 (Filters Icon):** 필터 메뉴 제목의 일반적인 설정 톱니바퀴 아이콘을 레트로 테마에 더 잘 어울리는 커스텀 3D 안경 아이콘으로 교체했습니다.
 * **동적 날씨 구름:** 3D 양식화된 구름이 이제 날씨 이벤트에 동적으로 반응합니다. 폭우 시 실제 폭풍 구름처럼 어두운 회청색으로 부드럽게 변하며, 일식 중에는 주변 환경과 어울리도록 깊은 보라색으로 물듭니다.
 * **얼음 폭발 시각 효과 개선:** 이제 얼음 폭발 능력을 사용하면 절차적 서리 오버레이로 화면 가장자리가 얼어붙고, 일시적으로 태양의 색상이 따뜻한 주황색에서 차가운 청록색으로 변하여 타격감이 매우 향상됩니다.
