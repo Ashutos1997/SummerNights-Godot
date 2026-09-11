@@ -527,6 +527,9 @@ func _ready() -> void:
 	hud.filter_heatwave_changed.connect(func(_enabled):
 		_update_post_process_settings()
 	)
+	hud.filter_neon_dusk_changed.connect(func(_enabled):
+		_update_post_process_settings()
+	)
 	mouse_sensitivity = GameState.mouse_sensitivity
 	reduce_motion = GameState.reduce_motion
 	heat_changed.emit(temperature, MAX_TEMP)
@@ -4027,3 +4030,4 @@ func _update_post_process_settings() -> void:
 		post_process_mat.set_shader_parameter("color_reduction_enabled", GameState.filter_color_depth)
 		post_process_mat.set_shader_parameter("dither_enabled", GameState.filter_dithering)
 		post_process_mat.set_shader_parameter("heatwave_1984_enabled", GameState.filter_heatwave)
+		post_process_mat.set_shader_parameter("neon_dusk_enabled", GameState.filter_neon_dusk)

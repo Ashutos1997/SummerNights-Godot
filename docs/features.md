@@ -114,6 +114,7 @@ Weather events trigger based on a dynamic probability system tied to the current
     *   **Retro Colors:** Simulates PS1-style 15-bit color depth posterization (32 discrete levels per RGB channel).
     *   **Dithering:** Applies authentic 4x4 Bayer ordered dithering (cross-hatch pattern) for vintage console stippling and shading.
     *   **Heatwave 1984:** Simulates sun-bleached 35mm / Kodachrome vintage film with overexposed golden highlights, crushed teal-olive shadows, soft reddish-orange film halation around the Sun and water speculars, warm lens falloff, and analog celluloid grain.
+    *   **Neon Dusk:** Hyper-stylized Synthwave / Outrun aesthetic that bathes the scene in deep indigo/violet shadows, vibrant cyan/teal ocean highlights, electric hot magenta highlights, dual chromatic halation around bright light sources, and retro VHS grain.
     *   Filter preferences are fully persisted in `settings.cfg` under `[Filters]`.
 
 *   **Accessibility & Settings:**

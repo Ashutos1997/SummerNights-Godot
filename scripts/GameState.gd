@@ -291,6 +291,7 @@ var fullscreen: bool = true
 var filter_color_depth: bool = false
 var filter_dithering: bool = false
 var filter_heatwave: bool = false
+var filter_neon_dusk: bool = false
 var language: String = "EN"  # "EN" or "KR"
 var ice_charges_remaining: int = 0
 var is_survival_mode: bool = false
@@ -433,6 +434,7 @@ func save_settings() -> void:
 	config.set_value("Filters", "color_depth", filter_color_depth)
 	config.set_value("Filters", "dithering", filter_dithering)
 	config.set_value("Filters", "heatwave", filter_heatwave)
+	config.set_value("Filters", "neon_dusk", filter_neon_dusk)
 	config.set_value("Localization", "language", language)
 	config.set_value("Stats", "high_score", high_score)
 	config.set_value("Stats", "unlocked_achievements", unlocked_achievements)
@@ -454,9 +456,14 @@ func load_settings() -> void:
 		filter_color_depth = config.get_value("Filters", "color_depth", false)
 		filter_dithering = config.get_value("Filters", "dithering", false)
 		filter_heatwave = config.get_value("Filters", "heatwave", false)
-		var active_count = int(filter_color_depth) + int(filter_dithering) + int(filter_heatwave)
+		filter_neon_dusk = config.get_value("Filters", "neon_dusk", false)
+		var active_count = int(filter_color_depth) + int(filter_dithering) + int(filter_heatwave) + int(filter_neon_dusk)
 		if active_count > 1:
-			if filter_heatwave:
+			if filter_neon_dusk:
+				filter_color_depth = false
+				filter_dithering = false
+				filter_heatwave = false
+			elif filter_heatwave:
 				filter_color_depth = false
 				filter_dithering = false
 			elif filter_dithering:
