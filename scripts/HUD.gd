@@ -48,10 +48,10 @@ var transition_overlay: ColorRect
 @onready var end_unlock_lbl    = $HUD/EndScreen/ColorRect/VBoxContainer/UnlockPrompt
 @onready var end_prompt_lbl    = $HUD/EndScreen/ColorRect/VBoxContainer/RestartPrompt
 
-@onready var timer_label       = $HUD/TimerLabel
+@onready var timer_label       = $HUD/TopRightInfo/TimerLabel
 @onready var weather_icon_container = $HUD/WeatherIconContainer
 @onready var weather_icon       = $HUD/WeatherIconContainer/Icon
-@onready var score_label       = $HUD/ScoreLabel
+@onready var score_label       = $HUD/TopRightInfo/ScoreLabel
 @onready var combo_label       = $HUD/ComboLabel
 var callout_label: Label
 var active_perks_hud: HFlowContainer

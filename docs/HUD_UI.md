@@ -17,8 +17,9 @@ The live gameplay HUD is designed to minimize clutter while keeping critical sur
 *   **`Phase2Label`:** A centered warning text that flashes when a boss transitions into Phase 2.
 
 ### Top-Right
-*   **`TimerLabel`:** Displays the time remaining in the current wave (e.g., `TIME: 0:45`).
-*   **`ScoreLabel`:** Located directly beneath the Timer. Displays the live arcade score (e.g., `SCORE: 1,500`). When points are scored, this label scales up and snaps back smoothly, pivoting from the right edge to avoid extending off-screen.
+*   **`TopRightInfo` (VBoxContainer):** A container anchoring the top-right text elements to ensure perfect right-alignment of their bounding boxes.
+    *   **`TimerLabel`:** Displays the time remaining in the current wave (e.g., `TIME: 0:45`).
+    *   **`ScoreLabel`:** Displays the live arcade score (e.g., `SCORE: 1,500`). When points are scored, this label scales up and snaps back smoothly, pivoting from the right edge to avoid extending off-screen.
 *   **`WeatherIconContainer`:** A persistent, stylized circular icon container located directly beneath the Score. Displays a yellow star for normal weather, and animated exclamation marks for active weather events (Rain / Eclipse).
 *   **`WeatherTimerLabel`:** Positioned just below the WeatherIconContainer. Appears during an Eclipse if the "Shadow Walker" achievement is unlocked, displaying a precise countdown until the eclipse ends in a striking red font with a black outline.
 *   **`ToastContainer`:** Displays transient slide-down notifications (e.g., "Weapon Unlocked") from the top-right corner. During level transitions, these notifications are deferred and will only appear after the next level has fully loaded and the screen has faded in.
@@ -31,9 +32,10 @@ The live gameplay HUD is designed to minimize clutter while keeping critical sur
 *   **`FlareRings` (`scripts/FlareRings.gd`):** A custom diegetic 2D vector HUD overlay attached to the HUD canvas. Projects the Sun's 3D mesh radius into screen space, drawing an outer glow, background track, bright orange-yellow fill arc, leading dot, and cardinal tick marks over the 0.6s Solar Flare charge window. Works in tandem with the Sun's dynamic `"charging"` facial expression (wide strained eyes, sharp brows, fiery glow) to clearly telegraph incoming flare attacks.
 
 ### Bottom-Right
-*   **`resource_container`:** A vertical box container managing player resources:
+*   **`resource_container`:** A vertical box container managing player resources, anchored with a 24px right margin to align flush with the Top-Right Info container:
+    *   **Standardized Labels:** All resource rows (`water_row`, `ice_row`, `catastrom_row`) enforce a uniform label minimum width (`custom_minimum_size.x = 100`) so that all progress bars expand to identical widths.
     *   **Water Bar:** Shows current water tank capacity. Recharges when not shooting. Smoothly lerps (interpolates) to changes, but instantly snaps its visual value if its maximum capacity changes (e.g., when switching weapons) to prevent visual artifacting.
-    *   **Ice Charges:** Displays pip-style dots indicating how many Ice Bursts the player has stored.
+    *   **Ice Charges:** Displays pip-style dots indicating how many Ice Bursts the player has stored. Positioned immediately to the left of the Ice Burst progress bar inside `IceBarContainer` (`[ChargeDots, IceBar]`) to prevent them from pushing the bar inwards and breaking the HUD's right alignment.
     *   **Catastrom Bar:** Shows the ultimate gauge, which fills rapidly via the Combo System.
 
 ### Bottom-Left
@@ -55,7 +57,7 @@ These elements sit on top of the Core Gameplay HUD and blur/dim the background w
     *   The **AchievementsScreen** uses a vertically scrolling `ScrollContainer` displaying dynamically built panels for all configured achievements, utilizing custom icons sourced from Game-icons.net. Locked achievements clearly display their full titles and unlock descriptions but are visually greyed out to indicate their locked status. It operates completely independently of the game's pause state (PROCESS_MODE_ALWAYS) to ensure its internal UI scrolling physics and animations never freeze when accessed from the Pause menu.
 
 ### Filters Screen (`FiltersScreen`)
-*   Accessed from the Pause Screen via the "FILTERS" button. Uses the same gold-tinted settings gear icon in its title.
+*   Accessed from the Pause Screen via the "FILTERS" button. Uses a gold-tinted 3D glasses icon (`3d-glasses.png`) in its title.
 *   Houses visual post-processing toggles, separating graphic customization from the core Settings screen. Filter toggles are mutually exclusive (only one can be active at a time):
     *   **Retro Colors:** PS1-style 15-bit color depth reduction posterization (32 levels per RGB channel).
     *   **Dithering:** 4x4 Bayer ordered cross-hatch dithering matrix for classic vintage console shading.

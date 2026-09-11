@@ -88,7 +88,7 @@ All full-screen menus (Title Screen, Pause Screen, Settings, Credits, End Screen
 All menus (Pause, Settings, Filters, Credits, Achievements, Buffs, Stats) follow a strict internal layout logic:
 *   **Alignment:** Content is always left-aligned (anchored to the left) with a `96px` margin from the global border. *(Exception: The Lose Screen features a perfectly centered layout to emphasize the dramatic Game Over Supernova cinematic transition.)*
 *   **Vertical Flow:** All primary interior components (e.g., Title Row, Divider, Body Content) are separated by exactly `24px` of vertical spacing to ensure perfect visual rhythm across all menus.
-*   **Title Icons:** Each menu title is preceded by a `40x40` icon (`TextureRect` using Game-icons.net SVGs/PNGs) wrapped in a `TitleRow` HBoxContainer (separation `12px`). The icons are dynamically tinted to exactly match the gold color of their respective titles.
+*   **Title Icons:** Each menu title is preceded by a `40x40` icon (`TextureRect` using Game-icons.net SVGs/PNGs, such as `3d-glasses.png` for Filters or `console-controller.svg` for Controls) wrapped in a `TitleRow` HBoxContainer (separation `12px`). The icons are dynamically tinted to exactly match the gold color of their respective titles.
 *   **Title Separator:** An `HSeparator` sits directly beneath the TitleRow.
     *   **Color:** `Color(1.0, 0.88, 0.3, 0.35)`
     *   **Thickness:** `2px`
@@ -110,6 +110,12 @@ The mid-game drafting menu adheres strictly to the global menu visual language r
     *   Background: `Color(0, 0, 0, 0.4)` with `4px` corner radii and a `1px` thin golden border (`Color(1, 0.85, 0.2, 0.6)`).
     *   Icon Texture: Shrinks inside the panel with a `4px` margin on all sides to provide breathing room.
     *   Stack Badges: Duplicate perks append a `12px` font "xN" badge anchored to the bottom right, pushed slightly outside the panel (`-24px` left, `-14px` top) for readability against the sky.
+
+### HUD Right-Edge Alignment & Resource Layout
+To ensure mathematical visual alignment across the right side of the screen during live combat, all elements along the right edge adhere to a strict coordinate hierarchy:
+*   **Top-Right Container (`TopRightInfo`):** The `TimerLabel` and `ScoreLabel` are unified within a dedicated `VBoxContainer` anchored to the top-right corner with a `24px` screen edge margin (`offset_right = -24.0`, `offset_left = -300.0`). Both labels utilize `horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT` so their right text boundaries remain perfectly flush with one another.
+*   **Standardized Resource Rows:** In `resource_container` (anchored bottom-right with a matching `24px` margin), all resource row labels (Water, Ice, Catastrom) specify a uniform `custom_minimum_size = Vector2(100, 0)`.
+*   **Charge Dots Placement:** Inside `IceBarContainer`, `ChargeDots` are positioned on the left side of the `IceBar` progress bar (`[ChargeDots, IceBar]`), ensuring the progress bar itself can expand flush to the right boundary alongside the Water and Catastrom bars without being offset inwards by charge pips.
 
 ### Buttons (StyleBoxFlat)
 
