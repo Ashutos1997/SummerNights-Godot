@@ -104,6 +104,7 @@ var wind_elapsed: float = 0.0  # time accumulator for turbulence
 var wind_level_mult: float = 1.0  # scales intensity per level
 
 var title_screen_ui: Control = null
+var title_screen_layer: CanvasLayer = null
 var is_title_screen: bool = true
 var title_cam_angle: float = 0.0
 
@@ -601,8 +602,12 @@ func _ready() -> void:
 	_load_weapon_model()
 
 	if not GameState.is_retrying:
+		title_screen_layer = CanvasLayer.new()
+		title_screen_layer.name = "TitleScreenLayer"
+		title_screen_layer.layer = 10
 		title_screen_ui = load("res://scenes/TitleScreen.tscn").instantiate()
-		add_child(title_screen_ui)
+		title_screen_layer.add_child(title_screen_ui)
+		add_child(title_screen_layer)
 		title_screen_ui.start_game.connect(_on_title_start_game)
 	else:
 		GameState.is_retrying = false
@@ -625,7 +630,20 @@ func _ready() -> void:
 		tw.tween_callback(overlay.queue_free)
 
 func _on_title_start_game(is_survival: bool) -> void:
-	if title_screen_ui:
+	if title_screen_layer:
+		var layer_to_free = title_screen_layer
+		var tw = create_tween()
+		if title_screen_ui:
+			tw.tween_property(title_screen_ui, "modulate:a", 0.0, 0.5)
+		tw.tween_callback(func():
+			if is_instance_valid(title_screen_ui):
+				title_screen_ui.queue_free()
+				title_screen_ui = null
+			if is_instance_valid(layer_to_free):
+				layer_to_free.queue_free()
+				title_screen_layer = null
+		)
+	elif title_screen_ui:
 		var tw = create_tween()
 		tw.tween_property(title_screen_ui, "modulate:a", 0.0, 0.5)
 		tw.tween_callback(title_screen_ui.queue_free)

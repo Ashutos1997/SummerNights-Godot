@@ -109,7 +109,7 @@ All labels within the HUD are dynamically localized in `HUD.gd` via the `_apply_
 
 To correctly manage drawing order between the 3D world, global post-processing effects, and the 2D UI, the game utilizes multiple `CanvasLayer` nodes:
 *   **Layer 0 (Post-Processing):** A full-screen `ColorRect` is dynamically injected at runtime behind the HUD. It runs `retro_postprocess.gdshader`, capturing the `SCREEN_TEXTURE` (which is the 3D game world) and applying color grading, film grain, and dynamic gameplay borders (e.g., Heat Warning, Frost Border).
-*   **Layer 10 (HUD):** The main `HUD.tscn` root operates at layer 10. This ensures that UI elements, crosshairs, and text remain crisp, legible, and completely unaffected by the retro shader.
+*   **Layer 10 (HUD & Title Screen UI):** The main `HUD.tscn` root and `TitleScreen.tscn` (wrapped in `TitleScreenLayer`) operate at layer 10. This ensures that UI elements, menus, buttons, crosshairs, and typography remain crisp, legible, and completely unaffected by retro shaders (PS1 Shading, Dithering, Color Reduction, Heatwave 1984).
 
 ---
 
