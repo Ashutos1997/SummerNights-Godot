@@ -16,6 +16,7 @@ Read these files to understand existing patterns before proposing new changes. F
 
 ## Repository Management
 **CRITICAL README RULE:** The project contains both an English `README.md` and a Korean `README.ko.md`. Whenever making updates to the README structure, layout, or content, you MUST ensure that both files are updated synchronously to keep their contents, image counts, and structures completely identical (accounting for language translations).
+**CRITICAL STATS & PLATFORM TRACKING RULE:** Whenever the user mentions or provides stats, analytics, or discussion about any platform or community, you MUST always update the corresponding documents in the `local_notes/` directory (such as `local_notes/posted_on_these_platforms.md` and `local_notes/feedback_notes.md`) in addition to any public README badges, keeping all view counts, download numbers, followers, and platform statuses synchronized.
 
 ## UI & Design Consistency
 **CRITICAL DESIGN RULE:** You must ALWAYS follow our design system (`docs/ui_design_system.md`) 1:1 for every single thing you create or modify. Fonts, colors, border radii, alignments, margins, and container sizes must strictly adhere to the established styles. Never introduce arbitrary colors or styling choices.
