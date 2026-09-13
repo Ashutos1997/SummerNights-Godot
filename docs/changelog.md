@@ -233,7 +233,8 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ---
 
-## [v1.0.0] - Initial Release
+## [v1.0.0] - 2026-07-19 (Initial Release)
+*(Development started: July 18, 2026)*
 
 ### Added
 - **Core Gameplay Loop:** Survive 5 progressively difficult waves against a 3D stylized Sun that generates heat. Includes a two-phase boss encounter on the final wave.
@@ -490,7 +491,8 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ---
 
-## [v1.0.0] - 초기 출시 (Initial Release)
+## [v1.0.0] - 2026-07-19 (초기 출시)
+*(개발 시작일: 2026년 7월 18일)*
 
 ### 추가됨 (Added)
 - **핵심 게임플레이 루프:** 열기를 생성하는 3D 태양을 상대로 점차 어려워지는 5번의 웨이브에서 생존하세요. 마지막 웨이브에는 2단계(Two-phase) 보스전이 포함됩니다.
