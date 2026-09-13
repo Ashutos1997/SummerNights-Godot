@@ -421,6 +421,7 @@ func _ready() -> void:
 	add_child(ocean_wave_timer)
 
 
+	Engine.time_scale = 1.0
 	level = GameState.level
 	defeat_triggered = false
 	cooldown_timer = 0.0
@@ -635,6 +636,7 @@ func _on_title_start_game(is_survival: bool) -> void:
 		vol_tw.tween_property(ambient_sfx, "volume_db", -20.0, 1.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	
 	is_title_screen = false
+	Engine.time_scale = 1.0
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	hud._apply_language(GameState.language)
 	hud.visible = true
@@ -3079,6 +3081,17 @@ func _update_sky(instant: bool) -> void:
 	sun_bob_amp = t_bob_amp
 	heat_changed.emit(temperature, MAX_TEMP)
 	
+func _clear_active_hazards() -> void:
+	for flare in active_flares:
+		var n = flare.get("node")
+		if is_instance_valid(n):
+			n.queue_free()
+	active_flares.clear()
+	for rock in active_magma_rocks:
+		if is_instance_valid(rock):
+			rock.queue_free()
+	active_magma_rocks.clear()
+	
 func _trigger_catastrom_dunk() -> void:
 	_vibrate(1.0, 1.0, 0.5) # Massive dunk shockwave
 	shake(1.5, 0.5)
@@ -3121,6 +3134,7 @@ func _cinematic_boss_draft() -> void:
 	gun_spray.emitting = false
 	_stop_vibrate()
 	timer_running = false
+	_clear_active_hazards()
 	if ocean_wave_timer: ocean_wave_timer.paused = true
 	
 	# Bring up ocean ambient during the breather
@@ -3202,6 +3216,7 @@ func _win() -> void:
 		GameState.unlock_achievement("shadow_walker")
 	_end_mirage()
 	active_mirages.clear()
+	_clear_active_hazards()
 	game_over = true
 	GameState.log_playtest_round("Win", Time.get_unix_time_from_system() - round_start_time, GameState.current_weapon_id)
 	is_shooting = false # Reset shooting state to prevent auto-firing on next level
@@ -3247,6 +3262,7 @@ func _win() -> void:
 			is_catastrom_active = false
 			_end_mirage()
 			active_mirages.clear()
+			_clear_active_hazards()
 			var viewport_size = get_viewport().get_visible_rect().size
 			virtual_mouse_pos = viewport_size * 0.5
 			if gun:

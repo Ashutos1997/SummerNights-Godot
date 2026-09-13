@@ -221,7 +221,7 @@ The Sun's 2D billboarded face (`Sprite3D`) is rasterized procedurally at runtime
 
 ### Screen Overlays (Blur / Dim)
 
-When a menu or overlay is shown (e.g., Pause, Weapon Wheel), the screen behind it is blurred and dimmed using a custom screen-reading shader. Note: The Pause overlay is automatically triggered if the game window loses focus (`NOTIFICATION_APPLICATION_FOCUS_OUT`) to prevent unfair progression. Pausing sets `get_tree().paused = true`, which fully freezes the entire scene tree (clouds, waves, shaders, physics, animations, particles). The HUD's root `CanvasLayer` uses `PROCESS_MODE_ALWAYS` so that menus remain interactive during the pause.
+When a menu or overlay is shown (e.g., Pause, Weapon Wheel), the screen behind it is blurred and dimmed using a custom screen-reading shader. Note: The Pause overlay is automatically triggered if the game window loses focus (`NOTIFICATION_APPLICATION_FOCUS_OUT`) to prevent unfair progression, but is explicitly guarded when end-state screens (Victory, Defeat, Game Complete) or Draft screens are active to prevent softlocks. Pausing sets `get_tree().paused = true`, which fully freezes the entire scene tree (clouds, waves, shaders, physics, animations, particles). The HUD's root `CanvasLayer` uses `PROCESS_MODE_ALWAYS` so that menus remain interactive during the pause, and full-screen transition fades (`fade_to_black()`, `fade_from_black()`) use `TWEEN_PAUSE_PROCESS` so transitions complete reliably.
 
 *   **Shader Parameters:**
     *   `blur_amount`: Transitions from `0.0` to `2.0`

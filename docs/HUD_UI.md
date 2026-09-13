@@ -53,6 +53,7 @@ These elements sit on top of the Core Gameplay HUD and blur/dim the background w
 ### Pause Screen (`pause_screen`)
 *   Activated by pressing `ESC` or automatically triggered when the application window loses focus (e.g., Alt-Tabbing).
 *   Blurs the background and sets `get_tree().paused = true`, fully freezing the entire scene tree (clouds, ocean waves/shaders, physics, animations, particles). The HUD's root `CanvasLayer` uses `PROCESS_MODE_ALWAYS` to remain interactive. All exit paths (Resume, Retry, Main Menu) correctly unpause the tree before transitioning.
+*   **State & Focus Guards:** Pausing is explicitly guarded against if an end-state screen (`LoseScreen`, `WinScreen`, `EndScreen`) or the `DraftingScreen` is active, preventing conflicting modal states or overlay softlocks. All full-screen transition fades (`fade_to_black()`, `fade_from_black()`) use `TWEEN_PAUSE_PROCESS` so overlay tweens always run to completion regardless of tree pause state.
 *   Contains the `SettingsScreen` (Volume, Sensitivity, Reduce Motion, Vibration, Fullscreen, Language toggles), the `FiltersScreen` (Retro Colors and visual filter toggles), the `ControllerScreen` (Controls), the `CreditsScreen`, the `AchievementsScreen`, and the `ActiveBuffsScreen`.
     *   All these full-screen menus follow a strict unified layout: left-aligned content with a 96px margin, a 40x40 dynamic gold-tinted title icon, a 2px horizontal separator under the title, and exactly 24px of vertical separation between all primary layout components. Menu buttons (including all BACK buttons) uniformly use a standard size of 280x52 and share identical visual styling across 4 interaction states (Normal, Hover, Pressed, Disabled).
     *   The **PauseScreen** features a custom broken-border design with an animated procedurally-drawn vector sun graphic situated perfectly within a 320px gap in the bottom-right corner.
@@ -76,7 +77,7 @@ These elements sit on top of the Core Gameplay HUD and blur/dim the background w
 
 ### Weapon Wheel (`WeaponWheel`)
 *   Activated by holding `TAB`.
-*   Slows time (`Engine.time_scale = 0.1`) instead of fully pausing.
+*   Slows time (`Engine.time_scale = 0.1`) instead of fully pausing. Closing the wheel, or encountering defeat, retry, or menu returns, guarantees `Engine.time_scale` is restored to `1.0`.
 *   Draws procedural wedges using the `_draw()` API based on the number of configured weapons (currently 5). 
 *   Weapons can be locked either by level progression or via achievements. Locked wedges are drawn in a flat dark gray (`Color(0.1, 0.1, 0.1, 0.6)`) to visually distinguish them from unlocked yellow/golden wedges.
 *   Renders live 3D thumbnails of the weapons into viewports mapped to 2D textures.

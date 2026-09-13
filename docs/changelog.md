@@ -2,6 +2,13 @@
 
 All notable changes to the Summer Nights project will be documented in this file.
 
+## [v1.5.4] - 2026-09-13
+*(Note: This release corresponds to v1.4 on itch.io)*
+
+### Fixed
+* **Screen Transition & Focus Pause Guards:** Resolved critical edge cases where opening the pause menu during defeat, victory, or level transition sequences could leave the screen frozen in a permanent black overlay. `HUD.fade_to_black()` and `fade_from_black()` tweens now use `TWEEN_PAUSE_PROCESS` so screen fades complete reliably even if paused. Furthermore, `HUD._input()` and `HUD._notification()` now explicitly guard against opening the pause menu while the defeat, win, or level-end screens are active, and `Engine.time_scale` is strictly reset to `1.0` upon defeat, retry, and game start.
+* **Level Hazard Cleanup:** Fixed an issue where solar flares and magma rocks spawned just before wave completion could persist through level transitions and draft screens. All active flares and magma projectiles are now cleared when entering cinematic draft sequences, clearing a stage, or reloading the level.
+
 ## [v1.5.3] - 2026-09-12
 *(Note: This release corresponds to v1.3 on itch.io)*
 
@@ -251,6 +258,13 @@ All notable changes to the Summer Nights project will be documented in this file
   - Immersive sound effects for water spraying, sizzling, bird calls, and wind.
 
 ---
+
+## [v1.5.4] - 2026-09-13
+*(참고: 이 릴리스는 itch.io의 v1.4 버전에 해당합니다)*
+
+### 수정됨
+* **화면 전환 및 포커스 일시정지 보호 (Screen Transition & Focus Pause Guards):** 패배, 승리 또는 레벨 전환 시퀀스 중에 일시정지 메뉴를 열 경우 화면이 영구적인 검은색 오버레이 상태로 멈추던 문제를 해결했습니다. `HUD.fade_to_black()` 및 `fade_from_black()` 트윈이 이제 `TWEEN_PAUSE_PROCESS`를 사용하여 일시정지 중에도 화면 페이드가 정상적으로 완료되도록 보장합니다. 또한 `HUD._input()` 및 `HUD._notification()`에서 패배, 승리 또는 레벨 완료 화면이 활성화된 동안 일시정지 메뉴가 열리지 않도록 가드를 추가했으며, 패배, 재시도 및 게임 시작 시 `Engine.time_scale`을 `1.0`으로 엄격히 재설정합니다.
+* **레벨 전환 투사체 정리 (Level Hazard Cleanup):** 웨이브 완료 직전에 생성된 태양 플레어 및 마그마 바위가 레벨 전환 및 퍽 드래프트 화면을 넘어 지속되던 문제를 수정했습니다. 시네마틱 드래프트 시퀀스 진입 시, 스테이지 클리어 시 및 레벨 재로드 시 활성화된 모든 플레어 및 마그마 투사체를 깨끗이 제거합니다.
 
 ## [v1.5.3] - 2026-09-12
 *(참고: 이 릴리스는 itch.io의 v1.3 버전에 해당합니다)*

@@ -1862,14 +1862,14 @@ func _on_sun_defeated(level: int) -> void:
 	# Auto-hide logic is now handled explicitly by Main.gd via fade_to_black
 	
 func fade_to_black(duration: float = 1.0) -> Signal:
-	var tw = create_tween()
+	var tw = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	tw.tween_property(transition_overlay, "color:a", 1.0, duration)
 	return tw.finished
 
 func fade_from_black(duration: float = 1.0, hide_win: bool = true) -> Signal:
 	if win_screen and hide_win:
 		win_screen.visible = false
-	var tw = create_tween()
+	var tw = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	tw.tween_property(transition_overlay, "color:a", 0.0, duration)
 	return tw.finished
 
@@ -1949,6 +1949,11 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 		elif drafting_screen and drafting_screen.visible:
+			get_viewport().set_input_as_handled()
+			return
+		
+		# Guard against pausing during game over, victory celebration, or level complete
+		if (lose_screen and lose_screen.visible) or (win_screen and win_screen.visible) or (end_screen and end_screen.visible):
 			get_viewport().set_input_as_handled()
 			return
 		
@@ -2344,6 +2349,9 @@ func _on_timer_expired() -> void:
 
 func show_lose_screen() -> void:
 	if not lose_screen: return
+	if weapon_wheel and weapon_wheel.active:
+		weapon_wheel.close()
+	Engine.time_scale = 1.0
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	if lose_level_lbl:
 		if GameState.is_survival_mode:
@@ -2399,6 +2407,7 @@ func _on_phase2_started() -> void:
 	p_tw.tween_callback(func(): phase2_label.visible = false)
 
 func _on_retry_pressed() -> void:
+	Engine.time_scale = 1.0
 	GameState.level = 1
 	GameState.current_wave = 1
 	GameState.is_retrying = true
@@ -2406,6 +2415,7 @@ func _on_retry_pressed() -> void:
 	get_tree().call_deferred("reload_current_scene")
 
 func _on_menu_pressed() -> void:
+	Engine.time_scale = 1.0
 	GameState.level = 1
 	get_tree().paused = false
 	get_tree().call_deferred("change_scene_to_file", "res://scenes/Main.tscn")
@@ -3468,7 +3478,7 @@ func _notification(what: int) -> void:
 			return
 		if not pause_screen:
 			return
-		if not pause_screen.visible and not (end_screen and end_screen.visible) and not (win_screen and win_screen.visible) and not (drafting_screen and drafting_screen.visible):
+		if not pause_screen.visible and not (end_screen and end_screen.visible) and not (win_screen and win_screen.visible) and not (drafting_screen and drafting_screen.visible) and not (lose_screen and lose_screen.visible):
 			if weapon_wheel and weapon_wheel.active:
 				weapon_wheel.close()
 			_pause_game()
