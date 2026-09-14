@@ -276,6 +276,8 @@ func _process(delta: float) -> void:
 			heat_bar.value = target_heat
 		else:
 			heat_bar.value = lerp(heat_bar.value, target_heat, 12.0 * delta)
+			if abs(heat_bar.value - target_heat) < 0.05:
+				heat_bar.value = target_heat
 		_update_heat_display(heat_bar.value)
 			
 	if mirage_bar and mirage_bar.visible:
@@ -362,6 +364,8 @@ func hide_tutorial_prompt() -> void:
 
 func _ready() -> void:
 
+	if heat_bar: heat_bar.step = 0.0
+	if mirage_bar: mirage_bar.step = 0.0
 	heat_label.scale = Vector2(1.0, 1.0)
 	phase2_label.visible = false
 	combo_label.visible = false
@@ -1718,8 +1722,10 @@ func _style_lbl(lbl: Label, size: int, color: Color, out_size: int, out_color: C
 
 func _on_heat_changed(value: float, max_value: float) -> void:
 	heat_bar.max_value = max_value
+	if value >= max_value and heat_bar.value < max_value * 0.5:
+		heat_bar.value = value
 	target_heat = value
-	if reduce_motion:
+	if reduce_motion or (value >= max_value and heat_bar.value >= max_value):
 		_update_heat_display(value)
 	
 	var ratio = value / max_value

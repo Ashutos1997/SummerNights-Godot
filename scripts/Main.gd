@@ -2970,6 +2970,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				if wind_sfx: wind_sfx.stop()
 			
 			temperature = MAX_TEMP
+			heat_changed.emit(temperature, MAX_TEMP)
 			level_timer = min(120.0, 60.0 + (level_timer * 0.5)) # Bank 50% of remaining time
 			wave_timer = 0.0
 			is_catastrom_active = false
@@ -3271,6 +3272,7 @@ func _win() -> void:
 		# Seamless reload
 		var reload = func():
 			temperature = MAX_TEMP
+			heat_changed.emit(temperature, MAX_TEMP)
 			water_tank = MAX_WATER
 			game_over = false
 			defeat_triggered = false

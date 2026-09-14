@@ -272,6 +272,7 @@ custom_minimum_size = Vector2(300, 24)
 [node name="HeatBar" type="TextureProgressBar" parent="HUD/SunHeatBar/BarContainer"]
 custom_minimum_size = Vector2(300, 24)
 layout_mode = 2
+step = 0.0
 value = 100.0
 nine_patch_stretch = true
 stretch_margin_left = 10
@@ -284,6 +285,7 @@ texture_progress = ExtResource("7_prog_red")
 [node name="MirageBar" type="TextureProgressBar" parent="HUD/SunHeatBar/BarContainer"]
 custom_minimum_size = Vector2(300, 24)
 layout_mode = 2
+step = 0.0
 value = 100.0
 nine_patch_stretch = true
 stretch_margin_left = 10
