@@ -17,6 +17,9 @@ var stats_label: Label
 
 var bg_dim: ColorRect
 var whoosh_player: AudioStreamPlayer = null
+var arrow_angle: float = -PI/2
+var arrow_alpha: float = 0.0
+var target_arrow_angle: float = -PI/2
 
 func _ready() -> void:
 	weapons = GameState.WEAPONS.keys()
@@ -274,19 +277,27 @@ func _process(delta: float) -> void:
 		diff = mouse_pos - center
 	
 	# Determine selection
+	var target_arrow_alpha = 0.0
+	var slice_size = TAU / weapons.size()
+	
 	if diff.length() > 40.0 and diff.length() <= 260.0:
 		var angle = diff.angle()
 		if angle < 0: angle += TAU
-		var slice_size = TAU / weapons.size()
 		var offset = PI/2 + slice_size/2
 		var adjusted_angle = fmod(angle + offset, TAU)
 		selected_index = int(adjusted_angle / slice_size)
+		target_arrow_angle = selected_index * slice_size - PI/2
+		target_arrow_alpha = 1.0
 	else:
 		selected_index = -1
 		
+	var actual_delta = delta / Engine.time_scale
+	arrow_angle = lerp_angle(arrow_angle, target_arrow_angle, 12.0 * actual_delta)
+	arrow_alpha = lerp(arrow_alpha, target_arrow_alpha, 15.0 * actual_delta)
+		
 	# Update positions of 3D viewports and rotate models
 	var radius = 170.0 # Midpoint between inner(100) and outer(240) radius
-	var slice_size = TAU / weapons.size()
+	slice_size = TAU / weapons.size()
 	for i in range(weapons.size()):
 		var mid_angle = i * slice_size - PI/2
 		var is_selected = (i == selected_index)
@@ -302,7 +313,6 @@ func _process(delta: float) -> void:
 			is_locked = prog < w_cfg.unlock_level
 		
 		# Rotate model
-		var actual_delta = delta / Engine.time_scale
 		if models[i]:
 			models[i].rotation.y -= 1.5 * actual_delta * (2.5 if (is_selected and not is_locked) else 1.0)
 		
@@ -440,6 +450,68 @@ func _draw() -> void:
 		points.push_back(points[0]) # close line
 		draw_polyline(points, stroke_color, 4.0 if is_selected else 2.0, true)
 		
-	# Draw center neutral dot
-	if selected_index == -1:
-		draw_circle(center, 4.0, Color(0.5, 0.5, 0.4, 0.8))
+	# Draw neutral dot fading out
+	var dot_alpha = 1.0 - arrow_alpha
+	if dot_alpha > 0.01:
+		draw_circle(center, 4.0, Color(0.5, 0.5, 0.4, 0.8 * dot_alpha))
+		
+	# Draw sleek arrowhead smoothly fading and rotating
+	if arrow_alpha > 0.01:
+		# Define chevron arrowhead pointing Right (0 radians)
+		var p_tip = Vector2(24, 0)
+		var p_top = Vector2(-12, -12)
+		var p_inner = Vector2(-4, 0)
+		var p_bot = Vector2(-12, 12)
+		
+		var rot_transform = Transform2D(arrow_angle, center)
+		var arrow_poly = PackedVector2Array([
+			rot_transform * p_tip,
+			rot_transform * p_top,
+			rot_transform * p_inner,
+			rot_transform * p_bot
+		])
+		
+		var arr_fill = Color(0.8, 0.7, 0.1, 0.8 * arrow_alpha)
+		var arr_stroke = Color(1.0, 0.9, 0.3, 1.0 * arrow_alpha)
+		
+		if selected_index != -1:
+			var w_cfg = GameState.WEAPONS[weapons[selected_index]]
+			var is_locked = false
+			if w_cfg.has("unlock_achievement"):
+				is_locked = not (w_cfg.unlock_achievement in GameState.unlocked_achievements)
+			else:
+				var prog = GameState.current_wave if GameState.is_survival_mode else GameState.level
+				is_locked = prog < w_cfg.unlock_level
+				
+			if is_locked:
+				arr_fill = Color(0.3, 0.3, 0.3, 0.8 * arrow_alpha)
+				arr_stroke = Color(0.5, 0.5, 0.5, 1.0 * arrow_alpha)
+		
+		var line_width = 4.0
+		var r = line_width / 2.0
+		
+		# 1) Draw the solid fill
+		draw_colored_polygon(arrow_poly, arr_fill)
+		
+		# 2) Draw fill caps (puffs out the fill to meet the stroke caps seamlessly)
+		draw_circle(rot_transform * p_tip, r, arr_fill)
+		draw_circle(rot_transform * p_top, r, arr_fill)
+		draw_circle(rot_transform * p_inner, r, arr_fill)
+		draw_circle(rot_transform * p_bot, r, arr_fill)
+		
+		# 3) Draw thick stroke caps at the vertices for perfectly rounded corners
+		draw_circle(rot_transform * p_tip, r, arr_stroke)
+		draw_circle(rot_transform * p_top, r, arr_stroke)
+		draw_circle(rot_transform * p_inner, r, arr_stroke)
+		draw_circle(rot_transform * p_bot, r, arr_stroke)
+		
+		# 4) Draw thick stroke line to connect the caps
+		var line_poly = arrow_poly.duplicate()
+		line_poly.push_back(line_poly[0])
+		draw_polyline(line_poly, arr_stroke, line_width, true)
+		
+		# 5) Refill the inner caps to overlay the stroke bleeding inwards at sharp joints!
+		draw_circle(rot_transform * p_tip, r - 1.0, arr_fill)
+		draw_circle(rot_transform * p_top, r - 1.0, arr_fill)
+		draw_circle(rot_transform * p_inner, r - 1.0, arr_fill)
+		draw_circle(rot_transform * p_bot, r - 1.0, arr_fill)
