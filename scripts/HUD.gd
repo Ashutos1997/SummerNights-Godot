@@ -2740,11 +2740,6 @@ func _update_weapon_hud(w_id: String) -> void:
 	if not hud_weapon_crosshair: return
 	
 	var w_color = Color(0.2, 0.84, 1.0)
-	match w_id:
-		"heavy": w_color = Color(1.0, 0.6, 0.2)
-		"precision": w_color = Color(0.3, 1.0, 0.3)
-		"scatter": w_color = Color(1.0, 0.85, 0.2)
-		"tidal": w_color = Color(0.7, 0.4, 1.0)
 		
 	hud_weapon_bg.color = Color(w_color.r, w_color.g, w_color.b, 0.2)
 	hud_weapon_crosshair.weapon_id = w_id
