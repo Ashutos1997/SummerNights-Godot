@@ -336,6 +336,7 @@ func _process(delta: float) -> void:
 				credits_scroll_acc -= amt
 		
 func reset() -> void:
+	_stop_timer_pulse()
 	# Hide prompt on reset by default
 	if tutorial_prompt:
 		tutorial_prompt.hide()
@@ -370,6 +371,7 @@ func _ready() -> void:
 	phase2_label.visible = false
 	combo_label.visible = false
 	timer_label.text = ""
+	_stop_timer_pulse()
 	
 	active_perks_hud = HFlowContainer.new()
 	active_perks_hud.position = Vector2(24, 60)
@@ -1554,6 +1556,19 @@ func _on_motion_toggled(enabled: bool) -> void:
 	reduce_motion = enabled
 	reduce_motion_changed.emit(enabled)
 	_update_toggle_btn(motion_check, enabled)
+	if timer_label:
+		if enabled:
+			if is_instance_valid(timer_pulse_tween):
+				timer_pulse_tween.kill()
+				timer_pulse_tween = null
+			timer_label.modulate.a = 1.0
+			timer_label.scale = Vector2.ONE
+		elif timer_pulse_active:
+			if is_instance_valid(timer_pulse_tween):
+				timer_pulse_tween.kill()
+			timer_pulse_tween = create_tween().set_loops()
+			timer_pulse_tween.tween_property(timer_label, "modulate:a", 0.4, 0.35).set_trans(Tween.TRANS_SINE)
+			timer_pulse_tween.tween_property(timer_label, "modulate:a", 1.0, 0.35).set_trans(Tween.TRANS_SINE)
 
 func _on_vibration_toggled(enabled: bool) -> void:
 	GameState.vibration_enabled = enabled
@@ -2271,25 +2286,56 @@ func hide_win_screen() -> void:
 		win_screen.modulate.a = 0.0
 
 var timer_pulse_active: bool = false
+var timer_pulse_tween: Tween = null
+var _last_urgency_sec: int = -1
+
+func _stop_timer_pulse() -> void:
+	timer_pulse_active = false
+	_last_urgency_sec = -1
+	if is_instance_valid(timer_pulse_tween):
+		timer_pulse_tween.kill()
+		timer_pulse_tween = null
+	if timer_label:
+		timer_label.modulate.a = 1.0
+		timer_label.scale = Vector2.ONE
+		timer_label.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 1.0))
 
 func _on_timer_tick(seconds: float) -> void:
 	if not timer_label: return
-	var secs = max(0, int(seconds))
-	var mins = secs / 60
-	secs = secs % 60
+	var total_secs = max(0, int(ceil(seconds))) if seconds > 0.0 else 0
+	var mins = total_secs / 60
+	var secs = total_secs % 60
 	
 	var prefix = "시간: " if GameState.language == "KR" else "TIME: "
 	timer_label.text = prefix + ("%d:%02d" % [mins, secs])
 
-	if seconds <= 10.0:
+	if seconds <= 10.0 and seconds > 0.0:
 		timer_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.2, 1.0))
-		if not timer_pulse_active:
-			timer_pulse_active = true
-			var tw = create_tween().set_loops()
-			tw.tween_property(timer_label, "modulate:a", 0.3, 0.4)
-			tw.tween_property(timer_label, "modulate:a", 1.0, 0.4)
+		if reduce_motion:
+			# Reduced motion: suppress all animated pulses and bounces
+			if is_instance_valid(timer_pulse_tween):
+				timer_pulse_tween.kill()
+				timer_pulse_tween = null
+			timer_label.modulate.a = 1.0
+			timer_label.scale = Vector2.ONE
+		else:
+			if not timer_pulse_active or not is_instance_valid(timer_pulse_tween):
+				timer_pulse_active = true
+				if is_instance_valid(timer_pulse_tween):
+					timer_pulse_tween.kill()
+				timer_pulse_tween = create_tween().set_loops()
+				timer_pulse_tween.tween_property(timer_label, "modulate:a", 0.4, 0.35).set_trans(Tween.TRANS_SINE)
+				timer_pulse_tween.tween_property(timer_label, "modulate:a", 1.0, 0.35).set_trans(Tween.TRANS_SINE)
+			
+			if total_secs != _last_urgency_sec:
+				_last_urgency_sec = total_secs
+				timer_label.pivot_offset = Vector2(timer_label.size.x, timer_label.size.y / 2.0)
+				var bounce_tw = create_tween()
+				timer_label.scale = Vector2(1.12, 1.12)
+				bounce_tw.tween_property(timer_label, "scale", Vector2.ONE, 0.25).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 	else:
-		timer_label.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 1.0))
+		if timer_pulse_active or seconds <= 0.0:
+			_stop_timer_pulse()
 
 func show_combo(active: bool) -> void:
 	if not combo_label: return

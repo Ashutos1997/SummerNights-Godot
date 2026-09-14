@@ -18,7 +18,8 @@ The live gameplay HUD is designed to minimize clutter while keeping critical sur
 
 ### Top-Right
 *   **`TopRightInfo` (VBoxContainer):** A container anchoring the top-right text elements to ensure perfect right-alignment of their bounding boxes.
-    *   **`TimerLabel`:** Displays the time remaining in the current wave (e.g., `TIME: 0:45`).
+    *   **`TimerLabel`:** Displays the time remaining in the current wave (e.g., `TIME: 0:45` / `시간: 0:45`).
+        *   **Low-Time Urgency State (<10s):** When the countdown reaches 10 seconds, the font color dynamically switches to warning red (`Color(1.0, 0.3, 0.2, 1.0)`). While `reduce_motion` is OFF, it plays a smooth continuous alpha sine pulse and triggers a punchy `1.12x` right-pivoting scale bounce on each integer second tick. When `reduce_motion` is ON, pulses and bounces are suppressed, maintaining static high-contrast red text. The state is strictly governed by `_stop_timer_pulse()` to eliminate lingering tween leaks upon wave resets or level completions.
     *   **`ScoreLabel`:** Displays the live arcade score (e.g., `SCORE: 1,500`). When points are scored, this label scales up and snaps back smoothly, pivoting from the right edge to avoid extending off-screen.
 *   **`WeatherIconContainer`:** A persistent, stylized circular icon container located directly beneath the Score. Displays a yellow star for normal weather, and animated exclamation marks for active weather events (Rain / Eclipse).
 *   **`WeatherTimerLabel`:** Positioned just below the WeatherIconContainer. Appears during an Eclipse if the "Shadow Walker" achievement is unlocked, displaying a precise countdown until the eclipse ends in a striking red font with a black outline.

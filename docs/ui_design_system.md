@@ -71,6 +71,11 @@ To ensure legibility against the bright, 3D sun background, heavy outlines and d
     *   Size: `24px`
     *   Text Color: `Color(1, 0, 0, 1)` (Red)
     *   Outline Size: `4px` (Black)
+*   **Low-Time Wave Timer Urgency (<10s):**
+    *   Size: `22px` (EN) / `26px` (KR)
+    *   Warning Color: `Color(1.0, 0.3, 0.2, 1.0)` (Warning Red, transitions from default solar yellow `Color(1.0, 0.8, 0.2, 1.0)`)
+    *   Outline Size: `2px` (Black)
+    *   Animation: Alpha sine pulse (`0.4` to `1.0` over `0.35s`) + `1.12x` scale bounce on each countdown integer tick, pivoting from right edge (`Vector2(size.x, size.y / 2)`). Fully suppressed when `reduce_motion` is ON.
 *   **Sun Heat Bar Header Label:**
     *   Size: `22px` (EN) / `26px` (KR)
     *   Text Color: `Color(1.0, 0.9, 0.3, 1.0)` (Solar Yellow)
