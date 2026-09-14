@@ -261,7 +261,7 @@ size_flags_horizontal = 4
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 14
-text = "☀ HEAT"
+text = "HEAT | 100°C"
 horizontal_alignment = 1
 uppercase = true
 
@@ -272,7 +272,7 @@ custom_minimum_size = Vector2(300, 24)
 [node name="HeatBar" type="TextureProgressBar" parent="HUD/SunHeatBar/BarContainer"]
 custom_minimum_size = Vector2(300, 24)
 layout_mode = 2
-value = 50.0
+value = 100.0
 nine_patch_stretch = true
 stretch_margin_left = 10
 stretch_margin_top = 10

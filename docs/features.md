@@ -95,7 +95,7 @@ Weather events trigger based on a dynamic probability system tied to the current
 *   **Screen Shake:** The camera violently shakes during critical moments (e.g., Phase 2 transitions, high heat, solar flare impacts, Catastrom dunks).
 *   **Hit Feedback:** The crosshair flashes and scales upon successful hits (`projectile_hit` events) and critical hits.
 *   **Dynamic UI Elements:**
-    *   Temperature/Heat Bar (Sun Heat).
+    *   Temperature/Heat Bar (Sun Heat): Includes live Celsius temperature readout alongside the header label (`HEAT | X°C` in English, `열기 | X°C` in Korean), tracking smoothly with cooling and heat recovery.
     *   Water Tank Bar.
     *   Ice Charge indicators.
     *   Catastrom Ultimate notification toasts.

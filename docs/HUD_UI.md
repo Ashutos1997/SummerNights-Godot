@@ -13,7 +13,7 @@ The live gameplay HUD is designed to minimize clutter while keeping critical sur
 *   **`ActivePerksHUD`:** Positioned immediately below the `LevelLabel`. This dynamically generated `HFlowContainer` tracks all Rogue-lite perks the player has drafted in Endless Mode using a grid of 32x32 icons. Duplicate perks stack into a single icon with a small "xN" badge.
 
 ### Top-Center
-*   **`SunHeatBar`:** The most critical UI element. Displays the current temperature of the sun. If this bar fills completely (100%), the player loses.
+*   **`SunHeatBar`:** The most critical UI element. Displays the current temperature of the sun. The top label features a live dynamic Celsius temperature readout alongside the heat text (`HEAT | X°C` in English / `열기 | X°C` in Korean), tracking smoothly with the bar's cooling and heating values. If this bar fills completely (100%), the player loses.
 *   **`Phase2Label`:** A centered warning text that flashes when a boss transitions into Phase 2.
 
 ### Top-Right

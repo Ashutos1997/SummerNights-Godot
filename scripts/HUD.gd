@@ -152,6 +152,7 @@ var reduce_motion: bool = false
 var vibration_enabled: bool = true
 var cursor_screen_pos: Vector2 = Vector2.ZERO  # Tracks virtual mouse for captured mode
 var target_heat: float = 100.0
+var _last_displayed_temp: int = -1
 var target_mirage_hp: float = 100.0
 var target_water: float = 100.0
 
@@ -275,6 +276,7 @@ func _process(delta: float) -> void:
 			heat_bar.value = target_heat
 		else:
 			heat_bar.value = lerp(heat_bar.value, target_heat, 12.0 * delta)
+		_update_heat_display(heat_bar.value)
 			
 	if mirage_bar and mirage_bar.visible:
 		if reduce_motion:
@@ -938,15 +940,16 @@ func _on_language_toggle(lang: String) -> void:
 	_apply_language(lang)
 
 func _apply_language(lang: String) -> void:
+	GameState.language = lang
 	var is_kr := lang == "KR"
 	var font: Font = galmuri_font if is_kr else kenney_font
 	var body_font: Font = galmuri_font if is_kr else load("res://assets/fonts/Inter-Medium.ttf")
 
 	# ── Gameplay HUD (Galmuri11 is small, so we scale it up in KR to visually match EN) ──
 	if heat_label:
-		heat_label.text = "열기" if is_kr else "HEAT"
 		if font: heat_label.add_theme_font_override("font", font)
 		heat_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
+		_update_heat_display(heat_bar.value if heat_bar else target_heat, true)
 	if water_label:
 		water_label.text = "물" if is_kr else "WATER"
 		if font: water_label.add_theme_font_override("font", font)
@@ -1716,6 +1719,8 @@ func _style_lbl(lbl: Label, size: int, color: Color, out_size: int, out_color: C
 func _on_heat_changed(value: float, max_value: float) -> void:
 	heat_bar.max_value = max_value
 	target_heat = value
+	if reduce_motion:
+		_update_heat_display(value)
 	
 	var ratio = value / max_value
 	if ratio > 0.85:
@@ -1738,6 +1743,18 @@ func _on_heat_changed(value: float, max_value: float) -> void:
 			heat_bar.tint_progress = Color(1.0, 0.65, 0.1) # amber
 		else:
 			heat_bar.tint_progress = Color(0.4, 0.9, 0.4) # cool green
+
+func _update_heat_display(val: float, force: bool = false) -> void:
+	if not heat_label:
+		return
+	var max_t: float = heat_bar.max_value if heat_bar else 100.0
+	var rounded_val: int = clampi(roundi(val), 0, roundi(max_t))
+	if not force and rounded_val == _last_displayed_temp:
+		return
+	_last_displayed_temp = rounded_val
+	var is_kr := GameState.language == "KR"
+	var prefix := "열기" if is_kr else "HEAT"
+	heat_label.text = "%s | %d°C" % [prefix, rounded_val]
 
 func update_mirage_hp(current: float, max_val: float) -> void:
 	if mirage_bar:

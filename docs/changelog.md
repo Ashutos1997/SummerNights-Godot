@@ -10,6 +10,9 @@ All notable changes to the Summer Nights project will be documented in this file
 * **Screen Transition & Focus Pause Guards:** Resolved critical edge cases where opening the pause menu during defeat, victory, or level transition sequences could leave the screen frozen in a permanent black overlay. `HUD.fade_to_black()` and `fade_from_black()` tweens now use `TWEEN_PAUSE_PROCESS` so screen fades complete reliably even if paused. Furthermore, `HUD._input()` and `HUD._notification()` now explicitly guard against opening the pause menu while the defeat, win, or level-end screens are active, and `Engine.time_scale` is strictly reset to `1.0` upon defeat, retry, and game start.
 * **Level Hazard Cleanup:** Fixed an issue where solar flares and magma rocks spawned just before wave completion could persist through level transitions and draft screens. All active flares and magma projectiles are now cleared when entering cinematic draft sequences, clearing a stage, or reloading the level.
 
+### Improved
+* **Sun Heat Celsius Readout:** Added a dynamic live temperature readout in Celsius alongside the heat bar header label (`HEAT | X°C` in English, `열기 | X°C` in Korean). The readout smoothly tracks with the bar's cooling and heating values, keeping players precisely informed of the Sun's current temperature.
+
 ## [v1.5.3] - 2026-09-12
 *(Note: This release corresponds to v1.3 on itch.io)*
 
@@ -268,6 +271,9 @@ All notable changes to the Summer Nights project will be documented in this file
 * **시작 화면 UI 필터 격리 (Start Screen UI Filter Isolation):** 레트로 후처리 필터(레트로 색상, 디더링, PS1 셰이딩, 폭염 1984)를 적용한 상태에서 게임을 종료하고 타이틀 화면으로 돌아왔을 때, 시작 화면 UI에도 필터가 적용되던 문제를 수정했습니다. 타이틀 화면을 인게임 HUD와 동일한 `layer = 10`의 전용 `CanvasLayer`로 래핑하여, 레이어 0의 후처리 셰이더와 분리함으로써 타이틀 로고, 시작 버튼, 언어 토글 및 모달 팝업 텍스트가 항상 선명하게 유지되도록 개선했습니다.
 * **화면 전환 및 포커스 일시정지 보호 (Screen Transition & Focus Pause Guards):** 패배, 승리 또는 레벨 전환 시퀀스 중에 일시정지 메뉴를 열 경우 화면이 영구적인 검은색 오버레이 상태로 멈추던 문제를 해결했습니다. `HUD.fade_to_black()` 및 `fade_from_black()` 트윈이 이제 `TWEEN_PAUSE_PROCESS`를 사용하여 일시정지 중에도 화면 페이드가 정상적으로 완료되도록 보장합니다. 또한 `HUD._input()` 및 `HUD._notification()`에서 패배, 승리 또는 레벨 완료 화면이 활성화된 동안 일시정지 메뉴가 열리지 않도록 가드를 추가했으며, 패배, 재시도 및 게임 시작 시 `Engine.time_scale`을 `1.0`으로 엄격히 재설정합니다.
 * **레벨 전환 투사체 정리 (Level Hazard Cleanup):** 웨이브 완료 직전에 생성된 태양 플레어 및 마그마 바위가 레벨 전환 및 퍽 드래프트 화면을 넘어 지속되던 문제를 수정했습니다. 시네마틱 드래프트 시퀀스 진입 시, 스테이지 클리어 시 및 레벨 재로드 시 활성화된 모든 플레어 및 마그마 투사체를 깨끗이 제거합니다.
+
+### 개선됨
+* **태양 열기 섭씨 온도 표시 (Sun Heat Celsius Readout):** 열기 게이지 상단 헤더 라벨에 실시간 섭씨 온도를 함께 표시하도록 개선했습니다 (영어: `HEAT | X°C`, 한국어: `열기 | X°C`). 게이지의 냉각 및 가열 값에 맞춰 수치가 부드럽게 동기화되어 태양의 현재 온도 상태를 직관적이고 정확하게 파악할 수 있습니다.
 
 ## [v1.5.3] - 2026-09-12
 *(참고: 이 릴리스는 itch.io의 v1.3 버전에 해당합니다)*

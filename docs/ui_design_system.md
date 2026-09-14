@@ -71,6 +71,11 @@ To ensure legibility against the bright, 3D sun background, heavy outlines and d
     *   Size: `24px`
     *   Text Color: `Color(1, 0, 0, 1)` (Red)
     *   Outline Size: `4px` (Black)
+*   **Sun Heat Bar Header Label:**
+    *   Size: `22px` (EN) / `26px` (KR)
+    *   Text Color: `Color(1.0, 0.9, 0.3, 1.0)` (Solar Yellow)
+    *   Outline Size: `3px` (Black)
+    *   Format: `HEAT | X°C` (EN) / `열기 | X°C` (KR), dynamically rendered and synchronized to the heat bar's current lerped temperature value.
 
 ---
 
