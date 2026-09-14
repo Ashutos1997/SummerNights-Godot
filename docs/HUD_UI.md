@@ -43,7 +43,7 @@ The live gameplay HUD is designed to minimize clutter while keeping critical sur
     *   **Catastrom Bar & "MAX READY!" State:** Shows the ultimate gauge in rich purple (`progress_red.png` tinted `Color(0.6, 0.0, 1.0)`). When charged to 100%, an animated arcade `ReadyLabel` (`Kenney Future` / `Galmuri11`, gold text with 3px black outline) pulses directly inside the bar ("MAX READY!" in EN / "준비 완료!" in KR).
 
 ### Bottom-Left
-*   **`UnlockPrompts`:** A square container anchored here. It primarily displays the **Active Weapon Icon** (currently selected gun) during gameplay, injected dynamically via `_setup_weapon_hud`.
+*   **`UnlockPrompts`:** A vertical container anchored here. It primarily displays the **Active Weapon Display** (a glowing 2D vector crosshair over a vibrant elemental background alongside its localized name text) during gameplay, injected dynamically via `_setup_weapon_hud`.
 
 ---
 

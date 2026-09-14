@@ -13,6 +13,7 @@ signal weapon_changed(weapon_id: String)
 @onready var heat_bar = $HUD/SunHeatBar/BarContainer/HeatBar
 @onready var mirage_bar = $HUD/SunHeatBar/BarContainer/MirageBar
 @onready var heat_label = $HUD/SunHeatBar/Label
+var heat_val_label: Label = null
 @onready var tutorial_prompt = $HUD/TutorialPrompt
 @onready var tutorial_aim_label = $HUD/TutorialPrompt/VBoxContainer/AimLabel
 @onready var tutorial_shoot_label = $HUD/TutorialPrompt/VBoxContainer/ShootLabel
@@ -145,8 +146,9 @@ var heat_tween: Tween
 var weather_timer_lbl: Label
 
 # Weapon HUD
-var hud_weapon_icons: Dictionary = {}  # w_id -> ImageTexture
-var hud_weapon_container: TextureRect
+var hud_weapon_crosshair: WeaponCrosshairIcon
+var hud_weapon_bg: ColorRect
+var hud_weapon_name_label: Label
 
 var reduce_motion: bool = false
 var vibration_enabled: bool = true
@@ -513,7 +515,22 @@ func _ready() -> void:
 		_style_lbl(ready_label, 14 if is_kr else 13, Color(1.0, 0.85, 0.2, 1.0), 3, Color.BLACK, ready_font)
 		ready_label.text = "준비 완료!" if is_kr else "MAX READY!"
 	
-	_style_lbl(heat_label, 22, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
+	var parent = heat_label.get_parent()
+	var heat_hbox = HBoxContainer.new()
+	heat_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	heat_hbox.add_theme_constant_override("separation", 6)
+	parent.add_child(heat_hbox)
+	parent.move_child(heat_hbox, heat_label.get_index())
+	
+	parent.remove_child(heat_label)
+	heat_hbox.add_child(heat_label)
+	
+	heat_val_label = Label.new()
+	heat_val_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	heat_hbox.add_child(heat_val_label)
+	
+	_style_lbl(heat_label, 22, Color(1.0, 1.0, 1.0, 0.9), 3, Color.BLACK, font)
+	_style_lbl(heat_val_label, 22, Color(1.0, 0.95, 0.5, 1.0), 3, Color.BLACK, font)
 	_style_lbl(water_label, 22, Color(0.4, 0.9, 1.0, 1.0), 3, Color.BLACK, font)
 	_style_lbl(ice_label, 22, Color(0.5, 0.85, 1.0, 1.0), 3, Color.BLACK, font)
 	_style_lbl(catastrom_label, 22, Color(0.8, 0.4, 1.0, 1.0), 3, Color.BLACK, font)
@@ -955,6 +972,9 @@ func _apply_language(lang: String) -> void:
 	if heat_label:
 		if font: heat_label.add_theme_font_override("font", font)
 		heat_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
+		if heat_val_label:
+			if font: heat_val_label.add_theme_font_override("font", font)
+			heat_val_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
 		_update_heat_display(heat_bar.value if heat_bar else target_heat, true)
 	if water_label:
 		water_label.text = "물" if is_kr else "WATER"
@@ -1399,7 +1419,7 @@ func _apply_language(lang: String) -> void:
 		settings_back_btn.text = "뒤로" if is_kr else "BACK"
 		if font: settings_back_btn.add_theme_font_override("font", font)
 		
-	if hud_weapon_container:
+	if hud_weapon_crosshair:
 		_update_weapon_hud(GameState.current_weapon_id)
 
 	# ── Pause screen ──────────────────────────────────────────────────────────
@@ -1774,8 +1794,10 @@ func _update_heat_display(val: float, force: bool = false) -> void:
 		return
 	_last_displayed_temp = rounded_val
 	var is_kr := GameState.language == "KR"
-	var prefix := "열기" if is_kr else "HEAT"
-	heat_label.text = "%s | %d°C" % [prefix, rounded_val]
+	var prefix := "열기 |" if is_kr else "HEAT |"
+	heat_label.text = prefix
+	if heat_val_label:
+		heat_val_label.text = "%d°C" % rounded_val
 
 func update_mirage_hp(current: float, max_val: float) -> void:
 	if mirage_bar:
@@ -2660,13 +2682,13 @@ func _setup_weapon_hud() -> void:
 	
 	var panel = PanelContainer.new()
 	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.0, 0.0, 0.0, 0.5)
-	style.border_color = Color(0.5, 0.85, 1.0, 0.5)
-	style.set_border_width_all(2)
-	style.corner_radius_top_left = 8
-	style.corner_radius_top_right = 8
-	style.corner_radius_bottom_right = 8
-	style.corner_radius_bottom_left = 8
+	style.bg_color = Color(0.0, 0.0, 0.0, 0.45)
+	style.border_color = Color(0.2, 0.84, 1.0, 0.6)
+	style.set_border_width_all(1)
+	style.corner_radius_top_left = 4
+	style.corner_radius_top_right = 4
+	style.corner_radius_bottom_right = 4
+	style.corner_radius_bottom_left = 4
 	style.content_margin_left = 6
 	style.content_margin_right = 6
 	style.content_margin_top = 6
@@ -2674,67 +2696,86 @@ func _setup_weapon_hud() -> void:
 	panel.add_theme_stylebox_override("panel", style)
 	margin.add_child(panel)
 	
-	var hud_weapon_tex_rect = TextureRect.new()
-	hud_weapon_tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	hud_weapon_tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	hud_weapon_tex_rect.custom_minimum_size = Vector2(64, 64)
-	panel.add_child(hud_weapon_tex_rect)
-	hud_weapon_container = hud_weapon_tex_rect
+	var hbox = HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 12)
+	panel.add_child(hbox)
 	
-	# Render each weapon into a SubViewport and capture its image
-	var temp_viewports: Array = []
-	var temp_w_ids: Array = []
+	var icon_container = MarginContainer.new()
+	icon_container.custom_minimum_size = Vector2(64, 64)
+	hbox.add_child(icon_container)
 	
-	for w_id in GameState.WEAPONS.keys():
-		var w_cfg = GameState.WEAPONS[w_id]
-		
-		var vp = SubViewport.new()
-		vp.size = Vector2i(256, 256)
-		vp.transparent_bg = true
-		vp.own_world_3d = true
-		vp.render_target_update_mode = SubViewport.UPDATE_ONCE
-		add_child(vp)
-		
-		var cam = Camera3D.new()
-		cam.position = Vector3(0, 0, 2.0)
-		vp.add_child(cam)
-		
-		var light = DirectionalLight3D.new()
-		light.rotation_degrees = Vector3(-30, 45, 0)
-		light.light_energy = 1.2
-		vp.add_child(light)
-		
-		var model = load(w_cfg.model).instantiate()
-		model.scale = w_cfg.scale * 1.0
-		model.position = Vector3(0, -0.3, -0.1)
-		vp.add_child(model)
-		
-		temp_viewports.append(vp)
-		temp_w_ids.append(w_id)
+	hud_weapon_bg = ColorRect.new()
+	hud_weapon_bg.color = Color(0.2, 0.84, 1.0, 0.2)
+	icon_container.add_child(hud_weapon_bg)
+	
+	var crosshair = WeaponCrosshairIcon.new()
+	crosshair.custom_minimum_size = Vector2(64, 64)
+	icon_container.add_child(crosshair)
+	hud_weapon_crosshair = crosshair
+	
+	hud_weapon_name_label = Label.new()
+	hud_weapon_name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	var ls = LabelSettings.new()
+	var is_kr = GameState.language == "KR"
+	ls.font = load("res://assets/ui/fonts/Galmuri11.ttf") if is_kr else load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+	ls.font_size = 20 if is_kr else 18
+	ls.font_color = Color(1.0, 0.95, 0.5, 1.0)
+	ls.outline_size = 4
+	ls.outline_color = Color.BLACK
+	hud_weapon_name_label.label_settings = ls
+	
+	var lbl_margin = MarginContainer.new()
+	lbl_margin.add_theme_constant_override("margin_right", 12)
+	lbl_margin.add_child(hud_weapon_name_label)
+	hbox.add_child(lbl_margin)
 	
 	# Add to UnlockPrompts at the bottom
 	var rc = $HUD/UnlockPrompts
 	if rc:
 		rc.add_child(margin)
 	
-	# Wait 2 frames for viewports to render, then capture and free them
-	await get_tree().process_frame
-	await get_tree().process_frame
-	
-	for i in temp_viewports.size():
-		var vp = temp_viewports[i]
-		var img = vp.get_texture().get_image()
-		var img_tex = ImageTexture.create_from_image(img)
-		hud_weapon_icons[temp_w_ids[i]] = img_tex
-		vp.queue_free()
-	
 	_update_weapon_hud(GameState.current_weapon_id)
 
 func _update_weapon_hud(w_id: String) -> void:
-	if not hud_weapon_container: return
-	var tex = hud_weapon_icons.get(w_id)
-	if tex:
-		hud_weapon_container.texture = tex
+	if not hud_weapon_crosshair: return
+	
+	var w_color = Color(0.2, 0.84, 1.0)
+	match w_id:
+		"heavy": w_color = Color(1.0, 0.6, 0.2)
+		"precision": w_color = Color(0.3, 1.0, 0.3)
+		"scatter": w_color = Color(1.0, 0.85, 0.2)
+		"tidal": w_color = Color(0.7, 0.4, 1.0)
+		
+	hud_weapon_bg.color = Color(w_color.r, w_color.g, w_color.b, 0.2)
+	hud_weapon_crosshair.weapon_id = w_id
+	hud_weapon_crosshair.icon_color = w_color
+	hud_weapon_crosshair.queue_redraw()
+		
+	if hud_weapon_name_label and GameState.WEAPONS.has(w_id):
+		var w_name = GameState.WEAPONS[w_id].name.to_upper().replace(" ", "\n")
+		if GameState.language == "KR":
+			match w_id:
+				"standard": w_name = "표준\n블래스터"
+				"heavy": w_name = "헤비\n캐논"
+				"precision": w_name = "정밀\n스트림"
+				"scatter": w_name = "스캐터\n노즐"
+				"tidal": w_name = "타이달\n개틀링"
+		hud_weapon_name_label.text = w_name
+		hud_weapon_name_label.label_settings.font_color = w_color
+		
+	var hbox = hud_weapon_bg.get_parent().get_parent()
+	if hbox:
+		var panel = hbox.get_parent() as PanelContainer
+		if panel:
+			var style = panel.get_theme_stylebox("panel") as StyleBoxFlat
+			if style:
+				style.border_color = Color(w_color, 0.6)
+			
+			if not reduce_motion:
+				panel.pivot_offset = panel.size / 2.0
+				var pop_tween = create_tween()
+				panel.scale = Vector2(1.15, 1.15)
+				pop_tween.tween_property(panel, "scale", Vector2.ONE, 0.3).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 
 func _on_score_updated(new_score: int) -> void:
 	if not score_label: return
@@ -3551,3 +3592,56 @@ func _notification(what: int) -> void:
 			if weapon_wheel and weapon_wheel.active:
 				weapon_wheel.close()
 			_pause_game()
+
+class WeaponCrosshairIcon extends Control:
+	var weapon_id: String = "standard"
+	var icon_color: Color = Color.WHITE
+	
+	func _draw() -> void:
+		var center = size / 2.0
+		match weapon_id:
+			"standard":
+				var radius = min(size.x, size.y) * 0.25
+				draw_arc(center, radius, 0, TAU, 32, icon_color, 3.0, true)
+			"precision":
+				var gap = 4.0
+				var arm = 12.0
+				var thick = 2.0
+				draw_line(center + Vector2(-arm - gap, 0), center + Vector2(-gap, 0), icon_color, thick, true)
+				draw_line(center + Vector2(gap, 0), center + Vector2(arm + gap, 0), icon_color, thick, true)
+				draw_line(center + Vector2(0, -arm - gap), center + Vector2(0, -gap), icon_color, thick, true)
+				draw_line(center + Vector2(0, gap), center + Vector2(0, arm + gap), icon_color, thick, true)
+				draw_circle(center, 2.0, icon_color)
+			"heavy":
+				var r = 12.0
+				var arm = 8.0
+				var thick = 3.5
+				draw_line(center + Vector2(-r - arm, -r), center + Vector2(-r, -r), icon_color, thick, true)
+				draw_line(center + Vector2(-r, -r), center + Vector2(-r, -r + arm), icon_color, thick, true)
+				draw_line(center + Vector2(r, -r), center + Vector2(r + arm, -r), icon_color, thick, true)
+				draw_line(center + Vector2(r, -r), center + Vector2(r, -r + arm), icon_color, thick, true)
+				draw_line(center + Vector2(-r - arm, r), center + Vector2(-r, r), icon_color, thick, true)
+				draw_line(center + Vector2(-r, r), center + Vector2(-r, r - arm), icon_color, thick, true)
+				draw_line(center + Vector2(r, r), center + Vector2(r + arm, r), icon_color, thick, true)
+				draw_line(center + Vector2(r, r), center + Vector2(r, r - arm), icon_color, thick, true)
+			"scatter":
+				var thick = 3.0
+				var scatter_center = center + Vector2(0, 10)
+				for ang_deg in [-35.0, 0.0, 35.0]:
+					var ang = deg_to_rad(ang_deg - 90.0)
+					var s = scatter_center + Vector2(cos(ang), sin(ang)) * 6.0
+					var e = scatter_center + Vector2(cos(ang), sin(ang)) * 20.0
+					draw_line(s, e, icon_color, thick, true)
+				draw_line(scatter_center + Vector2(-5, 0), scatter_center + Vector2(5, 0), icon_color, thick, true)
+			"tidal":
+				var radius = 16.0
+				var num_dashes = 8
+				var dash_arc = deg_to_rad(22.0)
+				var gap_arc  = (TAU / num_dashes) - dash_arc
+				var offset   = 0.0
+				for i in range(num_dashes):
+					var start_a = offset + i * (dash_arc + gap_arc)
+					draw_arc(center, radius, start_a, start_a + dash_arc, 8, icon_color, 3.0, true)
+				var c_arm = 4.0
+				draw_line(center + Vector2(-c_arm, 0), center + Vector2(c_arm, 0), icon_color, 2.0, true)
+				draw_line(center + Vector2(0, -c_arm), center + Vector2(0, c_arm), icon_color, 2.0, true)

@@ -15,6 +15,7 @@ All notable changes to the Summer Nights project will be documented in this file
 ### Improved
 * **Sun Heat Celsius Readout:** Added a dynamic live temperature readout in Celsius alongside the heat bar header label (`HEAT | X°C` in English, `열기 | X°C` in Korean). The readout smoothly tracks with the bar's cooling and heating values, keeping players precisely informed of the Sun's current temperature.
 * **Low-Time Wave Timer Urgency & Reduce Motion Support:** Elevated the final 10-second countdown in `TopRightInfo` with high-contrast warning red text (`Color(1.0, 0.3, 0.2, 1.0)`), a smooth alpha sine pulse, and a punchy `1.12x` right-pivoting scale bounce on each countdown integer tick. Explicitly wired into the `reduce_motion` accessibility toggle (both statically and during live setting changes): when enabled, all bouncing and pulsing are suppressed to prevent visual discomfort while maintaining clear static red color urgency.
+* **Left-Side Weapon HUD Polish:** Refined the bottom-left active weapon display. Transformed the previous single icon container into a wider horizontal layout, displaying both a stylized 2D vector crosshair icon on a vibrant elemental background and its localized name text (cleanly stacked across two lines) side-by-side. Aligned the container to the game's strict 4px-rounded retro plate design system, and added dynamic visual juice: the panel border and weapon name now tint to match the weapon's elemental class color, and equipping a weapon triggers a snappy `1.15x` scale bounce (fully respecting `reduce_motion`).
 
 ## [v1.5.3] - 2026-09-12
 *(Note: This release corresponds to v1.3 on itch.io)*
@@ -280,6 +281,7 @@ All notable changes to the Summer Nights project will be documented in this file
 ### 개선됨
 * **태양 열기 섭씨 온도 표시 (Sun Heat Celsius Readout):** 열기 게이지 상단 헤더 라벨에 실시간 섭씨 온도를 함께 표시하도록 개선했습니다 (영어: `HEAT | X°C`, 한국어: `열기 | X°C`). 게이지의 냉각 및 가열 값에 맞춰 수치가 부드럽게 동기화되어 태양의 현재 온도 상태를 직관적이고 정확하게 파악할 수 있습니다.
 * **타이머 긴급 카운트다운 연출 및 움직임 감소 지원 (Low-Time Wave Timer Urgency & Reduce Motion Support):** 웨이브 종료 10초 미만 진입 시 우측 상단 타이머 텍스트를 고대비 경고 빨간색(`Color(1.0, 0.3, 0.2, 1.0)`)으로 전환하고, 부드러운 알파 사인 펄스와 1초 단위의 경쾌한 `1.12x` 우측 기준 스케일 바운스 연출을 추가했습니다. '움직임 감소(Reduce Motion)' 접근성 설정과 완벽히 연동되어, 활성화 시 펄스 및 바운스 모션을 억제하고 정적 빨간색 텍스트를 유지하여 눈의 피로를 방지합니다.
+* **좌측 하단 무기 HUD 개선 (Left-Side Weapon HUD Polish):** 좌측 하단의 현재 장착 무기 UI를 개선했습니다. 기존의 단일 아이콘 컨테이너를 가로 형태로 넓혀 장착된 무기의 빛나는 2D 벡터 크로스헤어 아이콘(원소 색상 배경)과 두 줄로 깔끔하게 정렬된 현지화된 무기 이름 텍스트를 나란히 표시합니다. 컨테이너를 게임의 엄격한 4px 라운드 레트로 플레이트 디자인 시스템에 맞추고 역동적인 시각적 효과를 추가했습니다: 패널 테두리와 무기 이름이 이제 무기의 속성 클래스 색상에 맞춰 틴트되며, 무기를 장착할 때 경쾌한 `1.15x` 스케일 바운스 효과가 발생합니다 (시각 보호 모드 `reduce_motion` 완벽 지원).
 
 ## [v1.5.3] - 2026-09-12
 *(참고: 이 릴리스는 itch.io의 v1.3 버전에 해당합니다)*
