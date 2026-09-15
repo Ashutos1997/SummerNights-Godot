@@ -705,6 +705,7 @@ func _on_title_start_game(is_survival: bool) -> void:
 	cam_tw.set_parallel(true)
 	cam_tw.tween_property(camera, "position", Vector3(0, 0, 5), 0.6).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
 	cam_tw.tween_property(camera, "rotation", Vector3.ZERO, 0.6).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
+	cam_tw.tween_property(camera, "fov", 75.0, 0.6).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
 	
 	if GameState.is_survival_mode and GameState.current_wave > 1:
 		heat_regen_base = min(25.0, 2.5 + (GameState.current_wave * 1.5))
@@ -1765,10 +1766,11 @@ func _process(delta: float) -> void:
 	if is_title_screen:
 		title_cam_angle += 0.3 * delta  # time accumulator (not a rotation angle)
 		var swing = sin(title_cam_angle) * 0.52  # ±~30° arc in radians
-		var cam_dist = 6.0
-		# Lower the camera to use the island as a natural horizon blocker
-		camera.position = Vector3(sin(swing) * cam_dist, 0.5, cos(swing) * cam_dist)
-		camera.look_at(Vector3(0, 1.5, 0), Vector3.UP)
+		var cam_dist = 4.5
+		# Bring camera slightly down, but look towards the sun, not straight up
+		camera.position = Vector3(sin(swing) * cam_dist, 0.4, cos(swing) * cam_dist)
+		camera.look_at(Vector3(0, 1.8, -10.0), Vector3.UP)
+		camera.fov = 65.0 # Slightly tighter FOV, not too extreme
 		
 		# Slowly drift the sun and clouds
 		if sun_mesh:
