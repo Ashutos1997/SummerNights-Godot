@@ -1,144 +1,66 @@
 # Summer Nights: Feature Documentation
 
-This document serves as the master record for all currently implemented features, mechanics, and systems in the *Summer Nights* project. It should be updated whenever a new feature is added to maintain a single source of truth.
+This document serves as the master record for all currently implemented features, mechanics, and systems in the *Summer Nights* project.
 
 ---
 
 ## 1. Core Gameplay Loop
-*   **Objective:** Cool the Sun to prevent it from reaching 100% heat before the wave timer runs out.
-*   **Heat Mechanics:** The Sun passively generates heat. If heat reaches 100%, the player loses.
-*   **Water Management:** The player has a limited water tank that drains when shooting. It recharges automatically when not firing.
-*   **Water Stream Combo, Scoring & Pitch Shifting:** Continuously tracking the Sun with water builds a combo multiplier that scales up to 3.0x, significantly boosting Catastrom Ultimate charging speed. The pitch of the water stream audio dynamically shifts upward based on the active combo multiplier, providing subconscious auditory feedback of your success.
-*   **Scoring System:** Points are dynamically awarded for continuous hits, intercepting Solar Flares (500 base points), and evaporating Magma Debris (150 base points). All points are heavily multiplied by the active Combo meter, making long, accurate streams extremely lucrative. Your High Score is persistently saved between sessions.
-*   **Wave Progression:** The game progresses through increasingly difficult waves (longer timers, faster heat generation, more aggressive sun movement). Boss waves occur every 5 waves (e.g., Wave 5).
-*   **Level Transitions:** Completing a level triggers a cinematic multi-stage transition sequence: the sun dies (Dying Ember), the screen fades to black, the "COOLED DOWN!" clear menu loads behind the black overlay, the overlay fades away to reveal the menu, the player reads the results, the screen fades to black again for a seamless environment reset, and then fades in to reveal the new level. All screen fades (`fade_to_black()`, `fade_from_black()`) use `TWEEN_PAUSE_PROCESS` so overlay tweens always run to completion regardless of pause state. Active solar flares and magma projectiles are explicitly cleared when entering transitions or draft sequences, and ocean rogue waves are paused during the entire transition to prevent environmental activity during loading. All unlock popups (weapon, ice burst, catastrom) are deferred until the new level has fully loaded and the transition is complete.
-*   **Game Modes:**
-    *   **Normal Mode:** Standard level progression.
-    *   **Endless/Survival Mode:** Infinite waves to see how long the player can survive.
+* **Objective:** Keep the Sun's heat below 100% until the wave timer expires.
+* **Heat Mechanics:** The Sun generates heat passively; 100% heat results in a Game Over.
+* **Water Management:** Shooting drains the water tank; it recharges automatically when idle.
+* **Combo System:** Continuous hits build a Combo multiplier (up to 3.0x), boosting ultimate charge rate and shifting water pitch.
+* **Scoring:** Points awarded for continuous hits, intercepting Solar Flares, and evaporating Magma. Multiplied by Combo meter. High scores are saved.
+* **Progression:** Waves increase in difficulty (duration, heat rate, sun movement). Boss waves occur every 5th wave.
+* **Level Transitions:** Cinematic "Dying Ember" fade out, results screen, and seamless reset between waves.
+* **Game Modes:** 
+  * *Normal Mode:* 6 standard progression levels.
+  * *Endless Mode:* Infinite survival mode (Unlocked after completing Normal Mode).
 
 ## 2. Weapons & Tools
-*   **Weapon Swapping & Weapon Wheel:** Holding the weapon wheel key slows time (`Engine.time_scale = 0.1`) and opens a sleek UI to swap weapons. Fully supports Gamepad thumbstick aiming and release-to-equip mechanics. Swapping weapons (via hotkeys or the wheel) triggers a physical two-part animation sequence where the current gun drops out of sight and the new weapon springs up with a bouncy curve. Firing logic is strictly blocked during this sequence to prevent accidental firing mid-animation. Water tank capacity maintains its current percentage seamlessly across weapon swaps without visual artifacting. To prevent exploits, hazard timers (like Solar Wind or Eclipses) pause entirely while the wheel is open, forcing players to confront the hazards rather than wait them out, while the level timer continues to drain. Closing the wheel, or encountering defeat, retry, or menu returns, guarantees `Engine.time_scale` is restored to `1.0`.
-*   **Available Weapons:**
-    *   **Standard Blaster:** Balanced water usage and cooling power. (Unlocked Level 1)
-    *   **Precision Stream:** Low capacity, fast drain, but massive critical hit multipliers. (Unlocked Level 2)
-    *   **Heavy Cannon:** Huge capacity and high cooling power, but drains water rapidly. (Unlocked Level 3)
-    *   **Scatter Nozzle:** Wide spread, excellent for intercepting multiple solar flares at once, but lacks pinpoint cooling. (Unlocked Level 4)
-    *   **Tidal Gatling:** A massive heavy burst weapon with extreme cooling power and water drain, but a very punishing recharge rate. (Unlocked via "Arcade Legend" Achievement)
-*   **Ice Charges (Secondary Fire):** Powerful, instant-cooling projectiles with limited charges. Earn charges over time or when defeating boss waves. Striking the sun triggers a "Hit-Stop" freeze effect, temporarily turning the sun icy cyan and freezing the screen edges with a frosty blue procedural overlay.
-	*   **Catastrom Ultimate:** Fills up by continuously watering the sun. When at 100% (Level 4+), press [F] to physically grab the sun and violently drag it down into the ocean for an instant wave clear.
+* **Weapon Wheel:** Slows time to 0.1x to swap weapons. Firing is blocked during swap animations. Hazard timers pause while open.
+* **Available Weapons:**
+  * *Standard Blaster:* Balanced.
+  * *Precision Stream:* Low capacity, high critical multiplier.
+  * *Heavy Cannon:* High capacity, massive cooling, rapid drain.
+  * *Scatter Nozzle:* Wide spray for multi-target intercepts.
+  * *Tidal Gatling:* Extreme cooling/drain burst weapon.
+* **Ice Burst (Secondary):** Instantly freezes sun heat generation and movement.
+* **Catastrom (Ultimate):** Grab the sun and dunk it into the ocean to instantly clear the wave.
 
-## 2.5 Rogue-lite Perks & Drafting System
-*   **Drafting Mechanics:** In Endless/Survival Mode, every 5 waves (e.g., Wave 5, Wave 10) triggers a Rogue-lite Draft. The game pauses and presents 3 random perks drawn from a weighted pool.
-*   **Active Perks HUD:** Drafted perks are tracked on-screen in the top-left HUD via a compact icon row. Duplicate perks intelligently stack with a gold "x2" or "x3" badge instead of cluttering the UI.
-*   **Available Perks:**
-    *   **High Capacity** (+15% Water Tank Size)
-    *   **Precision Optics** (+15% Critical Hit Damage)
-    *   **Thermal Insulator** (+10% Cooling Power)
-    *   **Catastrom Flow** (+15% Catastrom charge rate)
-    *   **Heat Shield** (+5% Heat Resistance)
-    *   **Gravity Anchor** (-15% Sun Sway Speed) *[Rare: 20 Weight vs 100 Base Weight]*
+## 3. Rogue-lite Perks (Endless Mode)
+* **Drafting:** After every boss wave, choose 1 of 3 randomized perks.
+* **Active HUD:** Track drafted perks in the top-left HUD (duplicates stack visually).
+* **Perks Include:** High Capacity (+15% Water), Precision Optics (+15% Crit), Thermal Insulator (+10% Cooling), Catastrom Flow (+15% Ult Charge), Heat Shield (+5% Resist), Gravity Anchor (Reduces Sun Sway), Glass Cannon, Heavy Water, Reckless Haste.
 
-## 3. Sun Mechanics & Threats
-*   **Dynamic Movement:** The Sun sways horizontally. On higher waves, it begins to weave in a "Figure-8" pattern.
-*   **Sunspots (Critical Heat Vents):** Periodically, a glowing white-hot sunspot will appear on the Sun's surface. Hitting this specific point with the water stream (especially with the Precision Stream) grants massive critical cooling bonuses and huge score multipliers.
-*   **Solar Flares:** The Sun periodically spits fiery projectiles towards the screen. The player must intercept them with the water stream before they hit; otherwise, they cause a massive heat spike and severe gameplay penalties (resetting the combo meter and draining water). Intercepting a flare spawns physical Magma Debris that crashes onto the beach, scaring away seagulls and persisting until the player evaporates it with their water gun. Flares visually telegraph their attack using a dynamic 2D UI loading ring that perfectly outlines the sun on the HUD and fills up over 0.6 seconds before launching.
-*   **Solar Wind:** A physical force emitted by the Sun that pushes the player's crosshair away, requiring them to actively fight the mouse to maintain aim. The island's foliage (trees and bushes) violently bends, and wide screen-spanning GPU particle streaks rush horizontally to visually telegraph the hazard's intensity.
-*   **Two-Phase Bosses:** Boss waves (e.g., Wave 5) have two phases. Depleting the timer triggers Phase 2, which resets the timer and immediately spikes the heat to a critical level (e.g., 60%).
-*   **Endless/Survival Mode:**
-  *   **Unlock Condition:** Endless Mode is locked by default. It is permanently unlocked by beating all 5 levels in Normal Mode (earning the "Dawn Breaks" achievement). The victory End Screen features an explicit "ENDLESS MODE UNLOCKED!" prompt to communicate this reward.
-  *   **Rogue-lite Wave Perks (Drafting):** After surviving every 5th wave (Boss Wave), the game executes the cinematic Dying Ember fade-to-black sequence (identical to the Normal Mode level clear) and pauses to present the player with a choice of 3 randomized perks (e.g., +15% Max Capacity, +15% Critical Damage) on the HUD. The pool also includes "trade-off" perks (e.g., Glass Cannon: +40% Crit Damage but -15% Tank Size) to encourage deeper strategic builds. These perks permanently stack for the remainder of the Endless run, creating massive strategic build diversity. After selecting a perk, the game fades back to gameplay seamlessly.
-  *   **Heat Mirage Overshield:** Every 5th wave in Endless mode, the sun spawns two decoy mirages that scramble positions. The mirages project a collective golden Overshield protecting the main sun from all damage. You must shoot down the mirages (shrinking them with water) to shatter the shield before you can resume cooling the main sun!
-  *   **Multi-Flare Shotgun:** Starting at Wave 10, the sun spits multiple flares simultaneously in a shotgun spread pattern (2 flares at Wave 10, 3 flares at Wave 15).
-*   **High Heat Steam:** When the sun's temperature exceeds 75%, it begins to furiously boil off thick plumes of steam. The steam visually intensifies as the heat climbs toward 100%, serving as a clear physical warning of impending doom.
-*   **Dying Ember (Level Clear):** When the sun's heat bar is fully depleted, rather than instantly changing color, its fiery emission smoothly drains away over 1.0 second, transitioning to a dark, smoldering maroon (`Color(0.2, 0.05, 0.05)`) with zero emission—like a cooling ember. A massive plume of 40 steam particles erupts from the sun's surface to sell the "you put out the fire" visual.
-*   **Supernova Cinematic (Game Over):** If the sun reaches 100% heat, the standard Game Over screen is replaced by a dramatic Supernova event. The sun violently expands while the screen shakes, triggering a blinding white evaporation flash that smoothly transitions into the Lose menu.
+## 4. Sun Mechanics & Threats
+* **Dynamic Movement:** Sun sways horizontally, adopting complex "Figure-8" patterns on higher waves.
+* **Sunspots:** Glowing critical weakpoints that offer massive cooling and points when hit.
+* **Solar Flares:** Fireballs that must be intercepted. Missing triggers scaling heat/water penalties and breaks combos.
+* **Solar Wind:** Physical wind that pushes player crosshairs sideways.
+* **Heat Mirage (Boss):** Spawns two decoy suns and a collective Overshield that must be broken.
+* **High Heat Warnings:** Sun boils steam at 75% heat; screen pulses red and heartbeat plays at 85% heat.
+* **Supernova (Game Over):** Reaching 100% heat triggers a dramatic supernova explosion cinematic.
 
-## 4. Dynamic Weather Events
-Weather events trigger based on a dynamic probability system tied to the current wave (configured via `GameState.LEVEL_CONFIG`'s `weather_weights`). Level 1 favors Rain or no weather, while Boss waves almost guarantee an Eclipse. In Endless/Survival Mode, the weights dynamically shift over time to make Eclipses increasingly common.
+## 5. Dynamic Weather
+* **Rainstorms:** Massive downpour provides infinite water and passive sun cooling.
+* **Solar Eclipses:** Sky darkens, sun fires rapid "Shadow Flares" that must be intercepted.
 
-*   **Rainstorms:** A massive downpour begins. Ambient lighting cools, and the Sun's heat begins to slowly drop. The player's water tank rapidly refills, allowing for infinite firing during the storm.
-*   **Solar Eclipses:** The sky drops into a moody twilight and the Sun becomes a dark silhouette with a bright corona. The Sun stops passively generating heat, but it begins rapidly firing high-speed, dark purple "Shadow Flares" that must be intercepted.
+## 6. Environment & Visuals
+* **Dynamic Ocean:** Procedural Gerstner waves, Voronoi caustics, and subsurface scattering.
+* **Rogue Waves:** Massive waves crash onto the island, temporarily darkening the wet sand.
+* **Sky & Atmosphere:** Day/night cycles, parallax clouds, procedural starfields, and cinematic bloom.
+* **Sun Expressions:** Sun face reacts dynamically to being hit, critical hits, charging flares, and Catastrom dunks.
+* **Seagulls & Fireflies:** React dynamically to weather events (Rain, Eclipse, Wind).
+* **Retro Filters:** Optional post-processing shaders (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
 
-## 5. Environment & Level Design
-*   **Dynamic Ocean:** Procedural water material (`water.gdshader`) completely overhauled with physical Gerstner waves for steep, dynamic crests, depth-based color absorption, edge intersection foam, procedural Voronoi surface caustics that scroll across the open ocean, and fake subsurface scattering (SSS) that dynamically highlights wave crests based on height and view angle.
-    *   **Rogue Waves:** Randomly spawned giant surfing waves that travel towards the shore, adding unpredictable, dynamic motion to the ocean surface. They spawn off-mesh and dynamically swell in height to create a cinematic, realistic build-up. All rogue waves are guaranteed to be massive high-tide waves. When a rogue wave crashes, it temporarily turns the island's sand dark and glossy (perfectly synchronized to the wave's exact speed and impact time), slowly drying off over several seconds for enhanced immersion.
-*   **Sky & Weather:** Procedural sky shader featuring smooth time-of-day gradients, atmospheric fog, and a stylized sun. The scene transitions between daylight (bright blues) and night (deep purples) based on the wave progress. It features multi-layered **Parallax Clouds** for intense volumetric depth, and a **Procedural Starfield** that dynamically fades in to twinkle during dusk and Solar Eclipses to capture the "Summer Nights" aesthetic without using physical meshes.
-*   **Foliage & Props:** Low-poly stylized foliage (palms, bushes, rocks) scattered via GDScript. The foliage features a constant, gentle mathematical rotation applied in `Main.gd` to simulate a relaxing tropical breeze, which scales up violently during the Solar Wind hazard.
-*   **PBR Beach Sand:** The island's ground uses a high-quality CC0 PBR material (diffuse, normal, roughness maps) heavily tinted with a warm sunset tone to maintain a smooth, stylized aesthetic. Its emission dynamically fades to match dark ambient lighting during severe weather events (e.g., Rainstorms, Eclipses) while having a completely matte finish (`specular = 0.0`) for a realistic dry-sand feel.
-*   **Dynamic Sun Expressions & Hit Reactions:** The Sun features a fully procedural 2D face rendered onto a billboarded `Sprite3D` using custom vector drawing routines and a 4px dark-orange procedural outline. Beyond the base temperature tiers (`happy`, `neutral`, `annoyed`, `angry`), the Sun dynamically switches to expressive situational reaction states during live combat:
-    *   **Wince (`wince`):** Triggered when the Sun is actively hit by the water stream. The eyes clamp shut in a `> <` squint, brows furrow, mouth contorts into a wavy clenched grimace, and sweat/splash droplets fly from the temple. Paired with a kinetic positional micro-jitter (decaying shake) for punchy impact feel.
-    *   **Critical Agony (`crit_pain`):** Triggered when landing hits on the white-hot Sunspot core vent. The Sun's eyes clamp shut with deep tension creases, brows press down aggressively, the mouth opens wide into an agonized scream, dual sweat beads erupt, and the face flashes in brilliant white-hot light (`Color(2.8, 2.8, 3.2)`).
-    *   **Solar Flare Charging (`charging`):** Synchronized with the 0.6-second 2D HUD telegraph ring. The Sun's eyes dilate into wide shock rings with pinpoint pupils, brows angle sharply inward in fierce exertion, the mouth sets into a horizontal gritted-teeth grimace, and the face illuminates with a fiery solar glow (`Color(2.5, 1.4, 0.6)`).
-    *   **Catastrom Dread (`dread`):** Triggered during the Catastrom Ultimate drag sequence. The Sun's pupils widen looking downward in panic, with high worried brow arches and a trembling round open mouth as it is pulled toward the ocean.
-    *   **Frozen / Defeated (`dizzy`):** Retains top priority during Ice Burst freezes or Dying Ember defeats, displaying X-eyes and a squiggly zig-zag mouth with a deep icy blue glow.
-*   **Heat Distortion:** A screen-space shader applies heat shimmer/refraction over the environment, which intensifies as the Sun gets hotter.
-*   **Seagull Interactions:** Shooting the background seagulls with water causes them to squawk (pitch-shifted SFX), drop a burst of feathers, and rapidly flee higher into the sky. The flock also dynamically reacts to the weather: during Rainstorms, they rapidly seek shelter by landing on the beach, and during Solar Eclipses, they panic and flee out of sight.
-*   **Decorative Layers:**
-    *   **Cloud Layer:** Stylized 3D clouds that float across the sky.
-    *   **Seagull Layer:** Flocks of seagulls that fly in the distance.
-    *   **Fireflies:** A procedural particle system that dynamically spawns drifting, glowing low-poly bugs (ArrayMeshes) across the beach foreground to enhance the cozy sunset aesthetic. They feature dynamic weather reactions, fading away to hide during Rain, glowing intensely during Solar Eclipses, and being violently blown across the screen during Solar Winds.
-*   **Particle Effects:** Splashes for water hitting the sun and the environment (e.g. missing the sun and hitting the sand/ocean 100% of the time), fiery orange sparks for intercepted solar flares, shattered chunks for the Catastrom dunk, shattered ice particles for ice blasts, and steam plumes. All dynamically generated particles are emissive, reacting strongly to the WorldEnvironment.
-*   **Atmospherics & Post-Processing:**
-    *   **Retro Shader:** A global screen shader applying film grain, vignette, and synthwave color grading (S-curve contrast and complementary split-toning).
-    *   **Cinematic Bloom:** The `WorldEnvironment` utilizes soft additive bloom, causing the sun and emissive particles to visibly bleed light into the environment.
+## 7. UI & Game Feel
+* **Juice:** Screen shake on impacts, dynamic drop shadows, scaling/bouncing UI elements, UI audio ticks.
+* **Crosshairs:** Dynamic diegetic crosshairs for each weapon that track water capacity visually.
+* **Achievements & Buffs:** In-game achievement tracking that unlocks permanent buffs and tracks lifetime stats.
+* **Menus:** Unified golden borders, 96px margins, centered/left-aligned layouts, and full Gamepad navigation.
+* **Accessibility:** Full Xbox Controller support with haptics/aim-assist, "Reduce Motion" setting, and EN/KR localization.
 
-## 6. UI, Juice, & Game Feel
-*   **Consequences & Stakes:** The game features heavy visceral feedback to emphasize failure and critical states, completely adapting its intensity based on the "Reduce Motion" setting to maintain WCAG accessibility.
-    *   **High Heat Warning (Death's Door):** When the sun exceeds 85% heat, a soft translucent red border tweens around the screen, the master audio bus is heavily muffled via a Low-Pass Filter, and a thumping heartbeat audio pulses every 1.2s to match the visual flashing.
-    *   **Solar Flare Impact:** Failing to shoot a Solar Flare triggers a massive screen shake, a blinding orange screen flash, and a heavy, distorted explosion sound. Critically, it also severely disrupts gameplay by instantly resetting the player's active Combo multiplier back to zero, and triggers a scaling penalty based on the current wave/level (maxing out at 12.0°C heat damage and a 20% Water Tank drain).
-    *   **Low Water Warning:** When the water tank drops below 25%, the central dynamic crosshair cleanly interrupts the player's focus by pulsing a high-contrast orange.
-    *   **Empty Tank Sputter:** Attempting to shoot while empty triggers a rhythmic, high-frequency plastic clicking sound (0.35s cooldown) to audibly communicate the empty state.
-*   **Controller Aim Assist (Friction):** Intercepts Gamepad analog stick input to apply a "sticky" friction multiplier when the crosshair sweeps over the main body of the sun (0.5x sensitivity) and an even stronger lock-on friction over critical sunspots (0.2x sensitivity), ensuring precise aiming without a mouse.
-*   **Quit Game Confirmation:** Pressing ESC on the main menu opens a modal confirming if the player wants to quit, preventing accidental exits. Matches the global design system and uses a dedicated secondary visual state for the destructive action.
-*   **Dynamic Crosshair:** A custom diegetic cursor that scales up on hits. It features a translucent blue radial ring that visually tracks the current water tank capacity. The ring and crosshair instantly flash red when the tank is empty, and flash lime-green when landing critical hits on sunspots.
-    *   **Per-Weapon Crosshair Shapes:** Each weapon uses a unique procedurally-drawn crosshair style rendered via GDScript's `_draw()` API: Standard uses the default dot + ring; Precision uses a tight `+` cross with a scanning center dot; Heavy uses wide bracket corners for a brute-force feel; Scatter uses 3 diverging fan lines showing the spray cone; Tidal Gatling uses a spinning dashed ring that accelerates while firing.
-*   **Screen Shake:** The camera violently shakes during critical moments (e.g., Phase 2 transitions, high heat, solar flare impacts, Catastrom dunks).
-*   **Hit Feedback:** The crosshair flashes and scales upon successful hits (`projectile_hit` events) and critical hits.
-*   **Dynamic UI Elements:**
-    *   Temperature/Heat Bar (Sun Heat): Includes live Celsius temperature readout alongside the header label (`HEAT | X°C` in English, `열기 | X°C` in Korean), tracking smoothly with cooling and heat recovery.
-    *   Water Tank Bar.
-    *   Ice Charge indicators.
-    *   Catastrom Ultimate notification toasts.
-    *   Wave Timer and live Score counter (which formats and scales dynamically for juice, encapsulated in a unified top-right container to guarantee mathematical right-alignment flush with the resource meters).
-    *   **Low-Time Timer Urgency State:** When the wave timer drops below 10 seconds, the timer text transitions to warning red (`Color(1.0, 0.3, 0.2, 1.0)`), begins a gentle alpha sine pulse, and executes a punchy `1.12x` right-pivoting scale bounce on each integer second countdown tick. Fully wired to `reduce_motion` (disabling bounce and alpha pulse while retaining the high-contrast red warning) and includes robust lifecycle cleanup (`_stop_timer_pulse()`) preventing lingering tweens across wave resets.
-    *   Universal Resource Meter Icons (Water droplet, Snowflake, Sun Drag) housed in 38x38 Retro Flat Plates (`Color(0, 0, 0, 0.45)`, 4px corner radii, 1px accent border) matching the Active Perks Tracker design language. Features dynamic peripheral feedback: low water (<20%) flashes the water plate border and droplet red; empty ice charges dim the ice plate to 0.45 alpha; and Catastrom reaching 100% pulses its plate border gold while flashing a bold arcade "MAX READY!" (`준비 완료!`) label across the gauge.
-    *   Discrete Ice Charge Cells: Replaced ambiguous fractional progress bars with discrete segmented charge cells (`progress_white.png` tinted crystal frost cyan) dividing the meter width equally per available charge.
-    *   Dynamic Arcade Combo Callouts at key multiplier milestones (e.g., "CHILL!", "ICE COLD!").
-*   **Achievements System:** An in-game achievements gallery is available from both the Title Screen and the Pause Menu. The game tracks gameplay milestones and unlocks achievements dynamically, presenting a custom animated UI Toast with audio. Locked achievements clearly display their full titles and unlock conditions while remaining visually greyed-out.
-    *   **Meaningful Rewards:** Unlocking achievements provides tangible gameplay bonuses (e.g., unlocking Endless Mode, Catastrom charge buffs, combo decay grace periods, heat resistance buffs, eclipse warning timers, weapon handling buffs, and flare interception buffs).
-    *   **Active Buffs Menu:** A dedicated menu accessible from the Pause Screen dynamically displays a real-time list of all currently active perks, stat upgrades, and achievement rewards based on your High Score and progression. Similar to achievements, locked buffs display their full names and requirements while remaining greyed-out.
-*   **Startup Sequence:** The Title Screen features a dynamic "tech demo" boot sequence. It plays a custom synth audio that swells over 4 seconds, while a golden border procedurally draws itself around the perimeter. At the peak of the audio swell, the UI aggressively bounces up into place and the audio smoothly fades out while the ambient ocean fades in.
-*   **Lifetime Stats:** A dedicated Stats menu on the Title Screen that persistently tracks and displays total water sprayed, solar flares intercepted, seagulls shooed, and total deaths.
-*   **Menu Overlays:** Standard menus (Pause, Settings, Filters, Controls, Credits, Achievements, Buffs, Stats) are unified by a sleek golden border (with the Pause Screen uniquely featuring an animated procedurally-drawn sun situated in a broken bottom-right gap), an ultra-dark background dimming effect, consistent left-aligned typography with 96px interior margins, exactly 24px vertical layout separation, uniform title dividers, and dynamic gold-tinted title icons (with Filters featuring a dedicated 3D glasses icon). The HUD's root `CanvasLayer` is set to `PROCESS_MODE_ALWAYS` so it remains interactive while the entire scene tree is paused.
-    *   **Controller Keybindings:** The Controls screen displays a visual graphic of a keyboard and Xbox controller that perfectly align symmetrically with the menu using dynamic layout spacers (`size_flags_horizontal = 3`). Cleanly colored keys map directly to a fully translated vertical legend column to the left of the graphic, providing an intuitive, at-a-glance reference for all game actions.
-*   **Lose Screen Exception:** Unlike the standard left-aligned menus, the Lose Screen (Game Over) features a perfectly centered layout to emphasize the dramatic Supernova cinematic transition, but utilizes the exact same 280x52 button styling, typography scaling, and golden borders as the rest of the UI.
-
-*   **Retro Filters Menu:** A dedicated Filters menu accessible from the Pause Screen allows players to customize visual post-processing shaders independently of core system settings (distinguished by a custom gold 3D glasses icon `3d-glasses.png`). Filters operate with mutual exclusivity (enabling one automatically disables any other active filter):
-    *   **Retro Colors:** Arcade/console-style 10-level color reduction per RGB channel, combined with an analog NTSC composite horizontal chroma delay/bleed (`px.x * 2.5`) to replicate CRT video cable signal characteristics, and crisp 10% CRT aperture grille scanline modulation across alternating 2-pixel rows.
-    *   **Dithering:** High-contrast 4x4 Bayer ordered dithering matrix with 8-level quantization, delivering authentic 90s console and arcade cross-hatching and shading.
-    *   **PS1 Shading:** Authentic 5th-generation console visual simulation featuring low-res virtual framebuffer rasterization (downsampling 3D world to 384×216 while keeping the HUD completely crisp at native 1080p), 15-bit stepped color quantization (16 levels), low-res grid-aligned 4×4 Bayer matrix dithering, NTSC composite horizontal chroma smear, and 240p alternating 2-pixel CRT scanlines.
-    *   **Heatwave 1984:** Vintage 35mm / Kodachrome cinematography simulation featuring true multi-tap optical halation diffusion (4-tap radial cross kernel in screen UV that realistically scatters warm amber-red light around the Sun's silhouette and extreme highlights into adjacent pixels), film S-curve contrast boost, warm 1980s anamorphic lens falloff, and analog celluloid film grain.
-    *   Filter preferences are fully persisted in `settings.cfg` under `[Filters]`.
-
-*   **Accessibility & Settings:**
-    *   Reduce Motion toggle (disables screen shake and intensive UI flashing).
-    *   Mouse Sensitivity slider.
-    *   Vibration toggle (enables/disables controller haptics during combat).
-    *   Fullscreen toggle (enabled by default for optimal font legibility).
-    *   Language selection (English and Korean).
-    *   Automatic Pause on Window Unfocus (prevents losing a run when Alt-Tabbing). Pausing fully freezes the entire scene tree (`get_tree().paused`), halting all processing including clouds, wave shaders, physics, animations, and particles. Both manual `ESC` pausing and unfocus auto-pausing are protected by strict state guards, preventing pause activation while victory, defeat, or level-end screens are displayed.
-
-## 7. Audio
-*   **Audio Ducking:** Massive visceral events trigger dynamic audio ducking. When a Solar Flare violently impacts the screen, or when the player successfully dunks the sun via the Catastrom ability, the master audio bus drops by 12dB and smoothly fades back in, creating a massive "vacuum" shockwave effect.
-*   **Synthesized UI Sounds:** Programmatically generated sine-wave "ticks" and "whooshes" for UI navigation and the weapon wheel. A global Autoload (`UIJuice.gd`) strictly enforces a `-18 dB` 1800Hz sine sweep audio tick across every single interactive element (buttons, sliders, toggles) in the game.
-*   **Gameplay SFX:** 
-    *   Continuous water shooting loop.
-    *   Solar flare interception sound.
-    *   Catastrom voice-over (Kamen Rider) for GitHub builds, and a royalty-free cinematic impact sound for itch.io builds (via the `safe_audio` export tag), alongside a massive water dunk splash.
-    *   Critical warnings.
-
----
-
-*(Note: The Shop System was temporarily removed in a previous iteration and is currently disabled.)*
-
-
+## 8. Audio
+* **Audio Ducking:** 12dB master volume drop on massive impacts (Flares, Dunks) for shockwave effect.
+* **Synthesized UI Sounds:** Consistent -18dB 1800Hz sine sweep ticks for all UI interactions.
+* **Catastrom VO:** Royalty-free fallback for itch.io exports, original audio for GitHub builds.
