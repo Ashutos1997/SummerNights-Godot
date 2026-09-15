@@ -1,264 +1,56 @@
 # Summer Nights: UI Design System
 
-This document outlines the UI design system, color palette, typography guidelines, and specific component styles used in the Godot 4 implementation of *Summer Nights*.
+This document outlines the UI design system, color palette, typography, and component styles for *Summer Nights*.
+
+---
 
 ## 1. Color Palette
+* **Primary Accents:** Deep Gold `Color(1.0, 0.75, 0.15, 1.0)`, Bright Yellow `Color(1.0, 0.85, 0.2, 1.0)`.
+* **Secondary Accents:** Cyan `Color(0.2, 0.8, 1.0, 1.0)`, Water Blue `Color(0.1, 0.65, 0.95, 1.0)`.
+* **Backgrounds:** Global Menu `Color(0.02, 0.01, 0.05, 0.96)`, Dark Panel `Color(0.05, 0.02, 0.1, 0.85)`.
+* **Controller Highlights:** Gold (Pause), Lime (Weapons), Cyan (Ice Blast), Orange (Catastrom).
 
-### Primary Accents (Golden / Solar)
-- **Primary Text / Main Accent:** `Color(1.0, 0.75, 0.15, 1.0)` (Deep Golden Yellow)
-- **Bright Accent (Highlights):** `Color(1.0, 0.85, 0.2, 1.0)` (Bright Yellow)
-- **Title Highlights (Weapon Wheel):** `Color(1.0, 0.95, 0.5, 1.0)` (Pale Gold)
-
-### Secondary Accents (Cooling / Ice / Water)
-- **Cyan Accent (Survival Mode):** `Color(0.2, 0.8, 1.0, 1.0)`
-- **Water UI Bars:** `Color(0.1, 0.65, 0.95, 1.0)` (Features smooth internal value lerping, but must bypass lerp and instantly snap its visual representation whenever the maximum capacity changes to prevent UI flashing).
-
-### Controller Highlights (Keybindings)
-- **Pause / Gold:** `Color(1.0, 0.843, 0.0, 1.0)` (Yellow)
-- **Weapons / Lime:** `Color(0.5, 0.9, 0.1, 1.0)` (Lime Green)
-- **Ice Blast / Cyan:** `Color(0.31, 0.765, 0.969, 1.0)` (Blue)
-- **Catastrom / Orange:** `Color(1.0, 0.427, 0.0, 1.0)` (Orange)
-
-### Backgrounds & Panels
-- **Global Menu Background:** `Color(0.02, 0.01, 0.05, 0.96)` (Extremely dark, almost solid black for full-screen pause/settings menus)
-- **Dark Panel Background:** `Color(0.05, 0.02, 0.1, 0.85)` (Very dark, slightly purple-tinted black for UI panels)
-- **Standard UI Background:** `Color(0.0, 0.0, 0.0, 0.4)` (Semi-transparent black)
-
-### Text & Outlines
-- **Primary Text:** White or Gold (depending on hierarchy)
-- **Muted Text / Credits:** `Color(1.0, 1.0, 1.0, 0.7)`
-- **Shadows / Outlines:** `Color.BLACK` or `Color(0, 0, 0, 0.8)`
-
----
-
-## 2. Corner Radius System
-
-To maintain a consistent shape language across the game, corner rounding follows strict rules based on component size and function:
-
-*   **Small / Standard Buttons:** `0px` (Square corners, used for Main Menu buttons, simple prompts)
-*   **Retro Flat Plates & Badges:** `4px` (Subtle corner radius, used for Active Perks icons and Resource Meter Icon Plates to maintain consistent arcade styling)
-*   **Large Panels & Cards:** `16px` (Highly rounded corners, used for Weapon Wheel, large UI overlays, etc. to create a sleek and premium aesthetic)
-
----
+## 2. Corner Radii
+* **0px:** Standard buttons (Main Menu, popups).
+* **4px:** Retro Flat Plates and Badges (Resource meters, Perks).
+* **16px:** Large panels and cards (Weapon Wheel, Overlays).
 
 ## 3. Typography
+* **English (EN):** `Kenney Future.ttf` (Titles/Headers), `Inter-Medium.ttf` (Body).
+* **Korean (KR):** `Galmuri11.ttf` (Used globally for all KR text).
+* **Styling:** All text uses heavy black outlines and drop shadows to ensure legibility against the bright 3D sky.
 
-The game uses custom fonts loaded via `.ttf` and applied programmatically depending on the UI context and the active language setting.
+## 4. UI Components
 
-*   **English (EN):**
-    *   **Titles & Headers:** `Kenney Future.ttf` (Bold, squared-off arcade look)
-    *   **Body Text & Descriptions:** `Inter-Medium.ttf` (Clean, highly legible sans-serif for paragraphs)
-*   **Korean (KR):**
-    *   **All Text:** `Galmuri11.ttf` (Retro pixel-art aesthetic that natively supports full KR characters while maintaining the game's style)
+### Global Menus
+* **Borders:** All full-screen menus use a 2px golden border `Color(1.0, 0.85, 0.2, 0.4)` with an 8px radius and 24px screen margin.
+* **Layout:** Strict left-aligned content with a 96px margin (except the centered Lose Screen). Exactly 24px vertical spacing between elements.
+* **Titles:** Use 40x40 dynamically tinted gold icons and a 2px horizontal separator.
 
-### Text Outlines and Shadows
-To ensure legibility against the bright, 3D sun background, heavy outlines and drop shadows are applied to all text.
-
-*   **Main Titles (e.g., Title Screen):**
-    *   Size: `72px`
-    *   Outline Size: `8px` (Black)
-    *   Shadow Offset: `x: 4, y: 4`
-    *   Shadow Color: `Color(0, 0, 0, 0.8)`
-    *   Shadow Outline Size: `12px`
-*   **Subtitles (End Screen, Menus):**
-    *   Size: `18px` (EN) / `20px` (KR) (Standard size for UI sub-headers)
-    *   Highlighted Size: `24px` (EN) / `28px` (KR) (Used for primary screen conclusions like "THE SUN HAS BEEN TAMED")
-    *   Outline Size: `5px` (Black)
-*   **Buttons:**
-    *   Size: `18px` (EN) / `20px` (KR)
-    *   Outline Size: `2px` (Black)
-*   **Warning Timers (e.g., Eclipse Countdown):**
-    *   Size: `24px`
-    *   Text Color: `Color(1, 0, 0, 1)` (Red)
-    *   Outline Size: `4px` (Black)
-*   **Low-Time Wave Timer Urgency (<10s):**
-    *   Size: `22px` (EN) / `26px` (KR)
-    *   Warning Color: `Color(1.0, 0.3, 0.2, 1.0)` (Warning Red, transitions from default solar yellow `Color(1.0, 0.8, 0.2, 1.0)`)
-    *   Outline Size: `2px` (Black)
-    *   Animation: Alpha sine pulse (`0.4` to `1.0` over `0.35s`) + `1.12x` scale bounce on each countdown integer tick, pivoting from right edge (`Vector2(size.x, size.y / 2)`). Fully suppressed when `reduce_motion` is ON.
-*   **Sun Heat Bar Header Label:**
-    *   Size: `22px` (EN) / `26px` (KR)
-    *   Text Color: `Color(1.0, 0.9, 0.3, 1.0)` (Solar Yellow)
-    *   Outline Size: `3px` (Black)
-    *   Format: `HEAT | X°C` (EN) / `열기 | X°C` (KR), dynamically rendered and synchronized to the heat bar's current lerped temperature value.
-
----
-
-## 4. UI Component Styles
-
-### Global Menu Borders
-All full-screen menus (Title Screen, Pause Screen, Settings, Credits, End Screen, Win Screen, Lose Screen, Stats, etc.) are unified by a consistent golden border overlay to tie the visual language together:
-*   **Padding / Offset:** 24px from all screen edges
-*   **Border Width:** 2px (All sides)
-*   **Border Color:** `Color(1.0, 0.85, 0.2, 0.4)`
-*   **Corner Radius:** 8px
-*   **Fade Animation:** Menus tween the entire screen node (`self.modulate:a`) seamlessly over 0.5s rather than fading individual components out-of-sync.
-*   **Startup Animation:** The Title Screen border features a custom `_draw()` sequence that procedurally traces the 8px rounded rectangle perimeter over 4.0 seconds to sync with the boot audio, perfectly matching the final `StyleBoxFlat`.
-
-### Menu Interiors
-All menus (Pause, Settings, Filters, Credits, Achievements, Buffs, Stats) follow a strict internal layout logic:
-*   **Alignment:** Content is always left-aligned (anchored to the left) with a `96px` margin from the global border. *(Exception: The Lose Screen features a perfectly centered layout to emphasize the dramatic Game Over Supernova cinematic transition.)*
-*   **Vertical Flow:** All primary interior components (e.g., Title Row, Divider, Body Content) are separated by exactly `24px` of vertical spacing to ensure perfect visual rhythm across all menus.
-*   **Title Icons:** Each menu title is preceded by a `40x40` icon (`TextureRect` using Game-icons.net SVGs/PNGs, such as `3d-glasses.png` for Filters or `console-controller.svg` for Controls) wrapped in a `TitleRow` HBoxContainer (separation `12px`). The icons are dynamically tinted to exactly match the gold color of their respective titles.
-*   **Title Separator:** An `HSeparator` sits directly beneath the TitleRow.
-    *   **Color:** `Color(1.0, 0.88, 0.3, 0.35)`
-    *   **Thickness:** `2px`
-*   **Edge Alignment:** When aligning nested child elements (e.g., the controls graphic and legend) to the outer edges of the main menu boundaries, expanding spacers (`size_flags_horizontal = 3`) are utilized within an HBoxContainer to guarantee perfect, responsive left/right symmetry against the top and bottom dividers.
-
-### Drafting Menu (Rogue-lite Perks)
-The mid-game drafting menu adheres strictly to the global menu visual language rather than introducing a completely new aesthetic:
-*   **Background:** Same `Color(0.02, 0.01, 0.05, 0.96)` translucent overlay as the Pause Menu.
-*   **Layout:** Perfectly centered (like the Lose Screen) to focus player attention on the rewards.
-*   **Perk Cards:** Each perk is presented in a horizontal card layout (`HBoxContainer`).
-    *   Icon size: `64x64`
-    *   Padding/Spacing: `16px` separation between icon and text.
-*   **Button Styling:** Standard `StyleBoxFlat` is used for the perk cards to ensure hover interactions trigger the global golden glow effect.
-
-### Active Perks HUD (Tracker)
-*   **Container:** Uses an `HFlowContainer` anchored beneath the Top-Left Wave/Level text, with `8px` horizontal and vertical separation to handle wrapping cleanly during long runs.
-*   **Perk Icons:**
-    *   Base Size: `32x32` panel.
-    *   Background: `Color(0, 0, 0, 0.4)` with `4px` corner radii and a `1px` thin golden border (`Color(1, 0.85, 0.2, 0.6)`).
-    *   Icon Texture: Shrinks inside the panel with a `4px` margin on all sides to provide breathing room.
-    *   Stack Badges: Duplicate perks append a `12px` font "xN" badge anchored to the bottom right, pushed slightly outside the panel (`-24px` left, `-14px` top) for readability against the sky.
-
-### HUD Right-Edge Alignment & Resource Layout
-To ensure mathematical visual alignment across the right side of the screen during live combat, all elements along the right edge adhere to a strict coordinate hierarchy:
-*   **Top-Right Container (`TopRightInfo`):** The `TimerLabel` and `ScoreLabel` are unified within a dedicated `VBoxContainer` anchored to the top-right corner with a `24px` screen edge margin (`offset_right = -24.0`, `offset_left = -300.0`). Both labels utilize `horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT` so their right text boundaries remain perfectly flush with one another.
-*   **Resource Row Retro Flat Plates (`IconPlate`):** In `resource_container` (anchored bottom-right with a matching `24px` margin), resource meters are anchored by `38x38` retro flat dark plates (`Panel` with `Color(0, 0, 0, 0.45)`, `4px` corner radii, `1px` accent border) housing tightly framed vector icons with a `6px` internal offset (reducing icon size to 26x26 inside the 38x38 plate to provide balanced breathing room and avoid visual claustrophobia):
-    *   **Water Meter Plate:** Cyan border (`Color(0.2, 0.8, 1.0, 0.6)`) and `meter_water.svg` (Water Droplet) modulated with `Color(0.4, 0.9, 1.0)`. During low water (<20%), both the plate border and droplet flash warning red (`Color(1.0, 0.3, 0.3, 0.9)`) for immediate peripheral feedback.
-    *   **Ice Burst Plate:** Crystal frost border (`Color(0.55, 0.9, 1.0, 0.6)`) and `meter_ice.svg` (Snowflake) modulated with `Color(0.5, 0.85, 1.0)`. Dims to `0.45` alpha when all charges are spent.
-    *   **Catastrom Plate:** Catastrom purple border (`Color(0.8, 0.4, 1.0, 0.6)`) and `meter_catastrom.svg` (Sun Drag) modulated with `Color(0.8, 0.4, 1.0)`. Pulses bright gold (`Color(1.0, 0.85, 0.2)`) when the gauge reaches 100%.
-    Using identical 38x38 icon footprints eliminates cross-language string length differences (EN vs KR) and guarantees that all progress bars begin at the exact same horizontal coordinate and expand to the same right-aligned screen boundary.
-*   **Discrete Ice Charge Cells:** Inside `IceBarContainer`, integer charges are represented by discrete segmented cells (`progress_white.png` tinted `Color(0.55, 0.9, 1.0)` with a 4px gap) dividing the 200px width equally, eliminating fractional percentage ambiguities.
-*   **Catastrom "MAX READY!" Feedback:** When Catastrom reaches 100%, an animated arcade label (`ReadyLabel` with 3px black outline) pulses inside the purple bar ("MAX READY!" in EN / "준비 완료!" in KR).
+### HUD Alignment
+* **Right-Edge:** Top-Right info (Timer, Score) and Bottom-Right resources (Meters) use a strict 24px right-aligned screen margin.
+* **Resource Plates:** 38x38 dark plates (4px radii, 1px accent border) ensure consistent horizontal starting coordinates regardless of language.
 
 ### Buttons (StyleBoxFlat)
+* **Size:** Minimum `280x52`, font size `22px`, `0px` radius.
+* **States:** 
+  * *Normal:* 40% black bg, 2px gold border.
+  * *Hover:* 20% gold bg.
+  * *Pressed:* 40% gold bg, bright gold border.
+* **Juice:** Global Autoload (`UIJuice.gd`) applies 1.03x hover scale, 0.97x press bounce, and -18dB audio ticks.
 
-Buttons use a sleek, semi-transparent flat style with thick borders.
+### Interactive Elements
+* **Sliding Toggle Pill:** Binary toggle (EN/KR, Keyboard/Xbox) with a sliding gold highlight block and smooth color lerping.
+* **Weapon Wheel:** Procedural wedges drawn via `_draw()`. Locked weapons are dark gray, unlocked are gold.
 
-*   **Corner Radius:** `0px` (Standard buttons)
-*   **Menu Buttons Sizing:** `custom_minimum_size = Vector2(280, 52)` with font size `22px`
-*   **Dynamic Micro-animations (Juice):** A global Autoload (`UIJuice.gd`) automatically hooks into all buttons to provide consistent spatial feedback: buttons tween to scale `1.03x` on hover, and bounce down to `0.97x` on click, before returning to `1.0x` when resting.
+## 5. Procedural Sun Expressions
+* **Rendering:** 128x128 RGBA8 procedural texture with a 4px dark-orange outline.
+* **Expressions:** Changes dynamically based on heat (happy, neutral, annoyed, angry) and events (wince, crit_pain, charging, dread, dizzy).
+* **Jitter:** Positional micro-shake applied on water impacts (disabled with Reduce Motion).
 
-*   **Normal State:**
-    *   Background: `Color(0, 0, 0, 0.4)`
-    *   Border: `Color(1.0, 0.85, 0.2, 0.6)`
-    *   Border Width: `2px` (All sides)
-    *   Content Margins: `Left/Right: 16px`, `Top/Bottom: 8px`
-*   **Hover State:**
-    *   Background: `Color(1.0, 0.75, 0.15, 0.2)`
-    *   Border: Same as Normal
-*   **Pressed (Click) State:**
-    *   Background: `Color(1.0, 0.85, 0.2, 0.4)`
-    *   Border: `Color(1.0, 0.9, 0.3, 1.0)`
-*   **Disabled State:**
-    *   Background: `Color(0, 0, 0, 0.2)`
-    *   Border: `Color(0.5, 0.5, 0.5, 0.5)`
-*   **Focus State:**
-    *   Background: `Color(0, 0, 0, 0)`
-    *   Border: `Color(1.0, 0.85, 0.2, 1.0)`
-    *   Border Width: `2px`
-    *   Corner Radius: `6px`
-
-*   **Secondary / Destructive Actions (e.g., "YES" to Quit):**
-    *   Normal Background: `Color(0, 0, 0, 0.3)`
-    *   Hover Background: `Color(0.4, 0.4, 0.4, 0.2)`
-    *   Pressed Background: `Color(0.2, 0.2, 0.2, 0.4)`
-    *   Border: `Color(0.6, 0.6, 0.6, 0.4)` (Dim Grey)
-    *   Text Color: `Color(0.7, 0.7, 0.7, 1.0)` (Light Grey)
-    *   Corner Radius: `0px`
-
-### Panels & Overlays (Weapon Wheel Style)
-
-Panels like the Weapon Wheel info box use a distinct, rounded "sleek" aesthetic.
-
-*   **Background:** `Color(0.05, 0.02, 0.1, 0.85)`
-*   **Borders:**
-    *   Color: `Color(1.0, 0.9, 0.3, 1.0)`
-    *   Width: `2px` (All sides)
-*   **Corner Radius:** `16px` (All corners)
-*   **Content/Expand Margins:** `Left/Right: 16px`, `Top/Bottom: 8px`
-
-### Toast Notifications (Catastrom Popup)
-
-Transient popups that slide in from the top of the screen to notify the player of critical events (e.g., Catastrom Ultimate ready). During level transitions, these notifications are explicitly deferred and will wait in queue until the next level has fully loaded and the screen has faded in.
-
-*   **Background & Borders:** Inherits the "Panels & Overlays" style.
-*   **Icon:** Includes a `32x32` pixel icon (e.g., Catastrom logo).
-*   **Text & Accent:** Uses the Bright Accent `Color(1.0, 0.85, 0.2, 1.0)`.
-*   **Animation:** Uses a Sine ease-out tween to slide the `position.y` onto the screen and hold for 3 seconds before sliding back up.
-
-### Achievement Icons
-
-All achievements utilize thematic, open-source vector graphics from Game-icons.net (CC BY 3.0). These are imported as crisp PNGs to maintain consistency with the arcade aesthetic. Locked achievements and buffs clearly display their full names and unlock conditions, but are visually greyed out using alpha blending (`Color(0.5, 0.5, 0.5, 1.0)`) and dimmed icons (`Color(0.3, 0.3, 0.3, 0.5)`) to indicate their locked status without obfuscation.
-
-### Sliding Toggle Pill
-
-A sleek, modern binary toggle used for premium settings like the Language switch (EN/KR) and the Controls device selector (Keyboard/Xbox).
-
-*   **Container:** Uses a flat `ColorRect` background `Color(0, 0, 0, 0.4)` and a `ReferenceRect` golden border `Color(1.0, 0.85, 0.2, 0.6)` with `2px` width.
-*   **Labels:** Uses an `HBoxContainer` spanning the entire rect, containing two labels with equal size flags. Text is completely borderless.
-*   **Highlight Block:** A solid `ColorRect` using the Bright Accent `Color(1.0, 0.85, 0.2, 1.0)` that covers exactly half the toggle.
-*   **Animation:** When clicked, a parallel Tween smoothly interpolates the Highlight Block's `position.x` to the opposite side over `0.25s` with `TRANS_SINE` easing, while simultaneously tweening the font color of the active label to black `Color(0, 0, 0, 1.0)` and the inactive label to gold `Color(1.0, 0.85, 0.2, 1.0)` for high contrast.
-
-### Post-Processing Gameplay Overlays
-
-Dynamic visual feedback is rendered behind the HUD but above the 3D scene using a custom CanvasItem post-processing shader (`retro_postprocess.gdshader`):
-*   **Heat Warning (Death's Door):** A soft, fiery red translucent gradient border that tweens around the screen edges when the temperature exceeds 85%, pulsing to the beat of a heartbeat SFX.
-*   **Frost Border (Ice Burst):** An icy blue `vec3(0.6, 0.8, 1.5)` tint applied to the screen edges dynamically when the Ice Burst "Hit-Stop" freeze effect is active, emphasizing the freezing impact.
-
-### Procedural Sun Facial Expressions & Diegetic Reactions
-
-The Sun's 2D billboarded face (`Sprite3D`) is rasterized procedurally at runtime into a 128x128 RGBA8 texture (`FACE_SIZE = 128`) without using external raster assets. It strictly adheres to the game's stylized cartoon aesthetic:
-*   **Color & Line Weight:** Features a base white fill (`Color(1.0, 1.0, 1.0, 1.0)`) with a 4px procedural dark-orange outline (`Color(0.6, 0.2, 0.0, 1.0)`) applied via flood dilation to maintain perfect contrast against the bright emissive sun mesh.
-*   **Modulate Tinting:**
-    *   *Default State:* `Color(2.0, 2.0, 2.0, 0.7)` (Bright glowing semi-transparent white).
-    *   *Solar Flare Telegraph:* `Color(2.5, 1.4, 0.6, 0.95)` (Fiery solar charge glow).
-    *   *Critical Weakpoint Hit:* `Color(2.8, 2.8, 3.2, 0.95)` (White-hot brilliance flash).
-    *   *Frozen / Defeated:* `Color(0.2, 0.5, 2.5)` (Deep icy cyan flash).
-*   **Kinetic Impact Jitter:** Water hits trigger decaying positional micro-offsets (`sun_face_shake`: `0.08` for crits, `0.06` for Heavy blaster, `0.03` for normal hits). Decays at 4.0x/sec. Automatically disabled when `reduce_motion` accessibility is turned on.
-*   **Expression Catalog:**
-    *   `happy`: Wide pill eyes, broad D-smile, soft blush circles (<25% heat).
-    *   `neutral`: Standard pill eyes, small dot mouth (25–50% heat).
-    *   `annoyed`: Half-closed flat-bottom eyes, flat mouth (50–75% heat).
-    *   `angry`: Angled pill eyes, thick downward brows, top-half circle frown (>75% heat).
-    *   `wince`: Squinting closed `> <` eyes, furrowed brows, wavy grimace, temple droplet (active water hit).
-    *   `crit_pain`: Creased clamped eyes, downward heavy brows, wide screaming mouth, dual sweat beads (sunspot crit).
-    *   `charging`: Wide shock eyes with pinpoint pupils, inward angled brows, horizontal gritted grimace (0.6s flare charge).
-    *   `dread`: Downward-looking pill eyes, high worried brows, shivering open O-mouth (Catastrom drag).
-    *   `dizzy`: X-eyes, zigzag squiggly mouth (freeze/defeat).
-
-### Screen Overlays (Blur / Dim)
-
-When a menu or overlay is shown (e.g., Pause, Weapon Wheel), the screen behind it is blurred and dimmed using a custom screen-reading shader. Note: The Pause overlay is automatically triggered if the game window loses focus (`NOTIFICATION_APPLICATION_FOCUS_OUT`) to prevent unfair progression, but is explicitly guarded when end-state screens (Victory, Defeat, Game Complete) or Draft screens are active to prevent softlocks. Pausing sets `get_tree().paused = true`, which fully freezes the entire scene tree (clouds, waves, shaders, physics, animations, particles). The HUD's root `CanvasLayer` uses `PROCESS_MODE_ALWAYS` so that menus remain interactive during the pause, and full-screen transition fades (`fade_to_black()`, `fade_from_black()`) use `TWEEN_PAUSE_PROCESS` so transitions complete reliably.
-
-*   **Shader Parameters:**
-    *   `blur_amount`: Transitions from `0.0` to `2.0`
-    *   `dim_amount`: Transitions from `0.0` to `0.6`
-*   **Transition Duration:** `0.3s` (Tweened)
-
----
-
-## 5. Animation & Polish
-
-*   **UI Tick Audio:** When clicking buttons or opening menus, a synthesized 1800Hz sine sweep UI tick plays at `-18 dB`.
-*   **Auditory UX (Empty Tank):** Clicking the trigger when the water tank is empty triggers a `0.35s` rhythmic clicking sound to provide localized audio feedback.
-*   **Auditory UX (Combo Pitching):** The water stream SFX dynamically shifts its pitch higher based on the current combo multiplier to deliver subconscious gameplay feedback.
-*   **Prompts (e.g., "Click to Continue"):** Use a Sine ease-in-out tween looping to pulse the alpha between `0.7` and `1.0` over `1.2s`.
-*   **Weapon Wheel:** Selected wedge stroke turns from dark brown (`Color(0.4, 0.35, 0.2, 0.8)`) to bright gold (`Color(1.0, 0.9, 0.3, 1.0)`).
-*   **Combo UI:** The combo multiplier fades in and out dynamically.
-*   **Combo Callouts:** Arcade-style floating text callouts for combo milestones. The text rapidly scales up to 1.2x and snaps back with a slight random rotation tilt to emphasize the impact, before fading out.
-*   **Live Score Counter:** When the score increases, the score label rapidly interpolates to the new value. It scales up to `1.2x` and snaps back to `1.0x` over `0.2s`, pivoting from the right edge to prevent the text from scaling off the screen.
-
-## 6. Global Post-Processing & Screen Effects
-To unify the arcade aesthetic, a global post-processing shader (`retro_postprocess.gdshader`) is applied dynamically at runtime to a CanvasLayer sitting at `layer = 0` (behind the `layer = 10` UI elements, including both the in-game HUD and start screen UI).
-
-*   **Color Grading:** S-Curve contrast boost combined with Synthwave split-toning (deep blue/purple shadows and warm golden highlights).
-*   **Film Grain:** Animated noise added to the screen to simulate retro CRT/film quality. It automatically switches to a static noise pattern when the 'Reduce Motion' accessibility setting is enabled to prevent rapid flickering.
-*   **Vignette:** A soft, darkened edge vignette (`intensity: 0.4`, `opacity: 0.5`) focuses the player's attention on the center of the screen.
-*   **Retro Post-Processing Filters (Mutually Exclusive):**
-    *   **Retro Colors:** Arcade/console-style 10-level color reduction per RGB channel, combined with an analog NTSC composite horizontal chroma delay/bleed (`px.x * 2.5`) to replicate CRT video cable signal characteristics, and crisp 10% CRT aperture grille scanline modulation across alternating 2-pixel rows.
-    *   **Dithering:** High-contrast 4x4 Bayer ordered dithering matrix with 8-level quantization, delivering authentic 90s console and arcade cross-hatching and shading.
-    *   **PS1 Shading:** Authentic 5th-generation console visual simulation featuring low-res virtual framebuffer rasterization (downsampling 3D world to 384×216 while keeping the HUD completely crisp at native 1080p), 15-bit stepped color quantization (16 levels), low-res grid-aligned 4×4 Bayer matrix dithering, NTSC composite horizontal chroma smear, and 240p alternating 2-pixel CRT scanlines.
-    *   **Heatwave 1984:** Vintage 35mm / Kodachrome cinematography simulation featuring true multi-tap optical halation diffusion (4-tap radial cross kernel in screen UV that realistically scatters warm amber-red light around the Sun's silhouette and extreme highlights into adjacent pixels), film S-curve contrast boost, warm 1980s anamorphic lens falloff, and analog celluloid film grain.
+## 6. Post-Processing & Screen Effects
+* **Layering:** `retro_postprocess.gdshader` runs on Layer 0 (behind HUD on Layer 10) to keep UI crisp.
+* **Base Effects:** S-Curve contrast, Synthwave split-toning, vignette, and animated film grain.
+* **Dynamic Overlays:** Heat Warning (pulsing red border at 85% heat) and Frost Border (icy blue tint on Ice Burst).
+* **Retro Filters:** Mutually exclusive options (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
+* **Blur/Dim:** Menus apply a 0.3s tweened blur (up to 2.0) and dim (0.6) to the background scene.
