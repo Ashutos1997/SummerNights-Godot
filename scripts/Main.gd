@@ -119,10 +119,42 @@ const SKY := [
 ]
 
 var gun_model: Node3D
- 
+var is_swapping_weapon: bool = false
+var weapon_swap_tween: Tween
+
 func _on_weapon_changed(w_id: String) -> void:
+	if GameState.current_weapon_id == w_id: return
+	
+	is_swapping_weapon = true
+	if weapon_swap_tween and weapon_swap_tween.is_valid():
+		weapon_swap_tween.kill()
+		
+	weapon_swap_tween = create_tween()
+	
+	# If we have a current gun model, animate it dropping down and out of sight
+	if gun_model:
+		weapon_swap_tween.tween_property(gun_model, "position:y", -1.5, 0.15).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CUBIC)
+		weapon_swap_tween.parallel().tween_property(gun_model, "rotation_degrees:x", -30.0, 0.15)
+		weapon_swap_tween.tween_callback(_do_weapon_swap.bind(w_id))
+	else:
+		_do_weapon_swap(w_id)
+
+func _do_weapon_swap(w_id: String) -> void:
 	GameState.current_weapon_id = w_id
 	_load_weapon_model()
+	
+	# The model is now loaded at default position. Let's hide it and animate it popping up.
+	if gun_model:
+		var target_y = gun_model.position.y
+		gun_model.position.y = -1.5
+		gun_model.rotation_degrees.x = -30.0
+		
+		weapon_swap_tween = create_tween()
+		weapon_swap_tween.tween_property(gun_model, "position:y", target_y, 0.25).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SPRING)
+		weapon_swap_tween.parallel().tween_property(gun_model, "rotation_degrees:x", 0.0, 0.2)
+		weapon_swap_tween.tween_callback(func(): is_swapping_weapon = false)
+	else:
+		is_swapping_weapon = false
 
 func _load_weapon_model() -> void:
 	if gun_model:
@@ -133,6 +165,11 @@ func _load_weapon_model() -> void:
 	gun_model.rotation_degrees = Vector3(0, 180, 0)
 	gun_model.scale = w_cfg.scale
 	gun_model.position = Vector3(0, -0.3, -0.1)
+	
+	if GameState.current_weapon_id == "tidal":
+		# Tidal Gatling model pivot is slightly offset, push it left to center the barrels
+		gun_model.position.x -= 0.15
+		
 	_adjust_gun_materials(gun_model)
 	gun.add_child(gun_model)
 	
@@ -2135,7 +2172,7 @@ func _process(delta: float) -> void:
 			empty_sfx_timer = 0.35
 	
 	# Shooting mechanics
-	if is_shooting and can_shoot:
+	if is_shooting and can_shoot and not is_swapping_weapon:
 		_vibrate(0.1, 0.0, 0.1)
 		is_firing = true
 		if hud and hud.has_method("notify_firing"): hud.notify_firing(true)
