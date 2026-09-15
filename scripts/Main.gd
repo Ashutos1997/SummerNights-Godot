@@ -457,6 +457,37 @@ func _ready() -> void:
 				t.tween_property(self, "sand_wetness", 0.0, 8.0).set_delay(1.5)
 	)
 	add_child(ocean_wave_timer)
+	
+	# Horizontal Background Ocean Wave Spawner
+	var bg_wave_timer = Timer.new()
+	bg_wave_timer.name = "BgWaveTimer"
+	bg_wave_timer.wait_time = randf_range(12.0, 22.0)
+	bg_wave_timer.autostart = true
+	bg_wave_timer.one_shot = false
+	bg_wave_timer.timeout.connect(func():
+		if water_mat and water_mat is ShaderMaterial:
+			var target_height = randf_range(4.0, 7.0)
+			var speed = randf_range(18.0, 25.0)
+			
+			# Randomly choose left-to-right or right-to-left
+			var from_left = randf() > 0.5
+			var start_pos = -250.0 if from_left else 250.0
+			var end_pos = 250.0 if from_left else -250.0
+			var travel_dist = 500.0
+			var duration = travel_dist / speed
+			
+			var w_tween = create_tween()
+			water_mat.set_shader_parameter("bg_wave_offset", start_pos)
+			w_tween.tween_method(func(v): water_mat.set_shader_parameter("bg_wave_offset", v), start_pos, end_pos, duration)
+			
+			water_mat.set_shader_parameter("bg_pulse_height", 0.0)
+			var swell_tween = create_tween()
+			swell_tween.tween_method(func(v): water_mat.set_shader_parameter("bg_pulse_height", v), 0.0, target_height, duration * 0.3).set_ease(Tween.EASE_OUT)
+			swell_tween.tween_method(func(v): water_mat.set_shader_parameter("bg_pulse_height", v), target_height, 0.0, duration * 0.4).set_delay(duration * 0.3)
+			
+			bg_wave_timer.wait_time = randf_range(15.0, 30.0)
+	)
+	add_child(bg_wave_timer)
 
 
 	Engine.time_scale = 1.0
