@@ -22,6 +22,8 @@ All notable changes to the Summer Nights project will be documented in this file
 * Crosshair Bounce: Crosshair scales up briefly on weapon swap.
 * Solar Flare Penalties: Missing flares resets combo and applies scaling heat/water penalties.
 * Gatling Alignment: Nudged Tidal Gatling 3D model leftwards (-0.15) for center alignment.
+* Title Screen Camera: Fine-tuned distance, height, and FOV for a more cinematic perspective.
+* Ocean Audio: Processed ambient track to loop seamlessly without a sharp cut.
 
 ---
 
@@ -203,6 +205,8 @@ All notable changes to the Summer Nights project will be documented in this file
 * 크로스헤어 바운스: 무기 교체 시 크로스헤어 크기 일시적 증가.
 * 태양 플레어 페널티: 플레어 충돌 시 콤보 초기화 및 진행도 비례 열기/물 증발 페널티 적용.
 * 개틀링 정렬: 타이달 개틀링 3D 모델 중심축 미세 조정 (-0.15).
+* 타이틀 화면 카메라: 거리, 높이 및 시야각(FOV)을 조정하여 더 시네마틱한 연출 적용.
+* 바다 오디오: 끊김 현상 없이 자연스럽게 반복되도록 앰비언트 트랙 믹싱 처리.
 
 ---
 
