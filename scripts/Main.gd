@@ -1653,6 +1653,15 @@ func _update_flares(delta: float) -> void:
 				flare_impact_sfx.play()
 			audio_duck_timer = 1.0
 			
+			# Gameplay Penalties (Missed Intercept)
+			combo_timer = 0.0
+			if combo_active:
+				combo_active = false
+			combo_grace_timer = 0.0
+			
+			water_tank = max(0.0, water_tank - (MAX_WATER * 0.1))
+			water_changed.emit(water_tank, MAX_WATER)
+			
 			var flash_tw = create_tween()
 			if reduce_motion:
 				# Gentle warming

@@ -20,6 +20,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * **Left-Side Weapon HUD Polish:** Refined the bottom-left active weapon display. Transformed the previous single icon container into a wider horizontal layout, displaying both a stylized 2D vector crosshair icon on a vibrant elemental background and its localized name text (cleanly stacked across two lines) side-by-side. Aligned the container to the game's strict 4px-rounded retro plate design system, and added dynamic visual juice: the panel border and weapon name now tint to match the weapon's elemental class color, and equipping a weapon triggers a snappy `1.15x` scale bounce (fully respecting `reduce_motion`).
 * **Weapon Swap Animations:** Swapping weapons now triggers a satisfying, physical two-part animation sequence. The current gun drops down and out of sight, and the new weapon springs up into position with a bouncy curve. Firing logic is now safely blocked during this sequence to prevent accidental firing mid-animation.
 * **Crosshair Swap Bounce:** The dynamic crosshair now briefly springs to 1.5x scale when swapping weapons, adding visual impact and naturally drawing the player's eye back to the center of the screen as the new weapon readies.
+* **Solar Flare Impact Penalties:** Failing to intercept a Solar Flare now severely disrupts gameplay flow. On top of the existing heat damage and screen shake, a flare impact instantly resets the active Combo multiplier to zero and vaporizes 10% of the player's Water Tank capacity, making flares a much more critical threat.
 * **Tidal Gatling Alignment:** Nudged the horizontal offset of the Tidal Gatling weapon model leftwards (`x -0.15`) to perfectly center its barrels with the crosshair, compensating for an off-center origin in the original 3D asset.
 
 ## [v1.5.3] - 2026-09-12
@@ -291,6 +292,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * **좌측 하단 무기 HUD 개선 (Left-Side Weapon HUD Polish):** 좌측 하단의 현재 장착 무기 UI를 개선했습니다. 기존의 단일 아이콘 컨테이너를 가로 형태로 넓혀 장착된 무기의 빛나는 2D 벡터 크로스헤어 아이콘(원소 색상 배경)과 두 줄로 깔끔하게 정렬된 현지화된 무기 이름 텍스트를 나란히 표시합니다. 컨테이너를 게임의 엄격한 4px 라운드 레트로 플레이트 디자인 시스템에 맞추고 역동적인 시각적 효과를 추가했습니다: 패널 테두리와 무기 이름이 이제 무기의 속성 클래스 색상에 맞춰 틴트되며, 무기를 장착할 때 경쾌한 `1.15x` 스케일 바운스 효과가 발생합니다 (시각 보호 모드 `reduce_motion` 완벽 지원).
 * **무기 교체 애니메이션 (Weapon Swap Animations):** 무기 교체 시 역동적이고 물리적인 2단계 애니메이션 시퀀스가 실행됩니다. 현재 무기가 시야 밖으로 내려가고, 새로운 무기가 탄력 있는 곡선과 함께 제자리로 솟아오릅니다. 애니메이션 도중 오발을 방지하기 위해 발사 로직이 안전하게 차단됩니다.
 * **크로스헤어 교체 바운스 (Crosshair Swap Bounce):** 무기를 교체할 때 동적 크로스헤어가 잠시 1.5배 크기로 튀어 오르며, 시각적 타격감을 더하고 새로운 무기가 준비될 때 플레이어의 시선을 화면 중앙으로 자연스럽게 유도합니다.
+* **태양 플레어 충돌 페널티 (Solar Flare Impact Penalties):** 태양 플레어 요격에 실패하면 이제 게임 플레이 흐름에 심각한 지장을 줍니다. 기존의 열 피해와 화면 흔들림 외에도, 플레어 충돌 시 즉시 활성 콤보 배수가 0으로 초기화되고 플레이어의 물탱크 용량 중 10%가 증발하여 플레어가 훨씬 더 치명적인 위협이 됩니다.
 * **타이달 개틀링 정렬 수정 (Tidal Gatling Alignment):** 원본 3D 자산의 중심축이 어긋나 있던 타이다 개틀링 무기 모델의 가로 오프셋을 좌측(`x -0.15`)으로 미세 조정하여 총신이 크로스헤어와 완벽히 중앙 정렬되도록 수정했습니다.
 
 ## [v1.5.3] - 2026-09-12
