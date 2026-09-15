@@ -17,6 +17,7 @@ var current_crosshair_color: Color = base_color:
 		queue_redraw()
 
 var pulse_tween: Tween
+var scale_tween: Tween
 var current_water: float = 100.0
 var max_water: float = 100.0
 
@@ -36,6 +37,12 @@ func set_weapon_style(id: String) -> void:
 	weapon_style = id
 	_apply_weapon_style_visibility()
 	queue_redraw()
+	
+	if is_inside_tree():
+		if is_instance_valid(scale_tween): scale_tween.kill()
+		scale = Vector2.ONE * 1.5
+		scale_tween = create_tween()
+		scale_tween.tween_property(self, "scale", Vector2.ONE, 0.3).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SPRING)
 
 func set_firing(firing: bool) -> void:
 	_is_firing = firing
