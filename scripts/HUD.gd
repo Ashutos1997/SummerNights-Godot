@@ -673,6 +673,9 @@ func _ready() -> void:
 
 	_apply_language(GameState.language)
 	_setup_weapon_hud()
+	
+	# Apply unified Z-Depth drop shadows to all HUD panels
+	_apply_unified_drop_shadows($HUD)
 
 	if esc_hint_label:
 		# Reparent to UnlockPrompts so it stacks above the weapon HUD
@@ -1754,6 +1757,37 @@ func _style_lbl(lbl: Label, size: int, color: Color, out_size: int, out_color: C
 		lbl.add_theme_color_override("font_outline_color", out_color)
 	if letter_space > 0:
 		lbl.add_theme_constant_override("letter_spacing", letter_space)
+		
+	# Unified Drop Shadow for all stylized HUD text
+	lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.6))
+	lbl.add_theme_constant_override("shadow_outline_size", 2)
+	lbl.add_theme_constant_override("shadow_offset_x", 0)
+	lbl.add_theme_constant_override("shadow_offset_y", 4)
+	
+func _apply_unified_drop_shadows(node: Node) -> void:
+	if not node: return
+	
+	# Skip overlay menus so they don't get messy shadows
+	var skip_names = ["SettingsScreen", "FiltersScreen", "PauseScreen", "GameOverScreen", "LevelClearScreen", "DraftingScreen"]
+	if node.name in skip_names:
+		return
+		
+	# Apply to panels
+	if node is PanelContainer or node is Panel:
+		var style = null
+		if node.has_theme_stylebox_override("panel"):
+			style = node.get_theme_stylebox("panel")
+		elif node.get_theme_stylebox("panel") is StyleBoxFlat:
+			style = node.get_theme_stylebox("panel").duplicate()
+			node.add_theme_stylebox_override("panel", style)
+				
+		if style is StyleBoxFlat:
+			style.shadow_color = Color(0, 0, 0, 0.45)
+			style.shadow_size = 4
+			style.shadow_offset = Vector2(0, 4)
+			
+	for child in node.get_children():
+		_apply_unified_drop_shadows(child)
 
 func _on_heat_changed(value: float, max_value: float) -> void:
 	heat_bar.max_value = max_value
