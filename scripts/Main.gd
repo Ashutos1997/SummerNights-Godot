@@ -79,6 +79,8 @@ var sun_move_time: float = 0.0
 var level_timer: float = 0.0
 var wave_timer: float = 0.0
 var ocean_wave_timer: Timer
+var is_vertical_wave_active: bool = false
+var is_horizontal_wave_active: bool = false
 var sand_wetness: float = 0.0
 var timer_running: bool = false
 var max_survival_ice_charges: int = 3
@@ -417,7 +419,12 @@ func _ready() -> void:
 	ocean_wave_timer.autostart = true
 	ocean_wave_timer.one_shot = false
 	ocean_wave_timer.timeout.connect(func():
+		if is_horizontal_wave_active:
+			ocean_wave_timer.start(5.0) # Wait for horizontal wave to finish
+			return
+			
 		if water_mat and water_mat is ShaderMaterial:
+			is_vertical_wave_active = true
 			var target_height = randf_range(5.0, 8.0)
 			var target_curl = randf_range(0.7, 0.95)
 			var speed = randf_range(14.0, 18.0)
@@ -441,6 +448,7 @@ func _ready() -> void:
 			
 			# Slowly collapse after passing the island
 			swell_tween.tween_method(func(v): water_mat.set_shader_parameter("pulse_height", v), target_height, 0.0, duration * 0.3).set_delay(duration * 0.2)
+			swell_tween.tween_callback(func(): is_vertical_wave_active = false).set_delay(duration * 0.5) # Release lock when it starts collapsing
 			
 			ocean_wave_timer.wait_time = randf_range(20.0, 35.0)
 			
@@ -465,7 +473,12 @@ func _ready() -> void:
 	bg_wave_timer.autostart = true
 	bg_wave_timer.one_shot = false
 	bg_wave_timer.timeout.connect(func():
+		if is_vertical_wave_active:
+			bg_wave_timer.start(5.0) # Wait for vertical wave to finish
+			return
+			
 		if water_mat and water_mat is ShaderMaterial:
+			is_horizontal_wave_active = true
 			var target_height = randf_range(4.0, 7.0)
 			var speed = randf_range(18.0, 25.0)
 			
@@ -484,6 +497,7 @@ func _ready() -> void:
 			var swell_tween = create_tween()
 			swell_tween.tween_method(func(v): water_mat.set_shader_parameter("bg_pulse_height", v), 0.0, target_height, duration * 0.3).set_ease(Tween.EASE_OUT)
 			swell_tween.tween_method(func(v): water_mat.set_shader_parameter("bg_pulse_height", v), target_height, 0.0, duration * 0.4).set_delay(duration * 0.3)
+			swell_tween.tween_callback(func(): is_horizontal_wave_active = false).set_delay(duration * 0.7) # Release lock when it dissipates
 			
 			bg_wave_timer.wait_time = randf_range(15.0, 30.0)
 	)
