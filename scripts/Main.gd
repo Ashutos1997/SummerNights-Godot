@@ -1644,7 +1644,10 @@ func _update_flares(delta: float) -> void:
 			if steam_particles:
 				steam_particles.global_position = node.global_position
 				steam_particles.restart()
-			temperature = min(MAX_TEMP, temperature + 4.0)
+				
+			var progression = GameState.current_wave if GameState.is_survival_mode else GameState.level
+			var heat_dmg = min(12.0, 4.0 + (progression - 1) * 1.0)
+			temperature = min(MAX_TEMP, temperature + heat_dmg)
 			_vibrate(0.5, 0.0, 0.2)
 			
 			# Visceral Consequences
@@ -1659,7 +1662,8 @@ func _update_flares(delta: float) -> void:
 				combo_active = false
 			combo_grace_timer = 0.0
 			
-			water_tank = max(0.0, water_tank - (MAX_WATER * 0.1))
+			var water_drain_pct = min(0.20, 0.10 + (progression - 1) * 0.015)
+			water_tank = max(0.0, water_tank - (MAX_WATER * water_drain_pct))
 			water_changed.emit(water_tank, MAX_WATER)
 			
 			var flash_tw = create_tween()
