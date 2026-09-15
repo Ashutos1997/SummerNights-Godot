@@ -119,3 +119,12 @@ To correctly manage drawing order between the 3D world, global post-processing e
 To prevent the massive procedural UI scripts (`HUD.gd` and `TitleScreen.gd`) from being bloated with hundreds of manual signal connections for hover effects and audio feedback, the project uses a global Autoload (`UIJuice.gd`). 
 *   It operates in `PROCESS_MODE_ALWAYS` and hooks into the `SceneTree.node_added` signal.
 *   Any `Button` or `Slider` that enters the tree automatically receives dynamic scale tweens (1.03x hover, 0.97x press) and an `-18 dB` 1800Hz sine sweep audio tick on interaction. This ensures a consistent, juicy arcade feel across all menus without polluting the layout logic.
+
+---
+
+## 6. Global Z-Depth Styling (Drop Shadows)
+
+To ensure the HUD feels physically layered (like a 3D glass visor) rather than a flat 2D sticker, the game dynamically injects a unified drop shadow across the entire active gameplay UI immediately after the HUD initializes.
+
+*   **`_apply_unified_drop_shadows()`:** A recursive traversal function in `HUD.gd` that locates every `PanelContainer` and `Panel` (ignoring full-screen menus like Settings or Pause). It injects a soft, 4-pixel, 45% opacity black drop shadow into their `StyleBoxFlat`.
+*   **Text Shadows:** Every stylized label in the game (Timer, Score, Wave, Weapon Names) receives a crisp 4px offset 60% opacity black text shadow via the `_style_lbl()` helper.
