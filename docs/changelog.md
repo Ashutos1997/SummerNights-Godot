@@ -24,6 +24,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Gatling Alignment: Nudged Tidal Gatling 3D model leftwards (-0.15) for center alignment.
 * Title Screen Camera: Fine-tuned distance, height, and FOV for a more cinematic perspective.
 * Ocean Audio: Processed ambient track to loop seamlessly without a sharp cut.
+* Ocean Cross-Swells: Added horizontal distant background waves with a timing lock to prevent clashing with shoreline waves.
 
 ---
 
@@ -207,6 +208,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 개틀링 정렬: 타이달 개틀링 3D 모델 중심축 미세 조정 (-0.15).
 * 타이틀 화면 카메라: 거리, 높이 및 시야각(FOV)을 조정하여 더 시네마틱한 연출 적용.
 * 바다 오디오: 끊김 현상 없이 자연스럽게 반복되도록 앰비언트 트랙 믹싱 처리.
+* 바다 크로스 스웰: 해안가 파도와 겹치지 않도록 타이밍 잠금이 적용된 원경 가로 파도 추가.
 
 ---
 
