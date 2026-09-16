@@ -2,7 +2,7 @@
 
 All notable changes to the Summer Nights project will be documented in this file.
 
-## [v1.5.4 - WIP]
+## [v1.5.4] - 2026-09-16
 *(Note: This release corresponds to v1.4 on itch.io)*
 
 ### Fixed
@@ -195,7 +195,7 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ---
 
-## [v1.5.4 - WIP]
+## [v1.5.4] - 2026-09-16
 *(참고: 이 릴리스는 itch.io의 v1.4 버전에 해당합니다)*
 
 ### 수정됨 (Fixed)
