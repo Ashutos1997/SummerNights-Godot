@@ -45,7 +45,7 @@ Designed to minimize clutter while keeping survival info in the player's periphe
 
 ## 2. Screen Overlays (Menus)
 * **Unified Menu Styling:** All full-screen menus use a 96px left margin, 24px vertical separation, golden borders, dark background dim, and standard 280x52 buttons.
-* **PauseScreen (`ESC` or Auto-Pause):** Freezes the 3D scene tree (`get_tree().paused = true`). Includes Settings, Filters, Controls, Credits, Achievements, and Buffs. Features a broken-border design with an animated sun.
+* **PauseScreen (`ESC` or Auto-Pause):** Freezes the 3D scene tree (`get_tree().paused = true`). Includes Settings, Filters, Controls, Credits, Achievements, and Buffs. Features a broken-border design with an animated sun. The Credits screen features an autoscrolling bilingual listing with complete third-party asset attributions, procedural systems, and non-profit fan project disclaimers.
 * **Achievements Screen:** 3-column retro list showing status readouts. Locked achievements display live numerical counters (`current / max`) and mini gold progress bars (8px, 4px radii); completed achievements display a cyber gold completion badge.
 * **Drafting Screen (Perks):** Post-boss upgrade modal. Features staggered card entrance animations, audio deal ticks, 6px drop shadows, and rarity tags (`[ RARE ]`, `[ UNCOMMON ]`, `[ COMMON ]`).
 * **FiltersScreen:** Mutually exclusive post-processing options (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).

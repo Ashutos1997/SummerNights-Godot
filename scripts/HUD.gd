@@ -1340,16 +1340,37 @@ func _apply_language(lang: String) -> void:
 			var itm_ui1d = credits_list.get_node_or_null("ItmUI1d")
 			if itm_ui1d: itm_ui1d.text = "HUD 미터 아이콘  ·  Yudhi Restu Pebriyanto, Jaya99, balyanbinmalkan (Noun Project)  ·  CC BY 3.0" if is_kr else "HUD Meter Icons  ·  Yudhi Restu Pebriyanto, Jaya99, balyanbinmalkan (Noun Project)  ·  CC BY 3.0"
 
+			var itm_audio10 = credits_list.get_node_or_null("ItmAudio10")
+			if itm_audio10: itm_audio10.text = "SFX - 얼음 발사음  ·  urupin (Freesound)  ·  CC0" if is_kr else "SFX - Ice Shoot  ·  urupin (Freesound)  ·  CC0"
+			var itm_audio11 = credits_list.get_node_or_null("ItmAudio11")
+			if itm_audio11: itm_audio11.text = "SFX - 얼음 피격음  ·  antonsoederberg (Freesound)  ·  CC0" if is_kr else "SFX - Ice Hit  ·  antonsoederberg (Freesound)  ·  CC0"
+			var itm_audio12 = credits_list.get_node_or_null("ItmAudio12")
+			if itm_audio12: itm_audio12.text = "SFX - 바다 파도 앰비언스  ·  CC0" if is_kr else "SFX - Ocean Waves Ambient  ·  CC0"
+
+			var itm_ice_vfx = credits_list.get_node_or_null("ItmIceVFX")
+			if itm_ice_vfx: itm_ice_vfx.text = "VFX - 얼음 폭발 발사체 및 입자 효과  ·  절차적 Godot 기본 도형" if is_kr else "VFX - Ice Blast Projectile & Particles  ·  Procedural Godot Primitives"
+			var itm_magma = credits_list.get_node_or_null("ItmMagmaDebris")
+			if itm_magma: itm_magma.text = "VFX - 물리적 마그마 파편  ·  Quaternius Rock Models 및 Godot RigidBody3D" if is_kr else "VFX - Physical Magma Debris  ·  Quaternius Rock Models & RigidBody3D"
+			var itm_solar_wind = credits_list.get_node_or_null("ItmSolarWind")
+			if itm_solar_wind: itm_solar_wind.text = "VFX 및 오디오 - 태양풍  ·  절차적 파티클 및 AudioStreamGenerator" if is_kr else "VFX & Audio - Solar Wind Hazard  ·  Procedural Particles & Synth"
+			var itm_stream_combo = credits_list.get_node_or_null("ItmStreamCombo")
+			if itm_stream_combo: itm_stream_combo.text = "물줄기 콤보 UI 및 태양 표정  ·  절차적 GDScript 및 Godot Image API" if is_kr else "Stream Combo UI & Sun Expressions  ·  Procedural GDScript & Image API"
+
+			var itm_disclaimer = credits_list.get_node_or_null("ItmDisclaimer")
+			if itm_disclaimer:
+				itm_disclaimer.text = "*면책 조항: 가면라이더 및 관련 캐릭터(가면라이더 제츠 포함)는 토에이 주식회사 및 이시모리 프로덕션의 자산입니다. 본 게임은 비영리 팬 제작물이며 토에이의 공식 인가를 받지 않았습니다." if is_kr else "*Disclaimer: Kamen Rider and related characters (including Kamen Rider Zeztz) are the property of Toei Company, Ltd. and Ishimori Productions. This game is a non-profit, unofficial fan work and is not affiliated with or endorsed by Toei Company."
+
 			for child in credits_list.get_children():
 					if child is Label:
 						var is_header = child.name.begins_with("Hdr")
+						var is_disclaimer = child.name == "ItmDisclaimer"
 						if is_header:
 							if font: child.add_theme_font_override("font", font)
 						else:
 							if body_font: child.add_theme_font_override("font", body_font)
-						child.add_theme_font_size_override("font_size", 20 if is_header else 15)
+						child.add_theme_font_size_override("font_size", 20 if is_header else (12 if is_disclaimer else 15))
 						# Outline and colors
-						child.add_theme_constant_override("outline_size", 3 if is_header else 2)
+						child.add_theme_constant_override("outline_size", 3 if is_header else (1 if is_disclaimer else 2))
 						child.add_theme_color_override("font_outline_color", Color.BLACK)
 						if is_header:
 							child.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
@@ -1357,6 +1378,8 @@ func _apply_language(lang: String) -> void:
 							child.add_theme_color_override("font_pressed_color", Color(1.0, 0.85, 0.2, 1.0))
 							child.add_theme_color_override("font_focus_color", Color(1.0, 0.85, 0.2, 1.0))
 							child.add_theme_color_override("font_disabled_color", Color(1.0, 0.85, 0.2, 1.0))
+						elif is_disclaimer:
+							child.add_theme_color_override("font_color", Color(0.75, 0.75, 0.75, 0.7))
 						else:
 							child.add_theme_color_override("font_color", Color(0.92, 0.92, 0.92, 0.9))
 

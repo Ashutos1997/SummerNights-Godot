@@ -2079,6 +2079,30 @@ theme_override_font_sizes/font_size = 12
 text = "40 CC0 Water SFX  ·  OpenGameArt  ·  CC0"
 horizontal_alignment = 1
 
+[node name="ItmAudio10" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "SFX - Ice Shoot  ·  urupin (Freesound)  ·  CC0"
+horizontal_alignment = 1
+
+[node name="ItmAudio11" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "SFX - Ice Hit  ·  antonsoederberg (Freesound)  ·  CC0"
+horizontal_alignment = 1
+
+[node name="ItmAudio12" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "SFX - Ocean Waves Ambient  ·  CC0"
+horizontal_alignment = 1
+
 [node name="ItmAudio3" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
 layout_mode = 2
 mouse_filter = 2
@@ -2325,6 +2349,53 @@ theme_override_colors/font_color = Color(1, 1, 1, 0.85)
 theme_override_font_sizes/font_size = 12
 text = "Fireflies & Bugs  ·  Procedural GDScript ArrayMesh  ·  -"
 horizontal_alignment = 1
+
+[node name="ItmIceVFX" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "VFX - Ice Blast Projectile & Particles  ·  Procedural Godot Primitives"
+horizontal_alignment = 1
+
+[node name="ItmMagmaDebris" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "VFX - Physical Magma Debris  ·  Quaternius Rock Models & RigidBody3D"
+horizontal_alignment = 1
+
+[node name="ItmSolarWind" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "VFX & Audio - Solar Wind Hazard  ·  Procedural Particles & Synth"
+horizontal_alignment = 1
+
+[node name="ItmStreamCombo" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "Stream Combo UI & Sun Expressions  ·  Procedural GDScript & Image API"
+horizontal_alignment = 1
+
+[node name="SpacerDisclaimer" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="ItmDisclaimer" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+custom_minimum_size = Vector2(760, 0)
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.5)
+theme_override_font_sizes/font_size = 11
+text = "*Disclaimer: Kamen Rider and related characters (including Kamen Rider Zeztz) are the property of Toei Company, Ltd. and Ishimori Productions. This game is a non-profit, unofficial fan work and is not affiliated with or endorsed by Toei Company."
+horizontal_alignment = 1
+autowrap_mode = 2
 
 [node name="Divider2" type="HSeparator" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
