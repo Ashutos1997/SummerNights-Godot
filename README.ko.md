@@ -10,7 +10,7 @@ Godot 4로 제작된 3D 아케이드 슈터. 태양을 식히기 전에 열기�
 
 <div align="center">
 
-![조회수](https://img.shields.io/badge/조회수-183-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
+![조회수](https://img.shields.io/badge/조회수-188-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
 ![다운로드](https://img.shields.io/badge/다운로드-20-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
 ![팔로워](https://img.shields.io/badge/팔로워-0-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
 
