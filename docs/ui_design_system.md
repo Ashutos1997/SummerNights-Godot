@@ -41,7 +41,7 @@ This document outlines the UI design system, color palette, typography, and comp
 
 ### Interactive Elements
 * **Sliding Toggle Pill:** Binary toggle (EN/KR, Keyboard/Xbox) with a sliding gold highlight block and smooth color lerping.
-* **Weapon Wheel:** Procedural wedges drawn via `_draw()`. Locked weapons are dark gray, unlocked are gold.
+* **Weapon Wheel:** Procedural wedges drawn via `_draw()` with subtle 4px drop shadows matching global HUD panels. Locked weapons are dark gray, unlocked are gold.
 
 ## 5. Procedural Sun Expressions
 * **Rendering:** 128x128 RGBA8 procedural texture with a 4px dark-orange outline.

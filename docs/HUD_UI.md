@@ -48,7 +48,7 @@ Designed to minimize clutter while keeping survival info in the player's periphe
 * **PauseScreen (`ESC` or Auto-Pause):** Freezes the 3D scene tree (`get_tree().paused = true`). Includes Settings, Filters, Controls, Credits, Achievements, and Buffs. Features a broken-border design with an animated sun.
 * **FiltersScreen:** Mutually exclusive post-processing options (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
 * **ControllerScreen:** Sliding toggle between Keyboard and Xbox layouts.
-* **WeaponWheel (`TAB`):** Slows time to 0.1x. Draws procedural wedges for 5 weapons. Hazard timers pause while open.
+* **WeaponWheel (`TAB`):** Slows time to 0.2x. Draws procedural wedges for 5 weapons with subtle 4px drop shadows matching global HUD visor depth. Hazard timers pause while open.
 * **TitleScreen:** Main menu with a 4-second PS1 synth boot animation. Includes Quit confirmation and Lifetime Stats.
 * **End State Screens:** Win, End, and Lose screens. Lose screen is centered to emphasize the Supernova cinematic.
 
