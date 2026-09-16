@@ -3410,19 +3410,19 @@ func show_buffs_screen() -> void:
 		
 		var vbox_item = VBoxContainer.new()
 		vbox_item.alignment = BoxContainer.ALIGNMENT_CENTER
-		vbox_item.add_theme_constant_override("separation", 0)
+		vbox_item.add_theme_constant_override("separation", 2)
 		hbox.add_child(vbox_item)
 		
 		var title_lbl = Label.new()
 		title_lbl.text = (buff["title_kr"] if is_kr else buff["title_en"])
-		_style_lbl(title_lbl, 28, Color(1.0, 0.85, 0.2, 1.0) if unlocked else Color(0.5, 0.5, 0.5, 1.0), 2, Color.BLACK, font)
+		_style_lbl(title_lbl, 24, Color(1.0, 0.85, 0.2, 1.0) if unlocked else Color(0.5, 0.5, 0.5, 1.0), 2, Color.BLACK, font)
 		vbox_item.add_child(title_lbl)
 		
 		var desc_lbl = Label.new()
 		desc_lbl.text = (buff["desc_kr"] if is_kr else buff["desc_en"])
 		desc_lbl.custom_minimum_size = Vector2(550, 0)
 		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
-		_style_lbl(desc_lbl, 16, Color(1.0, 1.0, 1.0, 0.8) if unlocked else Color(0.4, 0.4, 0.4, 0.8), 1, Color.BLACK, body_font)
+		_style_lbl(desc_lbl, 15, Color(1.0, 1.0, 1.0, 0.8) if unlocked else Color(0.4, 0.4, 0.4, 0.8), 1, Color.BLACK, body_font)
 		vbox_item.add_child(desc_lbl)
 		
 		buffs_list.add_child(panel)

@@ -31,7 +31,7 @@ uniform float gerstner_wavelength2 : hint_range(1.0, 50.0, 1.0) = 7.0;
 // ── Rogue Waves ─────────────────────────────────────────────────────────────
 uniform float wave_pulse_offset = -1000.0;
 uniform float pulse_width : hint_range(0.1, 20.0, 0.1) = 6.0;
-uniform float pulse_height : hint_range(0.0, 15.0, 0.1) = 1.8;
+uniform float pulse_height : hint_range(0.0, 15.0, 0.1) = 0.0;
 uniform float pulse_curl : hint_range(0.0, 2.0, 0.05) = 0.0;
 
 // ── Background Lateral Waves ─────────────────────────────────────────────────

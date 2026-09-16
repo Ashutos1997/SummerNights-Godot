@@ -559,6 +559,7 @@ func unlock_achievement(id: String) -> void:
 		newly_unlocked_endless = true
 	
 	unlocked_achievements.append(id)
+	_evaluate_milestones()
 	save_settings()
 	emit_signal("achievement_unlocked", id)
 

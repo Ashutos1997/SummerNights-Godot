@@ -16,6 +16,20 @@ func _process(delta: float) -> void:
 			if main_node.has_method("freeze_sun"):
 				main_node.freeze_sun()
 			queue_free()
+			return
+
+	if main_node and "active_magma_rocks" in main_node:
+		for rock in main_node.active_magma_rocks:
+			if is_instance_valid(rock) and global_position.distance_to(rock.global_position) < 2.0:
+				if not "rock_solid" in GameState.unlocked_achievements:
+					GameState.unlock_achievement("rock_solid")
+				if "sizzle_sfx" in main_node and main_node.sizzle_sfx:
+					main_node.sizzle_sfx.play()
+				GameState.add_score(150)
+				rock.queue_free()
+				main_node.active_magma_rocks.erase(rock)
+				queue_free()
+				return
 
 	if distance_traveled > max_distance:
 		queue_free()

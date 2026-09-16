@@ -415,54 +415,66 @@ func _ready() -> void:
 	# Occasional Rogue Wave Spawner
 	ocean_wave_timer = Timer.new()
 	ocean_wave_timer.name = "OceanWaveTimer"
-	ocean_wave_timer.wait_time = randf_range(8.0, 18.0)
+	ocean_wave_timer.wait_time = randf_range(12.0, 20.0)
 	ocean_wave_timer.autostart = true
 	ocean_wave_timer.one_shot = false
 	ocean_wave_timer.timeout.connect(func():
-		if is_horizontal_wave_active:
-			ocean_wave_timer.start(5.0) # Wait for horizontal wave to finish
+		if is_vertical_wave_active or is_horizontal_wave_active:
+			ocean_wave_timer.start(5.0) # Wait for active wave to finish
 			return
 			
 		if water_mat and water_mat is ShaderMaterial:
 			is_vertical_wave_active = true
-			var target_height = randf_range(5.0, 8.0)
+			var target_height = randf_range(5.5, 8.0)
 			var target_curl = randf_range(0.7, 0.95)
 			var speed = randf_range(14.0, 18.0)
 				
-			var w_tween = create_tween()
-			var start_pos = -150.0 # Start off-mesh for a smooth entry
-			var travel_dist = 200.0 # From -150 to +50
+			var start_pos = -110.0 # Start just beyond visible water mesh edge (-100.0)
+			var end_pos = 65.0 # Traverses entirely across the island (shoreline at -40, center at 0, back at +40)
+			var travel_dist = end_pos - start_pos # 175.0
 			var duration = travel_dist / speed
 			
-			# Animate the wave position
+			# Animate the wave position smoothly across the entire beach
 			water_mat.set_shader_parameter("wave_pulse_offset", start_pos)
-			w_tween.tween_method(func(v): water_mat.set_shader_parameter("wave_pulse_offset", v), start_pos, 50.0, duration)
+			var w_tween = create_tween()
+			w_tween.tween_method(func(v): water_mat.set_shader_parameter("wave_pulse_offset", v), start_pos, end_pos, duration)
 			
-			# Animate the wave swelling up (buildup)
+			# Animate wave swelling, sustained beach wash, and gentle exit subsidence
 			water_mat.set_shader_parameter("pulse_height", 0.0)
 			water_mat.set_shader_parameter("pulse_curl", 0.0)
 			
 			var swell_tween = create_tween()
-			swell_tween.tween_method(func(v): water_mat.set_shader_parameter("pulse_height", v), 0.0, target_height, duration * 0.4).set_ease(Tween.EASE_OUT)
-			swell_tween.parallel().tween_method(func(v): water_mat.set_shader_parameter("pulse_curl", v), 0.0, target_curl, duration * 0.5).set_ease(Tween.EASE_IN_OUT)
+			# 1. Swell up and curl as the wave approaches the shoreline (-110.0 to -40.0)
+			swell_tween.tween_method(func(v): water_mat.set_shader_parameter("pulse_height", v), 0.0, target_height, duration * 0.40).set_ease(Tween.EASE_OUT)
+			swell_tween.parallel().tween_method(func(v): water_mat.set_shader_parameter("pulse_curl", v), 0.0, target_curl, duration * 0.40).set_ease(Tween.EASE_IN_OUT)
 			
-			# Slowly collapse after passing the island
-			swell_tween.tween_method(func(v): water_mat.set_shader_parameter("pulse_height", v), target_height, 0.0, duration * 0.3).set_delay(duration * 0.2)
-			swell_tween.tween_callback(func(): is_vertical_wave_active = false).set_delay(duration * 0.5) # Release lock when it starts collapsing
+			# 2. Maintain full wave wash completely throughout the beach (shoreline at -40 to back beach at +35)
+			swell_tween.tween_interval(duration * 0.43)
 			
-			ocean_wave_timer.wait_time = randf_range(20.0, 35.0)
+			# 3. Gracefully subside and uncurl as it washes off the back edge of the island (+35 to +65)
+			swell_tween.tween_method(func(v): water_mat.set_shader_parameter("pulse_height", v), target_height, 0.0, duration * 0.17).set_ease(Tween.EASE_IN)
+			swell_tween.parallel().tween_method(func(v): water_mat.set_shader_parameter("pulse_curl", v), target_curl, 0.0, duration * 0.17).set_ease(Tween.EASE_IN)
+			
+			# 4. Clean up shader parameters and release lock once wave has fully finished
+			swell_tween.tween_callback(func():
+				is_vertical_wave_active = false
+				water_mat.set_shader_parameter("wave_pulse_offset", -1000.0)
+				water_mat.set_shader_parameter("pulse_height", 0.0)
+				water_mat.set_shader_parameter("pulse_curl", 0.0)
+			)
+			
+			ocean_wave_timer.wait_time = randf_range(25.0, 40.0)
 			
 			# Wet sand effect
 			if ground_mat:
 				var t = create_tween()
-				# Wave spawns at -150. Island center is at -10. Distance = 140.0.
-				var hit_delay = 140.0 / speed # Time for wave to perfectly wash over the beach
+				var hit_delay = ((-40.0) - start_pos) / speed # Time for wave to reach shoreline
 				
 				# Fade to wet (darker, lower roughness, high specular for reflections)
-				t.tween_property(self, "sand_wetness", 1.0, 0.8).set_delay(hit_delay)
+				t.tween_property(self, "sand_wetness", 1.0, 1.0).set_delay(hit_delay)
 				
-				# Stay wet briefly, then slowly dry off (fade back to matte)
-				t.tween_property(self, "sand_wetness", 0.0, 8.0).set_delay(1.5)
+				# Stay wet while the wave washes throughout the beach, then slowly dry off
+				t.tween_property(self, "sand_wetness", 0.0, 8.0).set_delay(3.0)
 	)
 	add_child(ocean_wave_timer)
 	
@@ -473,8 +485,8 @@ func _ready() -> void:
 	bg_wave_timer.autostart = true
 	bg_wave_timer.one_shot = false
 	bg_wave_timer.timeout.connect(func():
-		if is_vertical_wave_active:
-			bg_wave_timer.start(5.0) # Wait for vertical wave to finish
+		if is_vertical_wave_active or is_horizontal_wave_active:
+			bg_wave_timer.start(5.0) # Wait for active wave to finish
 			return
 			
 		if water_mat and water_mat is ShaderMaterial:
@@ -496,10 +508,15 @@ func _ready() -> void:
 			water_mat.set_shader_parameter("bg_pulse_height", 0.0)
 			var swell_tween = create_tween()
 			swell_tween.tween_method(func(v): water_mat.set_shader_parameter("bg_pulse_height", v), 0.0, target_height, duration * 0.3).set_ease(Tween.EASE_OUT)
-			swell_tween.tween_method(func(v): water_mat.set_shader_parameter("bg_pulse_height", v), target_height, 0.0, duration * 0.4).set_delay(duration * 0.3)
-			swell_tween.tween_callback(func(): is_horizontal_wave_active = false).set_delay(duration * 0.7) # Release lock when it dissipates
+			swell_tween.tween_interval(duration * 0.3)
+			swell_tween.tween_method(func(v): water_mat.set_shader_parameter("bg_pulse_height", v), target_height, 0.0, duration * 0.4).set_ease(Tween.EASE_IN)
+			swell_tween.tween_callback(func():
+				is_horizontal_wave_active = false
+				water_mat.set_shader_parameter("bg_wave_offset", -1000.0)
+				water_mat.set_shader_parameter("bg_pulse_height", 0.0)
+			)
 			
-			bg_wave_timer.wait_time = randf_range(15.0, 30.0)
+			bg_wave_timer.wait_time = randf_range(20.0, 35.0)
 	)
 	add_child(bg_wave_timer)
 
@@ -1434,6 +1451,11 @@ func _build_environment() -> void:
 	
 	water_mat = ShaderMaterial.new()
 	water_mat.shader = load("res://assets/stylized_water.gdshader")
+	water_mat.set_shader_parameter("wave_pulse_offset", -1000.0)
+	water_mat.set_shader_parameter("pulse_height", 0.0)
+	water_mat.set_shader_parameter("pulse_curl", 0.0)
+	water_mat.set_shader_parameter("bg_wave_offset", -1000.0)
+	water_mat.set_shader_parameter("bg_pulse_height", 0.0)
 	
 	water_mesh.material = water_mat
 	var water = MeshInstance3D.new()
@@ -2355,6 +2377,8 @@ func _process(delta: float) -> void:
 					if dist_to_ray < 2.0: # Generous hitbox for rocks
 						# Rock hit by water! Evaporate it visually
 						rock.scale -= Vector3(1.0, 1.0, 1.0) * delta * 1.5
+						if not "rock_solid" in GameState.unlocked_achievements:
+							GameState.unlock_achievement("rock_solid")
 						if steam_particles and randf() < 0.2:
 							steam_particles.global_position = r_pos
 							steam_particles.restart()
@@ -2368,6 +2392,8 @@ func _process(delta: float) -> void:
 				GameState.add_score(int(150.0 * c_mult))
 				rock.queue_free()
 				active_magma_rocks.erase(rock)
+				if not "rock_solid" in GameState.unlocked_achievements:
+					GameState.unlock_achievement("rock_solid")
 		# Check Heat Mirage Hits
 		var hit_mirage: bool = false
 		var closest_mirage_dist = 999.0
