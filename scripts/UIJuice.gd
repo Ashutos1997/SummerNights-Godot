@@ -17,6 +17,9 @@ func _ready() -> void:
 	get_tree().node_added.connect(_on_node_added)
 	_apply_to_tree(get_tree().root)
 
+func play_tick() -> void:
+	_play_tick()
+
 func _play_tick() -> void:
 	if not _tick_player.playing:
 		_tick_player.play()

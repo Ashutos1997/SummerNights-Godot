@@ -283,6 +283,7 @@ func _process(delta: float) -> void:
 	
 	# Determine selection
 	var slice_size = TAU / weapons.size()
+	var prev_selected = selected_index
 	
 	if diff.length() > 40.0 and diff.length() <= 260.0:
 		var angle = diff.angle()
@@ -302,6 +303,9 @@ func _process(delta: float) -> void:
 	else:
 		selected_index = -1
 		target_arrow_anim = 0.0
+		
+	if selected_index != prev_selected and selected_index != -1:
+		UIJuice.play_tick()
 		
 	var actual_delta = clampf(delta / maxf(Engine.time_scale, 0.01), 0.001, 0.05)
 	arrow_angle = lerp_angle(arrow_angle, target_arrow_angle, 14.0 * actual_delta)
