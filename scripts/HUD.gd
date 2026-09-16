@@ -28,6 +28,8 @@ var water_label: Label = null
 @onready var ice_icon = $HUD/resource_container/ice_row/IconPlate/Icon
 @onready var ice_bar_container = $HUD/resource_container/ice_row/IceBarContainer
 @onready var ice_bar = $HUD/resource_container/ice_row/IceBarContainer/IceBar
+@onready var ice_notch_overlay = $HUD/resource_container/ice_row/IceBarContainer/IceBar/NotchOverlay
+@onready var ice_count_label = $HUD/resource_container/ice_row/IceBarContainer/IceBar/CountLabel
 var ice_label: Label = null
 
 @onready var catastrom_row = $HUD/resource_container/catastrom_row
@@ -374,6 +376,9 @@ func _ready() -> void:
 	combo_label.visible = false
 	timer_label.text = ""
 	_stop_timer_pulse()
+	
+	if is_instance_valid(ice_notch_overlay):
+		ice_notch_overlay.draw.connect(_draw_ice_notches)
 	
 	active_perks_hud = HFlowContainer.new()
 	active_perks_hud.position = Vector2(24, 60)
@@ -987,6 +992,9 @@ func _apply_language(lang: String) -> void:
 		ice_label.text = "얼음 폭발" if is_kr else "ICE BURST"
 		if font: ice_label.add_theme_font_override("font", font)
 		ice_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
+	if ice_count_label:
+		if font: ice_count_label.add_theme_font_override("font", font)
+		ice_count_label.add_theme_font_size_override("font_size", 13 if is_kr else 12)
 	if catastrom_label:
 		catastrom_label.text = "카타스트롬" if is_kr else "CATASTROM"
 		if font: catastrom_label.add_theme_font_override("font", font)
@@ -2545,12 +2553,30 @@ func _on_menu_pressed() -> void:
 	get_tree().paused = false
 	get_tree().call_deferred("change_scene_to_file", "res://scenes/Main.tscn")
 
+var _current_max_ice_charges: int = 1
+var _ice_tween: Tween = null
+
+func _draw_ice_notches() -> void:
+	if not is_instance_valid(ice_notch_overlay) or _current_max_ice_charges <= 1:
+		return
+	if _current_max_ice_charges > 16:
+		return
+	var w = ice_notch_overlay.size.x
+	var h = ice_notch_overlay.size.y
+	if w <= 0: w = 200.0
+	if h <= 0: h = 24.0
+	var col = Color(0.02, 0.01, 0.05, 0.6)
+	for i in range(1, _current_max_ice_charges):
+		var x = round((w / float(_current_max_ice_charges)) * float(i))
+		ice_notch_overlay.draw_line(Vector2(x, 2), Vector2(x, h - 2), col, 1.5)
+
 func update_ice_charges(charges: int, max_charges: int) -> void:
 	if max_charges <= 0:
 		ice_row.visible = false
 		return
 
 	ice_row.visible = true
+	_current_max_ice_charges = max_charges
 
 	# Dim plate and container when completely empty
 	var is_depleted = (charges == 0)
@@ -2562,40 +2588,27 @@ func update_ice_charges(charges: int, max_charges: int) -> void:
 	if is_instance_valid(ice_bar_container):
 		ice_bar_container.modulate.a = 0.45 if is_depleted else 1.0
 
-	# Discrete charge cells inside ice_bar_container
-	if is_instance_valid(ice_bar_container):
-		var cells: Array[TextureProgressBar] = []
-		for child in ice_bar_container.get_children():
-			if child is TextureProgressBar:
-				cells.append(child)
+	if is_instance_valid(ice_bar):
+		var target_val = (float(charges) / float(max_charges)) * 100.0 if max_charges > 0 else 0.0
+		if reduce_motion:
+			ice_bar.value = target_val
+		else:
+			if is_instance_valid(_ice_tween):
+				_ice_tween.kill()
+			_ice_tween = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+			_ice_tween.tween_property(ice_bar, "value", target_val, 0.15).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
-		# Spawn additional cells if needed
-		while cells.size() < max_charges:
-			var new_cell = TextureProgressBar.new()
-			new_cell.custom_minimum_size = Vector2(0, 24)
-			new_cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			new_cell.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-			new_cell.nine_patch_stretch = true
-			new_cell.stretch_margin_left = 6
-			new_cell.stretch_margin_top = 6
-			new_cell.stretch_margin_right = 6
-			new_cell.stretch_margin_bottom = 6
-			new_cell.texture_under = preload("res://assets/ui/ui_adventure/PNG/Default/progress_transparent.png")
-			new_cell.texture_progress = preload("res://assets/ui/ui_adventure/PNG/Default/progress_white.png")
-			new_cell.tint_progress = Color(0.55, 0.9, 1.0, 1.0)
-			new_cell.max_value = 100.0
-			ice_bar_container.add_child(new_cell)
-			cells.append(new_cell)
+	if is_instance_valid(ice_count_label):
+		ice_count_label.text = "%d / %d" % [charges, max_charges]
+		var is_kr = GameState.language == "KR"
+		var font = galmuri_font if is_kr else kenney_font
+		if font:
+			ice_count_label.add_theme_font_override("font", font)
+		ice_count_label.add_theme_font_size_override("font_size", 13 if is_kr else 12)
+		ice_count_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7, 0.6) if is_depleted else Color.WHITE)
 
-		# Remove extra cells if max_charges decreased
-		while cells.size() > max_charges:
-			var extra = cells.pop_back()
-			if extra != ice_bar:
-				extra.queue_free()
-
-		# Update values: full if index < charges, empty if index >= charges
-		for i in range(cells.size()):
-			cells[i].value = 100.0 if i < charges else 0.0
+	if is_instance_valid(ice_notch_overlay):
+		ice_notch_overlay.queue_redraw()
 
 func show_toast(title: String, description: String, icon_path: String, color: Color) -> void:
 	if not toast_container: return
@@ -3026,7 +3039,7 @@ func show_achievements_screen() -> void:
 		var unlocked = ach_id in GameState.unlocked_achievements
 		
 		var panel = Panel.new()
-		panel.custom_minimum_size = Vector2(660, 100)
+		panel.custom_minimum_size = Vector2(700, 100)
 		panel.mouse_filter = Control.MOUSE_FILTER_PASS
 		
 		var style = StyleBoxFlat.new()
@@ -3049,35 +3062,81 @@ func show_achievements_screen() -> void:
 		panel.add_child(margin)
 		
 		var hbox = HBoxContainer.new()
-		hbox.add_theme_constant_override("separation", 20)
+		hbox.add_theme_constant_override("separation", 16)
 		margin.add_child(hbox)
 		
 		var icon_rect = TextureRect.new()
 		icon_rect.texture = load(ach["icon"]) if unlocked else load("res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_white.png")
 		icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon_rect.custom_minimum_size = Vector2(64, 64)
+		icon_rect.custom_minimum_size = Vector2(56, 56)
 		icon_rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		icon_rect.modulate = Color(1.0, 1.0, 1.0, 1.0) if unlocked else Color(0.3, 0.3, 0.3, 0.5)
 		hbox.add_child(icon_rect)
 		
 		var vbox = VBoxContainer.new()
 		vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-		vbox.add_theme_constant_override("separation", 0)
+		vbox.add_theme_constant_override("separation", 2)
+		vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		hbox.add_child(vbox)
 		
 		var ach_title = Label.new()
 		ach_title.text = (ach["title_kr"] if is_kr else ach["title_en"])
-		_style_lbl(ach_title, 28, Color(1.0, 0.85, 0.2, 1.0) if unlocked else Color(0.5, 0.5, 0.5, 1.0), 2, Color.BLACK, font)
+		_style_lbl(ach_title, 24, Color(1.0, 0.85, 0.2, 1.0) if unlocked else Color(0.6, 0.6, 0.6, 1.0), 2, Color.BLACK, font)
 		vbox.add_child(ach_title)
 		
 		var ach_desc = Label.new()
-		var progress_str = "" if unlocked else GameState.get_achievement_progress(ach_id)
-		ach_desc.text = (ach["desc_kr"] if is_kr else ach["desc_en"]) + progress_str
-		ach_desc.custom_minimum_size = Vector2(550, 0)
+		ach_desc.text = (ach["desc_kr"] if is_kr else ach["desc_en"])
+		ach_desc.custom_minimum_size = Vector2(360, 0)
 		ach_desc.autowrap_mode = TextServer.AUTOWRAP_WORD
-		_style_lbl(ach_desc, 16, Color(1.0, 1.0, 1.0, 0.8) if unlocked else Color(0.4, 0.4, 0.4, 0.8), 1, Color.BLACK, body_font)
+		_style_lbl(ach_desc, 15, Color(1.0, 1.0, 1.0, 0.85) if unlocked else Color(0.45, 0.45, 0.45, 0.8), 1, Color.BLACK, body_font)
 		vbox.add_child(ach_desc)
+		
+		var pdata = GameState.get_achievement_progress_data(ach_id)
+		var status_col = VBoxContainer.new()
+		status_col.custom_minimum_size = Vector2(150, 0)
+		status_col.alignment = BoxContainer.ALIGNMENT_CENTER
+		status_col.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		status_col.add_theme_constant_override("separation", 6)
+		hbox.add_child(status_col)
+		
+		if unlocked:
+			var badge = Label.new()
+			badge.text = "[ ✔ 완료 ]" if is_kr else "[ ✔ DONE ]"
+			_style_lbl(badge, 13, Color(1.0, 0.85, 0.2, 1.0), 2, Color.BLACK, font)
+			badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			status_col.add_child(badge)
+		else:
+			var count_lbl = Label.new()
+			count_lbl.text = pdata.text
+			_style_lbl(count_lbl, 13, Color(0.85, 0.85, 0.9, 0.8), 2, Color.BLACK, font)
+			count_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			status_col.add_child(count_lbl)
+			
+			var pbar = ProgressBar.new()
+			pbar.custom_minimum_size = Vector2(140, 8)
+			pbar.show_percentage = false
+			pbar.min_value = 0.0
+			pbar.max_value = 100.0
+			pbar.step = 0.1
+			pbar.value = pdata.ratio * 100.0
+			
+			var pbar_bg = StyleBoxFlat.new()
+			pbar_bg.bg_color = Color(0.04, 0.03, 0.07, 0.9)
+			pbar_bg.border_width_left = 1
+			pbar_bg.border_width_right = 1
+			pbar_bg.border_width_top = 1
+			pbar_bg.border_width_bottom = 1
+			pbar_bg.border_color = Color(0.3, 0.3, 0.35, 0.5)
+			pbar_bg.set_corner_radius_all(4)
+			
+			var pbar_fill = StyleBoxFlat.new()
+			pbar_fill.bg_color = Color(1.0, 0.85, 0.2, 0.9)
+			pbar_fill.set_corner_radius_all(4)
+			
+			pbar.add_theme_stylebox_override("background", pbar_bg)
+			pbar.add_theme_stylebox_override("fill", pbar_fill)
+			status_col.add_child(pbar)
 		
 		achievement_list.add_child(panel)
 

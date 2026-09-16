@@ -388,19 +388,44 @@ size_flags_vertical = 4
 theme_override_constants/separation = 4
 
 [node name="IceBar" type="TextureProgressBar" parent="HUD/resource_container/ice_row/IceBarContainer"]
-custom_minimum_size = Vector2(0, 24)
+custom_minimum_size = Vector2(200, 24)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 value = 100.0
 nine_patch_stretch = true
-stretch_margin_left = 6
-stretch_margin_top = 6
-stretch_margin_right = 6
-stretch_margin_bottom = 6
+stretch_margin_left = 10
+stretch_margin_top = 10
+stretch_margin_right = 10
+stretch_margin_bottom = 10
 texture_under = ExtResource("4_prog_bg")
 texture_progress = ExtResource("5_prog_fg")
 tint_progress = Color(0.55, 0.9, 1, 1)
+
+[node name="NotchOverlay" type="Control" parent="HUD/resource_container/ice_row/IceBarContainer/IceBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="CountLabel" type="Label" parent="HUD/resource_container/ice_row/IceBarContainer/IceBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("23_font_future")
+theme_override_font_sizes/font_size = 12
+text = "10 / 10"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="catastrom_row" type="HBoxContainer" parent="HUD/resource_container"]
 visible = false

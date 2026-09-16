@@ -30,6 +30,7 @@ This document outlines the UI design system, color palette, typography, and comp
 ### HUD Alignment
 * **Right-Edge:** Top-Right info (Timer, Score) and Bottom-Right resources (Meters) use a strict 24px right-aligned screen margin.
 * **Resource Plates:** 38x38 dark plates (4px radii, 1px accent border) ensure consistent horizontal starting coordinates regardless of language.
+* **Unified Resource Meters:** All resource rows (Water, Ice, Catastrom) utilize uniform 200x24 gauges with 10px rounded corners. Ice Burst uses a unified cyan-frost bar with discrete vertical notch dividers and an overlaid real-time numeric counter (`charges / max_charges`), avoiding cluttered pill fragmentation at high charge counts.
 
 ### Buttons (StyleBoxFlat)
 * **Size:** Minimum `280x52`, font size `22px`, `0px` radius.
@@ -42,6 +43,8 @@ This document outlines the UI design system, color palette, typography, and comp
 ### Interactive Elements
 * **Sliding Toggle Pill:** Binary toggle (EN/KR, Keyboard/Xbox) with a sliding gold highlight block and smooth color lerping.
 * **Weapon Wheel:** Procedural wedges drawn via `_draw()` with subtle 4px drop shadows matching global HUD panels. Plays `-18dB` audio ticks via `UIJuice.play_tick()` on weapon highlight. Locked weapons are dark gray, unlocked are gold.
+* **Drafting Screen (Perk Cards):** Tactile staggered card deal entrance (`Tween` scale pop and alpha fade) accompanied by rhythmic audio ticks. Features 6px drop shadows and rarity badges (`[ RARE ]`, `[ UNCOMMON ]`, `[ COMMON ]`) with color-tinted borders.
+* **Achievement Progress Readouts:** 3-column layout featuring a dedicated status column. Locked achievements show numerical counters (`current / max`) and mini gold progress bars (8px height, 4px corner radii, dark background). Unlocked achievements display a cyber gold completion badge (`[ ✔ COMPLETED ]` / `[ ✔ 완료 ]`).
 
 ## 5. Procedural Sun Expressions
 * **Rendering:** 128x128 RGBA8 procedural texture with a 4px dark-orange outline.
@@ -54,3 +57,4 @@ This document outlines the UI design system, color palette, typography, and comp
 * **Dynamic Overlays:** Heat Warning (pulsing red border at 85% heat) and Frost Border (icy blue tint on Ice Burst).
 * **Retro Filters:** Mutually exclusive options (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
 * **Blur/Dim:** Menus apply a 0.3s tweened blur (up to 2.0) and dim (0.6) to the background scene.
+

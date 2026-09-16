@@ -573,6 +573,47 @@ func get_achievement_progress(id: String) -> String:
 		_:
 			return ""
 
+func get_achievement_progress_data(id: String) -> Dictionary:
+	var unlocked = id in unlocked_achievements
+	var cur: int = 0
+	var max_val: int = 1
+	var progress_str: String = ""
+	
+	match id:
+		"dawn_breaks":
+			max_val = 5
+			cur = 5 if unlocked else clampi(level, 1, 5)
+			progress_str = "LVL %d / %d" % [cur, max_val]
+		"arcade_legend":
+			max_val = 10000
+			cur = 10000 if unlocked else min(max(high_score, current_score), 10000)
+			progress_str = "%d / %d PTS" % [cur, max_val]
+		"bird_watcher":
+			max_val = 50
+			cur = 50 if unlocked else min(seagulls_shooed, 50)
+			progress_str = "%d / %d" % [cur, max_val]
+		"flare_catcher":
+			max_val = 10
+			cur = 10 if unlocked else min(flares_intercepted, 10)
+			progress_str = "%d / %d" % [cur, max_val]
+		"slam_dunk", "untouchable", "rock_solid", "shadow_walker":
+			max_val = 1
+			cur = 1 if unlocked else 0
+			progress_str = "1 / 1" if unlocked else "0 / 1"
+		_:
+			max_val = 1
+			cur = 1 if unlocked else 0
+			progress_str = "1 / 1" if unlocked else "0 / 1"
+			
+	var ratio: float = 1.0 if unlocked else (float(cur) / float(max_val) if max_val > 0 else 0.0)
+	return {
+		"unlocked": unlocked,
+		"current": cur,
+		"max": max_val,
+		"ratio": ratio,
+		"text": progress_str
+	}
+
 func log_playtest_round(outcome: String, time_played: float, current_weapon: String) -> void:
 	var log_data = {
 		"timestamp": Time.get_datetime_string_from_system(),

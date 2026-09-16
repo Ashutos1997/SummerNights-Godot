@@ -562,7 +562,7 @@ func _show_achievements() -> void:
 		var unlocked = ach_id in GameState.unlocked_achievements
 		
 		var panel = Panel.new()
-		panel.custom_minimum_size = Vector2(660, 100)
+		panel.custom_minimum_size = Vector2(700, 100)
 		panel.mouse_filter = Control.MOUSE_FILTER_PASS
 		
 		var style = StyleBoxFlat.new()
@@ -584,39 +584,89 @@ func _show_achievements() -> void:
 		panel.add_child(margin)
 		
 		var hbox = HBoxContainer.new()
-		hbox.add_theme_constant_override("separation", 20)
+		hbox.add_theme_constant_override("separation", 16)
 		margin.add_child(hbox)
 		
 		var icon_rect = TextureRect.new()
 		icon_rect.texture = load(ach["icon"]) if unlocked else load("res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_white.png")
 		icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon_rect.custom_minimum_size = Vector2(64, 64)
+		icon_rect.custom_minimum_size = Vector2(56, 56)
 		icon_rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		icon_rect.modulate = Color(1.0, 1.0, 1.0, 1.0) if unlocked else Color(0.3, 0.3, 0.3, 0.5)
 		hbox.add_child(icon_rect)
 		
 		var vbox = VBoxContainer.new()
 		vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-		vbox.add_theme_constant_override("separation", 0)
+		vbox.add_theme_constant_override("separation", 2)
+		vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		hbox.add_child(vbox)
 		
 		var ach_title = Label.new()
 		ach_title.text = (ach["title_kr"] if is_kr else ach["title_en"])
-		_style_label(ach_title, 28, Color(1.0, 0.85, 0.2, 1.0) if unlocked else Color(0.5, 0.5, 0.5, 1.0), font)
+		_style_label(ach_title, 24, Color(1.0, 0.85, 0.2, 1.0) if unlocked else Color(0.6, 0.6, 0.6, 1.0), font)
 		ach_title.add_theme_constant_override("outline_size", 2)
 		ach_title.add_theme_color_override("font_outline_color", Color.BLACK)
 		vbox.add_child(ach_title)
 		
 		var ach_desc = Label.new()
-		var progress_str = "" if unlocked else GameState.get_achievement_progress(ach_id)
-		ach_desc.text = (ach["desc_kr"] if is_kr else ach["desc_en"]) + progress_str
-		ach_desc.custom_minimum_size = Vector2(550, 0)
+		ach_desc.text = (ach["desc_kr"] if is_kr else ach["desc_en"])
+		ach_desc.custom_minimum_size = Vector2(360, 0)
 		ach_desc.autowrap_mode = TextServer.AUTOWRAP_WORD
-		_style_label(ach_desc, 16, Color(1.0, 1.0, 1.0, 0.8) if unlocked else Color(0.4, 0.4, 0.4, 0.8), body_font)
+		_style_label(ach_desc, 15, Color(1.0, 1.0, 1.0, 0.85) if unlocked else Color(0.45, 0.45, 0.45, 0.8), body_font)
 		ach_desc.add_theme_constant_override("outline_size", 1)
 		ach_desc.add_theme_color_override("font_outline_color", Color.BLACK)
 		vbox.add_child(ach_desc)
+		
+		var pdata = GameState.get_achievement_progress_data(ach_id)
+		var status_col = VBoxContainer.new()
+		status_col.custom_minimum_size = Vector2(150, 0)
+		status_col.alignment = BoxContainer.ALIGNMENT_CENTER
+		status_col.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		status_col.add_theme_constant_override("separation", 6)
+		hbox.add_child(status_col)
+		
+		if unlocked:
+			var badge = Label.new()
+			badge.text = "[ ✔ 완료 ]" if is_kr else "[ ✔ DONE ]"
+			_style_label(badge, 13, Color(1.0, 0.85, 0.2, 1.0), font)
+			badge.add_theme_constant_override("outline_size", 2)
+			badge.add_theme_color_override("font_outline_color", Color.BLACK)
+			badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			status_col.add_child(badge)
+		else:
+			var count_lbl = Label.new()
+			count_lbl.text = pdata.text
+			_style_label(count_lbl, 13, Color(0.85, 0.85, 0.9, 0.8), font)
+			count_lbl.add_theme_constant_override("outline_size", 2)
+			count_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+			count_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			status_col.add_child(count_lbl)
+			
+			var pbar = ProgressBar.new()
+			pbar.custom_minimum_size = Vector2(140, 8)
+			pbar.show_percentage = false
+			pbar.min_value = 0.0
+			pbar.max_value = 100.0
+			pbar.step = 0.1
+			pbar.value = pdata.ratio * 100.0
+			
+			var pbar_bg = StyleBoxFlat.new()
+			pbar_bg.bg_color = Color(0.04, 0.03, 0.07, 0.9)
+			pbar_bg.border_width_left = 1
+			pbar_bg.border_width_right = 1
+			pbar_bg.border_width_top = 1
+			pbar_bg.border_width_bottom = 1
+			pbar_bg.border_color = Color(0.3, 0.3, 0.35, 0.5)
+			pbar_bg.set_corner_radius_all(4)
+			
+			var pbar_fill = StyleBoxFlat.new()
+			pbar_fill.bg_color = Color(1.0, 0.85, 0.2, 0.9)
+			pbar_fill.set_corner_radius_all(4)
+			
+			pbar.add_theme_stylebox_override("background", pbar_bg)
+			pbar.add_theme_stylebox_override("fill", pbar_fill)
+			status_col.add_child(pbar)
 		
 		achievement_list.add_child(panel)
 

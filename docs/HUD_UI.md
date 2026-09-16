@@ -9,7 +9,7 @@ Designed to minimize clutter while keeping survival info in the player's periphe
 
 ### Top-Left
 * **LevelLabel:** Current stage (e.g., `LVL 01` or `WAVE 01`).
-* **ActivePerksHUD:** Grid of 32x32 icons tracking drafted Rogue-lite perks. Duplicates stack with an "xN" badge.
+* **ActivePerksHUD:** Grid of 32x32 retro plates tracking drafted Rogue-lite perks. Duplicates stack with an "xN" badge.
 
 ### Top-Center
 * **SunHeatBar:** Critical UI. Live Celsius readout (`HEAT | X°C`). Fills up to 100% (Game Over).
@@ -35,7 +35,7 @@ Designed to minimize clutter while keeping survival info in the player's periphe
   * *Ice Burst:* Frost border. Dims when empty.
   * *Catastrom:* Purple border. Pulses gold when ready.
 * **Water Bar:** Oceanic blue gauge.
-* **Ice Charge Cells:** Segmented crystalline frost cells per charge.
+* **Ice Bar:** Cyan-frost gauge matching Water & Catastrom dimensions (200x24), featuring etched divider notches per charge and an overlaid numeric counter (e.g., 10 / 10). Dims when depleted.
 * **Catastrom Bar:** Purple gauge. Flashes "MAX READY!" at 100%.
 
 ### Bottom-Left
@@ -46,10 +46,12 @@ Designed to minimize clutter while keeping survival info in the player's periphe
 ## 2. Screen Overlays (Menus)
 * **Unified Menu Styling:** All full-screen menus use a 96px left margin, 24px vertical separation, golden borders, dark background dim, and standard 280x52 buttons.
 * **PauseScreen (`ESC` or Auto-Pause):** Freezes the 3D scene tree (`get_tree().paused = true`). Includes Settings, Filters, Controls, Credits, Achievements, and Buffs. Features a broken-border design with an animated sun.
+* **Achievements Screen:** 3-column retro list showing status readouts. Locked achievements display live numerical counters (`current / max`) and mini gold progress bars (8px, 4px radii); completed achievements display a cyber gold completion badge.
+* **Drafting Screen (Perks):** Post-boss upgrade modal. Features staggered card entrance animations, audio deal ticks, 6px drop shadows, and rarity tags (`[ RARE ]`, `[ UNCOMMON ]`, `[ COMMON ]`).
 * **FiltersScreen:** Mutually exclusive post-processing options (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
 * **ControllerScreen:** Sliding toggle between Keyboard and Xbox layouts.
 * **WeaponWheel (`TAB`):** Slows time to 0.2x. Draws procedural wedges for 5 weapons with subtle 4px drop shadows matching global HUD visor depth and plays button hover tick audio on selection. Hazard timers pause while open.
-* **TitleScreen:** Main menu with a 4-second PS1 synth boot animation. Includes Quit confirmation and Lifetime Stats.
+* **TitleScreen:** Main menu with a 4-second PS1 synth boot animation. Includes Quit confirmation, Lifetime Stats, and Achievement progress list.
 * **End State Screens:** Win, End, and Lose screens. Lose screen is centered to emphasize the Supernova cinematic.
 
 ---

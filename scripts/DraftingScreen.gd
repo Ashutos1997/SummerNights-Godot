@@ -113,17 +113,52 @@ func show_draft() -> void:
 	for perk_id in choices:
 		var row = _create_perk_row(perk_id)
 		card_container.add_child(row)
+		row.modulate.a = 0.0
+		row.scale = Vector2(0.9, 0.9)
+		row.pivot_offset = Vector2(350, 50)
 		
 	modulate.a = 0.0
 	show()
-	var tw = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-	tw.tween_property(self, "modulate:a", 1.0, 0.3)
+	var fade_tw = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	fade_tw.tween_property(self, "modulate:a", 1.0, 0.18)
 	
-	# Grab focus so controller works
-	if card_container.get_child_count() > 0:
-		card_container.get_child(0).grab_focus()
+	# Staggered card deal animation with audio feedback
+	var deal_tw = create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	var children = card_container.get_children()
+	for i in range(children.size()):
+		var r = children[i]
+		deal_tw.tween_interval(0.06 if i == 0 else 0.08)
+		deal_tw.tween_callback(func():
+			UIJuice.play_tick()
+		)
+		var p_tw = deal_tw.parallel()
+		p_tw.tween_property(r, "modulate:a", 1.0, 0.2).set_ease(Tween.EASE_OUT)
+		p_tw.tween_property(r, "scale", Vector2.ONE, 0.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		
+	deal_tw.tween_callback(func():
+		if card_container.get_child_count() > 0:
+			card_container.get_child(0).grab_focus()
+	)
 	
 func _create_perk_row(perk_id: String) -> Control:
+	var perk = GameState.WAVE_PERKS[perk_id]
+	var is_kr = GameState.language == "KR"
+	var weight = perk.get("weight", 100)
+	
+	var rarity_name = "COMMON"
+	var rarity_color = Color(0.8, 0.85, 0.95, 0.6)
+	var border_tint = Color(1.0, 0.85, 0.2, 0.5)
+	if weight <= 20:
+		rarity_name = "희귀" if is_kr else "RARE"
+		rarity_color = Color(0.2, 0.85, 1.0, 0.9)
+		border_tint = Color(0.2, 0.85, 1.0, 0.75)
+	elif weight <= 60:
+		rarity_name = "고급" if is_kr else "UNCOMMON"
+		rarity_color = Color(1.0, 0.85, 0.2, 0.9)
+		border_tint = Color(1.0, 0.85, 0.2, 0.75)
+	else:
+		rarity_name = "일반" if is_kr else "COMMON"
+	
 	var btn = Button.new()
 	btn.custom_minimum_size = Vector2(700, 100)
 	btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -134,7 +169,10 @@ func _create_perk_row(perk_id: String) -> Control:
 	style_normal.border_width_right = 1
 	style_normal.border_width_top = 1
 	style_normal.border_width_bottom = 1
-	style_normal.border_color = Color(1.0, 0.85, 0.2, 0.5)
+	style_normal.border_color = border_tint
+	style_normal.shadow_size = 6
+	style_normal.shadow_offset = Vector2(0, 4)
+	style_normal.shadow_color = Color(0.0, 0.0, 0.0, 0.45)
 	style_normal.corner_radius_top_left = 6
 	style_normal.corner_radius_top_right = 6
 	style_normal.corner_radius_bottom_left = 6
@@ -143,6 +181,8 @@ func _create_perk_row(perk_id: String) -> Control:
 	var style_hover = style_normal.duplicate()
 	style_hover.bg_color = Color(0.15, 0.15, 0.2, 0.9)
 	style_hover.border_color = Color(1.0, 0.9, 0.3, 1.0)
+	style_hover.shadow_size = 8
+	style_hover.shadow_offset = Vector2(0, 5)
 	
 	var style_focus = style_hover.duplicate()
 	style_focus.border_color = Color(1.0, 0.85, 0.2, 1.0)
@@ -158,9 +198,6 @@ func _create_perk_row(perk_id: String) -> Control:
 	btn.add_theme_stylebox_override("hover", style_hover)
 	btn.add_theme_stylebox_override("focus", style_focus)
 	btn.add_theme_stylebox_override("pressed", style_pressed)
-	
-	var perk = GameState.WAVE_PERKS[perk_id]
-	var is_kr = GameState.language == "KR"
 	
 	var margin = MarginContainer.new()
 	margin.set_anchors_preset(PRESET_FULL_RECT)
@@ -184,19 +221,34 @@ func _create_perk_row(perk_id: String) -> Control:
 	
 	var vbox_item = VBoxContainer.new()
 	vbox_item.alignment = BoxContainer.ALIGNMENT_CENTER
-	vbox_item.add_theme_constant_override("separation", 0)
+	vbox_item.add_theme_constant_override("separation", 2)
 	vbox_item.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hbox.add_child(vbox_item)
+	
+	var title_row = HBoxContainer.new()
+	title_row.add_theme_constant_override("separation", 10)
+	title_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox_item.add_child(title_row)
 	
 	var title = Label.new()
 	title.text = perk.title_kr if is_kr else perk.title_en
 	var title_font = load("res://assets/fonts/Galmuri11.ttf") if is_kr else load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
 	title.add_theme_font_override("font", title_font)
-	title.add_theme_font_size_override("font_size", 28)
+	title.add_theme_font_size_override("font_size", 26)
 	title.add_theme_constant_override("outline_size", 2)
 	title.add_theme_color_override("font_outline_color", Color.BLACK)
 	title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
-	vbox_item.add_child(title)
+	title_row.add_child(title)
+	
+	var badge = Label.new()
+	badge.text = "[ %s ]" % rarity_name
+	badge.add_theme_font_override("font", title_font)
+	badge.add_theme_font_size_override("font_size", 14)
+	badge.add_theme_color_override("font_color", rarity_color)
+	badge.add_theme_constant_override("outline_size", 2)
+	badge.add_theme_color_override("font_outline_color", Color.BLACK)
+	badge.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	title_row.add_child(badge)
 	
 	var desc = Label.new()
 	desc.text = perk.desc_kr if is_kr else perk.desc_en

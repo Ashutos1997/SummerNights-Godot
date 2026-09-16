@@ -24,12 +24,12 @@ This document serves as the master record for all currently implemented features
   * *Heavy Cannon:* High capacity, massive cooling, rapid drain.
   * *Scatter Nozzle:* Wide spray for multi-target intercepts.
   * *Tidal Gatling:* Extreme cooling/drain burst weapon.
-* **Ice Burst (Secondary):** Instantly freezes sun heat generation and movement.
+* **Ice Burst (Secondary):** Instantly freezes sun heat generation and movement. Tracked via a unified 200x24 cyan-frost meter with discrete charge notches and numerical counter.
 * **Catastrom (Ultimate):** Grab the sun and dunk it into the ocean to instantly clear the wave.
 
 ## 3. Rogue-lite Perks (Endless Mode)
-* **Drafting:** After every boss wave, choose 1 of 3 randomized perks.
-* **Active HUD:** Track drafted perks in the top-left HUD (duplicates stack visually).
+* **Drafting:** After every boss wave, choose 1 of 3 randomized perks. Features staggered card deal entrance animation with sound ticks, 6px drop shadows, and rarity tags (`[ RARE ]`, `[ UNCOMMON ]`, `[ COMMON ]`).
+* **Active HUD:** Real-time active buff tracker on the top-left HUD (duplicates stack visually).
 * **Perks Include:** High Capacity (+15% Water), Precision Optics (+15% Crit), Thermal Insulator (+10% Cooling), Catastrom Flow (+15% Ult Charge), Heat Shield (+5% Resist), Gravity Anchor (Reduces Sun Sway), Glass Cannon, Heavy Water, Reckless Haste.
 
 ## 4. Sun Mechanics & Threats
@@ -56,7 +56,7 @@ This document serves as the master record for all currently implemented features
 ## 7. UI & Game Feel
 * **Juice:** Screen shake on impacts, dynamic drop shadows, scaling/bouncing UI elements, UI audio ticks.
 * **Crosshairs:** Dynamic diegetic crosshairs for each weapon that track water capacity visually.
-* **Achievements & Buffs:** In-game achievement tracking that unlocks permanent buffs and tracks lifetime stats.
+* **Achievements & Buffs:** In-game achievement tracking with dedicated status readouts (mini gold progress bars and numerical counters for locked achievements, completion badges for unlocked ones) that unlocks permanent buffs and tracks lifetime stats.
 * **Menus:** Unified golden borders, 96px margins, centered/left-aligned layouts, and full Gamepad navigation.
 * **Accessibility:** Full Xbox Controller support with haptics/aim-assist, "Reduce Motion" setting, and EN/KR localization.
 
