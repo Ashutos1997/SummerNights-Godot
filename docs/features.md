@@ -10,7 +10,7 @@ This document serves as the master record for all currently implemented features
 * **Water Management:** Shooting drains the water tank; it recharges automatically when idle.
 * **Combo System:** Continuous hits build a Combo multiplier (up to 3.0x), boosting ultimate charge rate and shifting water pitch.
 * **Scoring:** Points awarded for continuous hits, intercepting Solar Flares, and evaporating Magma. Multiplied by Combo meter. High scores are saved.
-* **Progression:** Waves increase in difficulty (duration, heat rate, sun movement). Boss waves occur every 5th wave.
+* **Progression:** Waves increase in difficulty (duration, heat rate, sun movement). Boss waves occur every 5th wave. Continuous water damage receives soft resistance scaling at Wave 100+ to combat endless trigger-holding.
 * **Level Transitions:** Cinematic "Dying Ember" fade out, results screen, and seamless reset between waves.
 * **Game Modes:** 
   * *Normal Mode:* 6 standard progression levels.
@@ -30,10 +30,11 @@ This document serves as the master record for all currently implemented features
 ## 3. Rogue-lite Perks (Endless Mode)
 * **Drafting:** After every boss wave, choose 1 of 3 randomized perks. Features staggered card deal entrance animation with sound ticks, 6px drop shadows, and rarity tags (`[ RARE ]`, `[ UNCOMMON ]`, `[ COMMON ]`).
 * **Active HUD:** Real-time active buff tracker on the top-left HUD (duplicates stack visually).
+* **Stat Caps:** Hard caps prevent infinite power scaling (Cooling Power multiplier caps at 4.0x, Crit Damage at 3.0x).
 * **Perks Include:** High Capacity (+15% Water), Precision Optics (+15% Crit), Thermal Insulator (+10% Cooling), Catastrom Flow (+15% Ult Charge), Heat Shield (+5% Resist), Gravity Anchor (Reduces Sun Sway), Glass Cannon, Heavy Water, Reckless Haste.
 
 ## 4. Sun Mechanics & Threats
-* **Dynamic Movement:** Sun sways horizontally, adopting complex "Figure-8" patterns on higher waves.
+* **Dynamic Movement:** Sun sways horizontally, adopting complex "Figure-8" patterns on higher waves. Speed and heat scaling continue progressively up to Wave 50.
 * **Sunspots:** Glowing critical weakpoints that offer massive cooling and points when hit.
 * **Solar Flares:** Fireballs that must be intercepted. Missing triggers scaling heat/water penalties and breaks combos.
 * **Solar Wind:** Physical wind that pushes player crosshairs sideways.

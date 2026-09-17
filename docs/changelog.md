@@ -2,6 +2,15 @@
 
 All notable changes to the Summer Nights project will be documented in this file.
 
+## [v1.5.5] - WIP
+*(Note: This release corresponds to v1.5 on itch.io)*
+
+### Improved
+* Late-Game Balance: Implemented hard caps for player buffs (Cooling Power at 4.0x, Crit Damage at 3.0x) to prevent infinite power scaling in Endless Mode.
+* Water Soft Resistance: Introduced diminishing returns against continuous water damage at Wave 100+ to combat endless trigger-holding scaling.
+* Sun Scaling: Increased the Sun's max heat regeneration cap to 45.0 (from 25.0) and extended scaling up to Wave 50.
+* Sun Movement: Reduced max sway speed (from 2.0 to 1.2) and increased max sway amplitude (from 8.0 to 12.0) to make the Sun glide in wide, evasive arcs rather than jittering frantically at high waves.
+
 ## [v1.5.4] - 2026-09-16
 *(Note: This release corresponds to v1.4 on itch.io)*
 
@@ -195,6 +204,15 @@ All notable changes to the Summer Nights project will be documented in this file
 * Accessibility: English/Korean localization, Reduce Motion setting.
 
 ---
+
+## [v1.5.5] - WIP
+*(참고: 이 릴리스는 itch.io의 v1.5 버전에 해당합니다)*
+
+### 개선됨 (Improved)
+* 후반부 밸런스: 무한 모드에서 무한한 파워 스케일링을 방지하기 위해 플레이어 버프에 하드 캡(냉각력 4.0배, 치명타 피해 3.0배)을 적용.
+* 물 피해 소프트 저항: 무한 모드의 단순 사격 플레이를 막기 위해 웨이브 100부터 지속 물 피해에 대해 점진적인 저항을 도입.
+* 태양 스케일링: 태양의 최대 열기 재생 상한을 45.0(기존 25.0)으로 늘리고 스케일링을 웨이브 50까지 연장.
+* 태양 움직임: 고열 웨이브에서 태양이 요동치지 않고 넓게 피하도록 최대 흔들림 속도를 1.2로 줄이고 진폭을 12.0으로 증가.
 
 ## [v1.5.4] - 2026-09-16
 *(참고: 이 릴리스는 itch.io의 v1.4 버전에 해당합니다)*

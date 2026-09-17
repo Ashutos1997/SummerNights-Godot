@@ -550,6 +550,10 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 			"reckless_haste":
 				catastrom_charge_mult += 0.30
 				heat_resistance -= 0.10
+				
+	# Apply hard caps to prevent infinite power scaling in late waves
+	cooling_power_mult = min(cooling_power_mult, 4.0)
+	crit_damage_mult = min(crit_damage_mult, 3.0)
 
 func unlock_achievement(id: String) -> void:
 	if id in unlocked_achievements: return

@@ -23,6 +23,7 @@ driver/output_latency=30
 
 GameState="*res://scripts/GameState.gd"
 UIJuice="*res://scripts/UIJuice.gd"
+FlyBrainBridge="*res://scripts/FlyBrainBridge.gd"
 
 [display]
 

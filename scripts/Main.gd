@@ -770,12 +770,12 @@ func _on_title_start_game(is_survival: bool) -> void:
 	cam_tw.tween_property(camera, "fov", 75.0, 0.6).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
 	
 	if GameState.is_survival_mode and GameState.current_wave > 1:
-		heat_regen_base = min(25.0, 2.5 + (GameState.current_wave * 1.5))
+		heat_regen_base = min(45.0, 2.5 + (GameState.current_wave * 0.85))
 		sun_figure8 = GameState.current_wave >= 3
 		solar_wind_enabled = GameState.current_wave >= 4
 		flare_spawn_timer = min(flare_spawn_timer, max(2.5, 8.0 - (GameState.current_wave * 0.5)))
-		sun_sway_amplitude = min(8.0, 3.0 + (GameState.current_wave * 0.6))
-		sun_sway_speed = min(2.0, 0.5 + (GameState.current_wave * 0.2))
+		sun_sway_amplitude = min(12.0, 3.0 + (GameState.current_wave * 0.6))
+		sun_sway_speed = min(1.2, 0.5 + (GameState.current_wave * 0.2))
 		wind_level_mult = min(2.5, 1.0 + (GameState.current_wave - 4) * 0.15)
 		if GameState.current_wave % 5 == 0:
 			is_two_phase = true
@@ -1899,7 +1899,7 @@ func _process(delta: float) -> void:
 			if wave_timer < 10.0:
 				heat_regen_base = 2.0 # The Release
 			else:
-				heat_regen_base = min(25.0, 2.5 + (GameState.current_wave * 1.5)) # The Tension (Capped at Wave 15 max)
+				heat_regen_base = min(45.0, 2.5 + (GameState.current_wave * 0.85)) # The Tension (Capped at Wave 50 max)
 			
 			if is_two_phase and phase2_triggered:
 				heat_regen_base *= 1.2 # The Boss Phase is aggressive but beatable with base gun
@@ -2944,8 +2944,14 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				is_critical = true
 				
 		var damage_mult: float = 1.0
-		if GameState.is_survival_mode and GameState.current_wave >= 5:
-			damage_mult = 1.0 + (GameState.current_wave - 4) * 0.15 # +15% damage per wave past wave 4
+		if GameState.is_survival_mode:
+			if GameState.current_wave >= 5:
+				damage_mult = 1.0 + (GameState.current_wave - 4) * 0.15 # +15% damage per wave past wave 4
+			
+			# Soft Resistance: Diminishing returns against continuous water damage at wave 100+
+			if GameState.current_wave >= 100:
+				var resist = max(0.2, 1.0 - (GameState.current_wave - 100) * 0.01)
+				damage_mult *= resist
 				
 		if is_critical:
 			var dmg = current_weapon_power * (current_weapon_crit * GameState.crit_damage_mult) * damage_mult * delta
