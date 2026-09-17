@@ -8,6 +8,7 @@ All notable changes to the Summer Nights project will be documented in this file
 ### Added
 * Solar Flare Shield: In Endless Mode (Wave 15+), the Sun periodically generates a procedural energy shield that completely nullifies water damage. Players must actively use an Ice Blast to shatter the shield before resuming normal cooling.
 * Energy Shield Visuals & FX: Custom Fresnel pulse shader (`energy_shield.gdshader`) with subtle hexagonal tech patterning, elastic scale-up spawn animation, and outward 3D particle shatter bursts upon impact.
+* Shield Materialize SFX: Integrated dedicated CC0 energy shield spawn audio (`shield_spawn.wav` by bart) with subtle pitch randomization playing as the procedural shield materializes.
 * Shield Shatter SFX: Integrated dedicated CC0 high-impact shatter audio (`shield_break.ogg` by IgnasD) with subtle pitch randomization and hit-stop screen shake.
 
 ### Improved
@@ -216,6 +217,7 @@ All notable changes to the Summer Nights project will be documented in this file
 ### 추가됨 (Added)
 * 태양 플레어 실드: 무한 모드(웨이브 15 이상)에서 태양이 주기적으로 물 피해를 완전히 무효화하는 에너지 실드를 생성합니다. 플레이어는 반드시 얼음 폭발(Ice Blast)을 사용해 실드를 산산조각 내야만 다시 냉각할 수 있습니다.
 * 에너지 실드 비주얼 및 연출: 프레넬 펄스 및 육각형 테크 패턴 셰이더(`energy_shield.gdshader`), 탄성 있는 스케일업 생성 애니메이션, 파괴 시 외곽 3D 파티클 파편 연출 추가.
+* 실드 생성 SFX: 절차적 에너지 실드가 형성될 때 재생되는 미세 피치 랜덤화 적용 전용 CC0 생성 사운드(`shield_spawn.wav`, bart 제작) 적용.
 * 실드 파괴 SFX: 미세 피치 랜덤화 및 히트스톱 화면 흔들림과 결합된 전용 CC0 고품질 파괴 사운드(`shield_break.ogg`, IgnasD 제작) 적용.
 
 ### 개선됨 (Improved)
