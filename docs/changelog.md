@@ -5,6 +5,11 @@ All notable changes to the Summer Nights project will be documented in this file
 ## [v1.5.5] - WIP
 *(Note: This release corresponds to v1.5 on itch.io)*
 
+### Added
+* Solar Flare Shield: In Endless Mode (Wave 15+), the Sun periodically generates a procedural energy shield that completely nullifies water damage. Players must actively use an Ice Blast to shatter the shield before resuming normal cooling.
+* Energy Shield Visuals & FX: Custom Fresnel pulse shader (`energy_shield.gdshader`) with subtle hexagonal tech patterning, elastic scale-up spawn animation, and outward 3D particle shatter bursts upon impact.
+* Shield Shatter SFX: Integrated dedicated CC0 high-impact shatter audio (`shield_break.ogg` by IgnasD) with subtle pitch randomization and hit-stop screen shake.
+
 ### Improved
 * Late-Game Balance: Implemented hard caps for player buffs (Cooling Power at 4.0x, Crit Damage at 3.0x) to prevent infinite power scaling in Endless Mode.
 * Water Soft Resistance: Introduced diminishing returns against continuous water damage at Wave 100+ to combat endless trigger-holding scaling.
@@ -207,6 +212,11 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ## [v1.5.5] - WIP
 *(참고: 이 릴리스는 itch.io의 v1.5 버전에 해당합니다)*
+
+### 추가됨 (Added)
+* 태양 플레어 실드: 무한 모드(웨이브 15 이상)에서 태양이 주기적으로 물 피해를 완전히 무효화하는 에너지 실드를 생성합니다. 플레이어는 반드시 얼음 폭발(Ice Blast)을 사용해 실드를 산산조각 내야만 다시 냉각할 수 있습니다.
+* 에너지 실드 비주얼 및 연출: 프레넬 펄스 및 육각형 테크 패턴 셰이더(`energy_shield.gdshader`), 탄성 있는 스케일업 생성 애니메이션, 파괴 시 외곽 3D 파티클 파편 연출 추가.
+* 실드 파괴 SFX: 미세 피치 랜덤화 및 히트스톱 화면 흔들림과 결합된 전용 CC0 고품질 파괴 사운드(`shield_break.ogg`, IgnasD 제작) 적용.
 
 ### 개선됨 (Improved)
 * 후반부 밸런스: 무한 모드에서 무한한 파워 스케일링을 방지하기 위해 플레이어 버프에 하드 캡(냉각력 4.0배, 치명타 피해 3.0배)을 적용.

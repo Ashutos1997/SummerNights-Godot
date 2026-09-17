@@ -207,6 +207,8 @@ SummerNights-Godot/
 | SFX - UI Audio Pack | Kenney | CC0 |
 | SFX - Ice Shoot | urupin (Freesound) | CC0 |
 | SFX - Ice Hit | antonsoederberg (Freesound) | CC0 |
+| SFX - Shield Shatter | IgnasD (OpenGameArt) | CC0 |
+| SFX - Shield Materialize | bart (OpenGameArt) | CC0 |
 | SFX - Seagull Ambiance | Half-Life | Mod Asset |
 | SFX - PS1 Style Synth Boot Audio | nihilanth217 (SampleFocus) | Standard License |
 | SFX - Heartbeat (Death's Door) | Wikimedia Commons | Public Domain |
@@ -214,6 +216,7 @@ SummerNights-Godot/
 | SFX - Supernova Impact Audio (Safe Export) | Uzbazur (Freesound) | CC0 |
 | VFX - Ice Blast Projectile & Particles | Procedural Godot Primitives | - |
 | VFX - Physical Magma Debris | Quaternius Rock Models & Godot RigidBody3D | - |
+| VFX - Solar Flare Shield | Procedural Fresnel Shader & Particles | - |
 | Procedural Clouds and Seagulls | Hand-crafted GDScript | - |
 | VFX - Fireflies & Bugs | Procedural GDScript ArrayMesh | - |
 | Sun Face Expressions | Procedural Godot Image draw API | - |

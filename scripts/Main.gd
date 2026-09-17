@@ -40,6 +40,11 @@ var ambient_sfx: AudioStreamPlayer
 var heartbeat_sfx: AudioStreamPlayer
 var is_heat_critical: bool = false
 var heat_warning_tween: Tween
+
+# Shield Mechanic State
+var is_sun_shielded: bool = false
+var sun_shield_cooldown: float = 25.0
+var sun_shield_mesh: MeshInstance3D
 var master_lp_idx: int = -1
 var heat_vignette_color: Color = Color(0, 0, 0, 0):
 	set(value):
@@ -289,6 +294,8 @@ var sizzle_sfx: AudioStreamPlayer
 var ice_blast_scene = preload("res://scenes/IceBlast.tscn")
 var ice_shoot_sfx: AudioStreamPlayer
 var ice_hit_sfx: AudioStreamPlayer
+var shield_spawn_sfx: AudioStreamPlayer
+var shield_break_sfx: AudioStreamPlayer
 var is_sun_frozen: bool = false
 var sun_freeze_timer: float = 0.0
 
@@ -363,6 +370,16 @@ func _ready() -> void:
 	ice_hit_sfx.volume_db = -2.0
 	add_child(ice_hit_sfx)
 	
+	shield_spawn_sfx = AudioStreamPlayer.new()
+	shield_spawn_sfx.stream = preload("res://assets/audio/sfx/shield_spawn.wav")
+	shield_spawn_sfx.volume_db = -1.0
+	add_child(shield_spawn_sfx)
+	
+	shield_break_sfx = AudioStreamPlayer.new()
+	shield_break_sfx.stream = preload("res://assets/audio/sfx/shield_break.ogg")
+	shield_break_sfx.volume_db = 0.0
+	add_child(shield_break_sfx)
+	
 	flare_intercept_sfx = AudioStreamPlayer.new()
 	flare_intercept_sfx.stream = preload("res://assets/audio/sfx/hit_sun.ogg")
 	flare_intercept_sfx.pitch_scale = 0.6
@@ -411,6 +428,25 @@ func _ready() -> void:
 	_build_environment()
 	_update_sky(true)
 	_sync_light_to_sun()
+	
+	# Procedural Solar Flare Shield Mesh
+	sun_shield_mesh = MeshInstance3D.new()
+	var shield_shape = SphereMesh.new()
+	shield_shape.radius = 10.0 # Large enough to clear the sun model
+	shield_shape.height = 20.0
+	sun_shield_mesh.mesh = shield_shape
+	
+	var shield_mat = ShaderMaterial.new()
+	shield_mat.shader = load("res://assets/shaders/energy_shield.gdshader")
+	shield_mat.set_shader_parameter("shield_color", Color(0.2, 0.8, 1.0, 0.9))
+	shield_mat.set_shader_parameter("fresnel_power", 2.5)
+	shield_mat.set_shader_parameter("pulse_speed", 3.0)
+	shield_mat.set_shader_parameter("pulse_intensity", 0.4)
+	shield_mat.set_shader_parameter("base_alpha", 0.15)
+	sun_shield_mesh.material_override = shield_mat
+	sun_shield_mesh.visible = false
+	if sun:
+		sun.add_child(sun_shield_mesh)
 	
 	# Occasional Rogue Wave Spawner
 	ocean_wave_timer = Timer.new()
@@ -1815,6 +1851,26 @@ func _process(delta: float) -> void:
 
 	_process_heat_warning(delta)
 	
+	if GameState.is_survival_mode and GameState.current_wave >= 15:
+		if not is_sun_shielded:
+			sun_shield_cooldown -= delta
+			if sun_shield_cooldown <= 0.0:
+				is_sun_shielded = true
+				if sun_shield_mesh:
+					sun_shield_mesh.scale = Vector3.ZERO
+					sun_shield_mesh.visible = true
+					# Spawn animation: scale up + fade in
+					var mat = sun_shield_mesh.material_override as ShaderMaterial
+					if mat:
+						mat.set_shader_parameter("shield_opacity", 0.0)
+					var tw = create_tween().set_parallel()
+					tw.tween_property(sun_shield_mesh, "scale", Vector3.ONE, 0.6).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_ELASTIC)
+					if mat:
+						tw.tween_method(func(v): mat.set_shader_parameter("shield_opacity", v), 0.0, 1.0, 0.4).set_ease(Tween.EASE_IN)
+				if is_instance_valid(shield_spawn_sfx):
+					shield_spawn_sfx.pitch_scale = randf_range(0.98, 1.02)
+					shield_spawn_sfx.play()
+	
 	if game_over:
 		if is_instance_valid(shoot_loop_sfx):
 			shoot_loop_sfx.stop()
@@ -2955,6 +3011,8 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				
 		if is_critical:
 			var dmg = current_weapon_power * (current_weapon_crit * GameState.crit_damage_mult) * damage_mult * delta
+			if is_sun_shielded:
+				dmg = 0.0 # Shield completely nullifies water damage
 			if active_mirages.size() == 0:
 				temperature = max(0.0, temperature - dmg)
 				
@@ -2971,6 +3029,8 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			critical_hit.emit()
 		else:
 			var dmg = current_weapon_power * damage_mult * delta
+			if is_sun_shielded:
+				dmg = 0.0 # Shield completely nullifies water damage
 			if active_mirages.size() == 0:
 				temperature = max(0.0, temperature - dmg)
 				
@@ -3952,6 +4012,71 @@ func _spawn_ice_nova() -> void:
 	get_tree().create_timer(1.0).timeout.connect(nova.queue_free)
 
 func freeze_sun() -> void:
+	if is_sun_shielded:
+		is_sun_shielded = false
+		sun_shield_cooldown = randf_range(20.0, 30.0)
+		if shield_break_sfx:
+			shield_break_sfx.pitch_scale = randf_range(0.95, 1.05)
+			shield_break_sfx.play()
+		else:
+			ice_hit_sfx.play()
+		
+		# Shatter animation: expand + dissolve + particle burst
+		if sun_shield_mesh:
+			var mat = sun_shield_mesh.material_override as ShaderMaterial
+			var tw = create_tween().set_parallel()
+			# Scale up rapidly (shield shatters outward)
+			tw.tween_property(sun_shield_mesh, "scale", Vector3.ONE * 1.8, 0.35).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+			# Fade out via shader
+			if mat:
+				tw.tween_method(func(v): mat.set_shader_parameter("shield_opacity", v), 1.0, 0.0, 0.3).set_ease(Tween.EASE_IN)
+			tw.chain().tween_callback(func():
+				sun_shield_mesh.visible = false
+				sun_shield_mesh.scale = Vector3.ONE
+				if mat:
+					mat.set_shader_parameter("shield_opacity", 1.0)
+			)
+			
+			# Shatter particle burst
+			var burst = GPUParticles3D.new()
+			var pmat = ParticleProcessMaterial.new()
+			pmat.direction = Vector3(0, 0, 1)
+			pmat.spread = 180.0
+			pmat.initial_velocity_min = 10.0
+			pmat.initial_velocity_max = 20.0
+			pmat.gravity = Vector3(0, -2.0, 0)
+			pmat.scale_min = 0.3
+			pmat.scale_max = 0.8
+			pmat.color = Color(0.2, 0.8, 1.0, 0.9)
+			var pmesh = BoxMesh.new()
+			pmesh.size = Vector3(0.3, 0.3, 0.05)
+			var pmat3d = StandardMaterial3D.new()
+			pmat3d.albedo_color = Color(0.2, 0.8, 1.0, 0.8)
+			pmat3d.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			pmat3d.emission_enabled = true
+			pmat3d.emission = Color(0.2, 0.8, 1.0)
+			pmat3d.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			pmesh.material = pmat3d
+			burst.process_material = pmat
+			burst.draw_pass_1 = pmesh
+			burst.emitting = true
+			burst.one_shot = true
+			burst.explosiveness = 1.0
+			burst.amount = 30
+			burst.lifetime = 0.6
+			burst.global_position = sun.global_position
+			add_child(burst)
+			get_tree().create_timer(1.0).timeout.connect(burst.queue_free)
+		
+		# Hit-stop for shield shatter
+		Engine.time_scale = 0.05
+		var shatter_timer = get_tree().create_timer(0.08, true, false, true)
+		shatter_timer.timeout.connect(func():
+			Engine.time_scale = 1.0
+			shake(0.6, 0.1)
+		)
+		return # Shield absorbs the freeze, sun doesn't get frozen
+		
 	is_sun_frozen = true
 	sun_freeze_timer = 3.0
 	ice_hit_sfx.play()

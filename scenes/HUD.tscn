@@ -2103,6 +2103,22 @@ theme_override_font_sizes/font_size = 12
 text = "SFX - Ocean Waves Ambient  ·  CC0"
 horizontal_alignment = 1
 
+[node name="ItmAudio13" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "SFX - Shield Shatter  ·  IgnasD (OpenGameArt)  ·  CC0"
+horizontal_alignment = 1
+
+[node name="ItmAudio14" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "SFX - Shield Materialize  ·  bart (OpenGameArt)  ·  CC0"
+horizontal_alignment = 1
+
 [node name="ItmAudio3" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
 layout_mode = 2
 mouse_filter = 2
@@ -2380,6 +2396,14 @@ mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.85)
 theme_override_font_sizes/font_size = 12
 text = "Stream Combo UI & Sun Expressions  ·  Procedural GDScript & Image API"
+horizontal_alignment = 1
+
+[node name="ItmShieldVFX" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "VFX - Solar Flare Shield  ·  Procedural Fresnel Shader & Particles"
 horizontal_alignment = 1
 
 [node name="SpacerDisclaimer" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
