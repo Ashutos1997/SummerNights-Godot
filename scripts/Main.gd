@@ -630,7 +630,8 @@ func _ready() -> void:
 		GameState.ice_charges_remaining = GameState.bonus_ice_charges # Start with bonus ice in Endless Mode
 		if hud:
 			hud.update_ice_charges(GameState.ice_charges_remaining, max_survival_ice_charges + GameState.bonus_ice_charges)
-		hud.ice_row.visible = false
+			if GameState.current_wave < 2 and GameState.ice_charges_remaining <= 0:
+				hud.ice_row.visible = false
 	else:
 		GameState.ice_charges_remaining = cfg.ice_charges + GameState.bonus_ice_charges
 		if hud:
@@ -639,6 +640,8 @@ func _ready() -> void:
 			hud.show_weapon_unlock()
 		elif GameState.level == 3:
 			hud.show_ice_unlock()
+		elif GameState.level == 4:
+			hud.show_catastrom_unlock()
 		
 	projectile_hit.connect(hud._on_projectile_hit)
 	timer_tick.connect(hud._on_timer_tick)
@@ -816,7 +819,10 @@ func _on_title_start_game(is_survival: bool) -> void:
 		if GameState.current_wave % 5 == 0:
 			is_two_phase = true
 			phase2_heat = min(150.0, 80.0 + (GameState.current_wave * 5.0))
-		hud.level_label.text = ("웨이브 %02d" if GameState.language == "KR" else "WAVE %02d") % GameState.current_wave
+	if GameState.is_survival_mode and hud:
+		hud.update_ice_charges(GameState.ice_charges_remaining, max_survival_ice_charges + GameState.bonus_ice_charges)
+		if GameState.current_wave < 2 and GameState.ice_charges_remaining <= 0:
+			hud.ice_row.visible = false
 	
 	timer_running = true
 	virtual_mouse_pos = get_viewport().get_visible_rect().size / 2.0
@@ -2401,7 +2407,9 @@ func _process(delta: float) -> void:
 				# Reward: Instantly refill Water Tank & +2% Catastrom Charge (scaled by buff)!
 				var refill_amount = 0.40 if "flare_catcher" in GameState.unlocked_achievements else 0.30
 				water_tank = min(MAX_WATER, water_tank + (MAX_WATER * refill_amount))
-				GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (0.02 * catastrom_buff * GameState.catastrom_charge_mult))
+				var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
+				if can_catastrom:
+					GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (0.02 * catastrom_buff * GameState.catastrom_charge_mult))
 				var c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2)) if combo_active else 1.0
 				GameState.add_score(int(500.0 * c_mult))
 				water_refill_count += 1
@@ -2594,7 +2602,8 @@ func _input(event: InputEvent) -> void:
 			_shoot_ice()
 
 	if event.is_action_pressed("ui_catastrom") and not event.is_echo():
-		if GameState.catastrom_charge >= 1.0 and not is_catastrom_active:
+		var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
+		if can_catastrom and GameState.catastrom_charge >= 1.0 and not is_catastrom_active:
 			is_catastrom_active = true
 			is_shooting = false
 			if gun: gun.visible = false
@@ -3019,7 +3028,9 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			var c_mult = 1.0
 			if combo_active:
 				c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
-			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult / 1200.0))
+			var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
+			if can_catastrom:
+				GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult / 1200.0))
 			GameState.add_score(int(dmg * 10.0 * c_mult))
 			if sizzle_sfx and not sizzle_sfx.playing:
 				sizzle_sfx.play()
@@ -3037,7 +3048,9 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			var c_mult = 1.0
 			if combo_active:
 				c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
-			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult / 1200.0))
+			var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
+			if can_catastrom:
+				GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult / 1200.0))
 			GameState.add_score(int(dmg * 5.0 * c_mult))
 			projectile_hit.emit()
 			
@@ -3112,6 +3125,8 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 					hud.show_weapon_unlock()
 				if GameState.current_wave == 2:
 					hud.show_ice_unlock()
+				if GameState.current_wave == 4 and hud.has_method("show_catastrom_unlock"):
+					hud.show_catastrom_unlock()
 					
 				if GameState.language == "KR":
 					hud.level_label.text = "웨이브 %02d" % GameState.current_wave
@@ -3585,6 +3600,7 @@ func _win() -> void:
 				hud.show_ice_unlock()
 			if GameState.level == 4:
 				hud.show_weapon_unlock()
+				hud.show_catastrom_unlock()
 
 
 func _create_sfx(path: String, vol: float, poly: int, bus_name: String = "SFX_WEAPON") -> AudioStreamPlayer:

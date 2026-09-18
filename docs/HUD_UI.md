@@ -31,12 +31,12 @@ Designed to minimize clutter while keeping survival info in the player's periphe
 
 ### Bottom-Right (Resource Meters)
 * **Retro Flat Plates:** 38x38 dark plates (4px radii) housing vector icons.
-  * *Water:* Cyan border. Flashes red below 20%.
-  * *Ice Burst:* Frost border. Dims when empty.
-  * *Catastrom:* Purple border. Pulses gold when ready.
+  * *Water:* Cyan border. Flashes red below 20%. Always visible.
+  * *Ice Burst:* Frost border. Dims when empty. Hidden on Wave 1 / Level 1-2 (unless bonus charges held); unlocks on Wave 2 / Level 3.
+  * *Catastrom:* Purple border. Pulses gold when ready. Hidden on Waves 1-3 / Levels 1-3; unlocks on Wave 4 / Level 4 with a dedicated toast notification.
 * **Water Bar:** Oceanic blue gauge.
-* **Ice Bar:** Cyan-frost gauge matching Water & Catastrom dimensions (200x24), featuring etched divider notches per charge and an overlaid numeric counter (e.g., 10 / 10). Dims when depleted.
-* **Catastrom Bar:** Purple gauge. Flashes "MAX READY!" at 100%.
+* **Ice Bar:** Cyan-frost gauge matching Water & Catastrom dimensions (200x24), featuring etched divider notches per charge and an overlaid numeric counter (e.g., 10 / 10). Dims when depleted. Only displays when unlocked or charges are available.
+* **Catastrom Bar:** Purple gauge. Flashes "MAX READY!" at 100%. Only visible and actively charging from Wave 4+ or Level 4+.
 
 ### Bottom-Left
 * **Active Weapon Display:** Glowing vector crosshair with elemental background and localized weapon name.

@@ -298,8 +298,9 @@ func _process(delta: float) -> void:
 			
 	if catastrom_bar:
 		var target_catastrom = GameState.catastrom_charge
-		if catastrom_row.visible != (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 1)):
-			catastrom_row.visible = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 1))
+		var can_show_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
+		if catastrom_row.visible != can_show_catastrom:
+			catastrom_row.visible = can_show_catastrom
 			
 		if reduce_motion:
 			catastrom_bar.value = target_catastrom
@@ -559,7 +560,8 @@ func _ready() -> void:
 	_style_lbl(lose_level_lbl, 16, Color(1.0, 0.8, 0.2, 0.5), 2, Color.BLACK, font)
 
 	var cfg = GameState.LEVEL_CONFIG[GameState.level]
-	if cfg.ice_charges > 0:
+	var can_show_ice = (cfg.ice_charges > 0) and not (GameState.is_survival_mode and GameState.current_wave < 2 and GameState.ice_charges_remaining <= 0)
+	if can_show_ice:
 		ice_row.visible = true
 		if GameState.level == 3:
 			ice_row.modulate.a = 0.0
@@ -2600,7 +2602,7 @@ func _draw_ice_notches() -> void:
 		ice_notch_overlay.draw_line(Vector2(x, 2), Vector2(x, h - 2), col, 1.5)
 
 func update_ice_charges(charges: int, max_charges: int) -> void:
-	if max_charges <= 0:
+	if max_charges <= 0 or (GameState.is_survival_mode and GameState.current_wave < 2 and charges <= 0):
 		ice_row.visible = false
 		return
 
@@ -2749,6 +2751,13 @@ func show_weapon_unlock() -> void:
 	var title = "무기 해금됨" if is_kr else "WEAPON UNLOCKED"
 	var desc = "[TAB] 을 길게 눌러 장착" if is_kr else "HOLD [TAB] TO EQUIP"
 	show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1.0, 0.9, 0.2, 1.0))
+
+func show_catastrom_unlock() -> void:
+	var is_kr = GameState.language == "KR"
+	var title = "카타스트롬 해금됨" if is_kr else "CATASTROM UNLOCKED"
+	var desc = "태양을 바다로 덩크하라 [F]" if is_kr else "DUNK THE SUN INTO THE OCEAN [F]"
+	var icon_path = "res://assets/ui/achievements/ball-glow.png" if OS.has_feature("safe_audio") else "res://assets/ui/Catastrom.png"
+	show_toast(title, desc, icon_path, Color(0.8, 0.4, 1.0, 1.0))
 
 func _setup_weapon_hud() -> void:
 	var margin = MarginContainer.new()

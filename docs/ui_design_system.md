@@ -30,7 +30,7 @@ This document outlines the UI design system, color palette, typography, and comp
 ### HUD Alignment
 * **Right-Edge:** Top-Right info (Timer, Score) and Bottom-Right resources (Meters) use a strict 24px right-aligned screen margin.
 * **Resource Plates:** 38x38 dark plates (4px radii, 1px accent border) ensure consistent horizontal starting coordinates regardless of language.
-* **Unified Resource Meters:** All resource rows (Water, Ice, Catastrom) utilize uniform 200x24 gauges with 10px rounded corners. Ice Burst uses a unified cyan-frost bar with discrete vertical notch dividers and an overlaid real-time numeric counter (`charges / max_charges`), avoiding cluttered pill fragmentation at high charge counts.
+* **Unified Resource Meters:** All resource rows (Water, Ice, Catastrom) utilize uniform 200x24 gauges with 10px rounded corners. Ice Burst uses a unified cyan-frost bar with discrete vertical notch dividers and an overlaid real-time numeric counter (`charges / max_charges`), avoiding cluttered pill fragmentation at high charge counts. Secondary (Ice Burst) and Ultimate (Catastrom) gauges dynamically remain hidden until unlocked (Wave 2 / Level 3 for Ice, Wave 4 / Level 4 for Catastrom) to prevent peripheral clutter during early waves.
 
 ### Buttons (StyleBoxFlat)
 * **Size:** Minimum `280x52`, font size `22px`, `0px` radius.
