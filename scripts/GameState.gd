@@ -551,9 +551,13 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 				catastrom_charge_mult += 0.30
 				heat_resistance -= 0.10
 				
-	# Apply hard caps to prevent infinite power scaling in late waves
-	cooling_power_mult = min(cooling_power_mult, 4.0)
-	crit_damage_mult = min(crit_damage_mult, 3.0)
+	# Balanced caps and floors to prevent infinite power scaling or game-breaking penalties in late waves
+	cooling_power_mult = clamp(cooling_power_mult, 0.5, 4.0)
+	crit_damage_mult = clamp(crit_damage_mult, 1.0, 3.0)
+	heat_resistance = clamp(heat_resistance, -0.5, 0.60) # Sun always retains at least 40% heat pressure
+	sun_sway_mult = max(0.40, sun_sway_mult) # Sun sway never drops below 40% speed
+	max_water_mult = clamp(max_water_mult, 0.50, 2.5) # Tank never drops below 50% or exceeds 250%
+	catastrom_charge_mult = clamp(catastrom_charge_mult, 0.40, 2.5) # Ult charge never stalls below 40%
 
 func unlock_achievement(id: String) -> void:
 	if id in unlocked_achievements: return

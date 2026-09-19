@@ -15,6 +15,7 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### Improved
 * Late-Game Balance: Implemented hard caps for player buffs (Cooling Power at 4.0x, Crit Damage at 3.0x) to prevent infinite power scaling in Endless Mode.
+* Perk Scaling Safety Bounds: Added comprehensive balance clamps for all drafted perks in late Endless waves (Heat Resistance clamped to max 60%, Sun Sway floored at 40% speed, Water Tank bounded between 50%-250%, and Catastrom charge floored at 40%), ensuring deep runs remain tense and skill-driven without game-breaking exploits or excessive penalties.
 * Water Soft Resistance: Introduced diminishing returns against continuous water damage at Wave 100+ to combat endless trigger-holding scaling.
 * Sun Scaling: Increased the Sun's max heat regeneration cap to 45.0 (from 25.0) and extended scaling up to Wave 50.
 * Sun Movement: Reduced max sway speed (from 2.0 to 1.2) and increased max sway amplitude (from 8.0 to 12.0) to make the Sun glide in wide, evasive arcs rather than jittering frantically at high waves.
@@ -230,6 +231,7 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### 개선됨 (Improved)
 * 후반부 밸런스: 무한 모드에서 무한한 파워 스케일링을 방지하기 위해 플레이어 버프에 하드 캡(냉각력 4.0배, 치명타 피해 3.0배)을 적용.
+* 퍽 스케일링 안전 경계 (Perk Safety Bounds): 후반 무한 모드에서 퍽 중첩으로 인한 밸런스 붕괴를 방지하기 위해 모든 특성에 균형 잡힌 상/하한선 적용 (열 저항 최대 60% 제한, 태양 흔들림 최소 40% 속도 보장, 물탱크 용량 50%~250% 제한, 카타스트롬 충전 속도 최소 40% 보장).
 * 물 피해 소프트 저항: 무한 모드의 단순 사격 플레이를 막기 위해 웨이브 100부터 지속 물 피해에 대해 점진적인 저항을 도입.
 * 태양 스케일링: 태양의 최대 열기 재생 상한을 45.0(기존 25.0)으로 늘리고 스케일링을 웨이브 50까지 연장.
 * 태양 움직임: 고열 웨이브에서 태양이 요동치지 않고 넓게 피하도록 최대 흔들림 속도를 1.2로 줄이고 진폭을 12.0으로 증가.
