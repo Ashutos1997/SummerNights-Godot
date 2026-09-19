@@ -2759,6 +2759,20 @@ func show_catastrom_unlock() -> void:
 	var icon_path = "res://assets/ui/achievements/ball-glow.png" if OS.has_feature("safe_audio") else "res://assets/ui/Catastrom.png"
 	show_toast(title, desc, icon_path, Color(0.8, 0.4, 1.0, 1.0))
 
+func show_shield_shatter_hint() -> void:
+	var is_kr = GameState.language == "KR"
+	var title = "실드 파괴 필요!" if is_kr else "SHATTER THE SHIELD!"
+	var desc = "아이스 버스트로 실드를 파괴하세요 [RMB / R]" if is_kr else "SHATTER SHIELD WITH ICE BURST [RMB / R]"
+	show_toast(title, desc, "res://assets/ui/hud_elements/meter_ice.svg", Color(0.4, 0.9, 1.0, 1.0))
+	flash_ice_hint()
+
+func flash_ice_hint() -> void:
+	if not ice_row or not ice_row.visible:
+		return
+	var tw = create_tween()
+	tw.tween_property(ice_row, "modulate", Color(1.8, 1.8, 2.2), 0.12)
+	tw.tween_property(ice_row, "modulate", Color.WHITE, 0.25)
+
 func _setup_weapon_hud() -> void:
 	var margin = MarginContainer.new()
 	margin.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN

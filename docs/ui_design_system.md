@@ -55,6 +55,7 @@ This document outlines the UI design system, color palette, typography, and comp
 * **Layering:** `retro_postprocess.gdshader` runs on Layer 0 (behind HUD on Layer 10) to keep UI crisp.
 * **Base Effects:** S-Curve contrast, Synthwave split-toning, vignette, and animated film grain.
 * **Dynamic Overlays:** Heat Warning (pulsing red border at 85% heat) and Frost Border (icy blue tint on Ice Burst).
+* **Energy Shield & Deflection FX:** Procedural Fresnel energy shield with dynamic shader ripple rings, localized impact glow (`energy_shield.gdshader`), backward water droplet bounce particles (`GPUParticles3D`), and floating electric cyan `DEFLECTED` feedback labels.
 * **Retro Filters:** Mutually exclusive options (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
 * **Blur/Dim:** Menus apply a 0.3s tweened blur (up to 2.0) and dim (0.6) to the background scene.
 

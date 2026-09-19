@@ -21,11 +21,12 @@ Designed to minimize clutter while keeping survival info in the player's periphe
   * **ScoreLabel:** Live arcade score. Scales up on scoring points.
 * **WeatherIconContainer:** Persistent icon showing active weather (Normal, Rain, Eclipse).
 * **WeatherTimerLabel:** Shows precise eclipse countdown (requires "Shadow Walker" achievement).
-* **ToastContainer:** Deferred transient notifications (e.g., weapon unlocks).
+* **ToastContainer:** Deferred transient notifications (e.g., weapon unlocks, catastrom unlock, and shield shatter tactical prompts).
 
 ### Center
 * **Crosshair:** Dynamic diegetic reticle. Scales on hits. Inner ring tracks water capacity. Flashes red when empty, green on critical hits.
   * *Weapon Shapes:* Unique shapes for each weapon (Standard, Precision, Heavy, Scatter, Gatling).
+* **Damage Numbers & Deflection Feedback:** Floating 3D text showing damage (`-%d`), golden weak-point crits, or electric cyan `DEFLECTED` labels when firing at an active Solar Flare Shield.
 * **ComboLabel & Callouts:** Displays combo multiplier (up to 3.0x) and arcade text (e.g., "CHILL!").
 * **FlareRings:** 2D diegetic charging rings projecting the sun's 3D radius to telegraph incoming flares.
 

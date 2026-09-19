@@ -45,6 +45,12 @@ var heat_warning_tween: Tween
 var is_sun_shielded: bool = false
 var sun_shield_cooldown: float = 25.0
 var sun_shield_mesh: MeshInstance3D
+var shield_deflect_sfx: AudioStreamPlayer
+var shield_deflect_cooldown: float = 0.0
+var shield_deflect_particles: GPUParticles3D
+var shield_hit_tween: Tween
+var shield_ripple_time: float = 999.0
+var shield_spray_duration: float = 0.0
 var master_lp_idx: int = -1
 var heat_vignette_color: Color = Color(0, 0, 0, 0):
 	set(value):
@@ -380,6 +386,11 @@ func _ready() -> void:
 	shield_break_sfx.volume_db = 0.0
 	add_child(shield_break_sfx)
 	
+	shield_deflect_sfx = AudioStreamPlayer.new()
+	shield_deflect_sfx.stream = preload("res://assets/audio/sfx/shield_deflect.wav")
+	shield_deflect_sfx.volume_db = -1.5
+	add_child(shield_deflect_sfx)
+	
 	flare_intercept_sfx = AudioStreamPlayer.new()
 	flare_intercept_sfx.stream = preload("res://assets/audio/sfx/hit_sun.ogg")
 	flare_intercept_sfx.pitch_scale = 0.6
@@ -447,6 +458,36 @@ func _ready() -> void:
 	sun_shield_mesh.visible = false
 	if sun:
 		sun.add_child(sun_shield_mesh)
+	
+	# Procedural Water Deflection Particles
+	shield_deflect_particles = GPUParticles3D.new()
+	shield_deflect_particles.emitting = false
+	shield_deflect_particles.one_shot = true
+	shield_deflect_particles.explosiveness = 0.85
+	shield_deflect_particles.amount = 16
+	shield_deflect_particles.lifetime = 0.35
+	
+	var deflect_pmat = ParticleProcessMaterial.new()
+	deflect_pmat.direction = Vector3(0, 0, 1)
+	deflect_pmat.spread = 50.0
+	deflect_pmat.initial_velocity_min = 10.0
+	deflect_pmat.initial_velocity_max = 22.0
+	deflect_pmat.gravity = Vector3(0, -9.8, 0)
+	deflect_pmat.scale_min = 0.2
+	deflect_pmat.scale_max = 0.45
+	deflect_pmat.color = Color(0.5, 0.9, 1.0, 0.85)
+	shield_deflect_particles.process_material = deflect_pmat
+	
+	var deflect_mesh = SphereMesh.new()
+	deflect_mesh.radius = 0.12
+	deflect_mesh.height = 0.24
+	var splash_mat = StandardMaterial3D.new()
+	splash_mat.shading_mode = StandardMaterial3D.SHADING_MODE_UNSHADED
+	splash_mat.albedo_color = Color(0.65, 0.95, 1.0, 0.9)
+	splash_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	deflect_mesh.material = splash_mat
+	shield_deflect_particles.draw_pass_1 = deflect_mesh
+	add_child(shield_deflect_particles)
 	
 	# Occasional Rogue Wave Spawner
 	ocean_wave_timer = Timer.new()
@@ -1857,6 +1898,13 @@ func _process(delta: float) -> void:
 
 	_process_heat_warning(delta)
 	
+	if shield_deflect_cooldown > 0.0:
+		shield_deflect_cooldown -= delta
+	if shield_ripple_time < 2.0:
+		shield_ripple_time += delta
+		if sun_shield_mesh and sun_shield_mesh.material_override:
+			sun_shield_mesh.material_override.set_shader_parameter("hit_time", shield_ripple_time)
+	
 	if GameState.is_survival_mode and GameState.current_wave >= 15:
 		if not is_sun_shielded:
 			sun_shield_cooldown -= delta
@@ -3022,39 +3070,55 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			var dmg = current_weapon_power * (current_weapon_crit * GameState.crit_damage_mult) * damage_mult * delta
 			if is_sun_shielded:
 				dmg = 0.0 # Shield completely nullifies water damage
-			if active_mirages.size() == 0:
-				temperature = max(0.0, temperature - dmg)
-				
-			var c_mult = 1.0
-			if combo_active:
-				c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
-			var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
-			if can_catastrom:
-				GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult / 1200.0))
-			GameState.add_score(int(dmg * 10.0 * c_mult))
-			if sizzle_sfx and not sizzle_sfx.playing:
-				sizzle_sfx.play()
-			if steam_particles:
-				steam_particles.global_position = sunspot_node.global_position
-				steam_particles.restart()
-			critical_hit.emit()
+				_on_shield_deflect(target_pos)
+				shield_spray_duration += delta
+				if shield_spray_duration >= 0.6:
+					shield_spray_duration = -2.0
+					if hud and hud.has_method("show_shield_shatter_hint"):
+						hud.show_shield_shatter_hint()
+			else:
+				shield_spray_duration = max(0.0, shield_spray_duration - delta * 2.0)
+				if active_mirages.size() == 0:
+					temperature = max(0.0, temperature - dmg)
+					
+				var c_mult = 1.0
+				if combo_active:
+					c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
+				var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
+				if can_catastrom:
+					GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult / 1200.0))
+				GameState.add_score(int(dmg * 10.0 * c_mult))
+				if sizzle_sfx and not sizzle_sfx.playing:
+					sizzle_sfx.play()
+				if steam_particles:
+					steam_particles.global_position = sunspot_node.global_position
+					steam_particles.restart()
+				critical_hit.emit()
 		else:
 			var dmg = current_weapon_power * damage_mult * delta
 			if is_sun_shielded:
 				dmg = 0.0 # Shield completely nullifies water damage
-			if active_mirages.size() == 0:
-				temperature = max(0.0, temperature - dmg)
-				
-			var c_mult = 1.0
-			if combo_active:
-				c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
-			var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
-			if can_catastrom:
-				GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult / 1200.0))
-			GameState.add_score(int(dmg * 5.0 * c_mult))
-			projectile_hit.emit()
+				_on_shield_deflect(target_pos)
+				shield_spray_duration += delta
+				if shield_spray_duration >= 0.6:
+					shield_spray_duration = -2.0
+					if hud and hud.has_method("show_shield_shatter_hint"):
+						hud.show_shield_shatter_hint()
+			else:
+				shield_spray_duration = max(0.0, shield_spray_duration - delta * 2.0)
+				if active_mirages.size() == 0:
+					temperature = max(0.0, temperature - dmg)
+					
+				var c_mult = 1.0
+				if combo_active:
+					c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
+				var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
+				if can_catastrom:
+					GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult / 1200.0))
+				GameState.add_score(int(dmg * 5.0 * c_mult))
+				projectile_hit.emit()
 			
-	if hit_cooldown <= 0.0:
+	if not is_sun_shielded and hit_cooldown <= 0.0:
 		hit_sfx.play()
 		hit_cooldown = HIT_COOLDOWN
 		
@@ -3910,6 +3974,62 @@ func _spawn_damage_number(amount: float, is_crit: bool, pos: Vector3) -> void:
 	tw.tween_property(lbl, "global_position:y", lbl.global_position.y + 5.0, 0.7).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 	tw.tween_property(lbl, "modulate:a", 0.0, 0.6).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_EXPO)
 	tw.chain().tween_callback(lbl.queue_free)
+
+func _spawn_deflected_number(pos: Vector3) -> void:
+	var lbl = Label3D.new()
+	lbl.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	lbl.no_depth_test = true
+	lbl.text = "DEFLECTED"
+	lbl.font = preload("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+	lbl.font_size = 420
+	lbl.modulate = Color(0.3, 0.9, 1.0, 0.95)
+	lbl.outline_size = 28
+	lbl.outline_modulate = Color(0.0, 0.2, 0.4, 0.9)
+	
+	var offset = Vector3(randf_range(-2.0, 2.0), randf_range(0.5, 2.5), randf_range(-1.0, 1.0))
+	add_child(lbl)
+	lbl.global_position = pos + offset
+	
+	var tw = create_tween().set_parallel(true)
+	tw.tween_property(lbl, "global_position:y", lbl.global_position.y + 3.5, 0.55).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+	tw.tween_property(lbl, "modulate:a", 0.0, 0.5).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_EXPO)
+	tw.chain().tween_callback(lbl.queue_free)
+
+func _on_shield_deflect(hit_world_pos: Vector3) -> void:
+	# 1. Update Energy Shield Shader Ripple
+	if sun_shield_mesh and sun_shield_mesh.material_override:
+		var mat = sun_shield_mesh.material_override as ShaderMaterial
+		if mat:
+			var local_hit = sun_shield_mesh.to_local(hit_world_pos)
+			mat.set_shader_parameter("hit_point", local_hit)
+			mat.set_shader_parameter("hit_intensity", 1.0)
+			mat.set_shader_parameter("hit_time", 0.0)
+			shield_ripple_time = 0.0
+			
+			if is_instance_valid(shield_hit_tween):
+				shield_hit_tween.kill()
+			shield_hit_tween = create_tween()
+			shield_hit_tween.tween_method(func(val): mat.set_shader_parameter("hit_intensity", val), 1.0, 0.0, 0.35).set_ease(Tween.EASE_OUT)
+
+	# 2. Deflection Particles
+	if is_instance_valid(shield_deflect_particles):
+		shield_deflect_particles.global_position = hit_world_pos
+		var deflect_dir = (camera.global_position - hit_world_pos).normalized()
+		var pmat = shield_deflect_particles.process_material as ParticleProcessMaterial
+		if pmat:
+			pmat.direction = deflect_dir
+		shield_deflect_particles.restart()
+
+	# 3. Deflection Sound (with rapid-fire throttle)
+	if shield_deflect_cooldown <= 0.0:
+		if is_instance_valid(shield_deflect_sfx):
+			shield_deflect_sfx.pitch_scale = randf_range(0.95, 1.05)
+			shield_deflect_sfx.play()
+		shield_deflect_cooldown = 0.07
+
+	# 4. Floating Combat Text: "DEFLECTED"
+	if randf() < 0.3:
+		_spawn_deflected_number(hit_world_pos)
 
 func _spawn_splash(pos: Vector3) -> void:
 	if splash_particles_pool.is_empty(): return

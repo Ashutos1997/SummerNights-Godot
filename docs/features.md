@@ -36,8 +36,7 @@ This document serves as the master record for all currently implemented features
 ## 4. Sun Mechanics & Threats
 * **Dynamic Movement:** Sun sways horizontally, adopting complex "Figure-8" patterns on higher waves. Speed and heat scaling continue progressively up to Wave 50.
 * **Sunspots:** Glowing critical weakpoints that offer massive cooling and points when hit.
-* **Solar Flares:** Fireballs that must be intercepted. Missing triggers scaling heat/water penalties and breaks combos.
-* **Solar Flare Shield:** In Endless Mode (Wave 15+), the Sun periodically generates an emissive procedural energy shield (Fresnel glow with subtle hexagonal tech grid) that completely nullifies water damage. Accompanied by an elastic scale-up spawn tween, materialize audio (`shield_spawn.wav`), and shattered by an Ice Blast featuring outward fragmentation particles (`GPUParticles3D`), hit-stop screen shake, and dedicated CC0 shatter audio.
+* **Solar Flare Shield:** In Endless Mode (Wave 15+), the Sun periodically generates an emissive procedural energy shield (Fresnel glow with subtle hexagonal tech grid) that completely nullifies water damage. Accompanied by an elastic scale-up spawn tween and materialize audio (`shield_spawn.wav`). When struck by water, the shield produces localized expanding shockwave ripples in the shader, backward-deflecting water splash particles (`GPUParticles3D`), floating `"DEFLECTED"` combat feedback, and dedicated metallic/steam deflection audio (`shield_deflect.wav`), prompting the player to shatter it using Ice Blast (`[R]`). Shattering triggers outward fragmentation particles, hit-stop screen shake, and dedicated CC0 shatter audio (`shield_break.ogg`).
 * **Solar Wind:** Physical wind that pushes player crosshairs sideways.
 * **Heat Mirage (Boss):** Spawns two decoy suns and a collective Overshield that must be broken.
 * **High Heat Warnings:** Sun boils steam at 75% heat; screen pulses red and heartbeat plays at 85% heat.
@@ -66,5 +65,6 @@ This document serves as the master record for all currently implemented features
 * **Audio Ducking:** 12dB master volume drop on massive impacts (Flares, Dunks) for shockwave effect.
 * **Synthesized UI Sounds:** Consistent -18dB 1800Hz sine sweep ticks for all UI interactions.
 * **Shield Materialize SFX:** Dedicated CC0 energy shield spawn audio (`shield_spawn.wav` by bart) with subtle pitch randomization playing as the procedural shield materializes.
+* **Shield Deflection SFX:** Dedicated barrier deflection audio (`shield_deflect.wav`) blending a resonant 1850Hz metallic ping with a pressurized steam vapor sizzle, throttled for rapid-fire automatic weapons.
 * **Shield Shatter SFX:** Dedicated CC0 high-impact shatter audio (`shield_break.ogg` by IgnasD) with subtle pitch randomization upon Ice Blast shield break.
 * **Catastrom VO:** Royalty-free fallback for itch.io exports, original audio for GitHub builds.
