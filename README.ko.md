@@ -211,6 +211,7 @@ SummerNights-Godot/
 | SFX - 얼음 피격음 | antonsoederberg (Freesound) | CC0 |
 | SFX - 실드 파괴음 (Shield Shatter) | IgnasD (OpenGameArt) | CC0 |
 | SFX - 실드 생성음 (Shield Materialize) | bart (OpenGameArt) | CC0 |
+| SFX - 실드 튕김음 (Shield Deflection) | 절차적 파이썬 오디오 합성 (Procedural Python Audio Synthesis) | 오픈소스 (Open Source) |
 | SFX - 갈매기 앰비언스 (Seagull Ambiance) | Half-Life | 모드 에셋 (Mod Asset) |
 | SFX - PS1 스타일 신스 부팅 오디오 (PS1 Style Synth Boot Audio) | nihilanth217 (SampleFocus) | 표준 라이선스 (Standard License) |
 | SFX - 심장 박동음 (죽음의 문턱) (Heartbeat - Death's Door) | Wikimedia Commons | 퍼블릭 도메인 (Public Domain) |
@@ -218,7 +219,7 @@ SummerNights-Godot/
 | SFX - 초신성 충돌 오디오 (안전 배포용) (Supernova Impact Audio - Safe Export) | Uzbazur (Freesound) | CC0 |
 | VFX - 얼음 폭발 발사체 및 입자 효과 | 절차적 고도(Godot) 기본 도형 | - |
 | VFX - 물리적 마그마 파편 (Physical Magma Debris) | Quaternius Rock Models 및 Godot RigidBody3D | - |
-| VFX - 태양 플레어 실드 (Solar Flare Shield) | 절차적 프레넬 셰이더 및 파티클 | - |
+| VFX - 태양 플레어 실드 및 튕김 연출 (Solar Flare Shield & Deflection FX) | 절차적 프레넬 셰이더 및 외곽 튕김 파티클 | - |
 | 절차적 구름 및 갈매기 | 수작업 GDScript | - |
 | VFX - 반딧불이 및 벌레 (Fireflies & Bugs) | 절차적 GDScript ArrayMesh | - |
 | 태양 표정 (Sun Face) | 절차적 Godot Image draw API | - |

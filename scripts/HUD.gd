@@ -1352,6 +1352,8 @@ func _apply_language(lang: String) -> void:
 			if itm_audio13: itm_audio13.text = "SFX - 실드 파괴음  ·  IgnasD (OpenGameArt)  ·  CC0" if is_kr else "SFX - Shield Shatter  ·  IgnasD (OpenGameArt)  ·  CC0"
 			var itm_audio14 = credits_list.get_node_or_null("ItmAudio14")
 			if itm_audio14: itm_audio14.text = "SFX - 실드 생성음  ·  bart (OpenGameArt)  ·  CC0" if is_kr else "SFX - Shield Materialize  ·  bart (OpenGameArt)  ·  CC0"
+			var itm_audio15 = credits_list.get_node_or_null("ItmAudio15")
+			if itm_audio15: itm_audio15.text = "SFX - 실드 튕김음  ·  절차적 파이썬 오디오 합성  ·  오픈소스" if is_kr else "SFX - Shield Deflection  ·  Procedural Python Audio Synthesis  ·  Open Source"
 
 			var itm_ice_vfx = credits_list.get_node_or_null("ItmIceVFX")
 			if itm_ice_vfx: itm_ice_vfx.text = "VFX - 얼음 폭발 발사체 및 입자 효과  ·  절차적 Godot 기본 도형" if is_kr else "VFX - Ice Blast Projectile & Particles  ·  Procedural Godot Primitives"
@@ -1362,7 +1364,7 @@ func _apply_language(lang: String) -> void:
 			var itm_stream_combo = credits_list.get_node_or_null("ItmStreamCombo")
 			if itm_stream_combo: itm_stream_combo.text = "물줄기 콤보 UI 및 태양 표정  ·  절차적 GDScript 및 Godot Image API" if is_kr else "Stream Combo UI & Sun Expressions  ·  Procedural GDScript & Image API"
 			var itm_shield_vfx = credits_list.get_node_or_null("ItmShieldVFX")
-			if itm_shield_vfx: itm_shield_vfx.text = "VFX - 태양 플레어 실드  ·  절차적 프레넬 셰이더 및 파티클" if is_kr else "VFX - Solar Flare Shield  ·  Procedural Fresnel Shader & Particles"
+			if itm_shield_vfx: itm_shield_vfx.text = "VFX - 태양 플레어 실드 및 튕김 연출  ·  절차적 프레넬 셰이더 및 외곽 튕김 파티클" if is_kr else "VFX - Solar Flare Shield & Deflection Ripple  ·  Procedural Fresnel Shader & Outward Splash Particles"
 
 			var itm_disclaimer = credits_list.get_node_or_null("ItmDisclaimer")
 			if itm_disclaimer:
