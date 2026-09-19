@@ -10,7 +10,7 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 
 <div align="center">
 
-![Views](https://img.shields.io/badge/Views-201-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
+![Views](https://img.shields.io/badge/Views-206-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
 ![Downloads](https://img.shields.io/badge/Downloads-20-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
 ![Followers](https://img.shields.io/badge/Followers-0-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
 
