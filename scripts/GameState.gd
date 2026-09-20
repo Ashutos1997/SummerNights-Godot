@@ -552,7 +552,7 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 				heat_resistance -= 0.10
 				
 	# Balanced caps and floors to prevent infinite power scaling or game-breaking penalties in late waves
-	cooling_power_mult = clamp(cooling_power_mult, 0.5, 4.0)
+	cooling_power_mult = clamp(cooling_power_mult, 0.5, 3.5)
 	crit_damage_mult = clamp(crit_damage_mult, 1.0, 3.0)
 	heat_resistance = clamp(heat_resistance, -0.5, 0.60) # Sun always retains at least 40% heat pressure
 	sun_sway_mult = max(0.40, sun_sway_mult) # Sun sway never drops below 40% speed

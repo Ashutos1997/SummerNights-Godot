@@ -30,7 +30,7 @@ This document serves as the master record for all currently implemented features
 ## 3. Rogue-lite Perks (Endless Mode)
 * **Drafting:** After every boss wave, choose 1 of 3 randomized perks. Features staggered card deal entrance animation with sound ticks, 6px drop shadows, and rarity tags (`[ RARE ]`, `[ UNCOMMON ]`, `[ COMMON ]`).
 * **Active HUD:** Real-time active buff tracker on the top-left HUD (duplicates stack visually).
-* **Stat Caps & Safety Bounds:** Hard caps and floors maintain high-wave balance (Cooling Power capped at 4.0x, Crit Damage at 3.0x, Heat Resistance capped at 60%, Sun Sway floored at 40% speed, Water Tank bounded between 50%-250%, and Catastrom charge floored at 40%).
+* **Stat Caps & Safety Bounds:** Hard caps and floors maintain high-wave balance (Cooling Power capped at 3.5x, Crit Damage at 3.0x, Heat Resistance capped at 60%, Sun Sway floored at 40% speed, Water Tank bounded between 50%-250%, and Catastrom charge floored at 40%).
 * **Perks Include:** High Capacity (+15% Water), Precision Optics (+15% Crit), Thermal Insulator (+10% Cooling), Catastrom Flow (+15% Ult Charge), Heat Shield (+5% Resist), Gravity Anchor (Reduces Sun Sway), Glass Cannon, Heavy Water, Reckless Haste.
 
 ## 4. Sun Mechanics & Threats
