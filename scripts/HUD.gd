@@ -1353,7 +1353,7 @@ func _apply_language(lang: String) -> void:
 			var itm_audio14 = credits_list.get_node_or_null("ItmAudio14")
 			if itm_audio14: itm_audio14.text = "SFX - 실드 생성음  ·  bart (OpenGameArt)  ·  CC0" if is_kr else "SFX - Shield Materialize  ·  bart (OpenGameArt)  ·  CC0"
 			var itm_audio15 = credits_list.get_node_or_null("ItmAudio15")
-			if itm_audio15: itm_audio15.text = "SFX - 실드 튕김음  ·  절차적 파이썬 오디오 합성  ·  오픈소스" if is_kr else "SFX - Shield Deflection  ·  Procedural Python Audio Synthesis  ·  Open Source"
+			if itm_audio15: itm_audio15.text = "SFX - 실드 튕김음  ·  OpenGameArt  ·  CC0" if is_kr else "SFX - Shield Deflection  ·  OpenGameArt  ·  CC0"
 
 			var itm_ice_vfx = credits_list.get_node_or_null("ItmIceVFX")
 			if itm_ice_vfx: itm_ice_vfx.text = "VFX - 얼음 폭발 발사체 및 입자 효과  ·  절차적 Godot 기본 도형" if is_kr else "VFX - Ice Blast Projectile & Particles  ·  Procedural Godot Primitives"

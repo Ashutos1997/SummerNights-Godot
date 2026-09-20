@@ -10,8 +10,8 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 
 <div align="center">
 
-![Views](https://img.shields.io/badge/Views-206-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
-![Downloads](https://img.shields.io/badge/Downloads-20-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
+![Views](https://img.shields.io/badge/Views-214-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
+![Downloads](https://img.shields.io/badge/Downloads-21-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
 ![Followers](https://img.shields.io/badge/Followers-0-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
 
 *Last updated: September 2026 · [Play on itch.io](https://ashu1997.itch.io/summer-nights)*
@@ -209,7 +209,7 @@ SummerNights-Godot/
 | SFX - Ice Hit | antonsoederberg (Freesound) | CC0 |
 | SFX - Shield Shatter | IgnasD (OpenGameArt) | CC0 |
 | SFX - Shield Materialize | bart (OpenGameArt) | CC0 |
-| SFX - Shield Deflection | Procedural Python Audio Synthesis | Open Source |
+| SFX - Shield Deflection | OpenGameArt | CC0 |
 | SFX - Seagull Ambiance | Half-Life | Mod Asset |
 | SFX - PS1 Style Synth Boot Audio | nihilanth217 (SampleFocus) | Standard License |
 | SFX - Heartbeat (Death's Door) | Wikimedia Commons | Public Domain |

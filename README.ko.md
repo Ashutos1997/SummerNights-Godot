@@ -10,8 +10,8 @@ Godot 4로 제작된 3D 아케이드 슈터. 태양을 식히기 전에 열기�
 
 <div align="center">
 
-![조회수](https://img.shields.io/badge/조회수-206-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
-![다운로드](https://img.shields.io/badge/다운로드-20-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
+![조회수](https://img.shields.io/badge/조회수-214-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
+![다운로드](https://img.shields.io/badge/다운로드-21-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
 ![팔로워](https://img.shields.io/badge/팔로워-0-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
 
 *마지막 업데이트: 2026년 9월 · [itch.io에서 플레이](https://ashu1997.itch.io/summer-nights)*
@@ -211,7 +211,7 @@ SummerNights-Godot/
 | SFX - 얼음 피격음 | antonsoederberg (Freesound) | CC0 |
 | SFX - 실드 파괴음 (Shield Shatter) | IgnasD (OpenGameArt) | CC0 |
 | SFX - 실드 생성음 (Shield Materialize) | bart (OpenGameArt) | CC0 |
-| SFX - 실드 튕김음 (Shield Deflection) | 절차적 파이썬 오디오 합성 (Procedural Python Audio Synthesis) | 오픈소스 (Open Source) |
+| SFX - 실드 튕김음 (Shield Deflection) | OpenGameArt | CC0 |
 | SFX - 갈매기 앰비언스 (Seagull Ambiance) | Half-Life | 모드 에셋 (Mod Asset) |
 | SFX - PS1 스타일 신스 부팅 오디오 (PS1 Style Synth Boot Audio) | nihilanth217 (SampleFocus) | 표준 라이선스 (Standard License) |
 | SFX - 심장 박동음 (죽음의 문턱) (Heartbeat - Death's Door) | Wikimedia Commons | 퍼블릭 도메인 (Public Domain) |
