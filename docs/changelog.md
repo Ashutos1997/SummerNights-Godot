@@ -6,7 +6,7 @@ All notable changes to the Summer Nights project will be documented in this file
 *(Note: This release corresponds to v1.5 on itch.io)*
 
 ### Added
-* Solar Flare Shield: In Endless Mode (Wave 15+), the Sun periodically generates a procedural energy shield that completely nullifies water damage. Players must actively use an Ice Blast to shatter the shield before resuming normal cooling.
+* Solar Flare Shield: In Endless Mode, appears exclusively on Boss Waves starting at Wave 15 (Waves 15, 20, 25, 30...), periodically generating a procedural energy shield that completely nullifies water damage. Players must actively use an Ice Blast to shatter the shield before resuming normal cooling.
 * Energy Shield Visuals & FX: Custom Fresnel pulse shader (`energy_shield.gdshader`) with subtle hexagonal tech patterning, elastic scale-up spawn animation, and outward 3D particle shatter bursts upon impact.
 * Shield Materialize SFX: Integrated dedicated CC0 energy shield spawn audio (`shield_spawn.wav` by bart) with subtle pitch randomization playing as the procedural shield materializes.
 * Shield Deflection FX & Audio: When spraying water at an active Solar Flare Shield, water droplets realistically bounce backward (`GPUParticles3D`), the shield renders expanding localized shockwave ripples in `energy_shield.gdshader`, a dedicated crisp hydro-repellent water deflection sound plays (`shield_deflect.wav` with authentic water splash impact and rapid-fire cadence throttling), and floating electric cyan `DEFLECTED` combat feedback appears.
@@ -222,7 +222,7 @@ All notable changes to the Summer Nights project will be documented in this file
 *(참고: 이 릴리스는 itch.io의 v1.5 버전에 해당합니다)*
 
 ### 추가됨 (Added)
-* 태양 플레어 실드: 무한 모드(웨이브 15 이상)에서 태양이 주기적으로 물 피해를 완전히 무효화하는 에너지 실드를 생성합니다. 플레이어는 반드시 얼음 폭발(Ice Blast)을 사용해 실드를 산산조각 내야만 다시 냉각할 수 있습니다.
+* 태양 플레어 실드: 무한 모드의 15웨이브 이상 보스 웨이브(15, 20, 25, 30웨이브...)에서 주기적으로 물 피해를 완전히 무효화하는 에너지 실드를 생성합니다. 플레이어는 반드시 얼음 폭발(Ice Blast)을 사용해 실드를 산산조각 내야만 다시 냉각할 수 있습니다.
 * 에너지 실드 비주얼 및 연출: 프레넬 펄스 및 육각형 테크 패턴 셰이더(`energy_shield.gdshader`), 탄성 있는 스케일업 생성 애니메이션, 파괴 시 외곽 3D 파티클 파편 연출 추가.
 * 실드 생성 SFX: 절차적 에너지 실드가 형성될 때 재생되는 미세 피치 랜덤화 적용 전용 CC0 생성 사운드(`shield_spawn.wav`, bart 제작) 적용.
 * 실드 튕김 연출 및 전용 SFX (Shield Deflection FX): 활성화된 태양 플레어 실드에 물을 분사할 때 물방울이 후방으로 튕겨 나가는 파티클(`GPUParticles3D`), 셰이더 국소 충격파 리플 링(`energy_shield.gdshader`), 연사 속도에 맞춘 전용 고품질 물 튕김(Hydro-Deflection) 사운드(`shield_deflect.wav`, 유리/금속 마찰음 배제 및 자연스러운 물방울 튀김 피드백 강화), 그리고 3D 청록색 `DEFLECTED` 전투 피드백 연출 추가.

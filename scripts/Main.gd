@@ -43,7 +43,7 @@ var heat_warning_tween: Tween
 
 # Shield Mechanic State
 var is_sun_shielded: bool = false
-var sun_shield_cooldown: float = 25.0
+var sun_shield_cooldown: float = 2.5
 var sun_shield_mesh: MeshInstance3D
 var shield_deflect_sfx: AudioStreamPlayer
 var shield_deflect_cooldown: float = 0.0
@@ -1905,7 +1905,8 @@ func _process(delta: float) -> void:
 		if sun_shield_mesh and sun_shield_mesh.material_override:
 			sun_shield_mesh.material_override.set_shader_parameter("hit_time", shield_ripple_time)
 	
-	if GameState.is_survival_mode and GameState.current_wave >= 15:
+	var is_boss_wave = (GameState.current_wave % 5 == 0)
+	if GameState.is_survival_mode and GameState.current_wave >= 15 and is_boss_wave:
 		if not is_sun_shielded:
 			sun_shield_cooldown -= delta
 			if sun_shield_cooldown <= 0.0:
@@ -1924,6 +1925,12 @@ func _process(delta: float) -> void:
 				if is_instance_valid(shield_spawn_sfx):
 					shield_spawn_sfx.pitch_scale = randf_range(0.98, 1.02)
 					shield_spawn_sfx.play()
+	else:
+		if is_sun_shielded:
+			is_sun_shielded = false
+			if sun_shield_mesh:
+				sun_shield_mesh.visible = false
+				sun_shield_mesh.scale = Vector3.ONE
 	
 	if game_over:
 		if is_instance_valid(shoot_loop_sfx):
@@ -3222,9 +3229,14 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				is_two_phase = true
 				phase2_triggered = false
 				phase2_heat = min(150.0, 80.0 + (GameState.current_wave * 5.0))
+				sun_shield_cooldown = 2.5 # Initial delay before shield deploys on boss wave
 			else:
 				is_two_phase = false
 				phase2_triggered = false
+				is_sun_shielded = false
+				if sun_shield_mesh:
+					sun_shield_mesh.visible = false
+					sun_shield_mesh.scale = Vector3.ONE
 			
 			wind_level_mult = min(2.5, 1.0 + (GameState.current_wave - 4) * 0.15)
 			if solar_wind_enabled and not prev_solar_wind:
