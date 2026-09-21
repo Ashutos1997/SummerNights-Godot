@@ -2,6 +2,9 @@
 
 All notable changes to the Summer Nights project will be documented in this file.
 
+## [v1.5.6] - WIP
+*(Note: This release corresponds to v1.6 on itch.io)*
+
 ## [v1.5.5] - 2026-09-22
 *(Note: This release corresponds to v1.5 on itch.io)*
 
@@ -214,6 +217,9 @@ All notable changes to the Summer Nights project will be documented in this file
 * Accessibility: English/Korean localization, Reduce Motion setting.
 
 ---
+
+## [v1.5.6] - WIP
+*(참고: 이 릴리스는 itch.io의 v1.6 버전에 해당합니다)*
 
 ## [v1.5.5] - 2026-09-22
 *(참고: 이 릴리스는 itch.io의 v1.5 버전에 해당합니다)*
