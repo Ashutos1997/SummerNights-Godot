@@ -6,25 +6,20 @@ All notable changes to the Summer Nights project will be documented in this file
 *(Note: This release corresponds to v1.5 on itch.io)*
 
 ### Added
-* Solar Flare Shield: In Endless Mode, appears exclusively on Boss Waves starting at Wave 15 (Waves 15, 20, 25, 30...), periodically generating a procedural energy shield that completely nullifies water damage. Players must actively use an Ice Blast to shatter the shield before resuming normal cooling.
-* Energy Shield Visuals & FX: Custom Fresnel pulse shader (`energy_shield.gdshader`) with subtle hexagonal tech patterning, elastic scale-up spawn animation, and outward 3D particle shatter bursts upon impact.
-* Shield Materialize SFX: Integrated dedicated CC0 energy shield spawn audio (`shield_spawn.wav` by bart) with subtle pitch randomization playing as the procedural shield materializes.
-* Shield Deflection FX & Audio: When spraying water at an active Solar Flare Shield, water droplets realistically bounce backward (`GPUParticles3D`), the shield renders expanding localized shockwave ripples in `energy_shield.gdshader`, a dedicated crisp hydro-repellent water deflection sound plays (`shield_deflect.wav` with authentic water splash impact and rapid-fire cadence throttling), and floating electric cyan `DEFLECTED` combat feedback appears.
-* Shield Shatter Tactical Prompt: Added a bilingual combat reminder and HUD Ice Burst meter flash prompting players to press `[R]` to shatter the shield when spraying it continuously for >0.6s.
-* Shield Shatter SFX: Integrated dedicated CC0 high-impact shatter audio (`shield_break.ogg` by IgnasD) with subtle pitch randomization and hit-stop screen shake.
-* Custom "Made with Godot" Boot Splash: Replaced engine stock grey/blue boot splash with a bespoke dark void (`#05030d`) with subtle ambient radial backlight, progressive golden border drawing with quad deceleration, official monochrome Godot Engine logo with vertically centered hairline wing dividers and 36px gold header, synchronized PS1 synth audio swell (`ps1_startup.wav`), slow camera push-in drift, and a silky curtain reveal with staggered cubic menu entrance that blooms into the 3D beach sunset.
+* Solar Flare Shield: Procedural boss shield on Endless Wave 15+ that nullifies water damage until shattered with Ice Blast (`[R]`).
+* Shield Visuals & Audio: Custom Fresnel pulse shader, impact ripples, deflection sparks, bouncing water droplets, and CC0 shatter/materialize SFX.
+* Shield Tactical Cue: Bilingual prompt and HUD meter flash alerting players to shatter the shield with Ice Blast.
+* Custom Boot Splash: Bespoke "Made with Godot" intro with golden frame drawing, monochrome Godot logo, PS1 synth swell, and curtain bloom.
 
 ### Improved
-* Late-Game Balance: Implemented hard caps for player buffs (Cooling Power at 3.5x, Crit Damage at 3.0x) to prevent infinite power scaling in Endless Mode.
-* Perk Scaling Safety Bounds: Added comprehensive balance clamps for all drafted perks in late Endless waves (Heat Resistance clamped to max 60%, Sun Sway floored at 40% speed, Water Tank bounded between 50%-250%, and Catastrom charge floored at 40%), ensuring deep runs remain tense and skill-driven without game-breaking exploits or excessive penalties.
-* Water Soft Resistance: Introduced diminishing returns against continuous water damage at Wave 100+ to combat endless trigger-holding scaling.
-* Sun Scaling: Increased the Sun's max heat regeneration cap to 45.0 (from 25.0) and extended scaling up to Wave 50.
-* Sun Movement: Reduced max sway speed (from 2.0 to 1.2) and increased max sway amplitude (from 8.0 to 12.0) to make the Sun glide in wide, evasive arcs rather than jittering frantically at high waves.
-* Credits Synchronization: Fully aligned in-game HUD Credits Screen with README documentation in both English and Korean, adding official Godot Engine monochrome logo & branding attributions (Andrea Calabró / Godot Foundation, CC BY 4.0), custom Boot Splash procedural animation credits, and full 1:1 bilingual translations across all audio, 3D models, textures, shaders, and procedural systems.
+* Stat Hard Caps: Clamped player Cooling Power (3.5x) and Crit Damage (3.0x) to prevent runaway scaling in Endless Mode.
+* Perk Scaling Safety: Added upper and lower safety bounds across all drafting perks to keep deep runs challenging and exploit-free.
+* Late Wave Scaling: Added soft water resistance at Wave 100+, raised Sun heat regen ceiling to 45.0, and tuned sway amplitude.
+* HUD Credits Sync: Aligned in-game credits screen 1:1 with README attributions in both English and Korean.
 
 ### Fixed
-* Wave 1 Resource HUD Clutter: Fixed Ice Burst and Catastrom gauges being visible on Wave 1 of Endless Mode before either ability is unlocked. Ice Burst now correctly unlocks on Wave 2 (unless starting with bonus charges) and Catastrom unlocks on Wave 4 with a dedicated toast notification, matching Campaign progression.
-* Catastrom Gating: Gated Catastrom meter charge accumulation and key activation so charge cannot build up prior to Wave 4 / Level 4.
+* HUD Meter Gating: Hidden Ice Blast and Catastrom meters on Wave 1 until naturally unlocked at Waves 2 and 4.
+* Catastrom Lock: Prevented early charge accumulation and activation before reaching Wave 4 / Level 4.
 
 ## [v1.5.4] - 2026-09-16
 *(Note: This release corresponds to v1.4 on itch.io)*
@@ -224,25 +219,20 @@ All notable changes to the Summer Nights project will be documented in this file
 *(참고: 이 릴리스는 itch.io의 v1.5 버전에 해당합니다)*
 
 ### 추가됨 (Added)
-* 태양 플레어 실드: 무한 모드의 15웨이브 이상 보스 웨이브(15, 20, 25, 30웨이브...)에서 주기적으로 물 피해를 완전히 무효화하는 에너지 실드를 생성합니다. 플레이어는 반드시 얼음 폭발(Ice Blast)을 사용해 실드를 산산조각 내야만 다시 냉각할 수 있습니다.
-* 에너지 실드 비주얼 및 연출: 프레넬 펄스 및 육각형 테크 패턴 셰이더(`energy_shield.gdshader`), 탄성 있는 스케일업 생성 애니메이션, 파괴 시 외곽 3D 파티클 파편 연출 추가.
-* 실드 생성 SFX: 절차적 에너지 실드가 형성될 때 재생되는 미세 피치 랜덤화 적용 전용 CC0 생성 사운드(`shield_spawn.wav`, bart 제작) 적용.
-* 실드 튕김 연출 및 전용 SFX (Shield Deflection FX): 활성화된 태양 플레어 실드에 물을 분사할 때 물방울이 후방으로 튕겨 나가는 파티클(`GPUParticles3D`), 셰이더 국소 충격파 리플 링(`energy_shield.gdshader`), 연사 속도에 맞춘 전용 고품질 물 튕김(Hydro-Deflection) 사운드(`shield_deflect.wav`, 유리/금속 마찰음 배제 및 자연스러운 물방울 튀김 피드백 강화), 그리고 3D 청록색 `DEFLECTED` 전투 피드백 연출 추가.
-* 실드 파괴 전술 알림 (Shield Shatter Tactical Prompt): 실드에 0.6초 이상 연속으로 물을 분사할 경우 플레이어가 즉각 인지할 수 있도록 `[R]` 아이스 버스트 게이지 점멸 및 다국어 전술 토스트 알림 연동.
-* 실드 파괴 SFX: 미세 피치 랜덤화 및 히트스톱 화면 흔들림과 결합된 전용 CC0 고품질 파괴 사운드(`shield_break.ogg`, IgnasD 제작) 적용.
-* 커스텀 "Made with Godot" 부트 스플래시 화면: 기본 엔진의 회색/파란색 스플래시를 게임 배경과 동일한 다크 보이드(`#05030d`) 및 은은한 앰버/골드 래디얼 백라이트로 교체하여 브랜딩 중 3D 배경 노출을 완벽히 차단하고, 감속 감쇠가 적용된 골드 테두리 드로잉, 공식 모노크롬 고도 엔진 로고 및 수직 중앙 정렬된 윙 디바이더와 36px 골드 텍스트, PS1 신스 오디오 스웰(`ps1_startup.wav`), 시네마틱 슬로우 줌 연출, 그리고 암전 커튼이 부드럽게 걷히며 3D 해변 일몰과 타이틀 메뉴가 단계적으로 우아하게 등장하는 시네마틱 커튼 리빌 연출 추가.
+* 태양 플레어 실드: 무한 모드 15웨이브 이상 보스에 등장하며, 얼음 폭발(`[R]`)로 파괴하기 전까지 물 피해를 완전 무효화하는 에너지 실드 추가.
+* 실드 비주얼 및 오디오: 프레넬 펄스 셰이더, 물방울 튕김 파티클, 충격 리플 및 전용 생성/파괴 효과음 적용.
+* 실드 전술 알림: 실드 피격 시 아이스 버스트 게이지 점멸 및 파괴 유도 다국어 토스트 알림 추가.
+* 커스텀 부트 스플래시: 골드 프레임 드로잉, 모노크롬 고도 엔진 로고, PS1 신스 사운드 및 커튼 리빌 연출을 갖춘 인트로 화면 추가.
 
 ### 개선됨 (Improved)
-* 후반부 밸런스: 무한 모드에서 무한한 파워 스케일링을 방지하기 위해 플레이어 버프에 하드 캡(냉각력 3.5배, 치명타 피해 3.0배)을 적용.
-* 퍽 스케일링 안전 경계 (Perk Safety Bounds): 후반 무한 모드에서 퍽 중첩으로 인한 밸런스 붕괴를 방지하기 위해 모든 특성에 균형 잡힌 상/하한선 적용 (열 저항 최대 60% 제한, 태양 흔들림 최소 40% 속도 보장, 물탱크 용량 50%~250% 제한, 카타스트롬 충전 속도 최소 40% 보장).
-* 물 피해 소프트 저항: 무한 모드의 단순 사격 플레이를 막기 위해 웨이브 100부터 지속 물 피해에 대해 점진적인 저항을 도입.
-* 태양 스케일링: 태양의 최대 열기 재생 상한을 45.0(기존 25.0)으로 늘리고 스케일링을 웨이브 50까지 연장.
-* 태양 움직임: 고열 웨이브에서 태양이 요동치지 않고 넓게 피하도록 최대 흔들림 속도를 1.2로 줄이고 진폭을 12.0으로 증가.
-* 크레딧 동기화 (Credits Synchronization): 게임 내 HUD 크레딧 화면을 README 문서와 완벽히 1:1로 일치시켰으며, 공식 고도 엔진 모노크롬 로고 및 브랜딩 저작권 표기(Andrea Calabró / Godot Foundation, CC BY 4.0), 커스텀 부트 스플래시 절차적 연출 크레딧을 추가하고 모든 오디오, 3D 모델, 텍스처, 셰이더 및 절차적 시스템에 걸쳐 한국어/영어 번역을 완벽하게 지원하도록 개선.
+* 능력치 하드 캡: 무한 모드 밸런스 붕괴를 방지하기 위해 냉각력(3.5배) 및 치명타 피해(3.0배) 상한선 적용.
+* 퍽 스케일링 안전 경계: 후반 무한 모드에서 모든 특성에 상·하한선을 두어 익스플로잇 방지 및 긴장감 유지.
+* 후반 웨이브 스케일링: 100웨이브 이후 물 소프트 저항 도입, 태양 최대 열기 재생 상한 상향(45.0), 흔들림 진폭 최적화.
+* 크레딧 동기화: 게임 내 크레딧 화면을 README 문서와 1:1로 일치시키고 다국어 표기 보강.
 
 ### 수정됨 (Fixed)
-* 웨이브 1 자원 HUD 표시 오류: 무한 모드 1웨이브에서 능력이 아직 해금되지 않았음에도 아이스 버스트와 카타스트롬 게이지가 표시되던 문제 수정. 이제 캠페인 진행도와 동일하게 아이스 버스트는 2웨이브에(보너스 충전량이 없는 경우), 카타스트롬은 4웨이브에 전용 해금 토스트 알림과 함께 정상 해금됩니다.
-* 카타스트롬 잠금 제어: 4웨이브 / 레벨 4 이전에는 카타스트롬 충전량이 누적되거나 발동되지 않도록 제어 조건 추가.
+* 자원 HUD 표시 오류: 무한 모드 1웨이브에서 아직 미해금된 아이스 버스트 및 카타스트롬 게이지가 보이던 문제 수정.
+* 카타스트롬 잠금 제어: 4웨이브 / 레벨 4 이전에는 게이지 충전 및 스킬 발동이 되지 않도록 수정.
 
 ## [v1.5.4] - 2026-09-16
 *(참고: 이 릴리스는 itch.io의 v1.4 버전에 해당합니다)*
