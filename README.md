@@ -178,7 +178,7 @@ SummerNights-Godot/
 0% Generative AI. All assets are hand-crafted, CC0 open-source, or procedural GDScript.
 
 ### Core Team
-*   **Ashutos1997** - Product Design & Direction
+*   **Ash J** - Product Design & Direction
 *   **Ivy** - UI & Visual Designer
 
 ### Special Thanks

@@ -1334,7 +1334,7 @@ func _apply_language(lang: String) -> void:
 			if hdr_special: hdr_special.text = "특별한 감사" if is_kr else "SPECIAL THANKS"
 
 			var itm_core1 = credits_list.get_node_or_null("ItmCore1")
-			if itm_core1: itm_core1.text = "Ashutos1997  ·  게임 기획 및 디렉션" if is_kr else "Ashutos1997  ·  Product Design & Direction"
+			if itm_core1: itm_core1.text = "Ash J  ·  게임 기획 및 디렉션" if is_kr else "Ash J  ·  Product Design & Direction"
 			var itm_core2 = credits_list.get_node_or_null("ItmCore2")
 			if itm_core2: itm_core2.text = "Ivy  ·  UI 및 시각 디자인" if is_kr else "Ivy  ·  UI & Visual Designer"
 			var itm_special1 = credits_list.get_node_or_null("ItmSpecial1")
