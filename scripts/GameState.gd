@@ -280,7 +280,7 @@ const WEAPONS = {
 		"unlock_achievement": "arcade_legend"
 	}
 }
-
+var has_shown_splash: bool = false
 var current_weapon_id: String = "standard"
 var level: int = 1
 var sfx_volume: float = 1.0

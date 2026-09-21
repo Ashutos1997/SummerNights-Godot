@@ -59,6 +59,7 @@ This document serves as the master record for all currently implemented features
 * **Crosshairs:** Dynamic diegetic crosshairs for each weapon that track water capacity visually.
 * **Achievements & Buffs:** In-game achievement tracking with dedicated status readouts (mini gold progress bars and numerical counters for locked achievements, completion badges for unlocked ones) that unlocks permanent buffs and tracks lifetime stats.
 * **Menus:** Unified golden borders, 96px margins, centered/left-aligned layouts, and full Gamepad navigation.
+* **Custom "Made with Godot" Boot Splash:** Bespoke startup sequence featuring a seamless dark engine boot (`#05030d`), an isolated dark void hiding in-game 3D assets during branding, progressive golden vector border drawing, official monochrome Godot Engine logo with letter-tracked gold header, synchronized PS1 synth swell audio (`ps1_startup.wav`), and a dramatic curtain reveal that unveils the 3D beach sunset as the title menu slides in.
 * **Accessibility:** Full Xbox Controller support with haptics/aim-assist, "Reduce Motion" setting, and EN/KR localization.
 
 ## 8. Audio

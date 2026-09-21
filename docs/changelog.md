@@ -12,6 +12,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Shield Deflection FX & Audio: When spraying water at an active Solar Flare Shield, water droplets realistically bounce backward (`GPUParticles3D`), the shield renders expanding localized shockwave ripples in `energy_shield.gdshader`, a dedicated crisp hydro-repellent water deflection sound plays (`shield_deflect.wav` with authentic water splash impact and rapid-fire cadence throttling), and floating electric cyan `DEFLECTED` combat feedback appears.
 * Shield Shatter Tactical Prompt: Added a bilingual combat reminder and HUD Ice Burst meter flash prompting players to press `[R]` to shatter the shield when spraying it continuously for >0.6s.
 * Shield Shatter SFX: Integrated dedicated CC0 high-impact shatter audio (`shield_break.ogg` by IgnasD) with subtle pitch randomization and hit-stop screen shake.
+* Custom "Made with Godot" Boot Splash: Replaced engine stock grey/blue boot splash with a bespoke dark void (`#05030d`) with subtle ambient radial backlight, progressive golden border drawing with quad deceleration, official monochrome Godot Engine logo with vertically centered hairline wing dividers and 36px gold header, synchronized PS1 synth audio swell (`ps1_startup.wav`), slow camera push-in drift, and a silky curtain reveal with staggered cubic menu entrance that blooms into the 3D beach sunset.
 
 ### Improved
 * Late-Game Balance: Implemented hard caps for player buffs (Cooling Power at 3.5x, Crit Damage at 3.0x) to prevent infinite power scaling in Endless Mode.
@@ -228,6 +229,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 실드 튕김 연출 및 전용 SFX (Shield Deflection FX): 활성화된 태양 플레어 실드에 물을 분사할 때 물방울이 후방으로 튕겨 나가는 파티클(`GPUParticles3D`), 셰이더 국소 충격파 리플 링(`energy_shield.gdshader`), 연사 속도에 맞춘 전용 고품질 물 튕김(Hydro-Deflection) 사운드(`shield_deflect.wav`, 유리/금속 마찰음 배제 및 자연스러운 물방울 튀김 피드백 강화), 그리고 3D 청록색 `DEFLECTED` 전투 피드백 연출 추가.
 * 실드 파괴 전술 알림 (Shield Shatter Tactical Prompt): 실드에 0.6초 이상 연속으로 물을 분사할 경우 플레이어가 즉각 인지할 수 있도록 `[R]` 아이스 버스트 게이지 점멸 및 다국어 전술 토스트 알림 연동.
 * 실드 파괴 SFX: 미세 피치 랜덤화 및 히트스톱 화면 흔들림과 결합된 전용 CC0 고품질 파괴 사운드(`shield_break.ogg`, IgnasD 제작) 적용.
+* 커스텀 "Made with Godot" 부트 스플래시 화면: 기본 엔진의 회색/파란색 스플래시를 게임 배경과 동일한 다크 보이드(`#05030d`) 및 은은한 앰버/골드 래디얼 백라이트로 교체하여 브랜딩 중 3D 배경 노출을 완벽히 차단하고, 감속 감쇠가 적용된 골드 테두리 드로잉, 공식 모노크롬 고도 엔진 로고 및 수직 중앙 정렬된 윙 디바이더와 36px 골드 텍스트, PS1 신스 오디오 스웰(`ps1_startup.wav`), 시네마틱 슬로우 줌 연출, 그리고 암전 커튼이 부드럽게 걷히며 3D 해변 일몰과 타이틀 메뉴가 단계적으로 우아하게 등장하는 시네마틱 커튼 리빌 연출 추가.
 
 ### 개선됨 (Improved)
 * 후반부 밸런스: 무한 모드에서 무한한 파워 스케일링을 방지하기 위해 플레이어 버프에 하드 캡(냉각력 3.5배, 치명타 피해 3.0배)을 적용.

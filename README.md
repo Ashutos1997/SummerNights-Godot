@@ -200,6 +200,7 @@ SummerNights-Godot/
 | Font - Galmuri11 (Korean Support) | quiple | SIL OFL |
 | UI Pack Adventure | Kenney | CC0 |
 | Controller SVGs | Oscar Nilsson | CC0 |
+| Godot Engine Logo & Branding | Andrea Calabró (Godot Foundation) | CC BY 4.0 |
 | Menu & Achievement Icons | Game-icons.net | CC BY 3.0 |
 | HUD Meter Icons | Yudhi Restu Pebriyanto, Jaya99, balyanbinmalkan (Noun Project) | CC BY 3.0 |
 | SFX - 40 CC0 Water/Splash/Slime | OpenGameArt | CC0 |

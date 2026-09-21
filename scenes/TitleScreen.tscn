@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://c8b7f2a1e4d5"]
+[gd_scene load_steps=6 format=3 uid="uid://c8b7f2a1e4d5"]
 
 [ext_resource type="Script" path="res://scripts/TitleScreen.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://d3qapm043hdk7" path="res://assets/ui/splash/logo_large_monochrome_dark.png" id="2_godot_logo"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_border"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -13,6 +14,18 @@ corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
+
+[sub_resource type="Gradient" id="Gradient_glow"]
+offsets = PackedFloat32Array(0, 0.45, 1)
+colors = PackedColorArray(1, 0.72, 0.2, 0.09, 1, 0.58, 0.14, 0.03, 0.02, 0.01, 0.05, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_glow"]
+gradient = SubResource("Gradient_glow")
+width = 480
+height = 480
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
 
 [node name="TitleScreen" type="Control"]
 layout_mode = 3
@@ -203,6 +216,106 @@ text = "KR"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="SplashContainer" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="SplashBG" type="ColorRect" parent="SplashContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.02, 0.01, 0.05, 1)
+
+[node name="SplashBorderDrawer" type="Control" parent="SplashContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+[node name="RadialGlow" type="TextureRect" parent="SplashContainer"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -240.0
+offset_right = 240.0
+offset_bottom = 240.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(240, 240)
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_glow")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SplashCenter" type="VBoxContainer" parent="SplashContainer"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -120.0
+offset_right = 250.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(250, 120)
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="MadeWithRow" type="HBoxContainer" parent="SplashContainer/SplashCenter"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="LeftWing" type="ColorRect" parent="SplashContainer/SplashCenter/MadeWithRow"]
+custom_minimum_size = Vector2(20, 2)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+color = Color(1, 0.85, 0.2, 0.4)
+
+[node name="MadeWithLabel" type="Label" parent="SplashContainer/SplashCenter/MadeWithRow"]
+layout_mode = 2
+text = "M A D E   W I T H"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RightWing" type="ColorRect" parent="SplashContainer/SplashCenter/MadeWithRow"]
+custom_minimum_size = Vector2(20, 2)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+color = Color(1, 0.85, 0.2, 0.4)
+
+[node name="GodotLogo" type="TextureRect" parent="SplashContainer/SplashCenter"]
+custom_minimum_size = Vector2(400, 162)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("2_godot_logo")
+expand_mode = 1
+stretch_mode = 5
+
+
 [node name="BorderPanel" type="Panel" parent="."]
 layout_mode = 1
 anchors_preset = 15
@@ -216,3 +329,5 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_border")
+
+

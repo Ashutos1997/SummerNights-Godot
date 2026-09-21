@@ -52,7 +52,7 @@ Designed to minimize clutter while keeping survival info in the player's periphe
 * **FiltersScreen:** Mutually exclusive post-processing options (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
 * **ControllerScreen:** Sliding toggle between Keyboard and Xbox layouts.
 * **WeaponWheel (`TAB`):** Slows time to 0.2x. Draws procedural wedges for 5 weapons with subtle 4px drop shadows matching global HUD visor depth and plays button hover tick audio on selection. Hazard timers pause while open.
-* **TitleScreen:** Main menu with a 4-second PS1 synth boot animation. Includes Quit confirmation, Lifetime Stats, and Achievement progress list.
+* **TitleScreen:** Main menu featuring custom "Made with Godot" boot splash with isolated void presentation, progressive golden frame tracing, monochrome engine branding, synchronized PS1 synth boot audio, cinematic curtain reveal, Quit confirmation, Lifetime Stats, and Achievement progress list.
 * **End State Screens:** Win, End, and Lose screens. Lose screen is centered to emphasize the Supernova cinematic.
 
 ---
