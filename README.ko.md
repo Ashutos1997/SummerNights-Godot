@@ -10,9 +10,9 @@ Godot 4로 제작된 3D 아케이드 슈터. 태양을 식히기 전에 열기�
 
 <div align="center">
 
-![조회수](https://img.shields.io/badge/조회수-214-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
-![다운로드](https://img.shields.io/badge/다운로드-21-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
-![팔로워](https://img.shields.io/badge/팔로워-0-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
+![조회수](https://img.shields.io/badge/조회수-217-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
+![다운로드](https://img.shields.io/badge/다운로드-22-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
+![팔로워](https://img.shields.io/badge/팔로워-1-blue?style=flat-square&logo=itchdotio&logoColor=white&color=FA5C5C)
 
 *마지막 업데이트: 2026년 9월 · [itch.io에서 플레이](https://ashu1997.itch.io/summer-nights)*
 
