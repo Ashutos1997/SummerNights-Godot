@@ -20,6 +20,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Water Soft Resistance: Introduced diminishing returns against continuous water damage at Wave 100+ to combat endless trigger-holding scaling.
 * Sun Scaling: Increased the Sun's max heat regeneration cap to 45.0 (from 25.0) and extended scaling up to Wave 50.
 * Sun Movement: Reduced max sway speed (from 2.0 to 1.2) and increased max sway amplitude (from 8.0 to 12.0) to make the Sun glide in wide, evasive arcs rather than jittering frantically at high waves.
+* Credits Synchronization: Fully aligned in-game HUD Credits Screen with README documentation in both English and Korean, adding official Godot Engine monochrome logo & branding attributions (Andrea Calabró / Godot Foundation, CC BY 4.0), custom Boot Splash procedural animation credits, and full 1:1 bilingual translations across all audio, 3D models, textures, shaders, and procedural systems.
 
 ### Fixed
 * Wave 1 Resource HUD Clutter: Fixed Ice Burst and Catastrom gauges being visible on Wave 1 of Endless Mode before either ability is unlocked. Ice Burst now correctly unlocks on Wave 2 (unless starting with bonus charges) and Catastrom unlocks on Wave 4 with a dedicated toast notification, matching Campaign progression.
@@ -237,6 +238,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 물 피해 소프트 저항: 무한 모드의 단순 사격 플레이를 막기 위해 웨이브 100부터 지속 물 피해에 대해 점진적인 저항을 도입.
 * 태양 스케일링: 태양의 최대 열기 재생 상한을 45.0(기존 25.0)으로 늘리고 스케일링을 웨이브 50까지 연장.
 * 태양 움직임: 고열 웨이브에서 태양이 요동치지 않고 넓게 피하도록 최대 흔들림 속도를 1.2로 줄이고 진폭을 12.0으로 증가.
+* 크레딧 동기화 (Credits Synchronization): 게임 내 HUD 크레딧 화면을 README 문서와 완벽히 1:1로 일치시켰으며, 공식 고도 엔진 모노크롬 로고 및 브랜딩 저작권 표기(Andrea Calabró / Godot Foundation, CC BY 4.0), 커스텀 부트 스플래시 절차적 연출 크레딧을 추가하고 모든 오디오, 3D 모델, 텍스처, 셰이더 및 절차적 시스템에 걸쳐 한국어/영어 번역을 완벽하게 지원하도록 개선.
 
 ### 수정됨 (Fixed)
 * 웨이브 1 자원 HUD 표시 오류: 무한 모드 1웨이브에서 능력이 아직 해금되지 않았음에도 아이스 버스트와 카타스트롬 게이지가 표시되던 문제 수정. 이제 캠페인 진행도와 동일하게 아이스 버스트는 2웨이브에(보너스 충전량이 없는 경우), 카타스트롬은 4웨이브에 전용 해금 토스트 알림과 함께 정상 해금됩니다.

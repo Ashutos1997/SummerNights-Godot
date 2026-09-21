@@ -2205,6 +2205,14 @@ theme_override_font_sizes/font_size = 12
 text = "Godot 4.7  ·  GDScript  ·  Forward+"
 horizontal_alignment = 1
 
+[node name="ItmEngineLogo" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "Godot Engine Logo & Branding  ·  Andrea Calabró (Godot Foundation)  ·  CC BY 4.0"
+horizontal_alignment = 1
+
 [node name="HdrUI" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
 layout_mode = 2
 mouse_filter = 2
@@ -2412,6 +2420,14 @@ mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.85)
 theme_override_font_sizes/font_size = 12
 text = "VFX - Solar Flare Shield  ·  Procedural Fresnel Shader & Particles"
+horizontal_alignment = 1
+
+[node name="ItmBootSplash" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "Boot Splash Frame & Curtain Reveal  ·  Procedural CanvasItem Drawing & Vector Animation  ·  -"
 horizontal_alignment = 1
 
 [node name="SpacerDisclaimer" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]

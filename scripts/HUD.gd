@@ -1339,9 +1339,33 @@ func _apply_language(lang: String) -> void:
 			if itm_core2: itm_core2.text = "Ivy  ·  UI 및 시각 디자인" if is_kr else "Ivy  ·  UI & Visual Designer"
 			var itm_special1 = credits_list.get_node_or_null("ItmSpecial1")
 			if itm_special1: itm_special1.text = "Yodi (요디님) & 카카오톡 디자인 클럽  ·  초기 콘셉트 영감 제공" if is_kr else "Yodi (요디님) & Kakao based Design Club  ·  Original Concept Inspiration"
-			var itm_ui1d = credits_list.get_node_or_null("ItmUI1d")
-			if itm_ui1d: itm_ui1d.text = "HUD 미터 아이콘  ·  Yudhi Restu Pebriyanto, Jaya99, balyanbinmalkan (Noun Project)  ·  CC BY 3.0" if is_kr else "HUD Meter Icons  ·  Yudhi Restu Pebriyanto, Jaya99, balyanbinmalkan (Noun Project)  ·  CC BY 3.0"
 
+			var itm_3d1 = credits_list.get_node_or_null("Itm3D1")
+			if itm_3d1: itm_3d1.text = "3D 총기 모델 (3D Blaster)  ·  Kenney  ·  CC0" if is_kr else "3D Blaster (Gun Model)  ·  Kenney  ·  CC0"
+			var itm_3d2 = credits_list.get_node_or_null("Itm3D2")
+			if itm_3d2: itm_3d2.text = "3D 태양 모델 (PS1 Style Low Poly Sun)  ·  albert_buscio (Sketchfab)  ·  CC0" if is_kr else "PS1 Style Low Poly Sun  ·  albert_buscio (Sketchfab)  ·  CC0"
+
+			var itm_tex1 = credits_list.get_node_or_null("ItmTextures1")
+			if itm_tex1: itm_tex1.text = "모래 텍스처 (Coast Sand 01)  ·  Poly Haven  ·  CC0" if is_kr else "Coast Sand 01  ·  Poly Haven  ·  CC0"
+
+			var itm_audio1 = credits_list.get_node_or_null("ItmAudio1")
+			if itm_audio1: itm_audio1.text = "SFX - 물총 발사음  ·  belanhud (Freesound)  ·  CC0" if is_kr else "SFX - Water Gun Shot  ·  belanhud (Freesound)  ·  CC0"
+			var itm_audio2 = credits_list.get_node_or_null("ItmAudio2")
+			if itm_audio2: itm_audio2.text = "SFX - 40가지 CC0 물/물결 효과음  ·  OpenGameArt  ·  CC0" if is_kr else "SFX - 40 CC0 Water SFX  ·  OpenGameArt  ·  CC0"
+			var itm_audio3 = credits_list.get_node_or_null("ItmAudio3")
+			if itm_audio3: itm_audio3.text = "SFX - UI 오디오 팩  ·  Kenney  ·  CC0" if is_kr else "SFX - UI Audio Pack  ·  Kenney  ·  CC0"
+			var itm_audio4 = credits_list.get_node_or_null("ItmAudio4")
+			if itm_audio4: itm_audio4.text = "SFX - 갈매기 앰비언스  ·  Half-Life  ·  모드 에셋" if is_kr else "SFX - Seagull Ambiance  ·  Half-Life  ·  Mod Asset"
+			var itm_audio5 = credits_list.get_node_or_null("ItmAudio5")
+			if itm_audio5: itm_audio5.text = "SFX - 카타스트롬 덩크  ·  Dual Mare Capsem Sound  ·  공정 이용 (팬 프로젝트)" if is_kr else "SFX - Catastrom Dunk  ·  Dual Mare Capsem Sound  ·  Fair Use (Fan Project)"
+			var itm_audio6 = credits_list.get_node_or_null("ItmAudio6")
+			if itm_audio6: itm_audio6.text = "SFX - PS1 스타일 신스 부팅 오디오  ·  nihilanth217 (SampleFocus)  ·  표준 라이선스" if is_kr else "SFX - PS1 Style Synth Boot Audio  ·  nihilanth217 (SampleFocus)  ·  Standard License"
+			var itm_audio7 = credits_list.get_node_or_null("ItmAudio7")
+			if itm_audio7: itm_audio7.text = "SFX - 초신성 충돌 오디오 (안전 배포용)  ·  Uzbazur (Freesound)  ·  CC0" if is_kr else "SFX - Supernova Impact Audio (Safe Export)  ·  Uzbazur (Freesound)  ·  CC0"
+			var itm_audio8 = credits_list.get_node_or_null("ItmAudio8")
+			if itm_audio8: itm_audio8.text = "SFX - 심장 박동음 (죽음의 문턱)  ·  Wikimedia Commons  ·  퍼블릭 도메인" if is_kr else "SFX - Heartbeat (Death's Door)  ·  Wikimedia Commons  ·  Public Domain"
+			var itm_audio9 = credits_list.get_node_or_null("ItmAudio9")
+			if itm_audio9: itm_audio9.text = "SFX - 빈 탱크 클릭음  ·  절차적 파이썬 스크립트 합성  ·  오픈소스" if is_kr else "SFX - Empty Tank Click  ·  Procedural Python Script Synthesis  ·  Open Source"
 			var itm_audio10 = credits_list.get_node_or_null("ItmAudio10")
 			if itm_audio10: itm_audio10.text = "SFX - 얼음 발사음  ·  urupin (Freesound)  ·  CC0" if is_kr else "SFX - Ice Shoot  ·  urupin (Freesound)  ·  CC0"
 			var itm_audio11 = credits_list.get_node_or_null("ItmAudio11")
@@ -1355,6 +1379,47 @@ func _apply_language(lang: String) -> void:
 			var itm_audio15 = credits_list.get_node_or_null("ItmAudio15")
 			if itm_audio15: itm_audio15.text = "SFX - 실드 튕김음  ·  OpenGameArt  ·  CC0" if is_kr else "SFX - Shield Deflection  ·  OpenGameArt  ·  CC0"
 
+			var itm_engine_logo = credits_list.get_node_or_null("ItmEngineLogo")
+			if itm_engine_logo: itm_engine_logo.text = "고도 엔진 로고 및 브랜딩  ·  Andrea Calabró (Godot Foundation)  ·  CC BY 4.0" if is_kr else "Godot Engine Logo & Branding  ·  Andrea Calabró (Godot Foundation)  ·  CC BY 4.0"
+
+			var itm_ui1 = credits_list.get_node_or_null("ItmUI1")
+			if itm_ui1: itm_ui1.text = "UI Pack Adventure  ·  Kenney  ·  CC0" if is_kr else "Kenney UI Pack Adventure  ·  kenney.nl  ·  CC0"
+			var itm_ui1b = credits_list.get_node_or_null("ItmUI1b")
+			if itm_ui1b: itm_ui1b.text = "메뉴 및 업적 아이콘  ·  Game-icons.net  ·  CC BY 3.0" if is_kr else "Menu & Achievement Icons  ·  Game-icons.net  ·  CC BY 3.0"
+			var itm_ui1c = credits_list.get_node_or_null("ItmUI1c")
+			if itm_ui1c: itm_ui1c.text = "컨트롤러 SVGs  ·  Oscar Nilsson  ·  CC0" if is_kr else "Controller SVGs  ·  Oscar Nilsson  ·  CC0"
+			var itm_ui1d = credits_list.get_node_or_null("ItmUI1d")
+			if itm_ui1d: itm_ui1d.text = "HUD 미터 아이콘  ·  Yudhi Restu Pebriyanto, Jaya99, balyanbinmalkan (Noun Project)  ·  CC BY 3.0" if is_kr else "HUD Meter Icons  ·  Yudhi Restu Pebriyanto, Jaya99, balyanbinmalkan (Noun Project)  ·  CC BY 3.0"
+			var itm_ui2 = credits_list.get_node_or_null("ItmUI2")
+			if itm_ui2: itm_ui2.text = "폰트 - Kenney Future  ·  Kenney  ·  CC0" if is_kr else "Kenney Future Font  ·  kenney.nl  ·  CC0"
+			var itm_ui3 = credits_list.get_node_or_null("ItmUI3")
+			if itm_ui3: itm_ui3.text = "한국어 폰트 - Galmuri11  ·  quiple  ·  SIL OFL" if is_kr else "Galmuri11 (Korean Font)  ·  quiple  ·  SIL OFL"
+			var itm_ui3b = credits_list.get_node_or_null("ItmUI3b")
+			if itm_ui3b: itm_ui3b.text = "영어 본문 폰트 - Inter  ·  Rasmus Andersson  ·  SIL OFL" if is_kr else "Inter Font (Body Text)  ·  Rasmus Andersson  ·  SIL OFL"
+			var itm_ui4 = credits_list.get_node_or_null("ItmUI4")
+			if itm_ui4: itm_ui4.text = "무기 선택 휠 UI  ·  절차적 GDScript Draw API" if is_kr else "Weapon Wheel UI  ·  Procedural GDScript Draw API"
+			var itm_ui5 = credits_list.get_node_or_null("ItmUI5")
+			if itm_ui5: itm_ui5.text = "동적 무기 조준선  ·  절차적 GDScript Draw API" if is_kr else "Dynamic Weapon Crosshairs  ·  Procedural GDScript Draw API"
+
+			var itm_env = credits_list.get_node_or_null("ItmEnv")
+			if itm_env: itm_env.text = "식물 및 바위 (Ultimate Stylized Nature)  ·  Quaternius  ·  CC0" if is_kr else "Ultimate Stylized Nature  ·  Quaternius  ·  CC0"
+			var itm_sky_shader = credits_list.get_node_or_null("ItmSkyShader")
+			if itm_sky_shader: itm_sky_shader.text = "양식화된 하늘 셰이더  ·  MinionsArt  ·  CC0" if is_kr else "Stylized Sky Shader  ·  MinionsArt  ·  CC0"
+			var itm_clouds = credits_list.get_node_or_null("ItmClouds")
+			if itm_clouds: itm_clouds.text = "절차적 3D 구름  ·  수작업 GDScript 드리프트 하늘 레이어" if is_kr else "Procedural 3D Low-Poly Clouds  ·  Drifting Sky Layer"
+			var itm_seagulls = credits_list.get_node_or_null("ItmSeagulls")
+			if itm_seagulls: itm_seagulls.text = "절차적 3D 갈매기  ·  수작업 GDScript 수평선 비행 레이어" if is_kr else "Procedural 3D Low-Poly Seagulls  ·  Horizon Aviary Layer"
+			var itm_water_shader = credits_list.get_node_or_null("ItmWaterShader")
+			if itm_water_shader: itm_water_shader.text = "양식화된 물 셰이더  ·  Jtfinlay  ·  MIT" if is_kr else "Stylized Water Shader  ·  Jtfinlay  ·  MIT"
+			var itm_catastrom_icon = credits_list.get_node_or_null("ItmCatastromIcon")
+			if itm_catastrom_icon: itm_catastrom_icon.text = "UI 아이콘 - 카타스트롬  ·  pandora0226 (DeviantArt)  ·  CC BY-NC-ND 3.0" if is_kr else "UI Icon - Catastrom Powerup  ·  pandora0226 (DeviantArt)  ·  CC BY-NC-ND 3.0"
+			var itm_haze_shader = credits_list.get_node_or_null("ItmHazeShader")
+			if itm_haze_shader: itm_haze_shader.text = "열기 왜곡 화면 효과  ·  MinionsArt  ·  CC0" if is_kr else "Heat Haze Screen Distortion  ·  MinionsArt  ·  CC0"
+			var itm_mirage = credits_list.get_node_or_null("ItmMirage")
+			if itm_mirage: itm_mirage.text = "열기 신기루 연출  ·  절차적 반투명 재질 및 Tween" if is_kr else "Heat Mirage Mechanic  ·  Procedural Translucent Materials & Tweens"
+			var itm_fireflies = credits_list.get_node_or_null("ItmFireflies")
+			if itm_fireflies: itm_fireflies.text = "반딧불이 및 벌레  ·  절차적 GDScript ArrayMesh" if is_kr else "Fireflies & Bugs  ·  Procedural GDScript ArrayMesh"
+
 			var itm_ice_vfx = credits_list.get_node_or_null("ItmIceVFX")
 			if itm_ice_vfx: itm_ice_vfx.text = "VFX - 얼음 폭발 발사체 및 입자 효과  ·  절차적 Godot 기본 도형" if is_kr else "VFX - Ice Blast Projectile & Particles  ·  Procedural Godot Primitives"
 			var itm_magma = credits_list.get_node_or_null("ItmMagmaDebris")
@@ -1365,6 +1430,8 @@ func _apply_language(lang: String) -> void:
 			if itm_stream_combo: itm_stream_combo.text = "물줄기 콤보 UI 및 태양 표정  ·  절차적 GDScript 및 Godot Image API" if is_kr else "Stream Combo UI & Sun Expressions  ·  Procedural GDScript & Image API"
 			var itm_shield_vfx = credits_list.get_node_or_null("ItmShieldVFX")
 			if itm_shield_vfx: itm_shield_vfx.text = "VFX - 태양 플레어 실드 및 튕김 연출  ·  절차적 프레넬 셰이더 및 외곽 튕김 파티클" if is_kr else "VFX - Solar Flare Shield & Deflection Ripple  ·  Procedural Fresnel Shader & Outward Splash Particles"
+			var itm_boot_splash = credits_list.get_node_or_null("ItmBootSplash")
+			if itm_boot_splash: itm_boot_splash.text = "부트 스플래시 프레임 및 커튼 연출  ·  절차적 CanvasItem 드로잉 및 벡터 애니메이션" if is_kr else "Boot Splash Frame & Curtain Reveal  ·  Procedural CanvasItem Drawing & Vector Animation"
 
 			var itm_disclaimer = credits_list.get_node_or_null("ItmDisclaimer")
 			if itm_disclaimer:
