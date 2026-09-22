@@ -226,8 +226,9 @@ void fragment() {
 	var pwr_box = HBoxContainer.new()
 	pwr_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	pwr_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	pwr_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	pwr_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	pwr_box.add_theme_constant_override("separation", 6)
+	pwr_box.add_theme_constant_override("separation", 10)
 	stats_row.add_child(pwr_box)
 	
 	pwr_label = Label.new()
@@ -243,7 +244,8 @@ void fragment() {
 	
 	pwr_bar = ProgressBar.new()
 	pwr_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	pwr_bar.custom_minimum_size = Vector2(76, 9)
+	pwr_bar.custom_minimum_size = Vector2(40, 9)
+	pwr_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	pwr_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	pwr_bar.show_percentage = false
 	pwr_bar.min_value = 0.0
@@ -277,8 +279,9 @@ void fragment() {
 	var cap_box = HBoxContainer.new()
 	cap_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	cap_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	cap_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	cap_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	cap_box.add_theme_constant_override("separation", 6)
+	cap_box.add_theme_constant_override("separation", 10)
 	stats_row.add_child(cap_box)
 	
 	cap_label = Label.new()
@@ -294,7 +297,8 @@ void fragment() {
 	
 	cap_bar = ProgressBar.new()
 	cap_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	cap_bar.custom_minimum_size = Vector2(76, 9)
+	cap_bar.custom_minimum_size = Vector2(40, 9)
+	cap_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	cap_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	cap_bar.show_percentage = false
 	cap_bar.min_value = 0.0
@@ -329,7 +333,7 @@ void fragment() {
 	crit_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	crit_box.alignment = BoxContainer.ALIGNMENT_CENTER
 	crit_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	crit_box.add_theme_constant_override("separation", 5)
+	crit_box.add_theme_constant_override("separation", 10)
 	stats_row.add_child(crit_box)
 	
 	crit_label = Label.new()
