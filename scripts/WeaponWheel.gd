@@ -37,6 +37,9 @@ var name_label: Label
 var archetype_panel: PanelContainer
 var archetype_label: Label
 
+var divider: HSeparator
+var divider_style: StyleBoxLine
+
 var stats_row: HBoxContainer
 var pwr_label: Label
 var pwr_bar: ProgressBar
@@ -128,7 +131,7 @@ void fragment() {
 	# Setup Text Panel (Option C: Header + Archetype badge, Mini-bars for PWR/CAP, CRIT readout, and Locked banner)
 	text_panel = PanelContainer.new()
 	text_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	text_panel.custom_minimum_size = Vector2(490, 84)
+	text_panel.custom_minimum_size = Vector2(490, 88)
 	
 	panel_style = StyleBoxFlat.new()
 	panel_style.bg_color = Color(0.06, 0.03, 0.11, 0.92)
@@ -140,14 +143,14 @@ void fragment() {
 	panel_style.border_color = Color(1.0, 0.86, 0.24, 0.95)
 	panel_style.content_margin_left = 22.0
 	panel_style.content_margin_right = 22.0
-	panel_style.content_margin_top = 14.0
-	panel_style.content_margin_bottom = 14.0
+	panel_style.content_margin_top = 13.0
+	panel_style.content_margin_bottom = 13.0
 	text_panel.add_theme_stylebox_override("panel", panel_style)
 	add_child(text_panel)
 	
 	var vbox = VBoxContainer.new()
 	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_theme_constant_override("separation", 10)
+	vbox.add_theme_constant_override("separation", 8)
 	text_panel.add_child(vbox)
 	
 	# Header Row: Gun Name + Spacer + Archetype Badge
@@ -200,6 +203,17 @@ void fragment() {
 	archetype_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	archetype_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	archetype_panel.add_child(archetype_label)
+	
+	# Faint Golden Divider
+	divider = HSeparator.new()
+	divider.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	divider_style = StyleBoxLine.new()
+	divider_style.color = Color(1.0, 0.85, 0.2, 0.28)
+	divider_style.thickness = 1
+	divider_style.grow_begin = 0
+	divider_style.grow_end = 0
+	divider.add_theme_stylebox_override("separator", divider_style)
+	vbox.add_child(divider)
 	
 	# Stats Row: PWR Mini-Bar + CAP Mini-Bar + CRIT Readout
 	stats_row = HBoxContainer.new()
@@ -657,6 +671,7 @@ func _update_info_panel(idx: int) -> void:
 	
 	if is_locked:
 		panel_style.border_color = Color(0.42, 0.44, 0.48, 0.85)
+		divider_style.color = Color(0.5, 0.52, 0.6, 0.25)
 		name_label.label_settings.font_color = Color(0.65, 0.65, 0.7, 1.0)
 		archetype_panel.hide()
 		stats_row.hide()
@@ -683,6 +698,7 @@ func _update_info_panel(idx: int) -> void:
 					lock_req_label.text = "UNLOCKS AT LEVEL %d" % w_cfg.unlock_level
 	else:
 		panel_style.border_color = Color(1.0, 0.86, 0.24, 0.95)
+		divider_style.color = Color(1.0, 0.85, 0.2, 0.28)
 		name_label.label_settings.font_color = Color(1.0, 0.96, 0.6, 1.0)
 		archetype_panel.show()
 		stats_row.show()
@@ -711,7 +727,7 @@ func _update_info_panel(idx: int) -> void:
 	
 	text_panel.reset_size()
 	var center = size / 2.0
-	text_panel.position = Vector2(center.x - text_panel.size.x / 2.0, center.y + 248.0)
+	text_panel.position = Vector2(center.x - text_panel.size.x / 2.0, center.y + 246.0)
 		
 	queue_redraw()
 
