@@ -17,7 +17,7 @@ This document serves as the master record for all currently implemented features
   * *Endless Mode:* Infinite survival mode (Unlocked after completing Normal Mode).
 
 ## 2. Weapons & Tools
-* **Weapon Wheel:** Slows time to 0.2x to swap weapons with subtle 4px depth shadows and hover tick audio. Firing is blocked during swap animations. Hazard timers pause while open.
+* **Weapon Wheel:** Slows time to 0.2x to swap weapons with subtle 4px depth shadows, uniform 12px gap spacing, and hover tick audio. Features an arcade-style bottom readout panel with archetype badges, cooling power/water capacity mini-gauge bars, and critical hit multipliers. Firing is blocked during swap animations. Hazard timers pause while open.
 * **Available Weapons:**
   * *Standard Blaster:* Balanced.
   * *Precision Stream:* Low capacity, high critical multiplier.

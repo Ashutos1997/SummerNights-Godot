@@ -42,7 +42,7 @@ This document outlines the UI design system, color palette, typography, and comp
 
 ### Interactive Elements
 * **Sliding Toggle Pill:** Binary toggle (EN/KR, Keyboard/Xbox) with a sliding gold highlight block and smooth color lerping.
-* **Weapon Wheel:** Procedural wedges drawn via `_draw()` with subtle 4px drop shadows matching global HUD panels. Plays `-18dB` audio ticks via `UIJuice.play_tick()` on weapon highlight. Locked weapons are dark gray, unlocked are gold.
+* **Weapon Wheel:** Procedural wedges drawn via `_draw()` with subtle 4px drop shadows matching global HUD panels and constant 12px linear gap spacing between slices. Plays `-18dB` audio ticks via `UIJuice.play_tick()` on weapon highlight. Features an arcade-style bottom information panel with gold border (unlocked) or steel-grey border (locked), displaying weapon archetype badges, mini progress bars for cooling power and water capacity, and critical multipliers. Typography strictly pairs Kenney Future (gun name) with Inter-Medium (body/stats) in English, and Galmuri11 globally in Korean.
 * **Drafting Screen (Perk Cards):** Tactile staggered card deal entrance (`Tween` scale pop and alpha fade) accompanied by rhythmic audio ticks. Features 6px drop shadows and rarity badges (`[ RARE ]`, `[ UNCOMMON ]`, `[ COMMON ]`) with color-tinted borders.
 * **Achievement Progress Readouts:** 3-column layout featuring a dedicated status column. Locked achievements show numerical counters (`current / max`) and mini gold progress bars (8px height, 4px corner radii, dark background). Unlocked achievements display a cyber gold completion badge (`[ ✔ COMPLETED ]` / `[ ✔ 완료 ]`).
 

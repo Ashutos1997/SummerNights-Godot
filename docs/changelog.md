@@ -7,6 +7,7 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### Improved
 * Weapon Wheel Uniform Spacing: Replaced fixed angular wedge padding with a constant linear gap width (12px), making the spacing between all wheel slices parallel, even, and consistent from inner to outer radius.
+* Weapon Wheel Info Panel (Option C): Overhauled the weapon wheel bottom information panel with a high-readability arcade layout featuring weapon archetype badges (`BALANCED`, `HIGH IMPACT`, `HIGH CRIT`, etc.), mini-gauge bars for cooling power and water capacity, and a distinct critical multiplier readout. Standardized typography with Kenney Future for weapon titles and Inter-Medium for all body labels, values, and unlock banners (and Galmuri11 across all text in Korean).
 
 ## [v1.5.5] - 2026-09-22
 *(Note: This release corresponds to v1.5 on itch.io)*
@@ -226,6 +227,7 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### 개선됨 (Improved)
 * 무기 선택 휠 균일 간격: 고정 각도 패딩 대신 일정한 선형 간격(12px)을 적용하여, 슬라이스 사이의 틈새가 안쪽에서 바깥쪽까지 균일하고 평행하게 유지되도록 개선.
+* 무기 정보 패널 개선 (Option C): 무기 선택 휠 하단 정보창을 직관적인 아케이드 스타일로 개편하여 무기 아키타입 태그(밸런스, 고화력, 고치명타 등), 파워 및 용량 미니 게이지 바, 치명타 배율 배지를 추가. 영어 모드에서는 무기 이름에 Kenney Future, 본문 및 수치에 Inter-Medium을 분리 적용하고, 한국어 모드에서는 전체 텍스트에 Galmuri11을 일관되게 적용.
 
 ## [v1.5.5] - 2026-09-22
 *(참고: 이 릴리스는 itch.io의 v1.5 버전에 해당합니다)*

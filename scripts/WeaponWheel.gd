@@ -5,15 +5,52 @@ signal weapon_selected(weapon_id: String)
 var active: bool = false
 var selected_index: int = -1
 var weapons: Array = []
-var custom_font: Font
+const ARCHETYPES_EN = {
+	"standard": "BALANCED",
+	"heavy": "HIGH IMPACT",
+	"precision": "HIGH CRIT",
+	"scatter": "WIDE SPREAD",
+	"tidal": "RAPID FIRE"
+}
+
+const ARCHETYPES_KR = {
+	"standard": "밸런스",
+	"heavy": "고화력",
+	"precision": "고치명타",
+	"scatter": "산탄",
+	"tidal": "속사 개틀링"
+}
+
+var font_header_en: Font = preload("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+var font_body_en: Font = preload("res://assets/fonts/Inter-Medium.ttf")
+var font_kr: Font = preload("res://assets/fonts/Galmuri11.ttf")
 
 var open_tween: Tween
 var containers: Array = []
 var models: Array = []
 
 var text_panel: PanelContainer
+var panel_style: StyleBoxFlat
+
+var header_row: HBoxContainer
 var name_label: Label
-var stats_label: Label
+var archetype_panel: PanelContainer
+var archetype_label: Label
+
+var stats_row: HBoxContainer
+var pwr_label: Label
+var pwr_bar: ProgressBar
+var pwr_val: Label
+var cap_label: Label
+var cap_bar: ProgressBar
+var cap_val: Label
+var crit_label: Label
+var crit_val: Label
+
+var locked_row: HBoxContainer
+var lock_badge: PanelContainer
+var lock_badge_label: Label
+var lock_req_label: Label
 
 var bg_dim: ColorRect
 var whoosh_player: AudioStreamPlayer = null
@@ -55,10 +92,6 @@ void fragment() {
 	get_parent().call_deferred("add_child", bg_dim)
 	get_parent().call_deferred("move_child", bg_dim, get_index())
 	
-	var is_kr = GameState.language == "KR"
-	var font_path = "res://assets/ui/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
-	custom_font = load(font_path)
-	
 	# Spawn 3D viewports
 	for i in range(weapons.size()):
 		var w_id = weapons[i]
@@ -91,49 +124,245 @@ void fragment() {
 		_adjust_gun_materials(model)
 		vp.add_child(model)
 		models.append(model)
-		
-	# Setup Text Panel (Kept at the bottom so it doesn't clutter the center)
+	
+	# Setup Text Panel (Option C: Header + Archetype badge, Mini-bars for PWR/CAP, CRIT readout, and Locked banner)
 	text_panel = PanelContainer.new()
-	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.05, 0.02, 0.1, 0.85)
-	style.corner_radius_top_left = 16
-	style.corner_radius_top_right = 16
-	style.corner_radius_bottom_right = 16
-	style.corner_radius_bottom_left = 16
-	style.expand_margin_left = 16.0
-	style.expand_margin_right = 16.0
-	style.expand_margin_top = 8.0
-	style.expand_margin_bottom = 8.0
-	style.border_width_bottom = 2
-	style.border_width_top = 2
-	style.border_width_left = 2
-	style.border_width_right = 2
-	style.border_color = Color(1.0, 0.9, 0.3, 1.0) # Matches the yellow wheel selection
-	text_panel.add_theme_stylebox_override("panel", style)
+	text_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	text_panel.custom_minimum_size = Vector2(470, 68)
+	
+	panel_style = StyleBoxFlat.new()
+	panel_style.bg_color = Color(0.06, 0.03, 0.11, 0.92)
+	panel_style.set_corner_radius_all(14)
+	panel_style.border_width_left = 2
+	panel_style.border_width_top = 2
+	panel_style.border_width_right = 2
+	panel_style.border_width_bottom = 2
+	panel_style.border_color = Color(1.0, 0.86, 0.24, 0.95)
+	panel_style.content_margin_left = 18.0
+	panel_style.content_margin_right = 18.0
+	panel_style.content_margin_top = 10.0
+	panel_style.content_margin_bottom = 10.0
+	text_panel.add_theme_stylebox_override("panel", panel_style)
 	add_child(text_panel)
 	
 	var vbox = VBoxContainer.new()
+	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_theme_constant_override("separation", 6)
 	text_panel.add_child(vbox)
+	
+	# Header Row: Gun Name + Spacer + Archetype Badge
+	header_row = HBoxContainer.new()
+	header_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	header_row.alignment = BoxContainer.ALIGNMENT_BEGIN
+	vbox.add_child(header_row)
 	
 	name_label = Label.new()
 	name_label.label_settings = LabelSettings.new()
-	name_label.label_settings.font = custom_font
-	name_label.label_settings.font_size = 28
-	name_label.label_settings.font_color = Color(1.0, 0.95, 0.5, 1.0)
-	name_label.label_settings.outline_size = 4
+	name_label.label_settings.font = font_header_en
+	name_label.label_settings.font_size = 22
+	name_label.label_settings.font_color = Color(1.0, 0.96, 0.6, 1.0)
+	name_label.label_settings.outline_size = 3
 	name_label.label_settings.outline_color = Color.BLACK
-	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(name_label)
+	header_row.add_child(name_label)
 	
-	stats_label = Label.new()
-	stats_label.label_settings = LabelSettings.new()
-	stats_label.label_settings.font = custom_font
-	stats_label.label_settings.font_size = 18
-	stats_label.label_settings.font_color = Color(1.0, 0.8, 0.2, 1.0)
-	stats_label.label_settings.outline_size = 3
-	stats_label.label_settings.outline_color = Color.BLACK
-	stats_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(stats_label)
+	var header_spacer = Control.new()
+	header_spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	header_spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header_row.add_child(header_spacer)
+	
+	archetype_panel = PanelContainer.new()
+	archetype_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var arch_style = StyleBoxFlat.new()
+	arch_style.bg_color = Color(1.0, 0.85, 0.2, 0.12)
+	arch_style.border_color = Color(1.0, 0.85, 0.2, 0.5)
+	arch_style.border_width_left = 1
+	arch_style.border_width_top = 1
+	arch_style.border_width_right = 1
+	arch_style.border_width_bottom = 1
+	arch_style.set_corner_radius_all(4)
+	arch_style.content_margin_left = 8.0
+	arch_style.content_margin_right = 8.0
+	arch_style.content_margin_top = 2.0
+	arch_style.content_margin_bottom = 2.0
+	archetype_panel.add_theme_stylebox_override("panel", arch_style)
+	header_row.add_child(archetype_panel)
+	
+	archetype_label = Label.new()
+	archetype_label.label_settings = LabelSettings.new()
+	archetype_label.label_settings.font = font_body_en
+	archetype_label.label_settings.font_size = 12
+	archetype_label.label_settings.font_color = Color(1.0, 0.88, 0.35, 1.0)
+	archetype_label.label_settings.outline_size = 2
+	archetype_label.label_settings.outline_color = Color.BLACK
+	archetype_panel.add_child(archetype_label)
+	
+	# Stats Row: PWR Mini-Bar + CAP Mini-Bar + CRIT Readout
+	stats_row = HBoxContainer.new()
+	stats_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	stats_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	stats_row.add_theme_constant_override("separation", 16)
+	vbox.add_child(stats_row)
+	
+	# PWR Group
+	var pwr_box = HBoxContainer.new()
+	pwr_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pwr_box.add_theme_constant_override("separation", 6)
+	stats_row.add_child(pwr_box)
+	
+	pwr_label = Label.new()
+	pwr_label.label_settings = LabelSettings.new()
+	pwr_label.label_settings.font = font_body_en
+	pwr_label.label_settings.font_size = 12
+	pwr_label.label_settings.font_color = Color(0.75, 0.75, 0.8, 1.0)
+	pwr_label.label_settings.outline_size = 2
+	pwr_label.label_settings.outline_color = Color.BLACK
+	pwr_label.text = "PWR"
+	pwr_box.add_child(pwr_label)
+	
+	pwr_bar = ProgressBar.new()
+	pwr_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pwr_bar.custom_minimum_size = Vector2(72, 8)
+	pwr_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	pwr_bar.show_percentage = false
+	pwr_bar.min_value = 0.0
+	pwr_bar.max_value = 45.0
+	var pbar_bg = StyleBoxFlat.new()
+	pbar_bg.bg_color = Color(0.12, 0.1, 0.16, 0.9)
+	pbar_bg.border_color = Color(0.28, 0.24, 0.32, 0.8)
+	pbar_bg.border_width_left = 1
+	pbar_bg.border_width_top = 1
+	pbar_bg.border_width_right = 1
+	pbar_bg.border_width_bottom = 1
+	pbar_bg.set_corner_radius_all(3)
+	pwr_bar.add_theme_stylebox_override("background", pbar_bg)
+	var pwr_fill = StyleBoxFlat.new()
+	pwr_fill.bg_color = Color(1.0, 0.8, 0.15, 1.0)
+	pwr_fill.set_corner_radius_all(3)
+	pwr_bar.add_theme_stylebox_override("fill", pwr_fill)
+	pwr_box.add_child(pwr_bar)
+	
+	pwr_val = Label.new()
+	pwr_val.label_settings = LabelSettings.new()
+	pwr_val.label_settings.font = font_body_en
+	pwr_val.label_settings.font_size = 13
+	pwr_val.label_settings.font_color = Color(1.0, 0.9, 0.4, 1.0)
+	pwr_val.label_settings.outline_size = 2
+	pwr_val.label_settings.outline_color = Color.BLACK
+	pwr_box.add_child(pwr_val)
+	
+	# CAP Group
+	var cap_box = HBoxContainer.new()
+	cap_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cap_box.add_theme_constant_override("separation", 6)
+	stats_row.add_child(cap_box)
+	
+	cap_label = Label.new()
+	cap_label.label_settings = LabelSettings.new()
+	cap_label.label_settings.font = font_body_en
+	cap_label.label_settings.font_size = 12
+	cap_label.label_settings.font_color = Color(0.75, 0.75, 0.8, 1.0)
+	cap_label.label_settings.outline_size = 2
+	cap_label.label_settings.outline_color = Color.BLACK
+	cap_label.text = "CAP"
+	cap_box.add_child(cap_label)
+	
+	cap_bar = ProgressBar.new()
+	cap_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cap_bar.custom_minimum_size = Vector2(72, 8)
+	cap_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	cap_bar.show_percentage = false
+	cap_bar.min_value = 0.0
+	cap_bar.max_value = 250.0
+	var cbar_bg = StyleBoxFlat.new()
+	cbar_bg.bg_color = Color(0.12, 0.1, 0.16, 0.9)
+	cbar_bg.border_color = Color(0.28, 0.24, 0.32, 0.8)
+	cbar_bg.border_width_left = 1
+	cbar_bg.border_width_top = 1
+	cbar_bg.border_width_right = 1
+	cbar_bg.border_width_bottom = 1
+	cbar_bg.set_corner_radius_all(3)
+	cap_bar.add_theme_stylebox_override("background", cbar_bg)
+	var cap_fill = StyleBoxFlat.new()
+	cap_fill.bg_color = Color(0.2, 0.75, 1.0, 1.0)
+	cap_fill.set_corner_radius_all(3)
+	cap_bar.add_theme_stylebox_override("fill", cap_fill)
+	cap_box.add_child(cap_bar)
+	
+	cap_val = Label.new()
+	cap_val.label_settings = LabelSettings.new()
+	cap_val.label_settings.font = font_body_en
+	cap_val.label_settings.font_size = 13
+	cap_val.label_settings.font_color = Color(0.45, 0.85, 1.0, 1.0)
+	cap_val.label_settings.outline_size = 2
+	cap_val.label_settings.outline_color = Color.BLACK
+	cap_box.add_child(cap_val)
+	
+	# CRIT Group
+	var crit_box = HBoxContainer.new()
+	crit_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	crit_box.add_theme_constant_override("separation", 5)
+	stats_row.add_child(crit_box)
+	
+	crit_label = Label.new()
+	crit_label.label_settings = LabelSettings.new()
+	crit_label.label_settings.font = font_body_en
+	crit_label.label_settings.font_size = 12
+	crit_label.label_settings.font_color = Color(0.75, 0.75, 0.8, 1.0)
+	crit_label.label_settings.outline_size = 2
+	crit_label.label_settings.outline_color = Color.BLACK
+	crit_label.text = "CRIT"
+	crit_box.add_child(crit_label)
+	
+	crit_val = Label.new()
+	crit_val.label_settings = LabelSettings.new()
+	crit_val.label_settings.font = font_body_en
+	crit_val.label_settings.font_size = 13
+	crit_val.label_settings.font_color = Color(0.9, 0.92, 0.95, 1.0)
+	crit_val.label_settings.outline_size = 2
+	crit_val.label_settings.outline_color = Color.BLACK
+	crit_box.add_child(crit_val)
+	
+	# Locked Row: Lock Badge + Unlock Requirement Label
+	locked_row = HBoxContainer.new()
+	locked_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	locked_row.alignment = BoxContainer.ALIGNMENT_BEGIN
+	locked_row.add_theme_constant_override("separation", 10)
+	vbox.add_child(locked_row)
+	
+	lock_badge = PanelContainer.new()
+	lock_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var lock_style = StyleBoxFlat.new()
+	lock_style.bg_color = Color(0.8, 0.2, 0.2, 0.15)
+	lock_style.border_color = Color(0.9, 0.3, 0.3, 0.7)
+	lock_style.border_width_left = 1
+	lock_style.border_width_top = 1
+	lock_style.border_width_right = 1
+	lock_style.border_width_bottom = 1
+	lock_style.set_corner_radius_all(4)
+	lock_style.content_margin_left = 6.0
+	lock_style.content_margin_right = 6.0
+	lock_style.content_margin_top = 2.0
+	lock_style.content_margin_bottom = 2.0
+	lock_badge.add_theme_stylebox_override("panel", lock_style)
+	locked_row.add_child(lock_badge)
+	
+	lock_badge_label = Label.new()
+	lock_badge_label.label_settings = LabelSettings.new()
+	lock_badge_label.label_settings.font = font_body_en
+	lock_badge_label.label_settings.font_size = 12
+	lock_badge_label.label_settings.font_color = Color(1.0, 0.4, 0.4, 1.0)
+	lock_badge_label.label_settings.outline_size = 2
+	lock_badge_label.label_settings.outline_color = Color.BLACK
+	lock_badge.add_child(lock_badge_label)
+	
+	lock_req_label = Label.new()
+	lock_req_label.label_settings = LabelSettings.new()
+	lock_req_label.label_settings.font = font_body_en
+	lock_req_label.label_settings.font_size = 13
+	lock_req_label.label_settings.font_color = Color(0.95, 0.78, 0.78, 1.0)
+	lock_req_label.label_settings.outline_size = 2
+	lock_req_label.label_settings.outline_color = Color.BLACK
+	locked_row.add_child(lock_req_label)
 	
 	text_panel.hide()
 
@@ -350,69 +579,117 @@ func _process(delta: float) -> void:
 		c.position = target_pos
 		
 	if selected_index >= 0:
-		text_panel.show()
-		var w_id = weapons[selected_index]
-		var w_cfg = GameState.WEAPONS[w_id]
-		var is_kr = GameState.language == "KR"
-		
-		var font_path = "res://assets/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
-		var dyn_font = load(font_path)
-		name_label.label_settings.font = dyn_font
-		name_label.label_settings.font_size = 32 if is_kr else 28
-		stats_label.label_settings.font = dyn_font
-		stats_label.label_settings.font_size = 22 if is_kr else 18
-		
-		var is_locked = false
-		
-		if w_cfg.has("unlock_achievement"):
-			is_locked = not (w_cfg.unlock_achievement in GameState.unlocked_achievements)
-		else:
-			var prog = GameState.current_wave if GameState.is_survival_mode else GameState.level
-			is_locked = prog < w_cfg.unlock_level
-		
-		var w_name = w_cfg.name.to_upper()
-		if is_kr:
-			match w_id:
-				"standard": w_name = "표준 블래스터"
-				"heavy": w_name = "헤비 캐논"
-				"precision": w_name = "정밀 스트림"
-				"scatter": w_name = "스캐터 노즐"
-				"tidal": w_name = "타이달 개틀링"
-		name_label.text = w_name
-		
-		if is_locked:
-			name_label.label_settings.font_color = Color(0.6, 0.6, 0.6, 1.0) # Greyed out name
-			stats_label.label_settings.font_color = Color(1.0, 0.3, 0.3, 1.0) # Red warning
-			if w_cfg.has("unlock_achievement"):
-				var ach_id = w_cfg.unlock_achievement
-				var ach_desc = GameState.ACHIEVEMENTS[ach_id].desc_kr if is_kr else GameState.ACHIEVEMENTS[ach_id].desc_en
-				if is_kr:
-					stats_label.text = "조건: %s" % ach_desc
-				else:
-					stats_label.text = "UNLOCK: %s" % ach_desc.to_upper()
-			else:
-				if GameState.is_survival_mode:
-					if is_kr:
-						stats_label.text = "웨이브 %d 에서 잠금 해제됨" % w_cfg.unlock_level
-					else:
-						stats_label.text = "UNLOCKS AT WAVE %d" % w_cfg.unlock_level
-				else:
-					if is_kr:
-						stats_label.text = "레벨 %d 에서 잠금 해제됨" % w_cfg.unlock_level
-					else:
-						stats_label.text = "UNLOCKS AT LEVEL %d" % w_cfg.unlock_level
-		else:
-			name_label.label_settings.font_color = Color(1.0, 0.95, 0.5, 1.0)
-			stats_label.label_settings.font_color = Color(1.0, 0.8, 0.2, 1.0)
-			if is_kr:
-				stats_label.text = "파워: %d   용량: %d" % [int(w_cfg.cooling_power), int(w_cfg.water_capacity)]
-			else:
-				stats_label.text = "POWER: %d   CAPACITY: %d" % [int(w_cfg.cooling_power), int(w_cfg.water_capacity)]
-		
-		text_panel.reset_size()
-		text_panel.position = Vector2(center.x - text_panel.size.x / 2.0, center.y + 240.0)
+		_update_info_panel(selected_index)
 	else:
 		text_panel.hide()
+		
+	queue_redraw()
+
+func _update_info_panel(idx: int) -> void:
+	if idx < 0 or idx >= weapons.size():
+		text_panel.hide()
+		return
+		
+	text_panel.show()
+	var w_id = weapons[idx]
+	var w_cfg = GameState.WEAPONS[w_id]
+	var is_kr = GameState.language == "KR"
+	
+	# Kenney Future for gun name (EN) / Galmuri11 (KR)
+	var font_header = font_kr if is_kr else font_header_en
+	# Inter for body text (EN) / Galmuri11 (KR)
+	var font_body = font_kr if is_kr else font_body_en
+	
+	name_label.label_settings.font = font_header
+	name_label.label_settings.font_size = 22 if is_kr else 22
+	
+	archetype_label.label_settings.font = font_body
+	archetype_label.label_settings.font_size = 12 if is_kr else 12
+	
+	pwr_label.label_settings.font = font_body
+	pwr_val.label_settings.font = font_body
+	cap_label.label_settings.font = font_body
+	cap_val.label_settings.font = font_body
+	crit_label.label_settings.font = font_body
+	crit_val.label_settings.font = font_body
+	
+	lock_badge_label.label_settings.font = font_body
+	lock_req_label.label_settings.font = font_body
+	
+	var is_locked = false
+	if w_cfg.has("unlock_achievement"):
+		is_locked = not (w_cfg.unlock_achievement in GameState.unlocked_achievements)
+	else:
+		var prog = GameState.current_wave if GameState.is_survival_mode else GameState.level
+		is_locked = prog < w_cfg.unlock_level
+	
+	var w_name = w_cfg.name.to_upper()
+	if is_kr:
+		match w_id:
+			"standard": w_name = "표준 블래스터"
+			"heavy": w_name = "헤비 캐논"
+			"precision": w_name = "정밀 스트림"
+			"scatter": w_name = "스캐터 노즐"
+			"tidal": w_name = "타이달 개틀링"
+	name_label.text = w_name
+	
+	if is_locked:
+		panel_style.border_color = Color(0.42, 0.44, 0.48, 0.85)
+		name_label.label_settings.font_color = Color(0.65, 0.65, 0.7, 1.0)
+		archetype_panel.hide()
+		stats_row.hide()
+		locked_row.show()
+		
+		lock_badge_label.text = "[ 잠김 ]" if is_kr else "[ LOCKED ]"
+		if w_cfg.has("unlock_achievement"):
+			var ach_id = w_cfg.unlock_achievement
+			var ach_desc = GameState.ACHIEVEMENTS[ach_id].desc_kr if is_kr else GameState.ACHIEVEMENTS[ach_id].desc_en
+			if is_kr:
+				lock_req_label.text = "조건: %s" % ach_desc
+			else:
+				lock_req_label.text = "UNLOCK: %s" % ach_desc.to_upper()
+		else:
+			if GameState.is_survival_mode:
+				if is_kr:
+					lock_req_label.text = "웨이브 %d 에서 잠금 해제됨" % w_cfg.unlock_level
+				else:
+					lock_req_label.text = "UNLOCKS AT WAVE %d" % w_cfg.unlock_level
+			else:
+				if is_kr:
+					lock_req_label.text = "레벨 %d 에서 잠금 해제됨" % w_cfg.unlock_level
+				else:
+					lock_req_label.text = "UNLOCKS AT LEVEL %d" % w_cfg.unlock_level
+	else:
+		panel_style.border_color = Color(1.0, 0.86, 0.24, 0.95)
+		name_label.label_settings.font_color = Color(1.0, 0.96, 0.6, 1.0)
+		archetype_panel.show()
+		stats_row.show()
+		locked_row.hide()
+		
+		var arch_dict = ARCHETYPES_KR if is_kr else ARCHETYPES_EN
+		archetype_label.text = arch_dict.get(w_id, "BALANCED")
+		
+		pwr_label.text = "파워" if is_kr else "PWR"
+		cap_label.text = "용량" if is_kr else "CAP"
+		crit_label.text = "치명타" if is_kr else "CRIT"
+		
+		pwr_bar.value = w_cfg.cooling_power
+		pwr_val.text = str(int(w_cfg.cooling_power))
+		
+		cap_bar.value = w_cfg.water_capacity
+		cap_val.text = str(int(w_cfg.water_capacity))
+		
+		crit_val.text = "%.1fx" % w_cfg.crit_multiplier
+		if w_cfg.crit_multiplier >= 4.0:
+			crit_val.label_settings.font_color = Color(0.65, 1.0, 0.35, 1.0)
+		elif w_cfg.crit_multiplier >= 2.0:
+			crit_val.label_settings.font_color = Color(1.0, 0.88, 0.35, 1.0)
+		else:
+			crit_val.label_settings.font_color = Color(0.9, 0.92, 0.95, 1.0)
+	
+	text_panel.reset_size()
+	var center = size / 2.0
+	text_panel.position = Vector2(center.x - text_panel.size.x / 2.0, center.y + 254.0)
 		
 	queue_redraw()
 
