@@ -128,26 +128,26 @@ void fragment() {
 	# Setup Text Panel (Option C: Header + Archetype badge, Mini-bars for PWR/CAP, CRIT readout, and Locked banner)
 	text_panel = PanelContainer.new()
 	text_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	text_panel.custom_minimum_size = Vector2(470, 68)
+	text_panel.custom_minimum_size = Vector2(490, 84)
 	
 	panel_style = StyleBoxFlat.new()
 	panel_style.bg_color = Color(0.06, 0.03, 0.11, 0.92)
-	panel_style.set_corner_radius_all(14)
+	panel_style.set_corner_radius_all(16)
 	panel_style.border_width_left = 2
 	panel_style.border_width_top = 2
 	panel_style.border_width_right = 2
 	panel_style.border_width_bottom = 2
 	panel_style.border_color = Color(1.0, 0.86, 0.24, 0.95)
-	panel_style.content_margin_left = 18.0
-	panel_style.content_margin_right = 18.0
-	panel_style.content_margin_top = 10.0
-	panel_style.content_margin_bottom = 10.0
+	panel_style.content_margin_left = 22.0
+	panel_style.content_margin_right = 22.0
+	panel_style.content_margin_top = 14.0
+	panel_style.content_margin_bottom = 14.0
 	text_panel.add_theme_stylebox_override("panel", panel_style)
 	add_child(text_panel)
 	
 	var vbox = VBoxContainer.new()
 	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_theme_constant_override("separation", 6)
+	vbox.add_theme_constant_override("separation", 10)
 	text_panel.add_child(vbox)
 	
 	# Header Row: Gun Name + Spacer + Archetype Badge
@@ -163,6 +163,8 @@ void fragment() {
 	name_label.label_settings.font_color = Color(1.0, 0.96, 0.6, 1.0)
 	name_label.label_settings.outline_size = 3
 	name_label.label_settings.outline_color = Color.BLACK
+	name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	name_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	header_row.add_child(name_label)
 	
 	var header_spacer = Control.new()
@@ -172,18 +174,19 @@ void fragment() {
 	
 	archetype_panel = PanelContainer.new()
 	archetype_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	archetype_panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var arch_style = StyleBoxFlat.new()
 	arch_style.bg_color = Color(1.0, 0.85, 0.2, 0.12)
-	arch_style.border_color = Color(1.0, 0.85, 0.2, 0.5)
+	arch_style.border_color = Color(1.0, 0.85, 0.2, 0.55)
 	arch_style.border_width_left = 1
 	arch_style.border_width_top = 1
 	arch_style.border_width_right = 1
 	arch_style.border_width_bottom = 1
-	arch_style.set_corner_radius_all(4)
-	arch_style.content_margin_left = 8.0
-	arch_style.content_margin_right = 8.0
-	arch_style.content_margin_top = 2.0
-	arch_style.content_margin_bottom = 2.0
+	arch_style.set_corner_radius_all(6)
+	arch_style.content_margin_left = 12.0
+	arch_style.content_margin_right = 12.0
+	arch_style.content_margin_top = 4.0
+	arch_style.content_margin_bottom = 4.0
 	archetype_panel.add_theme_stylebox_override("panel", arch_style)
 	header_row.add_child(archetype_panel)
 	
@@ -194,18 +197,22 @@ void fragment() {
 	archetype_label.label_settings.font_color = Color(1.0, 0.88, 0.35, 1.0)
 	archetype_label.label_settings.outline_size = 2
 	archetype_label.label_settings.outline_color = Color.BLACK
+	archetype_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	archetype_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	archetype_panel.add_child(archetype_label)
 	
 	# Stats Row: PWR Mini-Bar + CAP Mini-Bar + CRIT Readout
 	stats_row = HBoxContainer.new()
 	stats_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	stats_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	stats_row.add_theme_constant_override("separation", 16)
+	stats_row.add_theme_constant_override("separation", 18)
 	vbox.add_child(stats_row)
 	
 	# PWR Group
 	var pwr_box = HBoxContainer.new()
 	pwr_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pwr_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	pwr_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	pwr_box.add_theme_constant_override("separation", 6)
 	stats_row.add_child(pwr_box)
 	
@@ -216,12 +223,13 @@ void fragment() {
 	pwr_label.label_settings.font_color = Color(0.75, 0.75, 0.8, 1.0)
 	pwr_label.label_settings.outline_size = 2
 	pwr_label.label_settings.outline_color = Color.BLACK
+	pwr_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	pwr_label.text = "PWR"
 	pwr_box.add_child(pwr_label)
 	
 	pwr_bar = ProgressBar.new()
 	pwr_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	pwr_bar.custom_minimum_size = Vector2(72, 8)
+	pwr_bar.custom_minimum_size = Vector2(76, 9)
 	pwr_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	pwr_bar.show_percentage = false
 	pwr_bar.min_value = 0.0
@@ -248,11 +256,14 @@ void fragment() {
 	pwr_val.label_settings.font_color = Color(1.0, 0.9, 0.4, 1.0)
 	pwr_val.label_settings.outline_size = 2
 	pwr_val.label_settings.outline_color = Color.BLACK
+	pwr_val.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	pwr_box.add_child(pwr_val)
 	
 	# CAP Group
 	var cap_box = HBoxContainer.new()
 	cap_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cap_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	cap_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	cap_box.add_theme_constant_override("separation", 6)
 	stats_row.add_child(cap_box)
 	
@@ -263,12 +274,13 @@ void fragment() {
 	cap_label.label_settings.font_color = Color(0.75, 0.75, 0.8, 1.0)
 	cap_label.label_settings.outline_size = 2
 	cap_label.label_settings.outline_color = Color.BLACK
+	cap_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	cap_label.text = "CAP"
 	cap_box.add_child(cap_label)
 	
 	cap_bar = ProgressBar.new()
 	cap_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	cap_bar.custom_minimum_size = Vector2(72, 8)
+	cap_bar.custom_minimum_size = Vector2(76, 9)
 	cap_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	cap_bar.show_percentage = false
 	cap_bar.min_value = 0.0
@@ -295,11 +307,14 @@ void fragment() {
 	cap_val.label_settings.font_color = Color(0.45, 0.85, 1.0, 1.0)
 	cap_val.label_settings.outline_size = 2
 	cap_val.label_settings.outline_color = Color.BLACK
+	cap_val.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	cap_box.add_child(cap_val)
 	
 	# CRIT Group
 	var crit_box = HBoxContainer.new()
 	crit_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	crit_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	crit_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	crit_box.add_theme_constant_override("separation", 5)
 	stats_row.add_child(crit_box)
 	
@@ -310,6 +325,7 @@ void fragment() {
 	crit_label.label_settings.font_color = Color(0.75, 0.75, 0.8, 1.0)
 	crit_label.label_settings.outline_size = 2
 	crit_label.label_settings.outline_color = Color.BLACK
+	crit_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	crit_label.text = "CRIT"
 	crit_box.add_child(crit_label)
 	
@@ -320,6 +336,7 @@ void fragment() {
 	crit_val.label_settings.font_color = Color(0.9, 0.92, 0.95, 1.0)
 	crit_val.label_settings.outline_size = 2
 	crit_val.label_settings.outline_color = Color.BLACK
+	crit_val.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	crit_box.add_child(crit_val)
 	
 	# Locked Row: Lock Badge + Unlock Requirement Label
@@ -331,6 +348,7 @@ void fragment() {
 	
 	lock_badge = PanelContainer.new()
 	lock_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	lock_badge.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var lock_style = StyleBoxFlat.new()
 	lock_style.bg_color = Color(0.8, 0.2, 0.2, 0.15)
 	lock_style.border_color = Color(0.9, 0.3, 0.3, 0.7)
@@ -338,11 +356,11 @@ void fragment() {
 	lock_style.border_width_top = 1
 	lock_style.border_width_right = 1
 	lock_style.border_width_bottom = 1
-	lock_style.set_corner_radius_all(4)
-	lock_style.content_margin_left = 6.0
-	lock_style.content_margin_right = 6.0
-	lock_style.content_margin_top = 2.0
-	lock_style.content_margin_bottom = 2.0
+	lock_style.set_corner_radius_all(6)
+	lock_style.content_margin_left = 10.0
+	lock_style.content_margin_right = 10.0
+	lock_style.content_margin_top = 4.0
+	lock_style.content_margin_bottom = 4.0
 	lock_badge.add_theme_stylebox_override("panel", lock_style)
 	locked_row.add_child(lock_badge)
 	
@@ -353,6 +371,8 @@ void fragment() {
 	lock_badge_label.label_settings.font_color = Color(1.0, 0.4, 0.4, 1.0)
 	lock_badge_label.label_settings.outline_size = 2
 	lock_badge_label.label_settings.outline_color = Color.BLACK
+	lock_badge_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lock_badge_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	lock_badge.add_child(lock_badge_label)
 	
 	lock_req_label = Label.new()
@@ -362,6 +382,8 @@ void fragment() {
 	lock_req_label.label_settings.font_color = Color(0.95, 0.78, 0.78, 1.0)
 	lock_req_label.label_settings.outline_size = 2
 	lock_req_label.label_settings.outline_color = Color.BLACK
+	lock_req_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	lock_req_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	locked_row.add_child(lock_req_label)
 	
 	text_panel.hide()
@@ -689,7 +711,7 @@ func _update_info_panel(idx: int) -> void:
 	
 	text_panel.reset_size()
 	var center = size / 2.0
-	text_panel.position = Vector2(center.x - text_panel.size.x / 2.0, center.y + 254.0)
+	text_panel.position = Vector2(center.x - text_panel.size.x / 2.0, center.y + 248.0)
 		
 	queue_redraw()
 
