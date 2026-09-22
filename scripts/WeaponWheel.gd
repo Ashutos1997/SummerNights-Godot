@@ -851,30 +851,11 @@ func _draw() -> void:
 			arr_stroke = Color(0.5, 0.5, 0.5, 1.0 * arrow_alpha)
 		
 		var line_width = 4.0 * clampf(t * 1.2, 0.25, 1.0)
-		var r = line_width / 2.0
 		
-		# 1) Draw the solid fill
+		# Draw the solid fill
 		draw_colored_polygon(arrow_poly, arr_fill)
 		
-		# 2) Draw fill caps (puffs out the fill to meet the stroke caps seamlessly)
-		draw_circle(rot_transform * p_tip, r, arr_fill)
-		draw_circle(rot_transform * p_top, r, arr_fill)
-		draw_circle(rot_transform * p_inner, r, arr_fill)
-		draw_circle(rot_transform * p_bot, r, arr_fill)
-		
-		# 3) Draw thick stroke caps at the vertices for perfectly rounded corners
-		draw_circle(rot_transform * p_tip, r, arr_stroke)
-		draw_circle(rot_transform * p_top, r, arr_stroke)
-		draw_circle(rot_transform * p_inner, r, arr_stroke)
-		draw_circle(rot_transform * p_bot, r, arr_stroke)
-		
-		# 4) Draw thick stroke line to connect the caps
+		# Draw stroke outline
 		var line_poly = arrow_poly.duplicate()
 		line_poly.push_back(line_poly[0])
 		draw_polyline(line_poly, arr_stroke, line_width, true)
-		
-		# 5) Refill the inner caps to overlay the stroke bleeding inwards at sharp joints!
-		draw_circle(rot_transform * p_tip, maxf(r - 1.0, 0.1), arr_fill)
-		draw_circle(rot_transform * p_top, maxf(r - 1.0, 0.1), arr_fill)
-		draw_circle(rot_transform * p_inner, maxf(r - 1.0, 0.1), arr_fill)
-		draw_circle(rot_transform * p_bot, maxf(r - 1.0, 0.1), arr_fill)
