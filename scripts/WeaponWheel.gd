@@ -50,7 +50,7 @@ var cap_val: Label
 var crit_label: Label
 var crit_val: Label
 
-var locked_row: HBoxContainer
+
 var lock_badge: PanelContainer
 var lock_badge_label: Label
 var lock_req_label: Label
@@ -357,13 +357,7 @@ void fragment() {
 	crit_val.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	crit_box.add_child(crit_val)
 	
-	# Locked Row: Lock Badge + Unlock Requirement Label
-	locked_row = HBoxContainer.new()
-	locked_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	locked_row.alignment = BoxContainer.ALIGNMENT_BEGIN
-	locked_row.add_theme_constant_override("separation", 10)
-	vbox.add_child(locked_row)
-	
+	# Lock Badge (replaces archetype_panel in header_row when locked)
 	lock_badge = PanelContainer.new()
 	lock_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	lock_badge.size_flags_vertical = Control.SIZE_SHRINK_CENTER
@@ -380,7 +374,7 @@ void fragment() {
 	lock_style.content_margin_top = 4.0
 	lock_style.content_margin_bottom = 4.0
 	lock_badge.add_theme_stylebox_override("panel", lock_style)
-	locked_row.add_child(lock_badge)
+	header_row.add_child(lock_badge)
 	
 	lock_badge_label = Label.new()
 	lock_badge_label.label_settings = LabelSettings.new()
@@ -393,7 +387,9 @@ void fragment() {
 	lock_badge_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	lock_badge.add_child(lock_badge_label)
 	
+	# Lock Requirement Label (replaces stats_row below divider when locked)
 	lock_req_label = Label.new()
+	lock_req_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	lock_req_label.label_settings = LabelSettings.new()
 	lock_req_label.label_settings.font = font_body_en
 	lock_req_label.label_settings.font_size = 13
@@ -401,8 +397,8 @@ void fragment() {
 	lock_req_label.label_settings.outline_size = 2
 	lock_req_label.label_settings.outline_color = Color.BLACK
 	lock_req_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lock_req_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	locked_row.add_child(lock_req_label)
+	lock_req_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(lock_req_label)
 	
 	text_panel.hide()
 
@@ -678,8 +674,9 @@ func _update_info_panel(idx: int) -> void:
 		divider_style.color = Color(0.5, 0.52, 0.6, 0.25)
 		name_label.label_settings.font_color = Color(0.65, 0.65, 0.7, 1.0)
 		archetype_panel.hide()
+		lock_badge.show()
 		stats_row.hide()
-		locked_row.show()
+		lock_req_label.show()
 		
 		lock_badge_label.text = "[ 잠김 ]" if is_kr else "[ LOCKED ]"
 		if w_cfg.has("unlock_achievement"):
@@ -705,8 +702,9 @@ func _update_info_panel(idx: int) -> void:
 		divider_style.color = Color(1.0, 0.85, 0.2, 0.28)
 		name_label.label_settings.font_color = Color(1.0, 0.96, 0.6, 1.0)
 		archetype_panel.show()
+		lock_badge.hide()
 		stats_row.show()
-		locked_row.hide()
+		lock_req_label.hide()
 		
 		var arch_dict = ARCHETYPES_KR if is_kr else ARCHETYPES_EN
 		archetype_label.text = arch_dict.get(w_id, "BALANCED")
