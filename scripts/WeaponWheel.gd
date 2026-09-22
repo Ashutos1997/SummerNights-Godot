@@ -422,11 +422,17 @@ func _draw() -> void:
 	var inner_radius = 100.0
 	var outer_radius = 240.0
 	var slice_size = TAU / weapons.size()
-	var padding_angle = 0.05
+	var gap_width = 12.0 # Even, consistent linear spacing in pixels between slices
+	var pad_outer = asin((gap_width / 2.0) / outer_radius)
+	var pad_inner = asin((gap_width / 2.0) / inner_radius)
 	
 	for i in range(weapons.size()):
-		var start_angle = i * slice_size - PI/2 - slice_size/2 + padding_angle
-		var end_angle = start_angle + slice_size - padding_angle * 2.0
+		var base_start = i * slice_size - PI/2 - slice_size/2
+		var base_end = base_start + slice_size
+		var start_outer = base_start + pad_outer
+		var end_outer = base_end - pad_outer
+		var start_inner = base_start + pad_inner
+		var end_inner = base_end - pad_inner
 		var is_selected = (i == selected_index)
 		
 		var w_id = weapons[i]
@@ -451,15 +457,15 @@ func _draw() -> void:
 		
 		# Draw thick arc (donut slice)
 		var points = PackedVector2Array()
-		var segments = 16
+		var segments = 24
 		
 		var cur_outer = outer_radius
 		for j in range(segments + 1):
-			var a = lerp(start_angle, end_angle, j / float(segments))
+			var a = lerp(start_outer, end_outer, j / float(segments))
 			points.push_back(center + Vector2(cos(a), sin(a)) * cur_outer)
 			
 		for j in range(segments + 1):
-			var a = lerp(end_angle, start_angle, j / float(segments))
+			var a = lerp(end_inner, start_inner, j / float(segments))
 			points.push_back(center + Vector2(cos(a), sin(a)) * inner_radius)
 			
 		# Subtle Z-depth drop shadow matching HUD panels

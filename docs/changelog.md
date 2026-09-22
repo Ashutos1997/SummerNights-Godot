@@ -5,6 +5,9 @@ All notable changes to the Summer Nights project will be documented in this file
 ## [v1.5.6] - WIP
 *(Note: This release corresponds to v1.6 on itch.io)*
 
+### Improved
+* Weapon Wheel Uniform Spacing: Replaced fixed angular wedge padding with a constant linear gap width (12px), making the spacing between all wheel slices parallel, even, and consistent from inner to outer radius.
+
 ## [v1.5.5] - 2026-09-22
 *(Note: This release corresponds to v1.5 on itch.io)*
 
@@ -220,6 +223,9 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ## [v1.5.6] - WIP
 *(참고: 이 릴리스는 itch.io의 v1.6 버전에 해당합니다)*
+
+### 개선됨 (Improved)
+* 무기 선택 휠 균일 간격: 고정 각도 패딩 대신 일정한 선형 간격(12px)을 적용하여, 슬라이스 사이의 틈새가 안쪽에서 바깥쪽까지 균일하고 평행하게 유지되도록 개선.
 
 ## [v1.5.5] - 2026-09-22
 *(참고: 이 릴리스는 itch.io의 v1.5 버전에 해당합니다)*
