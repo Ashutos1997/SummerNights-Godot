@@ -5,6 +5,10 @@ All notable changes to the Summer Nights project will be documented in this file
 ## [v1.5.6] - WIP
 *(Note: This release corresponds to v1.6 on itch.io)*
 
+### Added
+* 4 New Achievements: Expanded achievements from 8 to 12 total ("Endurance" for surviving 25 Endless waves, "Marathon Runner" for 50 Endless waves, "Arsenal Expert" for using all 5 weapons in a single run, and "Ice Breaker" for 50 lifetime Ice Blasts) with real-time progress tracking, localized English/Korean titles & descriptions, and automatic scrollable menu presentation.
+* Best Endless Wave Tracking: Added persistent `best_wave` tracking that saves/loads alongside survival time, displays on the title screen ("BEST ENDLESS: WAVE X (MM:SS)"), includes an in-game "NEW BEST!" celebration badge upon game over, and records to the Lifetime Stats screen alongside new Ice Blasts Used metrics.
+
 ### Improved
 * Weapon Wheel Uniform Spacing: Replaced fixed angular wedge padding with a constant linear gap width (12px), making the spacing between all wheel slices parallel, even, and consistent from inner to outer radius.
 * Weapon Wheel Info Panel (Option C): Overhauled the weapon wheel bottom information panel with a high-readability arcade layout featuring centered weapon archetype badges (`BALANCED`, `HIGH IMPACT`, `HIGH CRIT`, etc.), mini-gauge bars for cooling power and water capacity, and a distinct critical multiplier readout. Added a faint golden hairline divider (`Color(1.0, 0.85, 0.2, 0.28)`) for clear visual separation between gun title and stats, expanded vertical breathing room (88px height), and standardized typography with Kenney Future for weapon titles and Inter-Medium for all body labels, values, and unlock banners (and Galmuri11 across all text in Korean).
@@ -225,6 +229,10 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ## [v1.5.6] - WIP
 *(참고: 이 릴리스는 itch.io의 v1.6 버전에 해당합니다)*
+
+### 추가됨 (Added)
+* 신규 업적 4종 추가: 총 업적 수를 8개에서 12개로 확장 ("인내심" - 엔들리스 모드 25웨이브 생존, "마라톤 주자" - 50웨이브 생존, "무기 전문가" - 한 게임에서 5가지 무기 모두 사용, "얼음 파괴자" - 얼음 폭발 통산 50회 사용). 실시간 진행도 게이지 및 카운터 지원, 영어/한국어 완벽 현지화, 자동 스크롤 업적 메뉴 지원.
+* 엔들리스 모드 최고 웨이브 추적: 생존 시간과 함께 최고 도달 웨이브(`best_wave`)를 영구 저장 및 불러오기 지원. 타이틀 화면("최고 기록: X 웨이브 (MM:SS)") 및 게임 오버 화면("최고 기록!" 배지) 표시, 통산 기록 화면에 최고 웨이브 및 사용한 얼음 폭발 횟수 추가.
 
 ### 개선됨 (Improved)
 * 무기 선택 휠 균일 간격: 고정 각도 패딩 대신 일정한 선형 간격(12px)을 적용하여, 슬라이스 사이의 틈새가 안쪽에서 바깥쪽까지 균일하고 평행하게 유지되도록 개선.

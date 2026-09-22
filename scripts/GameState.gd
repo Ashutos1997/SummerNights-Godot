@@ -60,6 +60,34 @@ const ACHIEVEMENTS: Dictionary = {
 		"title_kr": "플레어 사냥꾼",
 		"desc_en": "Intercept 10 Solar Flares.",
 		"desc_kr": "태양 플레어를 10회 요격하세요."
+	},
+	"wave_survivor": {
+		"icon": "res://assets/ui/achievements/sunset.png",
+		"title_en": "Endurance",
+		"title_kr": "인내심",
+		"desc_en": "Survive 25 waves in Endless Mode.",
+		"desc_kr": "엔들리스 모드에서 25웨이브를 생존하세요."
+	},
+	"wave_master": {
+		"icon": "res://assets/ui/achievements/trophy.png",
+		"title_en": "Marathon Runner",
+		"title_kr": "마라톤 주자",
+		"desc_en": "Survive 50 waves in Endless Mode.",
+		"desc_kr": "엔들리스 모드에서 50웨이브를 생존하세요."
+	},
+	"weapon_mastery": {
+		"icon": "res://assets/ui/achievements/water-recycling.png",
+		"title_en": "Arsenal Expert",
+		"title_kr": "무기 전문가",
+		"desc_en": "Use all 5 weapons in a single run.",
+		"desc_kr": "한 게임에서 5개의 무기를 모두 사용하세요."
+	},
+	"ice_breaker": {
+		"icon": "res://assets/ui/achievements/water-splash.png",
+		"title_en": "Ice Breaker",
+		"title_kr": "얼음 파괴자",
+		"desc_en": "Use Ice Blast 50 times.",
+		"desc_kr": "얼음 폭발을 통산 50회 사용하세요."
 	}
 }
 
@@ -299,10 +327,12 @@ var is_dev_mode: bool = false
 var current_wave: int = 1
 var survival_time: float = 0.0
 var best_survival_time: float = 0.0
+var best_wave: int = 0
 var current_score: int = 0
 var high_score: int = 0
 var seagulls_shooed: int = 0
 var flares_intercepted: int = 0
+var total_ice_blasts: int = 0
 var total_water_sprayed: float = 0.0
 var total_deaths: int = 0
 
@@ -387,6 +417,7 @@ const WAVE_PERKS: Dictionary = {
 }
 
 var active_wave_perks: Array[String] = []
+var weapons_used_this_run: Array[String] = []
 
 var crit_damage_mult: float = 1.0
 var catastrom_charge_mult: float = 1.0
@@ -408,6 +439,7 @@ func reset() -> void:
 	catastrom_charge_mult = 1.0
 	sun_sway_mult = 1.0
 	active_wave_perks.clear()
+	weapons_used_this_run.clear()
 	_evaluate_milestones()
 
 func _ready() -> void:
@@ -438,8 +470,11 @@ func save_settings() -> void:
 	config.set_value("Localization", "language", language)
 	config.set_value("Stats", "high_score", high_score)
 	config.set_value("Stats", "unlocked_achievements", unlocked_achievements)
+	config.set_value("Stats", "best_survival_time", best_survival_time)
+	config.set_value("Stats", "best_wave", best_wave)
 	config.set_value("Stats", "seagulls_shooed", seagulls_shooed)
 	config.set_value("Stats", "flares_intercepted", flares_intercepted)
+	config.set_value("Stats", "total_ice_blasts", total_ice_blasts)
 	config.set_value("Stats", "total_water_sprayed", total_water_sprayed)
 	config.set_value("Stats", "total_deaths", total_deaths)
 	config.set_value("Stats", "has_completed_tutorial", has_completed_tutorial)
@@ -472,9 +507,11 @@ func load_settings() -> void:
 				filter_ps1 = false
 				filter_heatwave = false
 		best_survival_time = config.get_value("Stats", "best_survival_time", 0.0)
+		best_wave = config.get_value("Stats", "best_wave", 0)
 		high_score = config.get_value("Stats", "high_score", 0)
 		seagulls_shooed = config.get_value("Stats", "seagulls_shooed", 0)
 		flares_intercepted = config.get_value("Stats", "flares_intercepted", 0)
+		total_ice_blasts = config.get_value("Stats", "total_ice_blasts", 0)
 		total_water_sprayed = config.get_value("Stats", "total_water_sprayed", 0.0)
 		total_deaths = config.get_value("Stats", "total_deaths", 0)
 		has_completed_tutorial = config.get_value("Stats", "has_completed_tutorial", false)
@@ -483,13 +520,19 @@ func load_settings() -> void:
 		
 		# Apply loaded fullscreen state with a slight delay to ensure macOS window server is ready
 		# Do not check window_get_mode() immediately, as MacOS might still be in transition
-		var apply_timer = get_tree().create_timer(0.1)
-		apply_timer.timeout.connect(func():
+		if is_inside_tree() and get_tree():
+			var apply_timer = get_tree().create_timer(0.1)
+			apply_timer.timeout.connect(func():
+				if fullscreen:
+					_apply_window_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+				else:
+					_apply_window_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+			)
+		else:
 			if fullscreen:
 				_apply_window_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 			else:
 				_apply_window_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-		)
 
 func _apply_window_mode(mode: int) -> void:
 	DisplayServer.window_set_mode(mode)
@@ -579,6 +622,16 @@ func get_achievement_progress(id: String) -> String:
 			return " (%d/50)" % min(seagulls_shooed, 50)
 		"flare_catcher":
 			return " (%d/10)" % min(flares_intercepted, 10)
+		"wave_survivor":
+			var cur_w = max(0, (current_wave - 1) if is_survival_mode else (best_wave - 1 if best_wave > 1 else 0))
+			return " (%d/25)" % min(cur_w, 25)
+		"wave_master":
+			var cur_w = max(0, (current_wave - 1) if is_survival_mode else (best_wave - 1 if best_wave > 1 else 0))
+			return " (%d/50)" % min(cur_w, 50)
+		"weapon_mastery":
+			return " (%d/5)" % min(weapons_used_this_run.size(), 5)
+		"ice_breaker":
+			return " (%d/50)" % min(total_ice_blasts, 50)
 		_:
 			return ""
 
@@ -604,6 +657,24 @@ func get_achievement_progress_data(id: String) -> Dictionary:
 		"flare_catcher":
 			max_val = 10
 			cur = 10 if unlocked else min(flares_intercepted, 10)
+			progress_str = "%d / %d" % [cur, max_val]
+		"wave_survivor":
+			max_val = 25
+			var cur_w = max(0, (current_wave - 1) if is_survival_mode else (best_wave - 1 if best_wave > 1 else 0))
+			cur = 25 if unlocked else min(cur_w, 25)
+			progress_str = "%d / %d" % [cur, max_val]
+		"wave_master":
+			max_val = 50
+			var cur_w = max(0, (current_wave - 1) if is_survival_mode else (best_wave - 1 if best_wave > 1 else 0))
+			cur = 50 if unlocked else min(cur_w, 50)
+			progress_str = "%d / %d" % [cur, max_val]
+		"weapon_mastery":
+			max_val = 5
+			cur = 5 if unlocked else min(weapons_used_this_run.size(), 5)
+			progress_str = "%d / %d" % [cur, max_val]
+		"ice_breaker":
+			max_val = 50
+			cur = 50 if unlocked else min(total_ice_blasts, 50)
 			progress_str = "%d / %d" % [cur, max_val]
 		"slam_dunk", "untouchable", "rock_solid", "shadow_walker":
 			max_val = 1

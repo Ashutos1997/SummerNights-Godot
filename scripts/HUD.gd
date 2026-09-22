@@ -2590,20 +2590,26 @@ func show_lose_screen() -> void:
 		if GameState.is_survival_mode:
 			var m = int(GameState.survival_time) / 60
 			var s = int(GameState.survival_time) % 60
+			var is_new_best_wave = GameState.current_wave > GameState.best_wave
+			var is_new_best_time = GameState.survival_time > GameState.best_survival_time
+			
 			if GameState.language == "KR":
-				lose_level_lbl.text = "도달 웨이브: %d" % GameState.current_wave
+				lose_level_lbl.text = "도달 웨이브: %d%s" % [GameState.current_wave, " (최고 기록!)" if is_new_best_wave else ""]
 			else:
-				lose_level_lbl.text = "WAVES CLEARED: %d" % GameState.current_wave
+				lose_level_lbl.text = "WAVE REACHED: %d%s" % [GameState.current_wave, " (NEW BEST!)" if is_new_best_wave else ""]
 			
 			if lose_wave_time_lbl:
 				lose_wave_time_lbl.show()
 				if GameState.language == "KR":
-					lose_wave_time_lbl.text = "생존 시간: %02d:%02d" % [m, s]
+					lose_wave_time_lbl.text = "생존 시간: %02d:%02d%s" % [m, s, " (최고 기록!)" if is_new_best_time and not is_new_best_wave else ""]
 				else:
-					lose_wave_time_lbl.text = "SURVIVAL TIME: %02d:%02d" % [m, s]
+					lose_wave_time_lbl.text = "SURVIVAL TIME: %02d:%02d%s" % [m, s, " (NEW BEST!)" if is_new_best_time and not is_new_best_wave else ""]
 			
-			if GameState.survival_time > GameState.best_survival_time:
+			if is_new_best_time:
 				GameState.best_survival_time = GameState.survival_time
+			if is_new_best_wave:
+				GameState.best_wave = GameState.current_wave
+			if is_new_best_time or is_new_best_wave:
 				GameState.save_settings()
 		else:
 			lose_level_lbl.text = "%02d 단계 실패" % GameState.level if GameState.language == "KR" else "LEVEL %02d FAILED" % GameState.level

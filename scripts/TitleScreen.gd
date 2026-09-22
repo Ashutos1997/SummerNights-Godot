@@ -228,8 +228,8 @@ func _update_language() -> void:
 				tw.tween_property(en_label, "theme_override_colors/font_color", Color(0.0, 0.0, 0.0, 1.0), 0.25)
 				tw.tween_property(kr_label, "theme_override_colors/font_color", Color(1.0, 0.85, 0.2, 1.0), 0.25)
 		
-		# Best Time Display
-		if GameState.best_survival_time > 0.0:
+		# Best Time & Wave Display
+		if GameState.best_survival_time > 0.0 or GameState.best_wave > 0:
 			if not best_time_lbl:
 				best_time_lbl = Label.new()
 				$ColorRect/VBoxContainer.add_child(best_time_lbl)
@@ -237,11 +237,21 @@ func _update_language() -> void:
 				
 			var m = int(GameState.best_survival_time) / 60
 			var s = int(GameState.best_survival_time) % 60
-			best_time_lbl.text = "최고 기록: %02d:%02d" % [m, s] if is_kr else "BEST ENDLESS TIME: %02d:%02d" % [m, s]
+			var time_str = "%02d:%02d" % [m, s]
+			if GameState.best_wave > 0 and GameState.best_survival_time > 0.0:
+				best_time_lbl.text = "최고 기록: %d 웨이브 (%s)" % [GameState.best_wave, time_str] if is_kr else "BEST ENDLESS: WAVE %d (%s)" % [GameState.best_wave, time_str]
+			elif GameState.best_wave > 0:
+				best_time_lbl.text = "최고 웨이브: %d" % GameState.best_wave if is_kr else "BEST ENDLESS: WAVE %d" % GameState.best_wave
+			else:
+				best_time_lbl.text = "최고 기록: %s" % time_str if is_kr else "BEST ENDLESS TIME: %s" % time_str
 			best_time_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			_style_label(best_time_lbl, 16 if is_kr else 14, Color(0.4, 0.9, 0.4, 1.0), font)
 			best_time_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
 			best_time_lbl.add_theme_constant_override("outline_size", 4)
+			# Breathing room above best time line
+			var best_time_style = StyleBoxEmpty.new()
+			best_time_style.content_margin_top = 6
+			best_time_lbl.add_theme_stylebox_override("normal", best_time_style)
 			
 		# High Score Display
 		if high_score_lbl:
@@ -258,6 +268,10 @@ func _update_language() -> void:
 				_style_label(high_score_lbl, 18 if is_kr else 16, Color(0.4, 0.9, 0.4, 1.0), font)
 				high_score_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
 				high_score_lbl.add_theme_constant_override("outline_size", 4)
+				# Breathing room above high score line
+				var hs_style = StyleBoxEmpty.new()
+				hs_style.content_margin_top = 4
+				high_score_lbl.add_theme_stylebox_override("normal", hs_style)
 			else:
 				high_score_lbl.visible = false
 			
@@ -427,6 +441,9 @@ func _start_game(is_survival: bool, is_dev: bool = false) -> void:
 	is_starting = true
 	GameState.reset()
 	GameState.is_survival_mode = is_survival
+	if is_survival and GameState.best_wave < 1:
+		GameState.best_wave = 1
+		GameState.save_settings()
 	
 	if is_dev:
 		GameState.is_dev_mode = true
@@ -1103,8 +1120,8 @@ func _build_stats_screen() -> void:
 	
 	var stats_list = VBoxContainer.new()
 	stats_list.name = "StatsList"
-	stats_list.custom_minimum_size = Vector2(500, 250)
-	stats_list.add_theme_constant_override("separation", 16)
+	stats_list.custom_minimum_size = Vector2(520, 0)
+	stats_list.add_theme_constant_override("separation", 12)
 	vbox.add_child(stats_list)
 	
 	var back_btn = Button.new()
@@ -1199,6 +1216,8 @@ func _show_stats() -> void:
 		{"label_en": "WATER SPRAYED", "label_kr": "분사한 물의 양", "value": format_int.call(int(GameState.total_water_sprayed)) + (" L" if is_kr else " L")},
 		{"label_en": "FLARES INTERCEPTED", "label_kr": "요격한 태양 플레어", "value": format_int.call(GameState.flares_intercepted)},
 		{"label_en": "SEAGULLS SHOOED", "label_kr": "쫓아낸 갈매기 수", "value": format_int.call(GameState.seagulls_shooed)},
+		{"label_en": "ICE BLASTS USED", "label_kr": "사용한 얼음 폭발", "value": format_int.call(GameState.total_ice_blasts)},
+		{"label_en": "BEST ENDLESS WAVE", "label_kr": "엔들리스 최고 웨이브", "value": ("%d 웨이브" % GameState.best_wave) if is_kr else ("WAVE %d" % GameState.best_wave)},
 		{"label_en": "SUPERNOVAS", "label_kr": "초신성 폭발 (사망)", "value": format_int.call(GameState.total_deaths)},
 		{"label_en": "HIGHEST SCORE", "label_kr": "최고 점수", "value": format_int.call(GameState.high_score)},
 		{"label_en": "ACHIEVEMENTS", "label_kr": "달성한 업적", "value": str(GameState.unlocked_achievements.size()) + " / " + str(GameState.ACHIEVEMENTS.keys().size())}

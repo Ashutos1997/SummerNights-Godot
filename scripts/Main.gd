@@ -154,6 +154,10 @@ func _on_weapon_changed(w_id: String) -> void:
 
 func _do_weapon_swap(w_id: String) -> void:
 	GameState.current_weapon_id = w_id
+	if not w_id in GameState.weapons_used_this_run:
+		GameState.weapons_used_this_run.append(w_id)
+		if GameState.weapons_used_this_run.size() >= 5:
+			GameState.unlock_achievement("weapon_mastery")
 	_load_weapon_model()
 	
 	# The model is now loaded at default position. Let's hide it and animate it popping up.
@@ -2381,6 +2385,10 @@ func _process(delta: float) -> void:
 			
 		water_tank -= WATER_DRAIN_RATE * delta
 		GameState.total_water_sprayed += WATER_DRAIN_RATE * delta
+		if not GameState.current_weapon_id in GameState.weapons_used_this_run:
+			GameState.weapons_used_this_run.append(GameState.current_weapon_id)
+			if GameState.weapons_used_this_run.size() >= 5:
+				GameState.unlock_achievement("weapon_mastery")
 		gun_spray.emitting = true
 		
 		# Subtle accessibility-friendly recoil kick (push gun and camera back slightly)
@@ -3176,6 +3184,13 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			if sun_defeated_sfx: sun_defeated_sfx.play()
 			if not GameState.is_dev_mode:
 				GameState.current_wave += 1
+				if GameState.current_wave > GameState.best_wave:
+					GameState.best_wave = GameState.current_wave
+					GameState.save_settings()
+				if (GameState.current_wave - 1) >= 25:
+					GameState.unlock_achievement("wave_survivor")
+				if (GameState.current_wave - 1) >= 50:
+					GameState.unlock_achievement("wave_master")
 			GameState.ice_charges_remaining = min(10, GameState.ice_charges_remaining + 1)
 			
 			# Boss wave reward
@@ -3939,6 +3954,10 @@ func _trigger_phase2() -> void:
 
 func _shoot_ice() -> void:
 	GameState.ice_charges_remaining -= 1
+	GameState.total_ice_blasts += 1
+	GameState.save_settings()
+	if GameState.total_ice_blasts >= 50:
+		GameState.unlock_achievement("ice_breaker")
 	var total = max_survival_ice_charges if GameState.is_survival_mode else current_config.ice_charges
 	total += GameState.bonus_ice_charges
 	hud.update_ice_charges(GameState.ice_charges_remaining, total)
