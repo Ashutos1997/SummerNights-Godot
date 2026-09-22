@@ -265,7 +265,7 @@ func _update_language() -> void:
 					formatted_score = score_str[score_str.length() - 1 - i] + formatted_score
 				
 				high_score_lbl.text = "최고 점수: %s" % formatted_score if is_kr else "HIGH SCORE: %s" % formatted_score
-				_style_label(high_score_lbl, 18 if is_kr else 16, Color(0.4, 0.9, 0.4, 1.0), font)
+				_style_label(high_score_lbl, 16 if is_kr else 14, Color(0.4, 0.9, 0.4, 1.0), font)
 				high_score_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
 				high_score_lbl.add_theme_constant_override("outline_size", 4)
 				# Breathing room above high score line
