@@ -51,7 +51,7 @@ This document serves as the master record for all currently implemented features
 * **Rogue Waves:** Massive waves crash onto the island, temporarily darkening the wet sand.
 * **Sky & Atmosphere:** Day/night cycles, parallax clouds, procedural starfields, and cinematic bloom.
 * **Sun Expressions:** Sun face reacts dynamically to being hit, critical hits, charging flares, and Catastrom dunks.
-* **Seagulls & Fireflies:** React dynamically to weather events (Rain, Eclipse, Wind).
+* **Articulated Low-Poly Seagulls & Fireflies:** Fully procedural low-poly seagulls featuring a multi-joint avian wing rig (Shoulder and Elbow articulation) with aerodynamic upstroke folding and downstroke extension, vertical body bobbing with wing thrust, dynamic banking into orbital turns, flap-and-glide cycles with dihedral V-wings, living ground idle behaviors (pecking at sand, head-turn scanning, neatly tucked wings), and panicked escape launches with feather bursts that react dynamically to weather events (Rain, Eclipse, Wind) and player interactions.
 * **Retro Filters:** Optional post-processing shaders (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
 
 ## 7. UI & Game Feel

@@ -13,6 +13,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Weapon Wheel Uniform Spacing: Replaced fixed angular wedge padding with a constant linear gap width (12px), making the spacing between all wheel slices parallel, even, and consistent from inner to outer radius.
 * Weapon Wheel Info Panel (Option C): Overhauled the weapon wheel bottom information panel with a high-readability arcade layout featuring centered weapon archetype badges (`BALANCED`, `HIGH IMPACT`, `HIGH CRIT`, etc.), mini-gauge bars for cooling power and water capacity, and a distinct critical multiplier readout. Added a faint golden hairline divider (`Color(1.0, 0.85, 0.2, 0.28)`) for clear visual separation between gun title and stats, expanded vertical breathing room (88px height), and standardized typography with Kenney Future for weapon titles and Inter-Medium for all body labels, values, and unlock banners (and Galmuri11 across all text in Korean).
 * Weapon Wheel Stat Bars: Made PWR and CAP progress bars responsive (`SIZE_EXPAND_FILL`) so they stretch to fill the available container width instead of staying fixed at 76px. Increased internal spacing within each stat group (label → meter → value) from 6px to 10px for better readability.
+* Procedural Multi-Joint Seagull Rig & Flight Dynamics: Upgraded the low-poly seagulls from single-hinge flat board flapping to an articulated 2-joint avian wing rig (Shoulder and Elbow articulation) with aerodynamic upstroke folding and downstroke extension. Added vertical body bobbing with wing downstrokes, dynamic banking into orbital turns, natural flap-and-glide cycles with dihedral V-wings, living ground idle behaviors (pecking at the sand, randomized look-around scanning, and neatly tucked wings against the body), and panicked escape launches with feather bursts that react dynamically to water splashes, magma rocks, and eclipses.
 
 ## [v1.5.5] - 2026-09-22
 *(Note: This release corresponds to v1.5 on itch.io)*
@@ -238,6 +239,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 무기 선택 휠 균일 간격: 고정 각도 패딩 대신 일정한 선형 간격(12px)을 적용하여, 슬라이스 사이의 틈새가 안쪽에서 바깥쪽까지 균일하고 평행하게 유지되도록 개선.
 * 무기 정보 패널 개선 (Option C): 무기 선택 휠 하단 정보창을 직관적인 아케이드 스타일로 개편하여 수직 정렬된 무기 아키타입 태그(밸런스, 고화력, 고치명타 등), 파워 및 용량 미니 게이지 바, 치명타 배율 배지를 추가. 무기명과 능력치 사이에 은은한 골드 헤어라인 구분선(`Color(1.0, 0.85, 0.2, 0.28)`)을 배치하여 시각적 구분을 강화하고, 카드 높이 확장(88px)과 여백 조정을 통해 레이아웃 안정성을 확보. 영어 모드에서는 무기 이름에 Kenney Future, 본문 및 수치에 Inter-Medium을 분리 적용하며, 한국어 모드에서는 전체 텍스트에 Galmuri11을 일관되게 적용.
 * 무기 휠 스탯 바 개선: PWR 및 CAP 게이지 바를 반응형(`SIZE_EXPAND_FILL`)으로 변경하여 고정 76px 대신 컨테이너 너비에 맞게 자동 확장되도록 개선. 각 스탯 그룹 내부(라벨 → 게이지 → 수치) 간격을 6px에서 10px로 확대하여 가독성 향상.
+* 절차적 다관절 갈매기 리그 및 비행 역학 개선: 단순 단일 힌지 날갯짓 방식을 벗어나, 어깨와 팔꿈치 관절로 세분화된 2관절 날개 리그를 도입하여 상승 날갯짓 시 공기 저항을 줄이며 날개를 접고 하강 날갯짓 시 날개를 활짝 펴는 실제 조류 공기역학 모션을 구현. 날개 추진력에 따른 수직 몸체 바운싱, 선회 반경에 따른 동적 뱅킹 롤, 이면각(V자) 활공 주기, 모래사장에 앉았을 때의 생생한 대기 행동(모래 쪼기, 좌우 고개 두리번거리기, 몸통에 단정히 접힌 날개 포즈), 그리고 물총/마그마 암석/일식 반응 시 깃털 폭발과 함께 급상승하는 탈출 플러터 애니메이션을 적용.
 
 ## [v1.5.5] - 2026-09-22
 *(참고: 이 릴리스는 itch.io의 v1.5 버전에 해당합니다)*
