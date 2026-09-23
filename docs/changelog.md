@@ -10,12 +10,12 @@ All notable changes to the Summer Nights project will be documented in this file
 * Best Endless Wave Tracking: Added persistent `best_wave` tracking that saves/loads alongside survival time, displays on the title screen ("BEST ENDLESS: WAVE X (MM:SS)"), includes an in-game "NEW BEST!" celebration badge upon game over, and records to the Lifetime Stats screen alongside new Ice Blasts Used metrics.
 
 ### Improved
-* Weapon Wheel Uniform Spacing: Replaced fixed angular wedge padding with a constant linear gap width (12px), making the spacing between all wheel slices parallel, even, and consistent from inner to outer radius.
-* Weapon Wheel Info Panel (Option C): Overhauled the weapon wheel bottom information panel with a high-readability arcade layout featuring centered weapon archetype badges (`BALANCED`, `HIGH IMPACT`, `HIGH CRIT`, etc.), mini-gauge bars for cooling power and water capacity, and a distinct critical multiplier readout. Added a faint golden hairline divider (`Color(1.0, 0.85, 0.2, 0.28)`) for clear visual separation between gun title and stats, expanded vertical breathing room (88px height), and standardized typography with Kenney Future for weapon titles and Inter-Medium for all body labels, values, and unlock banners (and Galmuri11 across all text in Korean).
-* Weapon Wheel Stat Bars: Made PWR and CAP progress bars responsive (`SIZE_EXPAND_FILL`) so they stretch to fill the available container width instead of staying fixed at 76px. Increased internal spacing within each stat group (label → meter → value) from 6px to 10px for better readability.
-* Procedural Multi-Joint Seagull Rig & Flight Dynamics: Upgraded the low-poly seagulls from single-hinge flat board flapping to an articulated 2-joint avian wing rig (Shoulder and Elbow articulation) with aerodynamic upstroke folding and downstroke extension. Added vertical body bobbing with wing downstrokes, dynamic banking into orbital turns, natural flap-and-glide cycles with dihedral V-wings, living ground idle behaviors (pecking at the sand, randomized look-around scanning, and neatly tucked wings against the body), and panicked escape launches with feather bursts that react dynamically to water splashes, magma rocks, and eclipses.
-* Cloud Depth Parallax: Linked cloud drift speed dynamically to Z depth in CloudLayer.gd, allowing closer clouds to drift slightly faster while distant horizon clouds move gracefully slower, providing natural 3D atmospheric perspective without gameplay impact.
-* Flare Interception Golden Ember Pop: Added a high-energy radiant golden ember particle burst with bloom when extinguishing solar flares with water, making tactical flare interceptions feel punchy and rewarding.
+* Weapon Wheel Uniform Spacing: Replaced fixed angular wedge padding with a constant 12px linear gap, keeping slice borders parallel from inner to outer radius.
+* Weapon Wheel Info Panel: Overhauled bottom card layout with centered archetype tags, mini-meter stat bars, critical multiplier badge, golden hairline divider, and standardized typography.
+* Weapon Wheel Stat Bars: Made PWR and CAP progress bars responsive (`SIZE_EXPAND_FILL`) to fit container width, and increased stat group spacing to 10px.
+* Procedural Multi-Joint Seagull Rig: Upgraded seagulls with an articulated 2-joint wing rig (Shoulder/Elbow), aerodynamic folding, thrust bobbing, banked turns, dihedral gliding, and reactive escape behaviors.
+* Cloud Depth Parallax: Linked cloud drift speed dynamically to Z depth in CloudLayer.gd, creating natural atmospheric depth with faster near clouds and slower horizon drift.
+* Flare Interception Golden Ember Pop: Added a high-energy radiant golden ember particle burst with bloom when extinguishing solar flares with water.
 
 ## [v1.5.5] - 2026-09-22
 *(Note: This release corresponds to v1.5 on itch.io)*
@@ -238,12 +238,12 @@ All notable changes to the Summer Nights project will be documented in this file
 * 엔들리스 모드 최고 웨이브 추적: 생존 시간과 함께 최고 도달 웨이브(`best_wave`)를 영구 저장 및 불러오기 지원. 타이틀 화면("최고 기록: X 웨이브 (MM:SS)") 및 게임 오버 화면("최고 기록!" 배지) 표시, 통산 기록 화면에 최고 웨이브 및 사용한 얼음 폭발 횟수 추가.
 
 ### 개선됨 (Improved)
-* 무기 선택 휠 균일 간격: 고정 각도 패딩 대신 일정한 선형 간격(12px)을 적용하여, 슬라이스 사이의 틈새가 안쪽에서 바깥쪽까지 균일하고 평행하게 유지되도록 개선.
-* 무기 정보 패널 개선 (Option C): 무기 선택 휠 하단 정보창을 직관적인 아케이드 스타일로 개편하여 수직 정렬된 무기 아키타입 태그(밸런스, 고화력, 고치명타 등), 파워 및 용량 미니 게이지 바, 치명타 배율 배지를 추가. 무기명과 능력치 사이에 은은한 골드 헤어라인 구분선(`Color(1.0, 0.85, 0.2, 0.28)`)을 배치하여 시각적 구분을 강화하고, 카드 높이 확장(88px)과 여백 조정을 통해 레이아웃 안정성을 확보. 영어 모드에서는 무기 이름에 Kenney Future, 본문 및 수치에 Inter-Medium을 분리 적용하며, 한국어 모드에서는 전체 텍스트에 Galmuri11을 일관되게 적용.
-* 무기 휠 스탯 바 개선: PWR 및 CAP 게이지 바를 반응형(`SIZE_EXPAND_FILL`)으로 변경하여 고정 76px 대신 컨테이너 너비에 맞게 자동 확장되도록 개선. 각 스탯 그룹 내부(라벨 → 게이지 → 수치) 간격을 6px에서 10px로 확대하여 가독성 향상.
-* 절차적 다관절 갈매기 리그 및 비행 역학 개선: 단순 단일 힌지 날갯짓 방식을 벗어나, 어깨와 팔꿈치 관절로 세분화된 2관절 날개 리그를 도입하여 상승 날갯짓 시 공기 저항을 줄이며 날개를 접고 하강 날갯짓 시 날개를 활짝 펴는 실제 조류 공기역학 모션을 구현. 날개 추진력에 따른 수직 몸체 바운싱, 선회 반경에 따른 동적 뱅킹 롤, 이면각(V자) 활공 주기, 모래사장에 앉았을 때의 생생한 대기 행동(모래 쪼기, 좌우 고개 두리번거리기, 몸통에 단정히 접힌 날개 포즈), 그리고 물총/마그마 암석/일식 반응 시 깃털 폭발과 함께 급상승하는 탈출 플러터 애니메이션을 적용.
-* 구름 깊이 시차(패럴랙스) 개선: CloudLayer.gd에서 구름 이동 속도를 Z축 깊이에 동적으로 연동하여, 가까운 구름은 상대적으로 빠르게 흐르고 먼 지평선 구름은 느리게 이동하도록 구현해 게임플레이 방해 없이 자연스러운 3D 원근감을 부여.
-* 태양 플레어 요격 골든 엠버 팝: 물줄기로 태양 플레어를 성공적으로 요격 및 소화했을 때 스팀 연기와 함께 찬란한 황금빛 불티(엠버) 파티클이 사방으로 터져나오는 시각 피드백을 추가하여 요격 성공 시의 손맛과 쾌감을 대폭 강화.
+* 무기 선택 휠 균일 간격: 고정 각도 패딩 대신 일정한 12px 선형 간격을 적용하여 슬라이스 사이 틈새를 평행하게 유지.
+* 무기 정보 패널 개선: 직관적인 아케이드 카드 레이아웃 적용 (아키타입 태그, 파워/용량 미니 게이지, 치명타 배율 배지, 골드 헤어라인 구분선, 폰트 규격화).
+* 무기 휠 스탯 바 개선: PWR/CAP 게이지 바 반응형 확장(`SIZE_EXPAND_FILL`) 및 내부 간격(10px) 확대로 가독성 향상.
+* 절차적 다관절 갈매기 리그: 어깨/팔꿈치 2관절 날개 접기 역학, 비행 추력 바운싱, 뱅킹 선회, 활공 주기, 모래사장 대기 및 탈출 상호작용 구현.
+* 구름 깊이 시차(패럴랙스) 개선: CloudLayer.gd에서 구름 이동 속도를 Z축 깊이에 연동하여 원근감 넘치는 자연스러운 3D 하늘 흐름 구현.
+* 태양 플레어 요격 골든 엠버 팝: 물줄기로 태양 플레어를 소화할 때 사방으로 터지는 황금빛 불티(엠버) 파티클 피드백 추가.
 
 ## [v1.5.5] - 2026-09-22
 *(참고: 이 릴리스는 itch.io의 v1.5 버전에 해당합니다)*

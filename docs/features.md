@@ -49,18 +49,18 @@ This document serves as the master record for all currently implemented features
 ## 6. Environment & Visuals
 * **Dynamic Ocean:** Procedural Gerstner waves, Voronoi caustics, and subsurface scattering.
 * **Rogue Waves:** Massive waves crash onto the island, temporarily darkening the wet sand.
-* **Sky & Atmosphere:** Day/night cycles, depth-parallax drifting clouds (CloudLayer.gd), procedural starfields, and cinematic bloom.
-* **Sun Expressions:** Sun face reacts dynamically to being hit, critical hits, charging flares, and Catastrom dunks.
-* **Articulated Low-Poly Seagulls & Fireflies:** Fully procedural low-poly seagulls featuring a multi-joint avian wing rig (Shoulder and Elbow articulation) with aerodynamic upstroke folding and downstroke extension, vertical body bobbing with wing thrust, dynamic banking into orbital turns, flap-and-glide cycles with dihedral V-wings, living ground idle behaviors (pecking at sand, head-turn scanning, neatly tucked wings), and panicked escape launches with feather bursts that react dynamically to weather events (Rain, Eclipse, Wind) and player interactions.
+* **Sky & Atmosphere:** Day/night cycles, depth-parallax drifting clouds, procedural starfields, and bloom.
+* **Sun Expressions:** Sun face reacts dynamically to damage, critical hits, charging flares, and Catastrom dunks.
+* **Articulated Low-Poly Seagulls:** Procedural seagulls with 2-joint wing rigging (aerodynamic folding), flight physics, orbital banking, beach foraging, and reactive escape behaviors.
 * **Retro Filters:** Optional post-processing shaders (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
 
 ## 7. UI & Game Feel
-* **Juice:** Screen shake on impacts, dynamic drop shadows, scaling/bouncing UI elements, UI audio ticks, and rewarding radiant golden ember pop particle bursts on solar flare interceptions.
+* **Juice:** Screen shake on impacts, dynamic drop shadows, bouncing UI elements, UI audio ticks, and golden ember bursts on flare interceptions.
 * **Crosshairs:** Dynamic diegetic crosshairs for each weapon that track water capacity visually.
-* **Achievements & Buffs:** Comprehensive in-game achievement system expanded to 12 achievements (including wave milestones *Endurance* and *Marathon Runner*, *Arsenal Expert*, and *Ice Breaker*) with dedicated status readouts (mini gold progress bars and numerical counters for locked achievements, completion badges for unlocked ones) that unlocks permanent buffs and tracks lifetime stats (water sprayed, flares intercepted, seagulls shooed, ice blasts used, and best endless wave).
-* **Endless Wave & Best Wave Tracking:** Real-time and persistent tracking of the highest wave reached in Endless Mode (`best_wave`), surfaced directly on the Title Screen banner ("BEST ENDLESS: WAVE X (MM:SS)"), within the Lifetime Stats modal, and with dynamic "(NEW BEST!)" celebration badges on the game over screen.
+* **Achievements & Buffs:** 12 unlockable achievements with live HUD progress tracking, permanent stat buffs, and lifetime stat tracking.
+* **Endless Wave & Best Wave Tracking:** Persistent tracking of highest Endless wave reached, displayed on Title Screen, Stats modal, and Game Over screen.
 * **Menus:** Unified golden borders, 96px margins, centered/left-aligned layouts, and full Gamepad navigation.
-* **Custom "Made with Godot" Boot Splash:** Bespoke startup sequence featuring a seamless dark engine boot (`#05030d`), an isolated dark void hiding in-game 3D assets during branding, progressive golden vector border drawing, official monochrome Godot Engine logo with letter-tracked gold header, synchronized PS1 synth swell audio (`ps1_startup.wav`), and a dramatic curtain reveal that unveils the 3D beach sunset as the title menu slides in.
+* **Custom "Made with Godot" Boot Splash:** Bespoke intro sequence with golden border drawing, monochrome Godot logo, PS1 synth swell audio, and curtain reveal.
 * **Accessibility:** Full Xbox Controller support with haptics/aim-assist, "Reduce Motion" setting, and EN/KR localization.
 
 ## 8. Audio
