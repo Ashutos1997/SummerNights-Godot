@@ -41,7 +41,10 @@ func _spawn_clouds() -> void:
 		var start_x = rng.randf_range(-bounds_x, bounds_x)
 		var start_y = rng.randf_range(min_y, max_y)
 		var start_z = rng.randf_range(min_z, max_z)
-		var speed = rng.randf_range(min_speed, max_speed)
+		
+		# Depth parallax: closer clouds (higher Z, nearer -20) drift faster than distant horizon clouds (nearer -75)
+		var depth_t = clamp((start_z - min_z) / (max_z - min_z), 0.0, 1.0)
+		var speed = lerp(min_speed, max_speed, depth_t) * rng.randf_range(0.9, 1.1)
 		
 		# Varied scale range from small wispy clouds to large billowy clouds (0.8x to 4.2x)
 		var scale_factor = rng.randf_range(0.8, 4.2)
@@ -102,7 +105,12 @@ func _process(delta: float) -> void:
 		if node.position.x > bounds_x:
 			node.position.x = -bounds_x
 			node.position.y = randf_range(min_y, max_y)
+			node.position.z = randf_range(min_z, max_z)
 			c["base_y"] = node.position.y
+			
+			# Re-calculate depth parallax speed for new depth
+			var depth_t = clamp((node.position.z - min_z) / (max_z - min_z), 0.0, 1.0)
+			c["speed"] = lerp(min_speed, max_speed, depth_t) * randf_range(0.9, 1.1)
 			
 			# Re-randomize size & aspect ratio on wrap for endless variety
 			var sf = randf_range(0.8, 4.2)

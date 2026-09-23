@@ -4102,6 +4102,41 @@ func _spawn_flare_explosion(pos: Vector3) -> void:
 	add_child(poof)
 	get_tree().create_timer(1.0).timeout.connect(poof.queue_free)
 	
+	# Golden Ember Pop Burst (rewarding radiant sparks on flare interception)
+	var embers = GPUParticles3D.new()
+	var e_mat = ParticleProcessMaterial.new()
+	e_mat.direction = Vector3(0, 1, 0)
+	e_mat.spread = 180.0
+	e_mat.initial_velocity_min = 7.0
+	e_mat.initial_velocity_max = 13.0
+	e_mat.damping_min = 4.0
+	e_mat.damping_max = 7.0
+	e_mat.gravity = Vector3(0, -2.5, 0)
+	e_mat.scale_min = 0.4
+	e_mat.scale_max = 0.9
+	
+	var ember_mesh = QuadMesh.new()
+	ember_mesh.size = Vector2(0.12, 0.12)
+	var ember_mat = StandardMaterial3D.new()
+	ember_mat.albedo_color = Color(1.0, 0.9, 0.4, 0.95) # Radiant gold
+	ember_mat.emission_enabled = true
+	ember_mat.emission = Color(1.0, 0.75, 0.2) # Warm gold-amber bloom
+	ember_mat.emission_energy_multiplier = 5.0
+	ember_mat.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+	ember_mesh.material = ember_mat
+	
+	embers.process_material = e_mat
+	embers.draw_pass_1 = ember_mesh
+	embers.emitting = true
+	embers.one_shot = true
+	embers.explosiveness = 0.95
+	embers.amount = 28
+	embers.lifetime = 0.65
+	embers.global_position = pos
+	
+	add_child(embers)
+	get_tree().create_timer(1.0).timeout.connect(embers.queue_free)
+	
 	# Spawn 3-5 magma rock debris
 	var num_rocks = randi_range(3, 5)
 	for i in range(num_rocks):

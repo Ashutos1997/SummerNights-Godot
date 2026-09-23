@@ -106,7 +106,7 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 - Water stream combo system that scales your combo multiplier up to 3.0x for continuous tracking, boosting Catastrom ultimate charging
 - Dynamic Scoring System intertwined with the combo multiplier, rewarding continuous cooling, flare interceptions, and debris evaporation, while saving your high score persistently
 - Solar wind gusts that push your aim sideways with GPU particle streak visuals
-- Procedural drifting 3D low-poly clouds (CloudLayer.gd)
+- Procedural drifting 3D low-poly clouds with depth-based parallax (CloudLayer.gd)
 - Articulated procedural low-poly seagulls with multi-joint wing rigging, flight dynamics, landing logic, and water interactions (SeagullLayer.gd)
 - Wind sway on palm trees and bushes
 - Custom GLSL shaders for sky, heat haze, pause blur, and ocean ripples

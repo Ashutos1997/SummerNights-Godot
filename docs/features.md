@@ -49,13 +49,13 @@ This document serves as the master record for all currently implemented features
 ## 6. Environment & Visuals
 * **Dynamic Ocean:** Procedural Gerstner waves, Voronoi caustics, and subsurface scattering.
 * **Rogue Waves:** Massive waves crash onto the island, temporarily darkening the wet sand.
-* **Sky & Atmosphere:** Day/night cycles, parallax clouds, procedural starfields, and cinematic bloom.
+* **Sky & Atmosphere:** Day/night cycles, depth-parallax drifting clouds (CloudLayer.gd), procedural starfields, and cinematic bloom.
 * **Sun Expressions:** Sun face reacts dynamically to being hit, critical hits, charging flares, and Catastrom dunks.
 * **Articulated Low-Poly Seagulls & Fireflies:** Fully procedural low-poly seagulls featuring a multi-joint avian wing rig (Shoulder and Elbow articulation) with aerodynamic upstroke folding and downstroke extension, vertical body bobbing with wing thrust, dynamic banking into orbital turns, flap-and-glide cycles with dihedral V-wings, living ground idle behaviors (pecking at sand, head-turn scanning, neatly tucked wings), and panicked escape launches with feather bursts that react dynamically to weather events (Rain, Eclipse, Wind) and player interactions.
 * **Retro Filters:** Optional post-processing shaders (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
 
 ## 7. UI & Game Feel
-* **Juice:** Screen shake on impacts, dynamic drop shadows, scaling/bouncing UI elements, UI audio ticks.
+* **Juice:** Screen shake on impacts, dynamic drop shadows, scaling/bouncing UI elements, UI audio ticks, and rewarding radiant golden ember pop particle bursts on solar flare interceptions.
 * **Crosshairs:** Dynamic diegetic crosshairs for each weapon that track water capacity visually.
 * **Achievements & Buffs:** Comprehensive in-game achievement system expanded to 12 achievements (including wave milestones *Endurance* and *Marathon Runner*, *Arsenal Expert*, and *Ice Breaker*) with dedicated status readouts (mini gold progress bars and numerical counters for locked achievements, completion badges for unlocked ones) that unlocks permanent buffs and tracks lifetime stats (water sprayed, flares intercepted, seagulls shooed, ice blasts used, and best endless wave).
 * **Endless Wave & Best Wave Tracking:** Real-time and persistent tracking of the highest wave reached in Endless Mode (`best_wave`), surfaced directly on the Title Screen banner ("BEST ENDLESS: WAVE X (MM:SS)"), within the Lifetime Stats modal, and with dynamic "(NEW BEST!)" celebration badges on the game over screen.
