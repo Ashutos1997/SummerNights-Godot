@@ -1515,12 +1515,7 @@ func _apply_language(lang: String) -> void:
 		lose_subtitle_lbl.add_theme_constant_override("outline_size", 4)
 		lose_subtitle_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 	if lose_level_lbl:
-		lose_level_lbl.text = "%02d 단계 실패" % GameState.level if is_kr else "LEVEL %02d FAILED" % GameState.level
-		if font: lose_level_lbl.add_theme_font_override("font", font)
-		lose_level_lbl.add_theme_font_size_override("font_size", 20 if is_kr else 18)
-		lose_level_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.7))
-		lose_level_lbl.add_theme_constant_override("outline_size", 4)
-		lose_level_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		lose_level_lbl.hide()
 	if lose_wave_time_lbl:
 		lose_wave_time_lbl.hide()
 	if retry_btn:
@@ -2586,30 +2581,166 @@ func _on_supernova_triggered() -> void:
 func _on_timer_expired() -> void:
 	show_lose_screen()
 
+func _build_recap_stat_row(icon_path: String, label_text: String, value_text: String, is_new_best: bool = false, badge_text: String = "", is_kr: bool = false) -> HBoxContainer:
+	var row = HBoxContainer.new()
+	row.custom_minimum_size = Vector2(380, 32)
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	row.add_theme_constant_override("separation", 10)
+	
+	# Retro Icon Plate (32x32)
+	var plate = PanelContainer.new()
+	plate.custom_minimum_size = Vector2(32, 32)
+	plate.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
+	var plate_style = StyleBoxFlat.new()
+	plate_style.bg_color = Color(0.08, 0.05, 0.12, 0.75)
+	plate_style.border_color = Color(1.0, 0.85, 0.2, 0.5)
+	plate_style.set_border_width_all(1)
+	plate_style.set_corner_radius_all(4)
+	plate.add_theme_stylebox_override("panel", plate_style)
+	
+	var icon_rect = TextureRect.new()
+	icon_rect.texture = load(icon_path)
+	icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon_rect.custom_minimum_size = Vector2(20, 20)
+	icon_rect.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	icon_rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	icon_rect.modulate = Color(1.0, 0.85, 0.2, 1.0)
+	plate.add_child(icon_rect)
+	row.add_child(plate)
+	
+	# Stat Label
+	var name_lbl = Label.new()
+	name_lbl.text = label_text
+	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	name_lbl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var body_font = galmuri_font if is_kr else load("res://assets/fonts/Inter-Medium.ttf")
+	_style_lbl(name_lbl, 16 if is_kr else 15, Color(1.0, 1.0, 1.0, 0.85), 2, Color.BLACK, body_font)
+	row.add_child(name_lbl)
+	
+	# Expanding Spacer
+	var spacer = Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(spacer)
+	
+	# Value Label
+	var val_lbl = Label.new()
+	val_lbl.text = value_text
+	val_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	val_lbl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var val_font = galmuri_font if is_kr else kenney_font
+	_style_lbl(val_lbl, 16 if is_kr else 18, Color(1.0, 0.85, 0.2, 1.0), 2, Color.BLACK, val_font)
+	row.add_child(val_lbl)
+	
+	# Milestone Badge (if new best)
+	if is_new_best and badge_text != "":
+		var badge = PanelContainer.new()
+		badge.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var b_style = StyleBoxFlat.new()
+		b_style.bg_color = Color(1.0, 0.85, 0.2, 0.15)
+		b_style.border_color = Color(1.0, 0.85, 0.2, 0.8)
+		b_style.set_border_width_all(1)
+		b_style.set_corner_radius_all(3)
+		b_style.content_margin_left = 6
+		b_style.content_margin_right = 6
+		b_style.content_margin_top = 2
+		b_style.content_margin_bottom = 2
+		badge.add_theme_stylebox_override("panel", b_style)
+		
+		var badge_lbl = Label.new()
+		badge_lbl.text = badge_text
+		var b_font = galmuri_font if is_kr else kenney_font
+		_style_lbl(badge_lbl, 11 if is_kr else 10, Color(1.0, 0.85, 0.2, 1.0), 1, Color.BLACK, b_font)
+		badge.add_child(badge_lbl)
+		row.add_child(badge)
+		
+	return row
+
 func show_lose_screen() -> void:
 	if not lose_screen: return
 	if weapon_wheel and weapon_wheel.active:
 		weapon_wheel.close()
 	Engine.time_scale = 1.0
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	
+	# Hide legacy bare labels
 	if lose_level_lbl:
+		lose_level_lbl.hide()
+	if lose_wave_time_lbl:
+		lose_wave_time_lbl.hide()
+		
+	var is_kr = GameState.language == "KR"
+	
+	var format_int = func(num: int) -> String:
+		var num_str = str(num)
+		var res = ""
+		for i in range(num_str.length()):
+			if i > 0 and i % 3 == 0:
+				res = "," + res
+			res = num_str[num_str.length() - 1 - i] + res
+		return res
+		
+	var lose_vbox = lose_screen.get_node_or_null("ColorRect/VBoxContainer")
+	if lose_vbox:
+		var stats_container = lose_vbox.get_node_or_null("LoseStatsContainer")
+		if not stats_container:
+			stats_container = VBoxContainer.new()
+			stats_container.name = "LoseStatsContainer"
+			stats_container.custom_minimum_size = Vector2(380, 0)
+			stats_container.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+			stats_container.alignment = BoxContainer.ALIGNMENT_CENTER
+			stats_container.add_theme_constant_override("separation", 10)
+			lose_vbox.add_child(stats_container)
+			if retry_btn:
+				lose_vbox.move_child(stats_container, retry_btn.get_index())
+		else:
+			for child in stats_container.get_children():
+				child.queue_free()
+				
 		if GameState.is_survival_mode:
 			var m = int(GameState.survival_time) / 60
 			var s = int(GameState.survival_time) % 60
 			var is_new_best_wave = GameState.current_wave > GameState.best_wave
 			var is_new_best_time = GameState.survival_time > GameState.best_survival_time
+			var is_new_best_score = GameState.current_score >= GameState.high_score and GameState.current_score > 0
 			
-			if GameState.language == "KR":
-				lose_level_lbl.text = "도달 웨이브: %d%s" % [GameState.current_wave, " (최고 기록!)" if is_new_best_wave else ""]
-			else:
-				lose_level_lbl.text = "WAVE REACHED: %d%s" % [GameState.current_wave, " (NEW BEST!)" if is_new_best_wave else ""]
+			var wave_val = ("%d 웨이브" % GameState.current_wave) if is_kr else ("WAVE %d" % GameState.current_wave)
+			var wave_row = _build_recap_stat_row(
+				"res://assets/ui/achievements/sunset.png",
+				"도달 웨이브" if is_kr else "WAVE REACHED",
+				wave_val,
+				is_new_best_wave,
+				"최고 기록!" if is_kr else "NEW BEST!",
+				is_kr
+			)
+			stats_container.add_child(wave_row)
 			
-			if lose_wave_time_lbl:
-				lose_wave_time_lbl.show()
-				if GameState.language == "KR":
-					lose_wave_time_lbl.text = "생존 시간: %02d:%02d%s" % [m, s, " (최고 기록!)" if is_new_best_time and not is_new_best_wave else ""]
-				else:
-					lose_wave_time_lbl.text = "SURVIVAL TIME: %02d:%02d%s" % [m, s, " (NEW BEST!)" if is_new_best_time and not is_new_best_wave else ""]
+			var time_val = "%02d:%02d" % [m, s]
+			var time_row = _build_recap_stat_row(
+				"res://assets/ui/menu_icons/pause.png",
+				"생존 시간" if is_kr else "SURVIVAL TIME",
+				time_val,
+				is_new_best_time,
+				"최고 기록!" if is_kr else "NEW BEST!",
+				is_kr
+			)
+			stats_container.add_child(time_row)
+			
+			var score_val = format_int.call(GameState.current_score)
+			var score_row = _build_recap_stat_row(
+				"res://assets/ui/achievements/trophy.png",
+				"최종 점수" if is_kr else "FINAL SCORE",
+				score_val,
+				is_new_best_score,
+				"최고 기록!" if is_kr else "HIGH SCORE!",
+				is_kr
+			)
+			stats_container.add_child(score_row)
 			
 			if is_new_best_time:
 				GameState.best_survival_time = GameState.survival_time
@@ -2618,9 +2749,29 @@ func show_lose_screen() -> void:
 			if is_new_best_time or is_new_best_wave:
 				GameState.save_settings()
 		else:
-			lose_level_lbl.text = "%02d 단계 실패" % GameState.level if GameState.language == "KR" else "LEVEL %02d FAILED" % GameState.level
-			if lose_wave_time_lbl:
-				lose_wave_time_lbl.hide()
+			var is_new_best_score = GameState.current_score >= GameState.high_score and GameState.current_score > 0
+			var level_val = ("%02d 단계" % GameState.level) if is_kr else ("LEVEL %02d" % GameState.level)
+			var level_row = _build_recap_stat_row(
+				"res://assets/ui/achievements/sunset.png",
+				"도전한 단계" if is_kr else "LEVEL ATTEMPTED",
+				level_val,
+				false,
+				"",
+				is_kr
+			)
+			stats_container.add_child(level_row)
+			
+			var score_val = format_int.call(GameState.current_score)
+			var score_row = _build_recap_stat_row(
+				"res://assets/ui/achievements/trophy.png",
+				"최종 점수" if is_kr else "FINAL SCORE",
+				score_val,
+				is_new_best_score,
+				"최고 기록!" if is_kr else "HIGH SCORE!",
+				is_kr
+			)
+			stats_container.add_child(score_row)
+			
 	lose_screen.visible = true
 	lose_screen.modulate.a = 0.0
 	var tw = create_tween()

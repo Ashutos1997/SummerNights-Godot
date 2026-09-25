@@ -40,7 +40,7 @@ This document serves as the master record for all currently implemented features
 * **Solar Wind:** Physical wind that pushes player crosshairs sideways.
 * **Heat Mirage (Boss):** Spawns two decoy suns and a collective Overshield that must be broken.
 * **High Heat Warnings:** Sun boils steam at 75% heat; screen pulses red and heartbeat plays at 85% heat.
-* **Supernova (Game Over):** Reaching 100% heat triggers a dramatic supernova explosion cinematic.
+* **Supernova (Game Over):** Reaching 100% heat triggers a dramatic supernova explosion cinematic followed by a clean frameless stats recap (32x32 retro plates with gold monochrome icons, localized labels, values, and milestone badges).
 
 ## 5. Dynamic Weather
 * **Rainstorms:** Massive downpour provides infinite water and passive sun cooling.

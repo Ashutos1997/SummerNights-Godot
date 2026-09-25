@@ -46,6 +46,7 @@ This document outlines the UI design system, color palette, typography, and comp
 * **Drafting Screen (Perk Cards):** Tactile staggered card deal entrance (`Tween` scale pop and alpha fade) accompanied by rhythmic audio ticks. Features 6px drop shadows and rarity badges (`[ RARE ]`, `[ UNCOMMON ]`, `[ COMMON ]`) with color-tinted borders.
 * **Achievement & Buff Card Plates:** 3-column layout inside 700x100 cards. Icons sit inside 64x64 retro flat plates (4px radii; 1px gold border for unlocked with gold monochrome icons, 1px steel border for locked with darkened mystery silhouettes). Status column displays mini gold progress bars (8px, 4px radii) or cyber gold completion badges (`[ ✔ COMPLETED ]` / `[ ✔ 완료 ]`).
 * **Stats Menu Icon Plates:** 32x32 retro flat plates (`4px` corner radii, `1px` gold border `Color(1.0, 0.85, 0.2, 0.5)`) housing `20x20` gold monochrome category icons for each stat entry.
+* **Game Over Frameless Stats Flow:** Dynamic stat recap rows (380px wide, centered) featuring 32x32 retro flat plates (4px radii, 1px gold border) with 20x20 gold monochrome icons, Inter-Medium (EN) / Galmuri11 (KR) labels, Kenney Future (EN) / Galmuri11 (KR) values, and inline cyber-gold milestone badges (`[ NEW BEST! ]` / `[ 최고 기록! ]`) flowing directly inside the screen without nested box containers.
 
 ### Boot Splash & Startup Continuity
 * **Engine Window Launch:** Window initializes directly with the theme's dark background `Color(0.02, 0.01, 0.05, 1)` with stock boot splash disabled, avoiding grey screen flashes.
