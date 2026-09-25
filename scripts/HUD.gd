@@ -935,10 +935,10 @@ func _build_settings_category_headers(font: Font) -> void:
 		
 		return wrap
 
-	# 1. AUDIO category (before RowSFX) - 8px margin gives 18px total gap from Divider
+	# 1. AUDIO category (before RowSFX) - 10px margin gives 22px total gap from Divider
 	var cat_audio = vbox.get_node_or_null("CatHeaderAudio")
 	if not cat_audio:
-		cat_audio = make_cat.call("CatHeaderAudio", "AUDIO", "오디오", 8)
+		cat_audio = make_cat.call("CatHeaderAudio", "AUDIO", "오디오", 10)
 		var sfx_row = vbox.get_node_or_null("RowSFX")
 		if sfx_row:
 			vbox.add_child(cat_audio)
@@ -947,10 +947,10 @@ func _build_settings_category_headers(font: Font) -> void:
 			vbox.add_child(cat_audio)
 	settings_cat_audio_lbl = cat_audio.get_node_or_null("HBox/Plate/Label")
 
-	# 2. GAMEPLAY & CONTROLS category (before RowSens) - 14px margin gives 24px total gap from RowSFX
+	# 2. GAMEPLAY & CONTROLS category (before RowSens) - 16px margin gives 28px total gap from RowSFX
 	var cat_gameplay = vbox.get_node_or_null("CatHeaderGameplay")
 	if not cat_gameplay:
-		cat_gameplay = make_cat.call("CatHeaderGameplay", "GAMEPLAY & CONTROLS", "조작 및 편의", 14)
+		cat_gameplay = make_cat.call("CatHeaderGameplay", "GAMEPLAY & CONTROLS", "조작 및 편의", 16)
 		var sens_row = vbox.get_node_or_null("RowSens")
 		if sens_row:
 			vbox.add_child(cat_gameplay)
@@ -959,10 +959,10 @@ func _build_settings_category_headers(font: Font) -> void:
 			vbox.add_child(cat_gameplay)
 	settings_cat_gameplay_lbl = cat_gameplay.get_node_or_null("HBox/Plate/Label")
 
-	# 3. DISPLAY & SYSTEM category (before RowFullscreen) - 14px margin gives 24px total gap from RowVibration
+	# 3. DISPLAY & SYSTEM category (before RowFullscreen) - 16px margin gives 28px total gap from RowVibration
 	var cat_system = vbox.get_node_or_null("CatHeaderSystem")
 	if not cat_system:
-		cat_system = make_cat.call("CatHeaderSystem", "DISPLAY & SYSTEM", "화면 및 시스템", 14)
+		cat_system = make_cat.call("CatHeaderSystem", "DISPLAY & SYSTEM", "화면 및 시스템", 16)
 		var fs_row = vbox.get_node_or_null("RowFullscreen")
 		if fs_row:
 			vbox.add_child(cat_system)
@@ -971,10 +971,10 @@ func _build_settings_category_headers(font: Font) -> void:
 			vbox.add_child(cat_system)
 	settings_cat_system_lbl = cat_system.get_node_or_null("HBox/Plate/Label")
 
-	# Bottom divider breathing room (16px separation)
+	# Bottom divider breathing room (18px separation)
 	var div2 = vbox.get_node_or_null("Divider2")
 	if div2:
-		div2.add_theme_constant_override("separation", 16)
+		div2.add_theme_constant_override("separation", 18)
 
 func _build_lang_row(font: Font) -> void:
 	var vbox = $HUD/SettingsScreen/CenterContainer/VBoxContainer

@@ -23,7 +23,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Game Over Frameless Stats Flow: Replaced bare end-of-run labels with a clean, dynamic frameless stats recap (32x32 retro plates with gold monochrome icons, localized typography, and inline milestone badges for Wave Reached, Survival Time, and Final Score) avoiding nested container clutter.
 * Settings Categorized Section Badges: Grouped settings rows into 3 distinct logical sections ("AUDIO", "GAMEPLAY & CONTROLS", "DISPLAY & SYSTEM") using tactile retro plate badges (4px radii, gold border), trailing golden hairline rules, balanced section clearance (36px between categories, 26px title/footer gap), and dynamic bilingual typography.
 * Settings Row Label Typography Contrast: Refined row label colors from uniform gold to high-contrast off-white body text (`Color(0.92, 0.92, 0.92, 0.95)`), establishing clear visual hierarchy between gold category badges/interactive controls and option labels.
-* Settings Compact Layout: Tightened vertical spacing (VBox 16→10px, title 32→28px, row labels 20→17px, category margins 20→14px, divider2 24→16px, buttons 40→34px, back 44→38px) to reclaim ~160px of vertical breathing room on 720p.
+* Settings Refined Spacing: Fine-tuned vertical separation (VBox 10→12px, category clearance 28px, divider2 18px) to provide balanced breathing room between rows while preserving comfortable 70px+ top/bottom clearance on 720p.
 
 ### Known Issues (Critical)
 * Fullscreen End-of-Run Dimming: Win ("Cool Down") and Lose ("The Sun Won") screens render at low brightness in Normal and Endless modes despite modulate 1.0. Root rendering cause under active investigation.
@@ -265,7 +265,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 게임 오버 프레임리스 기록 플로우: 기존 단순 텍스트 라벨을 중첩 박스 없이 깔끔한 동적 프레임리스 기록 요약(32x32 레트로 플레이트, 골드 모노크롬 아이콘, 국/영문 폰트 규격화, 도달 웨이브/생존 시간/최종 점수 및 신기록 인라인 배지)으로 개편.
 * 설정 메뉴 카테고리 섹션 배지: 설정 항목들을 3개의 논리적 섹션("오디오", "조작 및 편의", "화면 및 시스템")으로 구조화하고, 4px 모서리 곡률의 골드 테두리 레트로 플레이트 배지, 골드 헤어라인 구분선, 균형 잡힌 섹션 여백(카테고리 간 36px, 상/하단 26px), 실시간 국/영문 폰트 동기화를 적용.
 * 설정 메뉴 항목 라벨 시각적 대비 개선: 모든 항목 라벨 색상을 기존 단색 골드에서 고대비 오프화이트 본문 텍스트(`Color(0.92, 0.92, 0.92, 0.95)`)로 개편하여, 골드 카테고리 배지 및 대화형 컨트롤(슬라이더, 토글)과의 시각적 위계를 명확히 분리.
-* 설정 메뉴 콤팩트 레이아웃 최적화: 수직 여백 최적화 (VBox 16→10px, 타이틀 32→28px, 항목 라벨 20→17px, 카테고리 마진 20→14px, 하단 구분선 24→16px, 토글 버튼 40→34px, 뒤로가기 44→38px)로 720p 기준 ~160px의 상/하단 여유 공간 확보.
+* 설정 메뉴 여백 미세 조정: 수직 요소 간격(VBox 10→12px, 카테고리 여백 28px, 하단 구분선 18px)을 미세 조정하여 항목 간 쾌적한 호흡 공간을 부여하는 동시에 720p 기준 70px 이상의 상/하단 여유 공간 유지.
 
 ### 알려진 문제 (Known Issues - Critical)
 * 전체화면 라운드 종료 화면 밝기 저하: 일반 및 무한 모드 모두에서 승리("Cool Down") 및 패배("The Sun Won") 화면의 UI modulate 값이 1.0임에도 불구하고 화면이 어둡게 렌더링되는 중요 버그 발생. 렌더링 원인 추적 및 해결 진행 중.
