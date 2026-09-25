@@ -635,7 +635,7 @@ func _ready() -> void:
 		if r_node:
 			var r_lbl = r_node.get_node_or_null("Label")
 			if r_lbl:
-				_style_lbl(r_lbl, 20, Color(1.0, 0.85, 0.2, 1.0), 2, Color.BLACK, font)
+				_style_lbl(r_lbl, 20, Color(0.92, 0.92, 0.92, 0.95), 2, Color.BLACK, font)
 				r_lbl.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 
 	for row_name in ["RowColorDepth", "RowDithering", "RowPS1", "RowHeatwave"]:
@@ -643,7 +643,7 @@ func _ready() -> void:
 		if filter_r_node:
 			var r_lbl = filter_r_node.get_node_or_null("Label")
 			if r_lbl:
-				_style_lbl(r_lbl, 20, Color(1.0, 0.85, 0.2, 1.0), 2, Color.BLACK, font)
+				_style_lbl(r_lbl, 20, Color(0.92, 0.92, 0.92, 0.95), 2, Color.BLACK, font)
 				r_lbl.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 
 	# Build categorized section badges for Settings Screen (Option B: Tactile Retro Badges)
@@ -992,7 +992,7 @@ func _build_lang_row(font: Font) -> void:
 	lbl.name = "Label"
 	lbl.text = "Language"
 	lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_style_lbl(lbl, 24, Color(1.0, 0.88, 0.3, 0.95), 2, Color.BLACK, font)
+	_style_lbl(lbl, 20, Color(0.92, 0.92, 0.92, 0.95), 2, Color.BLACK, font)
 	row.add_child(lbl)
 
 	# ENG | KOR inline toggle (matches ON/OFF button visual language)
@@ -1344,11 +1344,11 @@ func _apply_language(lang: String) -> void:
 					r_lbl.text = row_texts_kr[i] if is_kr else row_texts_en[i]
 					if font: r_lbl.add_theme_font_override("font", font)
 					r_lbl.add_theme_font_size_override("font_size", 20)
-					r_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
-					r_lbl.add_theme_color_override("font_hover_color", Color(1.0, 0.85, 0.2, 1.0))
-					r_lbl.add_theme_color_override("font_pressed_color", Color(1.0, 0.85, 0.2, 1.0))
-					r_lbl.add_theme_color_override("font_focus_color", Color(1.0, 0.85, 0.2, 1.0))
-					r_lbl.add_theme_color_override("font_disabled_color", Color(1.0, 0.85, 0.2, 1.0))
+					r_lbl.add_theme_color_override("font_color", Color(0.92, 0.92, 0.92, 0.95))
+					r_lbl.add_theme_color_override("font_hover_color", Color(0.92, 0.92, 0.92, 0.95))
+					r_lbl.add_theme_color_override("font_pressed_color", Color(0.92, 0.92, 0.92, 0.95))
+					r_lbl.add_theme_color_override("font_focus_color", Color(0.92, 0.92, 0.92, 0.95))
+					r_lbl.add_theme_color_override("font_disabled_color", Color(0.92, 0.92, 0.92, 0.95))
 					r_lbl.add_theme_constant_override("outline_size", 2)
 					r_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 
@@ -1407,11 +1407,11 @@ func _apply_language(lang: String) -> void:
 					r_lbl.text = filter_labels[r_name]
 					if font: r_lbl.add_theme_font_override("font", font)
 					r_lbl.add_theme_font_size_override("font_size", 20)
-					r_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
-					r_lbl.add_theme_color_override("font_hover_color", Color(1.0, 0.85, 0.2, 1.0))
-					r_lbl.add_theme_color_override("font_pressed_color", Color(1.0, 0.85, 0.2, 1.0))
-					r_lbl.add_theme_color_override("font_focus_color", Color(1.0, 0.85, 0.2, 1.0))
-					r_lbl.add_theme_color_override("font_disabled_color", Color(1.0, 0.85, 0.2, 1.0))
+					r_lbl.add_theme_color_override("font_color", Color(0.92, 0.92, 0.92, 0.95))
+					r_lbl.add_theme_color_override("font_hover_color", Color(0.92, 0.92, 0.92, 0.95))
+					r_lbl.add_theme_color_override("font_pressed_color", Color(0.92, 0.92, 0.92, 0.95))
+					r_lbl.add_theme_color_override("font_focus_color", Color(0.92, 0.92, 0.92, 0.95))
+					r_lbl.add_theme_color_override("font_disabled_color", Color(0.92, 0.92, 0.92, 0.95))
 					r_lbl.add_theme_constant_override("outline_size", 2)
 					r_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 
