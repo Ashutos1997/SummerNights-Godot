@@ -2430,6 +2430,30 @@ theme_override_font_sizes/font_size = 12
 text = "Boot Splash Frame & Curtain Reveal  ·  Procedural CanvasItem Drawing & Vector Animation  ·  -"
 horizontal_alignment = 1
 
+[node name="ItmCoronalHalo" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "VFX - Coronal Halo & Heat Ripples  ·  Procedural Additive Shader"
+horizontal_alignment = 1
+
+[node name="ItmEmberBurst" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "VFX - Flare Interception Ember Burst  ·  Procedural Golden Particles & Bloom"
+horizontal_alignment = 1
+
+[node name="ItmStatsPlates" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "UI - Lifetime Stats Icon Plates  ·  Procedural Retro Plates & Modulated Icons"
+horizontal_alignment = 1
+
 [node name="SpacerDisclaimer" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
 custom_minimum_size = Vector2(0, 14)
 layout_mode = 2

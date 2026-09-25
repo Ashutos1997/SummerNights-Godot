@@ -1120,8 +1120,8 @@ func _build_stats_screen() -> void:
 	
 	var stats_list = VBoxContainer.new()
 	stats_list.name = "StatsList"
-	stats_list.custom_minimum_size = Vector2(520, 0)
-	stats_list.add_theme_constant_override("separation", 12)
+	stats_list.custom_minimum_size = Vector2(560, 0)
+	stats_list.add_theme_constant_override("separation", 10)
 	vbox.add_child(stats_list)
 	
 	var back_btn = Button.new()
@@ -1213,24 +1213,91 @@ func _show_stats() -> void:
 		return res
 		
 	var stats_data = [
-		{"label_en": "WATER SPRAYED", "label_kr": "분사한 물의 양", "value": format_int.call(int(GameState.total_water_sprayed)) + (" L" if is_kr else " L")},
-		{"label_en": "FLARES INTERCEPTED", "label_kr": "요격한 태양 플레어", "value": format_int.call(GameState.flares_intercepted)},
-		{"label_en": "SEAGULLS SHOOED", "label_kr": "쫓아낸 갈매기 수", "value": format_int.call(GameState.seagulls_shooed)},
-		{"label_en": "ICE BLASTS USED", "label_kr": "사용한 얼음 폭발", "value": format_int.call(GameState.total_ice_blasts)},
-		{"label_en": "BEST ENDLESS WAVE", "label_kr": "엔들리스 최고 웨이브", "value": ("%d 웨이브" % GameState.best_wave) if is_kr else ("WAVE %d" % GameState.best_wave)},
-		{"label_en": "SUPERNOVAS", "label_kr": "초신성 폭발 (사망)", "value": format_int.call(GameState.total_deaths)},
-		{"label_en": "HIGHEST SCORE", "label_kr": "최고 점수", "value": format_int.call(GameState.high_score)},
-		{"label_en": "ACHIEVEMENTS", "label_kr": "달성한 업적", "value": str(GameState.unlocked_achievements.size()) + " / " + str(GameState.ACHIEVEMENTS.keys().size())}
+		{
+			"label_en": "WATER SPRAYED",
+			"label_kr": "분사한 물의 양",
+			"value": format_int.call(int(GameState.total_water_sprayed)) + (" L" if is_kr else " L"),
+			"icon": "res://assets/ui/hud_elements/meter_water.svg"
+		},
+		{
+			"label_en": "FLARES INTERCEPTED",
+			"label_kr": "요격한 태양 플레어",
+			"value": format_int.call(GameState.flares_intercepted),
+			"icon": "res://assets/ui/achievements/fireball.png"
+		},
+		{
+			"label_en": "SEAGULLS SHOOED",
+			"label_kr": "쫓아낸 갈매기 수",
+			"value": format_int.call(GameState.seagulls_shooed),
+			"icon": "res://assets/ui/achievements/seagull.png"
+		},
+		{
+			"label_en": "ICE BLASTS USED",
+			"label_kr": "사용한 얼음 폭발",
+			"value": format_int.call(GameState.total_ice_blasts),
+			"icon": "res://assets/ui/hud_elements/meter_ice.svg"
+		},
+		{
+			"label_en": "BEST ENDLESS WAVE",
+			"label_kr": "엔들리스 최고 웨이브",
+			"value": ("%d 웨이브" % GameState.best_wave) if is_kr else ("WAVE %d" % GameState.best_wave),
+			"icon": "res://assets/ui/achievements/sunset.png"
+		},
+		{
+			"label_en": "SUPERNOVAS",
+			"label_kr": "초신성 폭발 (사망)",
+			"value": format_int.call(GameState.total_deaths),
+			"icon": "res://assets/ui/achievements/ball-glow.png"
+		},
+		{
+			"label_en": "HIGHEST SCORE",
+			"label_kr": "최고 점수",
+			"value": format_int.call(GameState.high_score),
+			"icon": "res://assets/ui/achievements/trophy.png"
+		},
+		{
+			"label_en": "ACHIEVEMENTS",
+			"label_kr": "달성한 업적",
+			"value": str(GameState.unlocked_achievements.size()) + " / " + str(GameState.ACHIEVEMENTS.keys().size()),
+			"icon": "res://assets/ui/menu_icons/achievements.png"
+		}
 	]
 	
 	for s_data in stats_data:
 		var hbox = HBoxContainer.new()
+		hbox.add_theme_constant_override("separation", 14)
 		list.add_child(hbox)
+		
+		# Retro Flat Plate with Gold Accent Border (Option B: Unified Gold Monochrome)
+		var plate = PanelContainer.new()
+		plate.custom_minimum_size = Vector2(32, 32)
+		plate.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		
+		var plate_style = StyleBoxFlat.new()
+		plate_style.bg_color = Color(0.08, 0.05, 0.12, 0.75)
+		plate_style.border_color = Color(1.0, 0.85, 0.2, 0.5)
+		plate_style.set_border_width_all(1)
+		plate_style.set_corner_radius_all(4)
+		plate.add_theme_stylebox_override("panel", plate_style)
+		
+		var icon_rect = TextureRect.new()
+		icon_rect.texture = load(s_data["icon"])
+		icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon_rect.custom_minimum_size = Vector2(20, 20)
+		icon_rect.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		icon_rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		icon_rect.modulate = Color(1.0, 0.85, 0.2, 1.0)
+		plate.add_child(icon_rect)
+		hbox.add_child(plate)
 		
 		var name_lbl = Label.new()
 		name_lbl.text = s_data["label_kr"] if is_kr else s_data["label_en"]
 		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		_style_label(name_lbl, 22, Color(1.0, 1.0, 1.0, 0.8), font)
+		name_lbl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		_style_label(name_lbl, 20, Color(1.0, 1.0, 1.0, 0.85), font)
 		name_lbl.add_theme_constant_override("outline_size", 2)
 		hbox.add_child(name_lbl)
 		
@@ -1241,7 +1308,8 @@ func _show_stats() -> void:
 		var val_lbl = Label.new()
 		val_lbl.text = s_data["value"]
 		val_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		_style_label(val_lbl, 24, Color(1.0, 0.85, 0.2, 1.0), font)
+		val_lbl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		_style_label(val_lbl, 22, Color(1.0, 0.85, 0.2, 1.0), font)
 		val_lbl.add_theme_constant_override("outline_size", 2)
 		hbox.add_child(val_lbl)
 

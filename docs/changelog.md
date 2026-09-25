@@ -17,6 +17,8 @@ All notable changes to the Summer Nights project will be documented in this file
 * Cloud Depth Parallax: Linked cloud drift speed dynamically to Z depth in CloudLayer.gd, creating natural atmospheric depth with faster near clouds and slower horizon drift.
 * Flare Interception Golden Ember Pop: Added a high-energy radiant golden ember particle burst with bloom when extinguishing solar flares with water.
 * Coronal Halo & Heat Waves: Added an unshaded additive coronal halo with organic concentric heat ripples that dynamically pulse, expand, and extinguish with the Sun's temperature (100°C to 0°C).
+* Lifetime Stats Icon Plates: Added 32x32 retro flat plates with gold monochrome category icons to each row in the Lifetime Stats screen.
+* Credits Synchronization: Synchronized in-game HUD Credits screen and bilingual READMEs with attributions for Coronal Halo, Flare Interception Ember Pop, and Lifetime Stats icon plates.
 
 ## [v1.5.5] - 2026-09-22
 *(Note: This release corresponds to v1.5 on itch.io)*
@@ -246,6 +248,8 @@ All notable changes to the Summer Nights project will be documented in this file
 * 구름 깊이 시차(패럴랙스) 개선: CloudLayer.gd에서 구름 이동 속도를 Z축 깊이에 연동하여 원근감 넘치는 자연스러운 3D 하늘 흐름 구현.
 * 태양 플레어 요격 골든 엠버 팝: 물줄기로 태양 플레어를 소화할 때 사방으로 터지는 황금빛 불티(엠버) 파티클 피드백 추가.
 * 코로나 헤일로 및 열파(Heat Waves): 태양 온도(100°C~0°C)에 따라 유기적으로 펄스하며 확산/소화되는 가산 혼합 대기 코로나 아우라 및 동심원 열파 효과 구현.
+* 기록 메뉴 아이콘 플레이트: 기록(Lifetime Stats) 화면의 각 항목에 골드 모노크롬 카테고리 아이콘과 32x32 레트로 플레이트 적용.
+* 크레딧 동기화: 인게임 HUD 크레딧 화면 및 국/영문 README에 대기 코로나 헤일로, 플레어 요격 엠버 팝, 기록 메뉴 아이콘 플레이트 항목 추가 및 동기화.
 
 ## [v1.5.5] - 2026-09-22
 *(참고: 이 릴리스는 itch.io의 v1.5 버전에 해당합니다)*

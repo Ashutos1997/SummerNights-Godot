@@ -220,7 +220,7 @@ SummerNights-Godot/
 | VFX - Ice Blast Projectile & Particles | Procedural Godot Primitives | - |
 | VFX - Physical Magma Debris | Quaternius Rock Models & Godot RigidBody3D | - |
 | VFX - Solar Flare Shield & Deflection Ripple | Procedural Fresnel Shader & Outward Splash Particles | - |
-| Procedural Clouds and Seagulls | Hand-crafted GDScript | - |
+| Procedural Clouds & Avian-Rigged Seagulls | Hand-crafted GDScript & Skeletal Flight Model | - |
 | VFX - Fireflies & Bugs | Procedural GDScript ArrayMesh | - |
 | Sun Face Expressions | Procedural Godot Image draw API | - |
 | Weapon Wheel UI | Procedural GDScript draw API | - |
@@ -232,5 +232,8 @@ SummerNights-Godot/
 | SFX - Catastrom Dunk | Dual Mare Capsem Sound | Fair Use (Fan Project) |
 | Heat Mirage Mechanic | Procedural Translucent Materials & Tweens | - |
 | Boot Splash Frame & Curtain Reveal | Procedural CanvasItem Drawing & Vector Animation | - |
+| VFX - Coronal Halo & Concentric Heat Ripples | Procedural Unshaded Additive Shader & Geometry | - |
+| VFX - Flare Interception Golden Ember Pop | Procedural Radial Particles & Bloom | - |
+| UI - Lifetime Stats Icon Plates | Procedural Retro Flat Plates & Tinted Vector Icons | - |
 
 *Disclaimer: Kamen Rider and related characters (including Kamen Rider Zeztz) are the property of Toei Company, Ltd. and Ishimori Productions. This game is a non-profit, unofficial fan work and is not affiliated with or endorsed by Toei Company.*

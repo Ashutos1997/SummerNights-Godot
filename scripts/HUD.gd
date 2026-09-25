@@ -1432,6 +1432,12 @@ func _apply_language(lang: String) -> void:
 			if itm_shield_vfx: itm_shield_vfx.text = "VFX - 태양 플레어 실드 및 튕김 연출  ·  절차적 프레넬 셰이더 및 외곽 튕김 파티클" if is_kr else "VFX - Solar Flare Shield & Deflection Ripple  ·  Procedural Fresnel Shader & Outward Splash Particles"
 			var itm_boot_splash = credits_list.get_node_or_null("ItmBootSplash")
 			if itm_boot_splash: itm_boot_splash.text = "부트 스플래시 프레임 및 커튼 연출  ·  절차적 CanvasItem 드로잉 및 벡터 애니메이션" if is_kr else "Boot Splash Frame & Curtain Reveal  ·  Procedural CanvasItem Drawing & Vector Animation"
+			var itm_coronal_halo = credits_list.get_node_or_null("ItmCoronalHalo")
+			if itm_coronal_halo: itm_coronal_halo.text = "VFX - 대기 코로나 헤일로 및 동심원 열파  ·  절차적 무음영 가산 셰이더" if is_kr else "VFX - Coronal Halo & Heat Ripples  ·  Procedural Additive Shader"
+			var itm_ember_burst = credits_list.get_node_or_null("ItmEmberBurst")
+			if itm_ember_burst: itm_ember_burst.text = "VFX - 태양 플레어 요격 골든 엠버 팝  ·  절차적 골든 파티클 및 블룸" if is_kr else "VFX - Flare Interception Ember Burst  ·  Procedural Golden Particles & Bloom"
+			var itm_stats_plates = credits_list.get_node_or_null("ItmStatsPlates")
+			if itm_stats_plates: itm_stats_plates.text = "UI - 기록 메뉴 아이콘 플레이트  ·  절차적 레트로 플랫 플레이트 및 변조 아이콘" if is_kr else "UI - Lifetime Stats Icon Plates  ·  Procedural Retro Plates & Modulated Icons"
 
 			var itm_disclaimer = credits_list.get_node_or_null("ItmDisclaimer")
 			if itm_disclaimer:

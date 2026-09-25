@@ -220,7 +220,7 @@ SummerNights-Godot/
 | VFX - 얼음 폭발 발사체 및 입자 효과 | 절차적 고도(Godot) 기본 도형 | - |
 | VFX - 물리적 마그마 파편 (Physical Magma Debris) | Quaternius Rock Models 및 Godot RigidBody3D | - |
 | VFX - 태양 플레어 실드 및 튕김 연출 (Solar Flare Shield & Deflection FX) | 절차적 프레넬 셰이더 및 외곽 튕김 파티클 | - |
-| 절차적 구름 및 갈매기 | 수작업 GDScript | - |
+| 절차적 구름 및 다관절 날개 갈매기 (Clouds & Avian Rigged Seagulls) | 수작업 GDScript 및 다관절 비행 모델 | - |
 | VFX - 반딧불이 및 벌레 (Fireflies & Bugs) | 절차적 GDScript ArrayMesh | - |
 | 태양 표정 (Sun Face) | 절차적 Godot Image draw API | - |
 | 무기 선택 휠 UI | 절차적 GDScript draw API | - |
@@ -232,5 +232,8 @@ SummerNights-Godot/
 | SFX - 카타스트롬 덩크 (Catastrom Dunk) | Dual Mare Capsem Sound | 공정 이용 (팬 프로젝트) |
 | 열기 신기루 (Heat Mirage) | 절차적 반투명 재질 및 Tween (Procedural Materials) | - |
 | 부트 스플래시 프레임 및 커튼 연출 (Boot Splash Frame & Curtain) | 절차적 CanvasItem 드로잉 및 벡터 애니메이션 | - |
+| VFX - 대기 코로나 헤일로 및 동심원 열파 (Coronal Halo & Heat Ripples) | 절차적 무음영 가산 혼합 셰이더 및 지오메트리 | - |
+| VFX - 태양 플레어 요격 골든 엠버 팝 (Flare Interception Ember Pop) | 절차적 방사형 파티클 및 블룸 | - |
+| UI - 기록 메뉴 아이콘 플레이트 (Lifetime Stats Icon Plates) | 절차적 레트로 플랫 플레이트 및 틴트 벡터 아이콘 | - |
 
 *면책 조항: 가면라이더 및 관련 캐릭터(가면라이더 제츠 포함)는 Toei Company, Ltd. 및 Ishimori Productions의 자산입니다. 본 게임은 비영리적인 비공식 팬 창작물이며 Toei Company와 제휴하거나 보증을 받지 않았습니다.*
