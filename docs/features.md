@@ -58,7 +58,7 @@ This document serves as the master record for all currently implemented features
 ## 7. UI & Game Feel
 * **Juice:** Screen shake on impacts, dynamic drop shadows, bouncing UI elements, UI audio ticks, and golden ember bursts on flare interceptions.
 * **Crosshairs:** Dynamic diegetic crosshairs for each weapon that track water capacity visually.
-* **Achievements & Buffs:** 12 unlockable achievements with live HUD progress tracking, permanent stat buffs, and lifetime stat tracking with retro gold icon plates.
+* **Achievements & Buffs:** 12 unlockable achievements with live HUD progress tracking, 64x64 retro flat plates with mystery silhouettes, permanent stat buffs, and lifetime stat tracking.
 * **Endless Wave & Best Wave Tracking:** Persistent tracking of highest Endless wave reached, displayed on Title Screen, Stats modal, and Game Over screen.
 * **Menus:** Unified golden borders, 96px margins, centered/left-aligned layouts, and full Gamepad navigation.
 * **Custom "Made with Godot" Boot Splash:** Bespoke intro sequence with golden border drawing, monochrome Godot logo, PS1 synth swell audio, and curtain reveal.

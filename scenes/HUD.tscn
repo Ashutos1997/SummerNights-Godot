@@ -2451,7 +2451,7 @@ layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.85)
 theme_override_font_sizes/font_size = 12
-text = "UI - Lifetime Stats Icon Plates  ·  Procedural Retro Plates & Modulated Icons"
+text = "UI - Stats & Achievement Icon Plates  ·  Procedural Retro Plates & Modulated Icons"
 horizontal_alignment = 1
 
 [node name="SpacerDisclaimer" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]

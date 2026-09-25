@@ -234,6 +234,6 @@ SummerNights-Godot/
 | 부트 스플래시 프레임 및 커튼 연출 (Boot Splash Frame & Curtain) | 절차적 CanvasItem 드로잉 및 벡터 애니메이션 | - |
 | VFX - 대기 코로나 헤일로 및 동심원 열파 (Coronal Halo & Heat Ripples) | 절차적 무음영 가산 혼합 셰이더 및 지오메트리 | - |
 | VFX - 태양 플레어 요격 골든 엠버 팝 (Flare Interception Ember Pop) | 절차적 방사형 파티클 및 블룸 | - |
-| UI - 기록 메뉴 아이콘 플레이트 (Lifetime Stats Icon Plates) | 절차적 레트로 플랫 플레이트 및 틴트 벡터 아이콘 | - |
+| UI - 기록 및 업적 아이콘 플레이트 (Stats & Achievement Icon Plates) | 절차적 레트로 플랫 플레이트 및 틴트 벡터 아이콘 | - |
 
 *면책 조항: 가면라이더 및 관련 캐릭터(가면라이더 제츠 포함)는 Toei Company, Ltd. 및 Ishimori Productions의 자산입니다. 본 게임은 비영리적인 비공식 팬 창작물이며 Toei Company와 제휴하거나 보증을 받지 않았습니다.*

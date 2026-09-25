@@ -234,6 +234,6 @@ SummerNights-Godot/
 | Boot Splash Frame & Curtain Reveal | Procedural CanvasItem Drawing & Vector Animation | - |
 | VFX - Coronal Halo & Concentric Heat Ripples | Procedural Unshaded Additive Shader & Geometry | - |
 | VFX - Flare Interception Golden Ember Pop | Procedural Radial Particles & Bloom | - |
-| UI - Lifetime Stats Icon Plates | Procedural Retro Flat Plates & Tinted Vector Icons | - |
+| UI - Stats & Achievement Icon Plates | Procedural Retro Flat Plates & Tinted Vector Icons | - |
 
 *Disclaimer: Kamen Rider and related characters (including Kamen Rider Zeztz) are the property of Toei Company, Ltd. and Ishimori Productions. This game is a non-profit, unofficial fan work and is not affiliated with or endorsed by Toei Company.*
