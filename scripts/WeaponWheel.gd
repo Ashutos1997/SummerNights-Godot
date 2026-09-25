@@ -92,6 +92,7 @@ void fragment() {
 	
 	bg_dim.set_anchors_preset(PRESET_FULL_RECT)
 	bg_dim.mouse_filter = MOUSE_FILTER_IGNORE
+	bg_dim.visible = false
 	get_parent().call_deferred("add_child", bg_dim)
 	get_parent().call_deferred("move_child", bg_dim, get_index())
 	
@@ -470,6 +471,7 @@ func open() -> void:
 		var parent = bg_dim.get_parent()
 		parent.move_child(bg_dim, parent.get_child_count() - 1)
 		parent.move_child(self, parent.get_child_count() - 1)
+		bg_dim.visible = true
 	
 	open_tween = create_tween().set_parallel(true).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 	var open_dur = 0.1 if "bird_watcher" in GameState.unlocked_achievements else 0.2
@@ -479,8 +481,22 @@ func open() -> void:
 		open_tween.tween_property(bg_dim.material, "shader_parameter/blur_amount", 2.5, open_dur)
 		open_tween.tween_property(bg_dim.material, "shader_parameter/dim_amount", 0.5, open_dur)
 
+func close_immediate() -> void:
+	active = false
+	modulate.a = 0.0
+	hide()
+	if open_tween: open_tween.kill()
+	if is_instance_valid(bg_dim):
+		bg_dim.visible = false
+		if bg_dim.material:
+			bg_dim.material.set_shader_parameter("blur_amount", 0.0)
+			bg_dim.material.set_shader_parameter("dim_amount", 0.0)
+
 func close() -> void:
-	if not active: return
+	if not active:
+		if is_instance_valid(bg_dim):
+			bg_dim.visible = false
+		return
 	active = false
 	Engine.time_scale = 1.0
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -495,6 +511,10 @@ func close() -> void:
 	if bg_dim and bg_dim.material:
 		open_tween.tween_property(bg_dim.material, "shader_parameter/blur_amount", 0.0, close_dur)
 		open_tween.tween_property(bg_dim.material, "shader_parameter/dim_amount", 0.0, close_dur)
+	open_tween.chain().tween_callback(func():
+		if is_instance_valid(bg_dim):
+			bg_dim.visible = false
+	)
 	
 	if selected_index >= 0 and selected_index < weapons.size():
 		var chosen = weapons[selected_index]

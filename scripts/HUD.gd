@@ -2047,6 +2047,11 @@ func _on_critical_hit() -> void:
 
 
 func _on_sun_defeated(level: int) -> void:
+	if weapon_wheel and weapon_wheel.has_method("close_immediate"):
+		weapon_wheel.close_immediate()
+	elif weapon_wheel and weapon_wheel.active:
+		weapon_wheel.close()
+		
 	if GameState.is_survival_mode:
 		level_label.text = "WAVE %02d" % GameState.current_wave
 	else:
@@ -2058,8 +2063,8 @@ func _on_sun_defeated(level: int) -> void:
 		else:
 			win_level_lbl.text = "LEVEL %02d  COMPLETE" % level
 	
+	win_screen.modulate = Color(1.0, 1.0, 1.0, 1.0)
 	win_screen.visible = true
-	win_screen.modulate.a = 1.0
 	win_screen.scale = Vector2(1.0, 1.0)
 	
 	# Auto-hide logic is now handled explicitly by Main.gd via fade_to_black
@@ -2077,6 +2082,10 @@ func fade_from_black(duration: float = 1.0, hide_win: bool = true) -> Signal:
 	return tw.finished
 
 func show_end_screen() -> void:
+	if weapon_wheel and weapon_wheel.has_method("close_immediate"):
+		weapon_wheel.close_immediate()
+	elif weapon_wheel and weapon_wheel.active:
+		weapon_wheel.close()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	if win_screen: win_screen.visible = false
 	if credits_screen: credits_screen.visible = false
@@ -2178,8 +2187,12 @@ func _input(event: InputEvent) -> void:
 			return
 
 func _pause_game() -> void:
+	if weapon_wheel and weapon_wheel.has_method("close_immediate"):
+		weapon_wheel.close_immediate()
+	elif weapon_wheel and weapon_wheel.active:
+		weapon_wheel.close()
 	pause_screen.visible = true
-	pause_screen.modulate.a = 0.0
+	pause_screen.modulate = Color(1.0, 1.0, 1.0, 0.0)
 	var tw = create_tween()
 	tw.tween_property(pause_screen, "modulate:a", 1.0, 0.25)
 	get_tree().paused = true
@@ -2663,7 +2676,9 @@ func _build_recap_stat_row(icon_path: String, label_text: String, value_text: St
 
 func show_lose_screen() -> void:
 	if not lose_screen: return
-	if weapon_wheel and weapon_wheel.active:
+	if weapon_wheel and weapon_wheel.has_method("close_immediate"):
+		weapon_wheel.close_immediate()
+	elif weapon_wheel and weapon_wheel.active:
 		weapon_wheel.close()
 	Engine.time_scale = 1.0
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -2772,8 +2787,8 @@ func show_lose_screen() -> void:
 			)
 			stats_container.add_child(score_row)
 			
+	lose_screen.modulate = Color(1.0, 1.0, 1.0, 0.0)
 	lose_screen.visible = true
-	lose_screen.modulate.a = 0.0
 	var tw = create_tween()
 	tw.tween_property(lose_screen, "modulate:a", 1.0, 0.4)
 	tw.set_ease(Tween.EASE_OUT)

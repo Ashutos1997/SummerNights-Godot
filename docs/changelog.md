@@ -22,6 +22,12 @@ All notable changes to the Summer Nights project will be documented in this file
 * Achievement & Buff Retro Icon Plates: Enclosed achievement and buff card icons in 64x64 retro flat plates (4px radii; gold border with monochrome gold icon for unlocked, steel border with mystery dark silhouette for locked) across Title Screen and HUD.
 * Game Over Frameless Stats Flow: Replaced bare end-of-run labels with a clean, dynamic frameless stats recap (32x32 retro plates with gold monochrome icons, localized typography, and inline milestone badges for Wave Reached, Survival Time, and Final Score) avoiding nested container clutter.
 
+### Known Issues (Critical)
+* Fullscreen End-of-Run Dimming: Win ("Cool Down") and Lose ("The Sun Won") screens render at low brightness in Normal and Endless modes despite modulate 1.0. Root rendering cause under active investigation.
+
+### Fixed
+* Weapon Wheel Overlay Safety: Guaranteed background blur/dim overlay hides immediately upon closing or switching to full-screen menus.
+
 ## [v1.5.5] - 2026-09-22
 *(Note: This release corresponds to v1.5 on itch.io)*
 
@@ -254,6 +260,12 @@ All notable changes to the Summer Nights project will be documented in this file
 * 크레딧 동기화: 인게임 HUD 크레딧 화면 및 국/영문 README에 대기 코로나 헤일로, 플레어 요격 엠버 팝, 기록 메뉴 아이콘 플레이트 항목 추가 및 동기화.
 * 업적 및 영구 강화 레트로 아이콘 플레이트: 타이틀 화면과 인게임 HUD의 업적 및 버프 카드 아이콘에 64x64 레트로 플랫 플레이트(4px 모서리 곡률, 해금 시 골드 테두리/모노크롬 골드 아이콘, 미해금 시 스틸 테두리/신비로운 실루엣) 적용.
 * 게임 오버 프레임리스 기록 플로우: 기존 단순 텍스트 라벨을 중첩 박스 없이 깔끔한 동적 프레임리스 기록 요약(32x32 레트로 플레이트, 골드 모노크롬 아이콘, 국/영문 폰트 규격화, 도달 웨이브/생존 시간/최종 점수 및 신기록 인라인 배지)으로 개편.
+
+### 알려진 문제 (Known Issues - Critical)
+* 전체화면 라운드 종료 화면 밝기 저하: 일반 및 무한 모드 모두에서 승리("Cool Down") 및 패배("The Sun Won") 화면의 UI modulate 값이 1.0임에도 불구하고 화면이 어둡게 렌더링되는 중요 버그 발생. 렌더링 원인 추적 및 해결 진행 중.
+
+### 수정됨 (Fixed)
+* 무기 선택 휠 오버레이 안전성 강화: 메뉴 전환 및 휠 종료 시 배경 블러/딤 오버레이가 즉시 비활성화되도록 수정.
 
 ## [v1.5.5] - 2026-09-22
 *(참고: 이 릴리스는 itch.io의 v1.5 버전에 해당합니다)*
