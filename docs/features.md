@@ -60,7 +60,7 @@ This document serves as the master record for all currently implemented features
 * **Crosshairs:** Dynamic diegetic crosshairs for each weapon that track water capacity visually.
 * **Achievements & Buffs:** 12 unlockable achievements with live HUD progress tracking, 64x64 retro flat plates with mystery silhouettes, permanent stat buffs, and lifetime stat tracking.
 * **Endless Wave & Best Wave Tracking:** Persistent tracking of highest Endless wave reached, displayed on Title Screen, Stats modal, and Game Over screen.
-* **Menus:** Unified golden borders, 96px margins, centered/left-aligned layouts, and full Gamepad navigation.
+* **Menus:** Unified golden borders, 96px margins, centered/left-aligned layouts, full Gamepad navigation, and categorized Settings sections with tactile retro plate badges.
 * **Custom "Made with Godot" Boot Splash:** Bespoke intro sequence with golden border drawing, monochrome Godot logo, PS1 synth swell audio, and curtain reveal.
 * **Accessibility:** Full Xbox Controller support with haptics/aim-assist, "Reduce Motion" setting, and EN/KR localization.
 

@@ -102,6 +102,9 @@ var last_callout_tier: int = 0
 @onready var vibration_check   = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowVibration/Check
 @onready var fullscreen_check  = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowFullscreen/Check
 @onready var settings_back_btn = $HUD/SettingsScreen/CenterContainer/VBoxContainer/BackBtn
+var settings_cat_audio_lbl: Label = null
+var settings_cat_gameplay_lbl: Label = null
+var settings_cat_system_lbl: Label = null
 
 @onready var filters_screen    = $HUD/FiltersScreen
 @onready var filters_bg        = $HUD/FiltersScreen/BG
@@ -643,6 +646,9 @@ func _ready() -> void:
 				_style_lbl(r_lbl, 20, Color(1.0, 0.85, 0.2, 1.0), 2, Color.BLACK, font)
 				r_lbl.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 
+	# Build categorized section badges for Settings Screen (Option B: Tactile Retro Badges)
+	_build_settings_category_headers(font)
+
 	# Build language row programmatically (below RowFullscreen)
 	_build_lang_row(font)
 
@@ -860,7 +866,102 @@ func _ready() -> void:
 	
 	_setup_controls_ui()
 
-# ---------- Language -------------------------------------------------------
+# ---------- Settings Categories & Language ---------------------------------
+
+func _build_settings_category_headers(font: Font) -> void:
+	var vbox = $HUD/SettingsScreen/CenterContainer/VBoxContainer
+	if not vbox: return
+	
+	var is_kr = GameState.language == "KR"
+	
+	var make_cat = func(node_name: String, title_en: String, title_kr: String) -> HBoxContainer:
+		var row = HBoxContainer.new()
+		row.name = node_name
+		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_theme_constant_override("separation", 12)
+		row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		
+		# Retro Plate Badge (PanelContainer)
+		var plate = PanelContainer.new()
+		plate.name = "Plate"
+		plate.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		
+		var p_style = StyleBoxFlat.new()
+		p_style.bg_color = Color(1.0, 0.85, 0.2, 0.12)
+		p_style.border_color = Color(1.0, 0.85, 0.2, 0.5)
+		p_style.set_border_width_all(1)
+		p_style.set_corner_radius_all(4)
+		p_style.content_margin_left = 10
+		p_style.content_margin_right = 10
+		p_style.content_margin_top = 2
+		p_style.content_margin_bottom = 2
+		plate.add_theme_stylebox_override("panel", p_style)
+		
+		var lbl = Label.new()
+		lbl.name = "Label"
+		lbl.text = title_kr if is_kr else title_en
+		var cur_font = galmuri_font if is_kr else kenney_font
+		if cur_font: lbl.add_theme_font_override("font", cur_font)
+		lbl.add_theme_font_size_override("font_size", 14 if is_kr else 13)
+		lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+		lbl.add_theme_constant_override("outline_size", 1)
+		lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		plate.add_child(lbl)
+		row.add_child(plate)
+		
+		# Trailing Hairline Separator (HSeparator)
+		var sep = HSeparator.new()
+		sep.name = "Hairline"
+		sep.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		sep.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		sep.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		
+		var line_style = StyleBoxLine.new()
+		line_style.color = Color(1.0, 0.85, 0.2, 0.28)
+		line_style.thickness = 1
+		line_style.vertical = false
+		sep.add_theme_stylebox_override("separator", line_style)
+		row.add_child(sep)
+		
+		return row
+
+	# 1. AUDIO category (before RowSFX)
+	var cat_audio = vbox.get_node_or_null("CatHeaderAudio")
+	if not cat_audio:
+		cat_audio = make_cat.call("CatHeaderAudio", "AUDIO", "오디오")
+		var sfx_row = vbox.get_node_or_null("RowSFX")
+		if sfx_row:
+			vbox.add_child(cat_audio)
+			vbox.move_child(cat_audio, sfx_row.get_index())
+		else:
+			vbox.add_child(cat_audio)
+	settings_cat_audio_lbl = cat_audio.get_node_or_null("Plate/Label")
+
+	# 2. GAMEPLAY & CONTROLS category (before RowSens)
+	var cat_gameplay = vbox.get_node_or_null("CatHeaderGameplay")
+	if not cat_gameplay:
+		cat_gameplay = make_cat.call("CatHeaderGameplay", "GAMEPLAY & CONTROLS", "조작 및 편의")
+		var sens_row = vbox.get_node_or_null("RowSens")
+		if sens_row:
+			vbox.add_child(cat_gameplay)
+			vbox.move_child(cat_gameplay, sens_row.get_index())
+		else:
+			vbox.add_child(cat_gameplay)
+	settings_cat_gameplay_lbl = cat_gameplay.get_node_or_null("Plate/Label")
+
+	# 3. DISPLAY & SYSTEM category (before RowFullscreen)
+	var cat_system = vbox.get_node_or_null("CatHeaderSystem")
+	if not cat_system:
+		cat_system = make_cat.call("CatHeaderSystem", "DISPLAY & SYSTEM", "화면 및 시스템")
+		var fs_row = vbox.get_node_or_null("RowFullscreen")
+		if fs_row:
+			vbox.add_child(cat_system)
+			vbox.move_child(cat_system, fs_row.get_index())
+		else:
+			vbox.add_child(cat_system)
+	settings_cat_system_lbl = cat_system.get_node_or_null("Plate/Label")
 
 func _build_lang_row(font: Font) -> void:
 	var vbox = $HUD/SettingsScreen/CenterContainer/VBoxContainer
@@ -1237,6 +1338,23 @@ func _apply_language(lang: String) -> void:
 					r_lbl.add_theme_color_override("font_disabled_color", Color(1.0, 0.85, 0.2, 1.0))
 					r_lbl.add_theme_constant_override("outline_size", 2)
 					r_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+
+		# Categorized Section Badges
+		if settings_cat_audio_lbl:
+			settings_cat_audio_lbl.text = "오디오" if is_kr else "AUDIO"
+			var cur_font = galmuri_font if is_kr else kenney_font
+			if cur_font: settings_cat_audio_lbl.add_theme_font_override("font", cur_font)
+			settings_cat_audio_lbl.add_theme_font_size_override("font_size", 14 if is_kr else 13)
+		if settings_cat_gameplay_lbl:
+			settings_cat_gameplay_lbl.text = "조작 및 편의" if is_kr else "GAMEPLAY & CONTROLS"
+			var cur_font = galmuri_font if is_kr else kenney_font
+			if cur_font: settings_cat_gameplay_lbl.add_theme_font_override("font", cur_font)
+			settings_cat_gameplay_lbl.add_theme_font_size_override("font_size", 14 if is_kr else 13)
+		if settings_cat_system_lbl:
+			settings_cat_system_lbl.text = "화면 및 시스템" if is_kr else "DISPLAY & SYSTEM"
+			var cur_font = galmuri_font if is_kr else kenney_font
+			if cur_font: settings_cat_system_lbl.add_theme_font_override("font", cur_font)
+			settings_cat_system_lbl.add_theme_font_size_override("font_size", 14 if is_kr else 13)
 
 	for btn in [settings_back_btn]:
 		if btn:
