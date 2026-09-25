@@ -53,10 +53,11 @@ This document outlines the UI design system, color palette, typography, and comp
 * **Golden Frame Tracing:** Dedicated `SplashBorderDrawer` performs progressive vector polyline tracing (`border_progress` 0.0 to 1.0 over 3.0s with quad deceleration) drawing the exact 2px gold border (`Color(1.0, 0.85, 0.2, 0.4)`, 8px radius, 24px screen margin) in sync with `ps1_startup.wav`. At 3.0s, the frame seamlessly handoffs to the permanent `BorderPanel` with zero flicker.
 * **Cinematic Curtain Reveal & Staggered Entrance:** As the golden frame completes, the dark curtain smoothly dissolves (`modulate:a` 1.0 -> 0.0 over 0.85s with sine easing), unveiling the sunny 3D beach world in a cinematic bloom while the "SUMMER NIGHTS" title, language toggle, and credit line glide in with staggered cubic easing (0.12s, 0.15s, 0.18s).
 
-## 5. Procedural Sun Expressions
+## 5. Procedural Sun Expressions & Rays
 * **Rendering:** 128x128 RGBA8 procedural texture with a 4px dark-orange outline.
 * **Expressions:** Changes dynamically based on heat (happy, neutral, annoyed, angry) and events (wince, crit_pain, charging, dread, dizzy).
 * **Jitter:** Positional micro-shake applied on water impacts (disabled with Reduce Motion).
+* **Coronal Halo & Heat Ripples:** Unshaded additive coronal glow with concentric heat ripples (`god_rays.gdshader`) and stylized low-poly corona ring (`sun_corona_mesh`). Dynamically expands, pulses, and radiates at 100°C (`Color(1.0, 0.86, 0.45)`), soft lavender at twilight, ultraviolet during eclipse, and cleanly extinguishes at 0°C.
 
 ## 6. Post-Processing & Screen Effects
 * **Layering:** `retro_postprocess.gdshader` runs on Layer 0 (behind HUD on Layer 10) to keep UI crisp.

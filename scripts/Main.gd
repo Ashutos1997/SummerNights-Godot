@@ -279,6 +279,10 @@ var sun_mesh:    MeshInstance3D
 var sun_mat:     StandardMaterial3D
 var sun_ray_mat: StandardMaterial3D
 var sun_rays_node: Node3D
+var sun_corona_mesh: MeshInstance3D
+var sky_god_rays_node: Node3D
+var sky_god_rays_mesh: MeshInstance3D
+var sky_god_rays_mat: ShaderMaterial
 var sun_face:    Sprite3D
 var face_textures: Dictionary = {}
 const SUN_FACE_BASE_POS: Vector3 = Vector3(0, 0, 3.4)
@@ -1140,46 +1144,46 @@ func _build_scene() -> void:
 	sun_model_instance.scale = Vector3(0.32, 0.32, 0.32) # Increased Sun size by ~25%
 	sun_mesh = _setup_sun_mesh_and_material(sun_model_instance)
 	
-	# Ray material (deeper reddish orange, lower emission to prevent blob fusion)
+	# Ray material (transparency-enabled for dynamic heat fading)
 	sun_ray_mat = StandardMaterial3D.new()
-	sun_ray_mat.albedo_color = Color(0.95, 0.35, 0.1) # Red-orange
+	sun_ray_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	sun_ray_mat.albedo_color = Color(1.0, 0.84, 0.3, 0.95)
 	sun_ray_mat.emission_enabled = true
-	sun_ray_mat.emission = Color(0.95, 0.35, 0.1)
-	sun_ray_mat.emission_energy_multiplier = 1.5 # Toned down to maintain distinct silhouette
+	sun_ray_mat.emission = Color(1.0, 0.72, 0.2)
+	sun_ray_mat.emission_energy_multiplier = 1.4
+	sun_ray_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 	
-	# Spawn 12 rotating cone sunbeams (retro-arcade style)
 	sun_rays_node = Node3D.new()
 	sun.add_child(sun_rays_node)
 	
-	for i in range(12):
-		var angle = i * (TAU / 12.0)
-		var ray = MeshInstance3D.new()
-		var cone = CylinderMesh.new()
-		cone.top_radius = 0.0
-		cone.bottom_radius = 0.4
-		cone.height = 2.4
-		ray.mesh = cone
-		ray.material_override = sun_ray_mat
-		
-		# Position outwards from sun center
-		var dist = 3.8
-		ray.position = Vector3(cos(angle) * dist, sin(angle) * dist, 0.0)
-		# Rotate to point outwards (align cylinder height to face away from center)
-		ray.rotation.z = angle - PI/2.0
-		sun_rays_node.add_child(ray)
-	
 	# Stylized Low-Poly Corona Ring (matches retro arcade 3D aesthetic)
 	var corona_mesh = TorusMesh.new()
-	corona_mesh.inner_radius = 3.0
-	corona_mesh.outer_radius = 3.6
-	corona_mesh.rings = 20
+	corona_mesh.inner_radius = 3.35
+	corona_mesh.outer_radius = 3.65
+	corona_mesh.rings = 24
 	corona_mesh.ring_segments = 8
 	
-	var corona_node = MeshInstance3D.new()
-	corona_node.mesh = corona_mesh
-	corona_node.material_override = sun_ray_mat
-	corona_node.rotation.x = PI / 2.0 # Face camera
-	sun.add_child(corona_node)
+	sun_corona_mesh = MeshInstance3D.new()
+	sun_corona_mesh.mesh = corona_mesh
+	sun_corona_mesh.material_override = sun_ray_mat
+	sun_corona_mesh.rotation.x = PI / 2.0 # Face camera
+	sun.add_child(sun_corona_mesh)
+	
+	# ── Coronal Halo & Concentric Heat Ripples (Atmospheric Solar Aura) ──
+	sky_god_rays_mat = ShaderMaterial.new()
+	sky_god_rays_mat.shader = load("res://assets/shaders/god_rays.gdshader")
+	sky_god_rays_mat.set_shader_parameter("ray_color", Color(1.0, 0.86, 0.45, 0.38))
+	sky_god_rays_mat.set_shader_parameter("heat_ratio", 1.0)
+	sky_god_rays_mat.set_shader_parameter("wave_speed", 2.2)
+	
+	sky_god_rays_node = Node3D.new()
+	sky_god_rays_node.position = Vector3(0, 0, -0.8) # Sits smoothly behind sun core
+	sun.add_child(sky_god_rays_node)
+	
+	sky_god_rays_mesh = MeshInstance3D.new()
+	sky_god_rays_mesh.mesh = _build_god_rays_mesh()
+	sky_god_rays_mesh.material_override = sky_god_rays_mat
+	sky_god_rays_node.add_child(sky_god_rays_mesh)
 	
 	sun_shatter_particles = GPUParticles3D.new()
 	sun_shatter_particles.emitting = false
@@ -1965,6 +1969,8 @@ func _process(delta: float) -> void:
 			sun_mesh.rotation.y += 0.2 * delta
 		if sun_rays_node:
 			sun_rays_node.rotation.z += 0.1 * delta
+		if sky_god_rays_node:
+			sky_god_rays_node.rotation.z = sin(title_cam_angle * 0.4) * 0.03
 		return
 
 	if timer_running and not defeat_triggered:
@@ -2139,12 +2145,27 @@ func _process(delta: float) -> void:
 			sun.position.y = sun_base_pos.y + sin(sun_time * sun_bob_speed) * sun_bob_amp
 			sun.position.z = sun_base_pos.z
 
+	var spd_mult = 0.0 if is_sun_frozen else 1.0
 	if sun_mesh:
-		var spd_mult = 0.0 if is_sun_frozen else 1.0
 		sun_mesh.rotation.y += 0.5 * delta * spd_mult
-	if sun_rays_node:
-		var spd_mult = 0.0 if is_sun_frozen else 1.0
-		sun_rays_node.rotation.z += 0.3 * delta * spd_mult
+	
+	var sun_heat_ratio = clamp(temperature / MAX_TEMP, 0.0, 1.0)
+	
+	# 1. Stylized Corona Ring (Scale & rotate smoothly with temperature)
+	if sun_corona_mesh:
+		sun_corona_mesh.rotation.z += 0.15 * delta * spd_mult
+		var corona_pulse = 1.0 + sin(sun_time * 3.0) * 0.02 * sun_heat_ratio
+		var corona_scale = sun_heat_ratio * corona_pulse
+		sun_corona_mesh.scale = Vector3(corona_scale, corona_scale, corona_scale)
+		sun_corona_mesh.visible = sun_heat_ratio > 0.005
+
+	# 2. Coronal Halo & Concentric Heat Ripples (Breathing celestial aura)
+	if sky_god_rays_node:
+		sky_god_rays_node.rotation.z += 0.02 * delta * spd_mult
+		var halo_pulse = sin(sun_time * 2.0) * 0.025 * sun_heat_ratio
+		var halo_scale = (0.75 + 0.25 * sun_heat_ratio) + halo_pulse
+		sky_god_rays_node.scale = Vector3(halo_scale, halo_scale, 1.0)
+		sky_god_rays_node.visible = sun_heat_ratio > 0.005
 	
 	_sync_light_to_sun()
 	# Breathing pulse & Temperature scaling
@@ -3049,6 +3070,12 @@ func _setup_sun_mesh_and_material(node: Node) -> MeshInstance3D:
 			first_mesh = found
 	return first_mesh
 
+func _build_god_rays_mesh() -> Mesh:
+	var quad = QuadMesh.new()
+	quad.size = Vector2(65.0, 65.0)
+	return quad
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # On hit
 # ─────────────────────────────────────────────────────────────────────────────
@@ -3388,8 +3415,32 @@ func _update_sky(instant: bool) -> void:
 	sun_mat.emission_energy_multiplier = emission_mult
 	if sun_ray_mat:
 		sun_ray_mat.emission = ray_base_emission
-		sun_ray_mat.albedo_color = ray_base_albedo
-		sun_ray_mat.emission_energy_multiplier = lerpf(1.5, 3.0, weather_blend if active_weather == "eclipse" else 0.0)
+		sun_ray_mat.albedo_color = Color(ray_base_albedo.r, ray_base_albedo.g, ray_base_albedo.b, ratio * 0.95)
+		var base_mult = 1.5 if temperature > 75.0 else (1.1 if temperature > 40.0 else 0.6)
+		sun_ray_mat.emission_energy_multiplier = base_mult * ratio * lerpf(1.0, 2.5, weather_blend if active_weather == "eclipse" else 0.0)
+		
+	if sky_god_rays_mat:
+		var god_ray_heat = ratio
+		if active_weather == "rain":
+			god_ray_heat *= (1.0 - weather_blend * 0.75)
+		sky_god_rays_mat.set_shader_parameter("heat_ratio", god_ray_heat)
+		
+		var ray_col = Color(1.0, 0.86, 0.45, 0.38) # Luminous soft golden sunlight
+		var wave_spd = 2.2
+		if active_weather == "eclipse":
+			ray_col = Color(0.75, 0.25, 1.0, 0.42) # Ultraviolet coronal flare
+			wave_spd = 3.2 # Fast pulsing solar prominence
+		elif active_weather == "rain":
+			ray_col = Color(0.82, 0.88, 0.96, 0.18) # Muted pale mist
+			wave_spd = 1.4 # Sluggish humid waves
+		elif is_sun_frozen:
+			ray_col = Color(0.42, 0.78, 1.0, 0.28) # Frost icy flare
+			wave_spd = 0.9 # Glacial crystal ripples
+		elif temperature < 40.0:
+			ray_col = Color(0.68, 0.62, 0.96, 0.24) # Twilight lavender
+			wave_spd = 1.6
+		sky_god_rays_mat.set_shader_parameter("ray_color", ray_col)
+		sky_god_rays_mat.set_shader_parameter("wave_speed", wave_spd)
 		
 	sun_bob_speed = t_bob_spd
 	sun_bob_amp = t_bob_amp

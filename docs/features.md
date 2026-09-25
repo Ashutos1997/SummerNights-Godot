@@ -50,6 +50,7 @@ This document serves as the master record for all currently implemented features
 * **Dynamic Ocean:** Procedural Gerstner waves, Voronoi caustics, and subsurface scattering.
 * **Rogue Waves:** Massive waves crash onto the island, temporarily darkening the wet sand.
 * **Sky & Atmosphere:** Day/night cycles, depth-parallax drifting clouds, procedural starfields, and bloom.
+* **Coronal Halo & Heat Waves:** Unshaded additive coronal halo with concentric heat ripples and stylized low-poly corona ring that dynamically breathe, pulse, and extinguish as the Sun cools down (100°C to 0°C).
 * **Sun Expressions:** Sun face reacts dynamically to damage, critical hits, charging flares, and Catastrom dunks.
 * **Articulated Low-Poly Seagulls:** Procedural seagulls with 2-joint wing rigging (aerodynamic folding), flight physics, orbital banking, beach foraging, and reactive escape behaviors.
 * **Retro Filters:** Optional post-processing shaders (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
