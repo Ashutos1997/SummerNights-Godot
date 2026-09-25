@@ -614,9 +614,9 @@ func _ready() -> void:
 		for lbl in [win_loading_lbl, end_prompt_lbl]:
 			if lbl:
 				lbl.modulate.a = 1.0
-	_style_lbl(settings_title, 32, Color(1.0, 0.88, 0.3, 1.0), 4, Color.BLACK, font)
-	if filters_title: _style_lbl(filters_title, 32, Color(1.0, 0.88, 0.3, 1.0), 4, Color.BLACK, font)
-	_style_lbl(credits_title, 32, Color(1.0, 0.88, 0.3, 1.0), 4, Color.BLACK, font)
+	_style_lbl(settings_title, 28, Color(1.0, 0.88, 0.3, 1.0), 3, Color.BLACK, font)
+	if filters_title: _style_lbl(filters_title, 28, Color(1.0, 0.88, 0.3, 1.0), 3, Color.BLACK, font)
+	_style_lbl(credits_title, 28, Color(1.0, 0.88, 0.3, 1.0), 3, Color.BLACK, font)
 	
 	# Close Prompts — Settings, Filters, and Credits (WCAG 10.7:1 PASS)
 	for p_lbl in [settings_prompt, filters_prompt, credits_prompt]:
@@ -635,7 +635,7 @@ func _ready() -> void:
 		if r_node:
 			var r_lbl = r_node.get_node_or_null("Label")
 			if r_lbl:
-				_style_lbl(r_lbl, 20, Color(0.92, 0.92, 0.92, 0.95), 2, Color.BLACK, font)
+				_style_lbl(r_lbl, 17, Color(0.92, 0.92, 0.92, 0.95), 2, Color.BLACK, font)
 				r_lbl.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 
 	for row_name in ["RowColorDepth", "RowDithering", "RowPS1", "RowHeatwave"]:
@@ -643,7 +643,7 @@ func _ready() -> void:
 		if filter_r_node:
 			var r_lbl = filter_r_node.get_node_or_null("Label")
 			if r_lbl:
-				_style_lbl(r_lbl, 20, Color(0.92, 0.92, 0.92, 0.95), 2, Color.BLACK, font)
+				_style_lbl(r_lbl, 17, Color(0.92, 0.92, 0.92, 0.95), 2, Color.BLACK, font)
 				r_lbl.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 
 	# Build categorized section badges for Settings Screen (Option B: Tactile Retro Badges)
@@ -935,10 +935,10 @@ func _build_settings_category_headers(font: Font) -> void:
 		
 		return wrap
 
-	# 1. AUDIO category (before RowSFX) - 10px margin gives 26px total gap from Divider
+	# 1. AUDIO category (before RowSFX) - 8px margin gives 18px total gap from Divider
 	var cat_audio = vbox.get_node_or_null("CatHeaderAudio")
 	if not cat_audio:
-		cat_audio = make_cat.call("CatHeaderAudio", "AUDIO", "오디오", 10)
+		cat_audio = make_cat.call("CatHeaderAudio", "AUDIO", "오디오", 8)
 		var sfx_row = vbox.get_node_or_null("RowSFX")
 		if sfx_row:
 			vbox.add_child(cat_audio)
@@ -947,10 +947,10 @@ func _build_settings_category_headers(font: Font) -> void:
 			vbox.add_child(cat_audio)
 	settings_cat_audio_lbl = cat_audio.get_node_or_null("HBox/Plate/Label")
 
-	# 2. GAMEPLAY & CONTROLS category (before RowSens) - 20px margin gives 36px total gap from RowSFX
+	# 2. GAMEPLAY & CONTROLS category (before RowSens) - 14px margin gives 24px total gap from RowSFX
 	var cat_gameplay = vbox.get_node_or_null("CatHeaderGameplay")
 	if not cat_gameplay:
-		cat_gameplay = make_cat.call("CatHeaderGameplay", "GAMEPLAY & CONTROLS", "조작 및 편의", 20)
+		cat_gameplay = make_cat.call("CatHeaderGameplay", "GAMEPLAY & CONTROLS", "조작 및 편의", 14)
 		var sens_row = vbox.get_node_or_null("RowSens")
 		if sens_row:
 			vbox.add_child(cat_gameplay)
@@ -959,10 +959,10 @@ func _build_settings_category_headers(font: Font) -> void:
 			vbox.add_child(cat_gameplay)
 	settings_cat_gameplay_lbl = cat_gameplay.get_node_or_null("HBox/Plate/Label")
 
-	# 3. DISPLAY & SYSTEM category (before RowFullscreen) - 20px margin gives 36px total gap from RowVibration
+	# 3. DISPLAY & SYSTEM category (before RowFullscreen) - 14px margin gives 24px total gap from RowVibration
 	var cat_system = vbox.get_node_or_null("CatHeaderSystem")
 	if not cat_system:
-		cat_system = make_cat.call("CatHeaderSystem", "DISPLAY & SYSTEM", "화면 및 시스템", 20)
+		cat_system = make_cat.call("CatHeaderSystem", "DISPLAY & SYSTEM", "화면 및 시스템", 14)
 		var fs_row = vbox.get_node_or_null("RowFullscreen")
 		if fs_row:
 			vbox.add_child(cat_system)
@@ -971,10 +971,10 @@ func _build_settings_category_headers(font: Font) -> void:
 			vbox.add_child(cat_system)
 	settings_cat_system_lbl = cat_system.get_node_or_null("HBox/Plate/Label")
 
-	# Bottom divider breathing room (24px separation)
+	# Bottom divider breathing room (16px separation)
 	var div2 = vbox.get_node_or_null("Divider2")
 	if div2:
-		div2.add_theme_constant_override("separation", 24)
+		div2.add_theme_constant_override("separation", 16)
 
 func _build_lang_row(font: Font) -> void:
 	var vbox = $HUD/SettingsScreen/CenterContainer/VBoxContainer
@@ -992,7 +992,7 @@ func _build_lang_row(font: Font) -> void:
 	lbl.name = "Label"
 	lbl.text = "Language"
 	lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_style_lbl(lbl, 20, Color(0.92, 0.92, 0.92, 0.95), 2, Color.BLACK, font)
+	_style_lbl(lbl, 17, Color(0.92, 0.92, 0.92, 0.95), 2, Color.BLACK, font)
 	row.add_child(lbl)
 
 	# ENG | KOR inline toggle (matches ON/OFF button visual language)
@@ -1156,8 +1156,8 @@ func _apply_language(lang: String) -> void:
 	if settings_title:
 		settings_title.text = "설정" if is_kr else "SETTINGS"
 		if font: settings_title.add_theme_font_override("font", font)
-		settings_title.add_theme_font_size_override("font_size", 32)
-		settings_title.add_theme_constant_override("outline_size", 4)
+		settings_title.add_theme_font_size_override("font_size", 28)
+		settings_title.add_theme_constant_override("outline_size", 3)
 		settings_title.add_theme_color_override("font_outline_color", Color.BLACK)
 
 	# Style separators cleanly to match the Credits screen
