@@ -874,12 +874,20 @@ func _build_settings_category_headers(font: Font) -> void:
 	
 	var is_kr = GameState.language == "KR"
 	
-	var make_cat = func(node_name: String, title_en: String, title_kr: String) -> HBoxContainer:
+	var make_cat = func(node_name: String, title_en: String, title_kr: String, top_margin: int) -> MarginContainer:
+		var wrap = MarginContainer.new()
+		wrap.name = node_name
+		wrap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		wrap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		if top_margin > 0:
+			wrap.add_theme_constant_override("margin_top", top_margin)
+		
 		var row = HBoxContainer.new()
-		row.name = node_name
+		row.name = "HBox"
 		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		row.add_theme_constant_override("separation", 12)
 		row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		wrap.add_child(row)
 		
 		# Retro Plate Badge (PanelContainer)
 		var plate = PanelContainer.new()
@@ -925,43 +933,48 @@ func _build_settings_category_headers(font: Font) -> void:
 		sep.add_theme_stylebox_override("separator", line_style)
 		row.add_child(sep)
 		
-		return row
+		return wrap
 
-	# 1. AUDIO category (before RowSFX)
+	# 1. AUDIO category (before RowSFX) - 10px margin gives 26px total gap from Divider
 	var cat_audio = vbox.get_node_or_null("CatHeaderAudio")
 	if not cat_audio:
-		cat_audio = make_cat.call("CatHeaderAudio", "AUDIO", "오디오")
+		cat_audio = make_cat.call("CatHeaderAudio", "AUDIO", "오디오", 10)
 		var sfx_row = vbox.get_node_or_null("RowSFX")
 		if sfx_row:
 			vbox.add_child(cat_audio)
 			vbox.move_child(cat_audio, sfx_row.get_index())
 		else:
 			vbox.add_child(cat_audio)
-	settings_cat_audio_lbl = cat_audio.get_node_or_null("Plate/Label")
+	settings_cat_audio_lbl = cat_audio.get_node_or_null("HBox/Plate/Label")
 
-	# 2. GAMEPLAY & CONTROLS category (before RowSens)
+	# 2. GAMEPLAY & CONTROLS category (before RowSens) - 20px margin gives 36px total gap from RowSFX
 	var cat_gameplay = vbox.get_node_or_null("CatHeaderGameplay")
 	if not cat_gameplay:
-		cat_gameplay = make_cat.call("CatHeaderGameplay", "GAMEPLAY & CONTROLS", "조작 및 편의")
+		cat_gameplay = make_cat.call("CatHeaderGameplay", "GAMEPLAY & CONTROLS", "조작 및 편의", 20)
 		var sens_row = vbox.get_node_or_null("RowSens")
 		if sens_row:
 			vbox.add_child(cat_gameplay)
 			vbox.move_child(cat_gameplay, sens_row.get_index())
 		else:
 			vbox.add_child(cat_gameplay)
-	settings_cat_gameplay_lbl = cat_gameplay.get_node_or_null("Plate/Label")
+	settings_cat_gameplay_lbl = cat_gameplay.get_node_or_null("HBox/Plate/Label")
 
-	# 3. DISPLAY & SYSTEM category (before RowFullscreen)
+	# 3. DISPLAY & SYSTEM category (before RowFullscreen) - 20px margin gives 36px total gap from RowVibration
 	var cat_system = vbox.get_node_or_null("CatHeaderSystem")
 	if not cat_system:
-		cat_system = make_cat.call("CatHeaderSystem", "DISPLAY & SYSTEM", "화면 및 시스템")
+		cat_system = make_cat.call("CatHeaderSystem", "DISPLAY & SYSTEM", "화면 및 시스템", 20)
 		var fs_row = vbox.get_node_or_null("RowFullscreen")
 		if fs_row:
 			vbox.add_child(cat_system)
 			vbox.move_child(cat_system, fs_row.get_index())
 		else:
 			vbox.add_child(cat_system)
-	settings_cat_system_lbl = cat_system.get_node_or_null("Plate/Label")
+	settings_cat_system_lbl = cat_system.get_node_or_null("HBox/Plate/Label")
+
+	# Bottom divider breathing room (24px separation)
+	var div2 = vbox.get_node_or_null("Divider2")
+	if div2:
+		div2.add_theme_constant_override("separation", 24)
 
 func _build_lang_row(font: Font) -> void:
 	var vbox = $HUD/SettingsScreen/CenterContainer/VBoxContainer

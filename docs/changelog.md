@@ -21,7 +21,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Credits Synchronization: Synchronized in-game HUD Credits screen and bilingual READMEs with attributions for Coronal Halo, Flare Interception Ember Pop, and Lifetime Stats icon plates.
 * Achievement & Buff Retro Icon Plates: Enclosed achievement and buff card icons in 64x64 retro flat plates (4px radii; gold border with monochrome gold icon for unlocked, steel border with mystery dark silhouette for locked) across Title Screen and HUD.
 * Game Over Frameless Stats Flow: Replaced bare end-of-run labels with a clean, dynamic frameless stats recap (32x32 retro plates with gold monochrome icons, localized typography, and inline milestone badges for Wave Reached, Survival Time, and Final Score) avoiding nested container clutter.
-* Settings Categorized Section Badges: Grouped settings rows into 3 distinct logical sections ("AUDIO", "GAMEPLAY & CONTROLS", "DISPLAY & SYSTEM") using tactile retro plate badges (4px radii, gold border) and trailing golden hairline rules with dynamic bilingual typography.
+* Settings Categorized Section Badges: Grouped settings rows into 3 distinct logical sections ("AUDIO", "GAMEPLAY & CONTROLS", "DISPLAY & SYSTEM") using tactile retro plate badges (4px radii, gold border), trailing golden hairline rules, balanced section clearance (36px between categories, 26px title/footer gap), and dynamic bilingual typography.
 
 ### Known Issues (Critical)
 * Fullscreen End-of-Run Dimming: Win ("Cool Down") and Lose ("The Sun Won") screens render at low brightness in Normal and Endless modes despite modulate 1.0. Root rendering cause under active investigation.
@@ -261,7 +261,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 크레딧 동기화: 인게임 HUD 크레딧 화면 및 국/영문 README에 대기 코로나 헤일로, 플레어 요격 엠버 팝, 기록 메뉴 아이콘 플레이트 항목 추가 및 동기화.
 * 업적 및 영구 강화 레트로 아이콘 플레이트: 타이틀 화면과 인게임 HUD의 업적 및 버프 카드 아이콘에 64x64 레트로 플랫 플레이트(4px 모서리 곡률, 해금 시 골드 테두리/모노크롬 골드 아이콘, 미해금 시 스틸 테두리/신비로운 실루엣) 적용.
 * 게임 오버 프레임리스 기록 플로우: 기존 단순 텍스트 라벨을 중첩 박스 없이 깔끔한 동적 프레임리스 기록 요약(32x32 레트로 플레이트, 골드 모노크롬 아이콘, 국/영문 폰트 규격화, 도달 웨이브/생존 시간/최종 점수 및 신기록 인라인 배지)으로 개편.
-* 설정 메뉴 카테고리 섹션 배지: 설정 항목들을 3개의 논리적 섹션("오디오", "조작 및 편의", "화면 및 시스템")으로 구조화하고, 4px 모서리 곡률의 골드 테두리 레트로 플레이트 배지와 골드 헤어라인 구분선, 실시간 국/영문 폰트 동기화를 적용.
+* 설정 메뉴 카테고리 섹션 배지: 설정 항목들을 3개의 논리적 섹션("오디오", "조작 및 편의", "화면 및 시스템")으로 구조화하고, 4px 모서리 곡률의 골드 테두리 레트로 플레이트 배지, 골드 헤어라인 구분선, 균형 잡힌 섹션 여백(카테고리 간 36px, 상/하단 26px), 실시간 국/영문 폰트 동기화를 적용.
 
 ### 알려진 문제 (Known Issues - Critical)
 * 전체화면 라운드 종료 화면 밝기 저하: 일반 및 무한 모드 모두에서 승리("Cool Down") 및 패배("The Sun Won") 화면의 UI modulate 값이 1.0임에도 불구하고 화면이 어둡게 렌더링되는 중요 버그 발생. 렌더링 원인 추적 및 해결 진행 중.
