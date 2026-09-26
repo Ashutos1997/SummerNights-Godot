@@ -4439,16 +4439,8 @@ func _perform_kitsune_blade_slash() -> void:
 		celestial_slash_sfx.play()
 	_vibrate(0.40 if is_celestial_awakened else 0.35, 0.40 if is_celestial_awakened else 0.35, 0.15)
 	
-	# Procedural Water Cutting Arc Sweep toward crosshair aim target
 	if celestial_hydro_blade:
-		# Compute actual aim target from virtual mouse (same as gun look_at)
-		var slash_mouse_pos = virtual_mouse_pos
-		var slash_ray_origin = camera.project_ray_origin(slash_mouse_pos)
-		var slash_ray_normal = camera.project_ray_normal(slash_mouse_pos)
-		var slash_dist = (sun.position.z - slash_ray_origin.z) / slash_ray_normal.z
-		var slash_aim_target = slash_ray_origin + slash_ray_normal * slash_dist
-		slash_aim_target.y = max(slash_aim_target.y, -2.0)
-		celestial_hydro_blade.trigger_slash_arc(camera, blade_slash_dir, is_celestial_awakened, slash_aim_target)
+		celestial_hydro_blade.trigger_slash_arc(camera, blade_slash_dir, is_celestial_awakened)
 	
 	# Slash sweep animation on gun
 	blade_slash_dir *= -1
@@ -4472,18 +4464,20 @@ func _perform_kitsune_blade_slash() -> void:
 			var tw_c = create_tween()
 			tw_c.tween_property(cyl, "rotation_degrees:z", cyl.rotation_degrees.z + (90.0 * blade_slash_dir), 0.16).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	
+	# Crosshair aim ray
+	var ray_origin = camera.project_ray_origin(virtual_mouse_pos)
+	var ray_normal = camera.project_ray_normal(virtual_mouse_pos)
+	
 	# Melee flare cleaving / parry
-	var aim_origin = camera.global_position
-	var aim_forward = -camera.global_basis.z
 	var severed_count = 0
 	for flare in active_flares:
 		var f_node = flare.get("node") as Node3D
 		if is_instance_valid(f_node):
 			var f_pos = f_node.global_position
-			var to_f = f_pos - aim_origin
+			var to_f = f_pos - ray_origin
 			var dist = to_f.length()
 			if dist < 8.5:
-				var angle = rad_to_deg(aim_forward.angle_to(to_f.normalized()))
+				var angle = rad_to_deg(ray_normal.angle_to(to_f.normalized()))
 				if angle < 60.0:
 					flare["hp"] = 0.0
 					severed_count += 1
@@ -4497,35 +4491,46 @@ func _perform_kitsune_blade_slash() -> void:
 		GameState.flares_intercepted += severed_count
 		GameState.celestial_charge = min(1.0, GameState.celestial_charge + 0.10 * severed_count)
 	
-	# Direct or Ranged Strike on Sun
-	var to_sun = (sun.global_position - aim_origin).normalized()
-	var sun_dot = aim_forward.dot(to_sun)
-	if sun_dot > 0.82: # Aimed at Sun
-		var base_dmg = 8.5 # Balanced cadence cooling (~24 DPS matching Kitsune weapon tier)
-		var is_crit = (sun_dot > 0.95)
-		var crit_m = 1.5 if is_crit else 1.0
-		var total_dmg = base_dmg * crit_m * GameState.cooling_power_mult
-		if is_celestial_awakened:
-			total_dmg *= 1.5
-		
-		temperature = max(0.0, temperature - total_dmg)
-		heat_changed.emit(temperature, MAX_TEMP)
-		_spawn_damage_number(total_dmg, is_crit, sun.global_position)
-		sun_hit_reaction_timer = 0.22
-		sun_hit_was_crit = is_crit
-		if is_crit:
-			sun_face_shake = 0.08
-		else:
-			sun_face_shake = 0.04
-		
-		if not is_sun_frozen:
-			sun_mat.emission = Color(1.8, 1.8, 2.4)
-		
-		GameState.celestial_charge = min(1.0, GameState.celestial_charge + 0.06)
-		
-		# Check victory
-		if temperature <= 0.0:
-			_check_sun_defeat()
+	# Direct Strike on Sun — raycasts where the crosshair is aimed (matching guns)
+	if abs(ray_normal.z) > 1e-4:
+		var dist_to_sun_z = (sun.global_position.z - ray_origin.z) / ray_normal.z
+		if dist_to_sun_z > 0.0:
+			var crosshair_target = ray_origin + ray_normal * dist_to_sun_z
+			var aim_dist = crosshair_target.distance_to(sun.global_position)
+			if aim_dist < 4.8: # Matches gun hit detection radius for the Sun
+				if is_sun_shielded:
+					_on_shield_deflect(crosshair_target)
+				else:
+					var is_crit = false
+					if sunspot_node and is_instance_valid(sunspot_node):
+						if crosshair_target.distance_to(sunspot_node.global_position) < 2.5:
+							is_crit = true
+					elif aim_dist < 1.8:
+						is_crit = true
+					
+					var base_dmg = 8.5 # Balanced cadence cooling (~24 DPS matching Kitsune weapon tier)
+					var crit_m = 1.5 if is_crit else 1.0
+					var total_dmg = base_dmg * crit_m * GameState.cooling_power_mult
+					if is_celestial_awakened:
+						total_dmg *= 1.5
+					
+					if active_mirages.size() == 0:
+						temperature = max(0.0, temperature - total_dmg)
+						heat_changed.emit(temperature, MAX_TEMP)
+					
+					_spawn_damage_number(total_dmg, is_crit, crosshair_target)
+					sun_hit_reaction_timer = 0.22
+					sun_hit_was_crit = is_crit
+					sun_face_shake = 0.08 if is_crit else 0.04
+					
+					if not is_sun_frozen:
+						sun_mat.emission = Color(1.8, 1.8, 2.4)
+					
+					GameState.celestial_charge = min(1.0, GameState.celestial_charge + 0.06)
+					
+					# Check victory
+					if temperature <= 0.0:
+						_check_sun_defeat()
 
 
 func _shoot_ice() -> void:

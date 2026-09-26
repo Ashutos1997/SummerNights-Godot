@@ -44,6 +44,7 @@ All notable changes to the Summer Nights project will be documented in this file
 ### Fixed
 * Kitsune Blade Sun Over-Damage: Rebalanced Blade Mode base strike cooling damage from 45.0 to 8.5 (1.5x crit) to match sustained v1.5 weapon pacing (~24 DPS), preventing instant one-shotting of the Sun.
 * Level Transition Double-Clearing: Fixed an issue where Blade Mode strikes and continuous raycasts fired during screen fade transitions, instantly clearing consecutive levels. Isolated melee input and locked firing during level reloads until the screen fully fades in.
+* Kitsune Blade Aim Hit Detection: Fixed a bug where Blade Mode strikes registered hits on the Sun anywhere on screen due to a broad forward dot-product check. Replaced with raycast hit detection matching guns, accurately requiring the crosshair to be over the Sun (or sunspot for crits) to deal damage.
 * Weapon Wheel Overlay Safety: Guaranteed background blur/dim overlay hides immediately upon closing or switching to full-screen menus.
 
 ## [v1.5.5] - 2026-09-22
@@ -302,6 +303,7 @@ All notable changes to the Summer Nights project will be documented in this file
 ### 수정됨 (Fixed)
 * 구미호 검 태양 과다 냉각 버그 수정: 검 모드 기본 냉각 피해량을 45.0에서 8.5(치명타 1.5배)로 재조정하여 v1.5 무기 밸런스 규격(~24 DPS)에 맞추고 태양이 1타에 즉시 격파되던 현상 해결.
 * 레벨 전환 시 2단계 연속 클리어 버그 수정: 검 모드 공격 및 물줄기 판정이 화면 페이드 전환 중에 조기 실행되어 다음 레벨이 즉각 클리어되던 문제를 해결. 근접 공격 로직을 연속 분사와 엄격히 분리하고, 레벨 페이드인이 완전히 끝날 때까지 사격을 잠금 처리.
+* 구미호 검 조준 타격 판정 수정: 광범위 전방 내적 판정으로 인해 화면 어디를 클릭해도 태양에 타격이 들어가던 버그를 수정. 다른 총기류와 동일하게 가상 마우스 조준선(크로스헤어) 광선 추적(Raycast)을 적용하여 조준선이 태양(또는 흑점 치명타) 위에 정확히 위치할 때만 타격되도록 일원화.
 * 무기 선택 휠 오버레이 안전성 강화: 메뉴 전환 및 휠 종료 시 배경 블러/딤 오버레이가 즉시 비활성화되도록 수정.
 
 ## [v1.5.5] - 2026-09-22
