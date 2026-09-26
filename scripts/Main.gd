@@ -463,6 +463,8 @@ var dir_light:   DirectionalLight3D
 var camera:      Camera3D
 var celestial_tails: CelestialTails
 var celestial_hydro_cannon: CelestialHydroCannon
+const CelestialHydroBladeScript = preload("res://scripts/CelestialHydroBlade.gd")
+var celestial_hydro_blade: Node3D
 var celestial_henshin_sfx: AudioStreamPlayer
 var celestial_deactivate_sfx: AudioStreamPlayer
 var celestial_slash_sfx: AudioStreamPlayer
@@ -1242,6 +1244,10 @@ func _build_scene() -> void:
 	celestial_hydro_cannon = CelestialHydroCannon.new()
 	celestial_hydro_cannon.name = "CelestialHydroCannon"
 	add_child(celestial_hydro_cannon)
+	
+	celestial_hydro_blade = CelestialHydroBladeScript.new()
+	celestial_hydro_blade.name = "CelestialHydroBlade"
+	add_child(celestial_hydro_blade)
 	
 	# ── Weather Rain Particles ───────────────────────────────────────────────
 	weather_rain_particles = GPUParticles3D.new()
@@ -2151,6 +2157,10 @@ func _process(delta: float) -> void:
 				hud.update_celestial_awakening(celestial_awakened_timer, 15.0)
 			if celestial_awakened_timer <= 0.0:
 				end_celestial_awakening()
+	
+	if celestial_hydro_blade:
+		var blade_aura_active = is_celestial_awakened and GameState.current_weapon_id == "kitsune" and GameState.kitsune_mode == "blade"
+		celestial_hydro_blade.set_blade_active(blade_aura_active, gun)
 	
 	if blade_slash_cooldown > 0.0:
 		blade_slash_cooldown -= delta
@@ -4384,6 +4394,8 @@ func end_celestial_awakening() -> void:
 		celestial_tails.deactivate_awakening()
 	if celestial_hydro_cannon:
 		celestial_hydro_cannon.set_firing(false, Vector3.ZERO, Vector3.ZERO)
+	if celestial_hydro_blade:
+		celestial_hydro_blade.set_blade_active(false, null)
 	if hud and hud.has_method("end_celestial_awakening"):
 		hud.end_celestial_awakening()
 	if post_process_mat:
@@ -4423,9 +4435,20 @@ func _perform_kitsune_blade_slash() -> void:
 	
 	# SFX & Haptics
 	if celestial_slash_sfx:
-		celestial_slash_sfx.pitch_scale = randf_range(1.05, 1.25)
+		celestial_slash_sfx.pitch_scale = randf_range(1.20, 1.40) if is_celestial_awakened else randf_range(1.05, 1.25)
 		celestial_slash_sfx.play()
-	_vibrate(0.35, 0.35, 0.12)
+	_vibrate(0.40 if is_celestial_awakened else 0.35, 0.40 if is_celestial_awakened else 0.35, 0.15)
+	
+	# Procedural Water Cutting Arc Sweep toward crosshair aim target
+	if celestial_hydro_blade:
+		# Compute actual aim target from virtual mouse (same as gun look_at)
+		var slash_mouse_pos = virtual_mouse_pos
+		var slash_ray_origin = camera.project_ray_origin(slash_mouse_pos)
+		var slash_ray_normal = camera.project_ray_normal(slash_mouse_pos)
+		var slash_dist = (sun.position.z - slash_ray_origin.z) / slash_ray_normal.z
+		var slash_aim_target = slash_ray_origin + slash_ray_normal * slash_dist
+		slash_aim_target.y = max(slash_aim_target.y, -2.0)
+		celestial_hydro_blade.trigger_slash_arc(camera, blade_slash_dir, is_celestial_awakened, slash_aim_target)
 	
 	# Slash sweep animation on gun
 	blade_slash_dir *= -1
@@ -4504,9 +4527,12 @@ func _perform_kitsune_blade_slash() -> void:
 		if temperature <= 0.0:
 			_check_sun_defeat()
 	
-	# In Celestial Awakening: spawn glowing crescent shockwave projectile
+	# In Celestial Awakening: launch colossal flying celestial hydro-crescent wave
 	if is_celestial_awakened:
-		_spawn_celestial_crescent_slash(aim_origin, aim_forward)
+		if celestial_hydro_blade:
+			celestial_hydro_blade.spawn_flying_hydro_crescent(aim_origin, aim_forward, self)
+		else:
+			_spawn_celestial_crescent_slash(aim_origin, aim_forward)
 
 func _spawn_celestial_crescent_slash(origin: Vector3, dir: Vector3) -> void:
 	var crescent = MeshInstance3D.new()

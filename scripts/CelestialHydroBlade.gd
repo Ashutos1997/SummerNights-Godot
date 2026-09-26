@@ -400,7 +400,7 @@ func _render_edge_glow() -> void:
 # ══════════════════════════════════════════════════════════════════
 # 4. SWEEPING WATER CRESCENT ARC (melee slash visual)
 # ══════════════════════════════════════════════════════════════════
-func trigger_slash_arc(camera: Camera3D, slash_dir: float, is_awakened: bool) -> void:
+func trigger_slash_arc(camera: Camera3D, slash_dir: float, is_awakened: bool, aim_target: Vector3 = Vector3.ZERO) -> void:
 	if not camera:
 		return
 		
@@ -409,19 +409,29 @@ func trigger_slash_arc(camera: Camera3D, slash_dir: float, is_awakened: bool) ->
 	add_child(slash_node)
 	
 	var cam_pos: Vector3 = camera.global_position
-	var cam_forward: Vector3 = -camera.global_basis.z.normalized()
-	var cam_right: Vector3 = camera.global_basis.x.normalized()
-	var cam_up: Vector3 = camera.global_basis.y.normalized()
 	
-	# Place arc center along the camera's aim line (where crosshair points)
-	# No vertical offset — the arc follows exactly where the player is looking
+	# Compute actual aim direction from camera to crosshair target
+	var aim_dir: Vector3
+	if aim_target != Vector3.ZERO:
+		aim_dir = (aim_target - cam_pos).normalized()
+	else:
+		aim_dir = -camera.global_basis.z.normalized()
+	
+	# Build orthonormal frame around the aim direction
+	var world_up: Vector3 = Vector3.UP
+	if abs(aim_dir.dot(world_up)) > 0.95:
+		world_up = Vector3.RIGHT
+	var aim_right: Vector3 = aim_dir.cross(world_up).normalized()
+	var aim_up: Vector3 = aim_right.cross(aim_dir).normalized()
+	
+	# Place arc center along the aim line (where crosshair points)
 	var arc_distance: float = 2.2 if not is_awakened else 2.8
-	slash_node.global_position = cam_pos + cam_forward * arc_distance
+	slash_node.global_position = cam_pos + aim_dir * arc_distance
 	
 	# Slash plane orientation (tilted diagonally following sword strike)
 	var swing_tilt: float = deg_to_rad(28.0 * slash_dir)
-	var swing_normal: Vector3 = (cam_up * cos(swing_tilt) + cam_right * sin(swing_tilt)).normalized()
-	var swing_tangent: Vector3 = swing_normal.cross(cam_forward).normalized()
+	var swing_normal: Vector3 = (aim_up * cos(swing_tilt) + aim_right * sin(swing_tilt)).normalized()
+	var swing_tangent: Vector3 = swing_normal.cross(aim_dir).normalized()
 	
 	var slash_mat = StandardMaterial3D.new()
 	slash_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -455,7 +465,7 @@ func trigger_slash_arc(camera: Camera3D, slash_dir: float, is_awakened: bool) ->
 		var sin_a: float = sin(cur_angle)
 		
 		# Arc sweeps in the plane perpendicular to aim direction
-		var radial_dir: Vector3 = (swing_tangent * cos_a + cam_forward * sin_a * 0.3).normalized()
+		var radial_dir: Vector3 = (swing_tangent * cos_a + aim_dir * sin_a * 0.3).normalized()
 		
 		var thick_profile: float = sin(u * PI)
 		var r_in: float = arc_radius_in + (1.0 - thick_profile) * 0.2
@@ -483,8 +493,6 @@ func trigger_slash_arc(camera: Camera3D, slash_dir: float, is_awakened: bool) ->
 	tw.tween_property(slash_node, "scale", Vector3(1.22, 1.22, 1.22), 0.26).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tw.tween_property(mesh_inst, "transparency", 1.0, 0.26).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	tw.chain().tween_callback(slash_node.queue_free)
-
-
 # ══════════════════════════════════════════════════════════════════
 # 5. FLYING CELESTIAL HYDRO-CRESCENT (Awakening Projectile)
 # ══════════════════════════════════════════════════════════════════
