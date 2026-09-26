@@ -284,6 +284,7 @@ var splash_idx: int = 0
 var dir_light:   DirectionalLight3D
 var camera:      Camera3D
 var celestial_tails: CelestialTails
+var celestial_hydro_cannon: CelestialHydroCannon
 var is_celestial_awakened: bool = false
 var celestial_awakened_timer: float = 0.0
 var sun:         Node3D
@@ -1023,10 +1024,14 @@ func _build_scene() -> void:
 	camera.position = Vector3(0, 0, 5)
 	add_child(camera)
 	
-	# ── Celestial Tails (Fox Nine Awakening) ──────────────────────────────────
+	# ── Celestial Tails & Hydro-Cannon (Fox Nine Awakening) ───────────────────
 	celestial_tails = CelestialTails.new()
 	celestial_tails.name = "CelestialTails"
 	camera.add_child(celestial_tails)
+	
+	celestial_hydro_cannon = CelestialHydroCannon.new()
+	celestial_hydro_cannon.name = "CelestialHydroCannon"
+	add_child(celestial_hydro_cannon)
 	
 	# ── Weather Rain Particles ───────────────────────────────────────────────
 	weather_rain_particles = GPUParticles3D.new()
@@ -1444,7 +1449,7 @@ func _build_scene() -> void:
 	
 	muzzle = Marker3D.new()
 	muzzle.name = "Muzzle"
-	muzzle.position = Vector3(0, 0, -1.0)
+	muzzle.position = Vector3(0, 0.15, -1.25)
 	gun.add_child(muzzle)
 	
 	
@@ -1923,9 +1928,12 @@ func _process(delta: float) -> void:
 
 	_process_heat_warning(delta)
 	
-	# Celestial Awakening countdown
+	# Celestial Awakening countdown, infinite reservoir & creation aura
 	if is_celestial_awakened:
 		celestial_awakened_timer -= delta
+		water_tank = MAX_WATER
+		can_shoot = true
+		_process_creation_aura(delta)
 		if celestial_awakened_timer <= 0.0:
 			end_celestial_awakening()
 	
@@ -2437,13 +2445,20 @@ func _process(delta: float) -> void:
 		if not shoot_loop_sfx.playing:
 			shoot_loop_sfx.play()
 			
-		water_tank -= WATER_DRAIN_RATE * delta
+		if not is_celestial_awakened:
+			water_tank -= WATER_DRAIN_RATE * delta
+		else:
+			water_tank = MAX_WATER
 		GameState.total_water_sprayed += WATER_DRAIN_RATE * delta
 		if not GameState.current_weapon_id in GameState.weapons_used_this_run:
 			GameState.weapons_used_this_run.append(GameState.current_weapon_id)
 			if GameState.weapons_used_this_run.size() >= 5:
 				GameState.unlock_achievement("weapon_mastery")
 		gun_spray.emitting = true
+		
+		if celestial_hydro_cannon:
+			var target_pt = result.position if result else (aim_origin + aim_dir * 100.0)
+			celestial_hydro_cannon.set_firing(is_celestial_awakened, aim_origin, target_pt)
 		
 		# Subtle accessibility-friendly recoil kick (push gun and camera back slightly)
 		if not reduce_motion:
@@ -2599,6 +2614,8 @@ func _process(delta: float) -> void:
 				sizzle_sfx.play()
 				
 			var damage_mult: float = 1.0
+			if is_celestial_awakened:
+				damage_mult *= 2.0
 			if GameState.is_survival_mode and GameState.current_wave >= 5:
 				damage_mult = 1.0 + (GameState.current_wave - 4) * 0.15
 				
@@ -2654,6 +2671,8 @@ func _process(delta: float) -> void:
 				if hud and hud.has_method("show_combo"): hud.show_combo(false)
 			
 		gun_spray.emitting = false
+		if celestial_hydro_cannon:
+			celestial_hydro_cannon.set_firing(false, Vector3.ZERO, Vector3.ZERO)
 		var combo_regen_bonus = 0.0
 		if combo_active:
 			var c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
@@ -3137,6 +3156,8 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				is_critical = true
 				
 		var damage_mult: float = 1.0
+		if is_celestial_awakened:
+			damage_mult *= 2.0
 		if GameState.is_survival_mode:
 			if GameState.current_wave >= 5:
 				damage_mult = 1.0 + (GameState.current_wave - 4) * 0.15 # +15% damage per wave past wave 4
@@ -4052,6 +4073,8 @@ func end_celestial_awakening() -> void:
 	celestial_awakened_timer = 0.0
 	if celestial_tails:
 		celestial_tails.deactivate_awakening()
+	if celestial_hydro_cannon:
+		celestial_hydro_cannon.set_firing(false, Vector3.ZERO, Vector3.ZERO)
 
 func toggle_celestial_awakening() -> void:
 	if is_celestial_awakened:
@@ -4132,6 +4155,67 @@ func _spawn_deflected_number(pos: Vector3) -> void:
 	tw.tween_property(lbl, "global_position:y", lbl.global_position.y + 3.5, 0.55).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 	tw.tween_property(lbl, "modulate:a", 0.0, 0.5).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_EXPO)
 	tw.chain().tween_callback(lbl.queue_free)
+
+func _spawn_rewrite_floating_text(pos: Vector3) -> void:
+	var lbl = Label3D.new()
+	lbl.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	lbl.no_depth_test = true
+	lbl.text = "+REWRITE!"
+	lbl.font = preload("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+	lbl.font_size = 460
+	lbl.modulate = Color(1.0, 0.90, 0.35, 0.98) # Radiant Kitsune gold
+	lbl.outline_size = 32
+	lbl.outline_modulate = Color(0.12, 0.04, 0.0, 0.9)
+	
+	var offset = Vector3(randf_range(-1.0, 1.0), randf_range(0.8, 1.8), randf_range(-0.5, 0.5))
+	add_child(lbl)
+	lbl.global_position = pos + offset
+	
+	var tw = create_tween().set_parallel(true)
+	tw.tween_property(lbl, "global_position:y", lbl.global_position.y + 4.2, 0.65).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	tw.tween_property(lbl, "modulate:a", 0.0, 0.65).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_EXPO)
+	tw.chain().tween_callback(lbl.queue_free)
+
+func _process_creation_aura(_delta: float) -> void:
+	if active_flares.is_empty():
+		return
+		
+	var aura_intercepted = []
+	var cam_pos = camera.global_position
+	
+	for flare in active_flares:
+		var f_node = flare.get("node") as Node3D
+		if is_instance_valid(f_node):
+			var flare_pos = f_node.global_position
+			var dist = flare_pos.distance_to(cam_pos)
+			if dist < 5.5:
+				aura_intercepted.append(flare)
+				
+	for flare in aura_intercepted:
+		var f_node = flare.get("node") as Node3D
+		if is_instance_valid(f_node):
+			var flare_pos = f_node.global_position
+			_spawn_flare_explosion(flare_pos)
+			_spawn_rewrite_floating_text(flare_pos)
+			if steam_particles:
+				steam_particles.global_position = flare_pos
+				steam_particles.restart()
+			if sizzle_sfx:
+				sizzle_sfx.play()
+			if flare_intercept_sfx:
+				flare_intercept_sfx.play()
+			shake(0.2, 0.035)
+			
+			var c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2)) if combo_active else 1.0
+			GameState.add_score(int(1000.0 * c_mult))
+			GameState.flares_intercepted += 1
+			f_node.queue_free()
+			active_flares.erase(flare)
+			
+			if GameState.flares_intercepted >= 10 and not "flare_catcher" in GameState.unlocked_achievements:
+				GameState.unlock_achievement("flare_catcher")
+			else:
+				GameState.save_settings()
 
 func _on_shield_deflect(hit_world_pos: Vector3) -> void:
 	# 1. Update Energy Shield Shader Ripple
