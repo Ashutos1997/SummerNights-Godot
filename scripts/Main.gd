@@ -138,6 +138,9 @@ var weapon_swap_tween: Tween
 func _on_weapon_changed(w_id: String) -> void:
 	if GameState.current_weapon_id == w_id: return
 	
+	if is_celestial_awakened and w_id != "kitsune":
+		end_celestial_awakening()
+		
 	is_swapping_weapon = true
 	if weapon_swap_tween and weapon_swap_tween.is_valid():
 		weapon_swap_tween.kill()
@@ -153,6 +156,8 @@ func _on_weapon_changed(w_id: String) -> void:
 		_do_weapon_swap(w_id)
 
 func _do_weapon_swap(w_id: String) -> void:
+	if is_celestial_awakened and w_id != "kitsune":
+		end_celestial_awakening()
 	GameState.current_weapon_id = w_id
 	if not w_id in GameState.weapons_used_this_run:
 		GameState.weapons_used_this_run.append(w_id)
@@ -285,8 +290,11 @@ var dir_light:   DirectionalLight3D
 var camera:      Camera3D
 var celestial_tails: CelestialTails
 var celestial_hydro_cannon: CelestialHydroCannon
+var celestial_henshin_sfx: AudioStreamPlayer
 var is_celestial_awakened: bool = false
 var celestial_awakened_timer: float = 0.0
+var celestial_filter_tween: Tween = null
+var celestial_shockwave_tween: Tween = null
 var sun:         Node3D
 var sun_mesh:    MeshInstance3D
 var sun_mat:     StandardMaterial3D
@@ -425,6 +433,13 @@ func _ready() -> void:
 		catastrom_sfx.stream = preload("res://assets/audio/sfx/catastrom_dunk.mp3")
 	catastrom_sfx.volume_db = 0.0
 	add_child(catastrom_sfx)
+	
+	celestial_henshin_sfx = AudioStreamPlayer.new()
+	celestial_henshin_sfx.stream = preload("res://assets/audio/sfx/shield_spawn.wav")
+	celestial_henshin_sfx.pitch_scale = 1.35
+	celestial_henshin_sfx.volume_db = 1.5
+	celestial_henshin_sfx.bus = "SFX_WEAPON"
+	add_child(celestial_henshin_sfx)
 	
 	var hum_gen = AudioStreamGenerator.new()
 	hum_gen.mix_rate = 44100
@@ -1930,12 +1945,17 @@ func _process(delta: float) -> void:
 	
 	# Celestial Awakening countdown, infinite reservoir & creation aura
 	if is_celestial_awakened:
-		celestial_awakened_timer -= delta
-		water_tank = MAX_WATER
-		can_shoot = true
-		_process_creation_aura(delta)
-		if celestial_awakened_timer <= 0.0:
+		if GameState.current_weapon_id != "kitsune":
 			end_celestial_awakening()
+		else:
+			celestial_awakened_timer -= delta
+			water_tank = MAX_WATER
+			can_shoot = true
+			_process_creation_aura(delta)
+			if hud and hud.has_method("update_celestial_awakening"):
+				hud.update_celestial_awakening(celestial_awakened_timer, 15.0)
+			if celestial_awakened_timer <= 0.0:
+				end_celestial_awakening()
 	
 	if shield_deflect_cooldown > 0.0:
 		shield_deflect_cooldown -= delta
@@ -2030,6 +2050,8 @@ func _process(delta: float) -> void:
 		if level_timer <= 0.0:
 			timer_running = false
 			game_over = true
+			if is_celestial_awakened:
+				end_celestial_awakening()
 			GameState.total_deaths += 1
 			GameState.save_settings()
 			GameState.log_playtest_round("Loss", Time.get_unix_time_from_system() - round_start_time, GameState.current_weapon_id)
@@ -3636,6 +3658,8 @@ func _cinematic_boss_draft() -> void:
 func _win() -> void:
 	if defeat_triggered: return
 	defeat_triggered = true
+	if is_celestial_awakened:
+		end_celestial_awakening()
 	if active_weather == "eclipse":
 		GameState.unlock_achievement("shadow_walker")
 	_end_mirage()
@@ -3685,6 +3709,8 @@ func _win() -> void:
 			water_refill_count = 0
 			is_measuring = false
 			is_catastrom_active = false
+			if is_celestial_awakened:
+				end_celestial_awakening()
 			_end_mirage()
 			active_mirages.clear()
 			_clear_active_hazards()
@@ -4063,10 +4089,43 @@ func _trigger_phase2() -> void:
 	timer_running = true
 
 func start_celestial_awakening(duration: float = 15.0) -> void:
+	# Exclusively locked to Kitsune Buster IX
+	if GameState.current_weapon_id != "kitsune":
+		if hud and hud.has_method("show_toast"):
+			var is_kr = GameState.language == "KR"
+			var title = "구미호 버스터 IX 필요" if is_kr else "KITSUNE BUSTER IX REQUIRED"
+			var desc = "신성의 각성은 구미호 버스터 전용입니다" if is_kr else "CELESTIAL AWAKENING REQUIRES KITSUNE BUSTER IX"
+			hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1.0, 0.85, 0.4, 1.0))
+		return
+
 	is_celestial_awakened = true
 	celestial_awakened_timer = duration
 	if celestial_tails:
 		celestial_tails.activate_awakening()
+	if celestial_henshin_sfx:
+		celestial_henshin_sfx.play()
+	if hud and hud.has_method("start_celestial_awakening"):
+		hud.start_celestial_awakening(duration)
+	if post_process_mat:
+		if celestial_filter_tween and celestial_filter_tween.is_valid():
+			celestial_filter_tween.kill()
+		celestial_filter_tween = create_tween()
+		celestial_filter_tween.tween_method(func(v: float): post_process_mat.set_shader_parameter("celestial_mix", v), 0.0, 1.0, 0.45).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		
+		# Tokusatsu Henshin Expanding Spacetime Shockwave (0.45s radial lens ripple)
+		if not GameState.reduce_motion:
+			if celestial_shockwave_tween and celestial_shockwave_tween.is_valid():
+				celestial_shockwave_tween.kill()
+			post_process_mat.set_shader_parameter("celestial_shockwave", 0.0)
+			post_process_mat.set_shader_parameter("celestial_shockwave_intensity", 1.0)
+			celestial_shockwave_tween = create_tween().set_parallel(true)
+			celestial_shockwave_tween.tween_method(func(v: float): post_process_mat.set_shader_parameter("celestial_shockwave", v), 0.0, 1.35, 0.45).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+			celestial_shockwave_tween.tween_method(func(v: float): post_process_mat.set_shader_parameter("celestial_shockwave_intensity", v), 1.0, 0.0, 0.45).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+			celestial_shockwave_tween.chain().tween_callback(func():
+				if post_process_mat:
+					post_process_mat.set_shader_parameter("celestial_shockwave", 0.0)
+					post_process_mat.set_shader_parameter("celestial_shockwave_intensity", 0.0)
+			)
 
 func end_celestial_awakening() -> void:
 	is_celestial_awakened = false
@@ -4075,6 +4134,19 @@ func end_celestial_awakening() -> void:
 		celestial_tails.deactivate_awakening()
 	if celestial_hydro_cannon:
 		celestial_hydro_cannon.set_firing(false, Vector3.ZERO, Vector3.ZERO)
+	if hud and hud.has_method("end_celestial_awakening"):
+		hud.end_celestial_awakening()
+	if post_process_mat:
+		if celestial_shockwave_tween and celestial_shockwave_tween.is_valid():
+			celestial_shockwave_tween.kill()
+		post_process_mat.set_shader_parameter("celestial_shockwave", 0.0)
+		post_process_mat.set_shader_parameter("celestial_shockwave_intensity", 0.0)
+		if celestial_filter_tween and celestial_filter_tween.is_valid():
+			celestial_filter_tween.kill()
+		var cur_mix = post_process_mat.get_shader_parameter("celestial_mix")
+		var start_v = cur_mix if cur_mix != null else 1.0
+		celestial_filter_tween = create_tween()
+		celestial_filter_tween.tween_method(func(v: float): post_process_mat.set_shader_parameter("celestial_mix", v), start_v, 0.0, 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
 func toggle_celestial_awakening() -> void:
 	if is_celestial_awakened:
@@ -4123,9 +4195,13 @@ func _spawn_damage_number(amount: float, is_crit: bool, pos: Vector3) -> void:
 	lbl.text = "-%d" % round(amount * 10.0)
 	lbl.font = preload("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
 	lbl.font_size = 600 if is_crit else 350
-	lbl.modulate = Color(1.0, 0.8, 0.1) if is_crit else Color(0.3, 0.8, 1.0)
+	if is_celestial_awakened:
+		lbl.modulate = Color(0.75, 1.0, 1.0) if is_crit else Color(0.17, 0.90, 1.0)
+		lbl.outline_modulate = Color(0.04, 0.22, 0.38, 0.9)
+	else:
+		lbl.modulate = Color(1.0, 0.8, 0.1) if is_crit else Color(0.3, 0.8, 1.0)
+		lbl.outline_modulate = Color.BLACK
 	lbl.outline_size = 32
-	lbl.outline_modulate = Color.BLACK
 	
 	var offset = Vector3(randf_range(-2.5, 2.5), randf_range(-1.5, 1.5), randf_range(-2.0, 2.0))
 	add_child(lbl)
@@ -4714,3 +4790,7 @@ func _update_post_process_settings() -> void:
 		post_process_mat.set_shader_parameter("dither_enabled", GameState.filter_dithering)
 		post_process_mat.set_shader_parameter("ps1_shading_enabled", GameState.filter_ps1)
 		post_process_mat.set_shader_parameter("heatwave_1984_enabled", GameState.filter_heatwave)
+		if not is_celestial_awakened:
+			post_process_mat.set_shader_parameter("celestial_mix", 0.0)
+			post_process_mat.set_shader_parameter("celestial_shockwave", 0.0)
+			post_process_mat.set_shader_parameter("celestial_shockwave_intensity", 0.0)

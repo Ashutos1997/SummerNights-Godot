@@ -21,6 +21,17 @@ var scale_tween: Tween
 var current_water: float = 100.0
 var max_water: float = 100.0
 
+# ─── Celestial Awakening Diegetic Visor Timer ────────────────────────────────
+var is_celestial_active: bool = false
+var celestial_time_left: float = 0.0
+var celestial_max_time: float = 15.0
+
+func set_celestial_timer(time_left: float, max_time: float = 15.0) -> void:
+	is_celestial_active = (time_left > 0.0)
+	celestial_time_left = max(0.0, time_left)
+	celestial_max_time = max(0.1, max_time)
+	queue_redraw()
+
 # ─── Weapon Style ─────────────────────────────────────────────────────────────
 var weapon_style: String = "standard"
 var _gatling_spin_angle: float = 0.0
@@ -123,9 +134,56 @@ func _draw() -> void:
 			_draw_kitsune(center, col)
 		_:
 			_draw_water_ring(center, 28.0, 3.0)
+			
+	if is_celestial_active:
+		_draw_celestial_visor_arcs(center)
+
+func _draw_celestial_visor_arcs(center: Vector2) -> void:
+	var r = 38.0
+	var thick = 3.5
+	var glow_r = 40.0
+	var glow_thick = 1.0
+	var frac = clamp(celestial_time_left / celestial_max_time, 0.0, 1.0)
+	
+	var is_low = (celestial_time_left <= 3.0)
+	var pulse = fmod(celestial_time_left * 8.0, 1.0) > 0.5 if is_low else false
+	var arc_col = Color(1.0, 0.45, 0.2, 0.95) if pulse else Color(0.17, 0.90, 1.0, 0.95)
+	var glow_col = Color(arc_col.r, arc_col.g, arc_col.b, 0.35)
+	var bg_col = Color(0.08, 0.18, 0.25, 0.35)
+	
+	# Full 360° background track ring
+	draw_arc(center, r, 0, TAU, 48, bg_col, thick, true)
+	
+	# Foreground depleting ring — drains clockwise from 12 o'clock (-PI/2)
+	if frac > 0.0:
+		var start_angle = -PI / 2.0
+		var end_angle = start_angle + TAU * frac
+		draw_arc(center, r, start_angle, end_angle, 48, arc_col, thick, true)
+		# Outer glow trail
+		draw_arc(center, glow_r, start_angle, end_angle, 48, glow_col, glow_thick, true)
+		
+	# Small digital readout centered below reticle
+	var t_text = "%.1fs" % max(0.0, celestial_time_left)
+	var font = load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+	if font:
+		var text_sz = font.get_string_size(t_text, HORIZONTAL_ALIGNMENT_CENTER, -1, 12)
+		var text_pos = center + Vector2(-text_sz.x / 2.0, 54.0)
+		draw_string_outline(font, text_pos, t_text, HORIZONTAL_ALIGNMENT_CENTER, -1, 12, 3, Color.BLACK)
+		draw_string(font, text_pos, t_text, HORIZONTAL_ALIGNMENT_CENTER, -1, 12, arc_col)
 
 # ── Kitsune: Celestial 9-point radial diamond reticle ───────────────────────
 func _draw_kitsune(center: Vector2, col: Color) -> void:
+	# Celestial outer glow — faint larger diamond + bloom ring behind reticle
+	if is_celestial_active:
+		var glow_col = Color(0.17, 0.90, 1.0, 0.2)
+		var glow_d = 10.0
+		draw_line(center + Vector2(0, -glow_d), center + Vector2(glow_d, 0), glow_col, 3.0, true)
+		draw_line(center + Vector2(glow_d, 0), center + Vector2(0, glow_d), glow_col, 3.0, true)
+		draw_line(center + Vector2(0, glow_d), center + Vector2(-glow_d, 0), glow_col, 3.0, true)
+		draw_line(center + Vector2(-glow_d, 0), center + Vector2(0, -glow_d), glow_col, 3.0, true)
+		# Outer bloom arc
+		draw_arc(center, 34.0, 0, TAU, 32, Color(0.17, 0.90, 1.0, 0.12), 4.0, true)
+	
 	var d = 6.0
 	draw_line(center + Vector2(0, -d), center + Vector2(d, 0), col, 2.0, true)
 	draw_line(center + Vector2(d, 0), center + Vector2(0, d), col, 2.0, true)

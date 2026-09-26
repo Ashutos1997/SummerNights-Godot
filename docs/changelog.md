@@ -6,6 +6,7 @@ All notable changes to the Summer Nights project will be documented in this file
 *(Note: This release corresponds to v1.6 on itch.io)*
 
 ### Added
+* Celestial Awakening Energy Aura & Ethereal Domain Filter: Implemented a dedicated 3D post-processing filter (`celestial_mix` in `retro_postprocess.gdshader` on CanvasLayer 0) applying midnight indigo shadows, optical highlight bloom on the sun and tails, and peripheral spacetime refraction below the HUD. Paired with a shader-driven radial energy vignette (`celestial_vignette.gdshader`), delicate procedural stardust motes, full 360° depleting crosshair ring with kitsune bloom diamond, breathing weapon plate glow, holographic cyan text shadows on LVL/TIME/SCORE labels, and electric cyan floating damage numbers. Base HUD elements (gold typography, retro plates) remain completely untouched.
 * Celestial Awakening (Fox Nine 3D Tails): Implemented procedural 9-tail celestial hydro-ribbon system (CelestialTails.gd) exclusive to the Kitsune Buster IX, featuring staggered henshin bloom, multi-octave traveling waves, 3D ribbon twist, aim inertia sway, and additive cyan/frost glow framing the first-person view.
 * 9-Stream Converging Hydro-Cannon & Infinite Reservoir: Enabled 9-stream spiraling hydro-vortex cannon (CelestialHydroCannon.gd) during Kitsune Buster's Celestial Awakening, locked water tank at 100% with infinite capacity, 2.0x cooling power, and implemented close-range Creation Aura deflecting flares with '+REWRITE!' combat feedback. Swapping weapons cancels the awakening state.
 * 6th Secret Weapon (Kitsune Buster IX): Added a custom tokusatsu-inspired celestial water blaster featuring an open holographic reflex sight, 6-way weapon wheel integration, a translucent amber-gold revolving Kyubi chamber exposing 9 pressurized cyan water vials, custom spray particles, and dedicated diamond crosshair.
@@ -27,6 +28,9 @@ All notable changes to the Summer Nights project will be documented in this file
 * Settings Categorized Section Badges: Grouped settings rows into 3 distinct logical sections ("AUDIO", "GAMEPLAY & CONTROLS", "DISPLAY & SYSTEM") using tactile retro plate badges (4px radii, gold border), trailing golden hairline rules, balanced section clearance (36px between categories, 26px title/footer gap), and dynamic bilingual typography.
 * Settings Row Label Typography Contrast: Refined row label colors from uniform gold to high-contrast off-white body text (`Color(0.92, 0.92, 0.92, 0.95)`), establishing clear visual hierarchy between gold category badges/interactive controls and option labels.
 * Settings Refined Spacing: Fine-tuned vertical separation (VBox 10→12px, category clearance 28px, divider2 18px) to provide balanced breathing room between rows while preserving comfortable 70px+ top/bottom clearance on 720p.
+* Celestial Awakening Pill Toast: Replaced bespoke centered title label with a standardized pill-style toast notification matching the achievement/buff toast design, using celestial cyan border/shadow, dark indigo background, centered VBox typography ("POWER UNLEASHED!" / "신성의 힘 발현!" header, "CELESTIAL AWAKENING" / "신성의 각성" title) vertically aligned with the icon, and 4s auto-dismiss.
+* Celestial Awakening Ethereal Filter Contrast: Upgraded mode-exclusive post-process grading curve (strictly active during Celestial Awakening; excluded from standard retro filter settings) with high-clarity S-curve contrast and zero-lift multiplicative cosmic indigo split-toning (`vec3(0.70, 0.84, 1.32)`), eliminating milky shadow wash while preserving inky deep blacks and radiant highlight luminescence.
+* Celestial Awakening Tokusatsu Post-Process FX: Integrated a 0.45s dynamic Henshin spacetime shockwave ripple expanding from screen center on activation in sync with audio feedback, paired with horizontal anamorphic cyan lens flare streaks radiating from peak emissives (Sun core, hydro-cannon, converging streams) throughout awakening.
 
 ### Known Issues (Critical)
 * Fullscreen End-of-Run Dimming: Win ("Cool Down") and Lose ("The Sun Won") screens render at low brightness in Normal and Endless modes despite modulate 1.0. Root rendering cause under active investigation.
@@ -251,6 +255,7 @@ All notable changes to the Summer Nights project will be documented in this file
 *(참고: 이 릴리스는 itch.io의 v1.6 버전에 해당합니다)*
 
 ### 추가됨 (Added)
+* 신성의 각성 에너지 아우라 및 에테리얼 도메인 필터: HUD 하단(CanvasLayer 0)에서 동작하는 전용 3D 후처리 필터(`retro_postprocess.gdshader`의 `celestial_mix`)를 적용하여 깊은 미드나이트 인디고 그림자, 태양/꼬리/물줄기 광학 하이라이트 블룸 및 외곽 시공간 굴절 효과 구현. 화면 가장자리 셰이더 기반 사이언 에너지 비네트(`celestial_vignette.gdshader`), 섬세한 절차적 에너지 파티클 모트, 조준선 360° 풀 링 타이머 및 구미호 다이아몬드 블룸, 무기 플레이트 브리딩 글로우, LVL/TIME/SCORE 라벨의 홀로그래픽 사이언 그림자 발광 및 전기 사이언 데미지 숫자 적용. 기본 HUD 요소(골드 타이포그래피, 레트로 플레이트)는 각성 중 변형 없이 유지.
 * 신성의 각성 (구미호 3D 수압 꼬리): 구미호 버스터 IX 전용 1인칭 시야 절차적 9꼬리 신성 수압 리본 시스템(CelestialTails.gd) 구현. 중앙 꼬리부터 양 날개로 번지는 단계별 변신 만개(Henshin Bloom), 다중 주파수 흐름 파동, 3D 리본 트위스트, 마우스 조준 관성 드래그 및 가산 혼합 청록/백색 발광 적용.
 * 9줄기 수렴형 하이드로 캐논 및 무한 수조: 구미호 버스터 신성의 각성 발동 중 9줄기 나선형 수압 볼텍스(CelestialHydroCannon.gd) 집중 사격, 물탱크 100% 무한 유지(소모/재장전 없음), 2.0배 냉각 파워, 반경 5.5m 내 태양 플레어를 즉시 소멸시키며 '+REWRITE!' 피드백을 띄우는 창조의 오라 구현. 무기 교체 시 각성 상태 즉시 해제.
 * 6번째 비밀 무기 (구미호 버스터 IX): 가면라이더 기츠 IX 오마주 기반의 커스텀 신성 수압 버스터 무기 추가. 시야 간섭 없는 오픈 홀로그래픽 리플렉스 사이트, 6분할 무기 선택 휠 연동, 내부 9개 수압 바이알이 비치는 반투명 호박빛 골드 회전식 실린더 챔버, 전용 다이아몬드 크로스헤어 및 전용 물줄기 파티클 구현.
@@ -272,6 +277,9 @@ All notable changes to the Summer Nights project will be documented in this file
 * 설정 메뉴 카테고리 섹션 배지: 설정 항목들을 3개의 논리적 섹션("오디오", "조작 및 편의", "화면 및 시스템")으로 구조화하고, 4px 모서리 곡률의 골드 테두리 레트로 플레이트 배지, 골드 헤어라인 구분선, 균형 잡힌 섹션 여백(카테고리 간 36px, 상/하단 26px), 실시간 국/영문 폰트 동기화를 적용.
 * 설정 메뉴 항목 라벨 시각적 대비 개선: 모든 항목 라벨 색상을 기존 단색 골드에서 고대비 오프화이트 본문 텍스트(`Color(0.92, 0.92, 0.92, 0.95)`)로 개편하여, 골드 카테고리 배지 및 대화형 컨트롤(슬라이더, 토글)과의 시각적 위계를 명확히 분리.
 * 설정 메뉴 여백 미세 조정: 수직 요소 간격(VBox 10→12px, 카테고리 여백 28px, 하단 구분선 18px)을 미세 조정하여 항목 간 쾌적한 호흡 공간을 부여하는 동시에 720p 기준 70px 이상의 상/하단 여유 공간 유지.
+* 신성의 각성 필 토스트 알림: 기존 중앙 고정 타이틀 라벨을 업적/버프와 동일한 필 스타일 토스트 알림으로 교체. 사이언 테두리/그림자, 다크 인디고 배경, 아이콘과 수직 중앙 정렬된 VBox 타이포그래피("신성의 힘 발현!" 헤더, "신성의 각성" 타이틀) 적용 후 4초 자동 퇴장.
+* 신성의 각성 에테리얼 필터 명암 개선: 모드 전용 후처리 그레이딩 곡선(신성의 각성 중에만 한정 동작하며 일반 레트로 필터 메뉴에서 완전 제외)을 S-커브 명암 강화 및 블랙 리프트가 없는 승산 방식 코스믹 인디고 분할 톤(`vec3(0.70, 0.84, 1.32)`)으로 개편하여, 그림자 영역의 뿌연 물빠짐 현상을 제거하고 깊은 암부 대비와 선명한 하이라이트 광채를 확보.
+* 신성의 각성 특촬(토쿠사츠) 후처리 효과: 변신 효과음에 맞춰 화면 중앙에서 외곽으로 0.45초간 확산되는 시공간 렌즈 왜곡 헨신(Henshin) 충격파 연출과, 각성 중 태양 코어 및 수류 수렴 광선 등 최고 발광체에서 가로 방향으로 뻗어나가는 사이언 아나모픽 렌즈 플레어 광조 효과 추가.
 
 ### 알려진 문제 (Known Issues - Critical)
 * 전체화면 라운드 종료 화면 밝기 저하: 일반 및 무한 모드 모두에서 승리("Cool Down") 및 패배("The Sun Won") 화면의 UI modulate 값이 1.0임에도 불구하고 화면이 어둡게 렌더링되는 중요 버그 발생. 렌더링 원인 추적 및 해결 진행 중.

@@ -9,6 +9,9 @@ uniform vec4 vignette_color : source_color = vec4(0.0, 0.0, 0.0, 1.0);
 uniform vec4 heat_border_color : source_color = vec4(0.0, 0.0, 0.0, 0.0);
 uniform float flash_mix : hint_range(0.0, 1.0) = 0.0;
 uniform float frost_mix : hint_range(0.0, 1.0) = 0.0;
+uniform float celestial_mix : hint_range(0.0, 1.0) = 0.0;
+uniform float celestial_shockwave : hint_range(0.0, 1.5) = 0.0;
+uniform float celestial_shockwave_intensity : hint_range(0.0, 1.0) = 0.0;
 uniform float noise_amount : hint_range(0.0, 1.0) = 0.03;
 uniform bool reduce_motion = false;
 uniform bool color_reduction_enabled = false;
@@ -63,7 +66,35 @@ void fragment() {
     // Scale aberration based on distance from center for a lens effect
     vec2 center_dist = distorted_uv - vec2(0.5);
     
+    // 2a. Tokusatsu Henshin Expanding Spacetime Shockwave (Activation Radial Lens Ripple)
+    if (celestial_shockwave_intensity > 0.001 && !reduce_motion) {
+        vec2 aspect_dist = vec2(center_dist.x * (px.y / px.x), center_dist.y);
+        float wave_r = length(aspect_dist);
+        float ring_thickness = 0.08;
+        float dist_to_ring = abs(wave_r - celestial_shockwave);
+        if (dist_to_ring < ring_thickness && wave_r > 0.001) {
+            float norm_dist = (wave_r - celestial_shockwave) / ring_thickness;
+            float ripple = sin(norm_dist * 3.14159) * (1.0 - dist_to_ring / ring_thickness);
+            vec2 wave_dir = normalize(center_dist);
+            vec2 wave_disp = wave_dir * (ripple * 0.035 * celestial_shockwave_intensity);
+            distorted_uv += wave_disp;
+            center_dist = distorted_uv - vec2(0.5);
+        }
+    }
+    
     vec3 color = texture(screen_texture, distorted_uv).rgb;
+    
+    // 2b. Celestial Spacetime Refraction (Perimeter Radial Warp)
+    if (celestial_mix > 0.001 && !reduce_motion) {
+        float r_dist = length(center_dist);
+        vec2 warp = center_dist * (r_dist * 0.035 * celestial_mix);
+        vec2 r_uv = distorted_uv + warp + center_dist * (px.x * 2.0 * celestial_mix);
+        vec2 b_uv = distorted_uv - warp - center_dist * (px.x * 2.0 * celestial_mix);
+        float r_ch = texture(screen_texture, r_uv).r;
+        float g_ch = color.g;
+        float b_ch = texture(screen_texture, b_uv).b;
+        color = mix(color, vec3(r_ch, g_ch, b_ch), celestial_mix * 0.7);
+    }
     
     // 3. Film Grain (Noise)
     if (noise_amount > 0.0) {
@@ -180,6 +211,58 @@ void fragment() {
         float film_grain = (rand(uv + vec2(TIME * 0.05, TIME * 0.1)) - 0.5) * 0.04;
         color += vec3(film_grain * 1.2, film_grain * 0.8, film_grain * 0.4);
         color = clamp(color, 0.0, 1.0);
+    }
+
+    // 5e. "Celestial Awakening: Ethereal Domain" Grade & Optical Halation
+    if (celestial_mix > 0.001) {
+        float c_luma = dot(color, vec3(0.299, 0.587, 0.114));
+        
+        // 1. High-clarity cinematic S-curve (anchors true black at 0.0, crisp punch)
+        vec3 s_curve = color * color * (3.0 - 2.0 * color);
+        vec3 graded = mix(color, s_curve, 0.42);
+        
+        // 2. Cosmic midnight indigo split-toning (multiplicative — zero black lift, no milky fog)
+        vec3 indigo_tint = vec3(0.70, 0.84, 1.32);
+        float shadow_weight = (1.0 - smoothstep(0.06, 0.62, c_luma));
+        graded = mix(graded, graded * indigo_tint, shadow_weight * 0.65);
+        
+        // 3. Ethereal cyan-crystalline highlight grade
+        vec3 highlight_tint = vec3(0.92, 1.02, 1.10);
+        float highlight_weight = smoothstep(0.48, 0.95, c_luma);
+        graded = mix(graded, graded * highlight_tint, highlight_weight * 0.50);
+        
+        // 4. Celestial Optical Bloom/Halation on bright emissives (Sun, Tails, Converging Water)
+        vec2 bloom_step = px * 6.0;
+        vec3 b0 = texture(screen_texture, distorted_uv + vec2( bloom_step.x, 0.0)).rgb;
+        vec3 b1 = texture(screen_texture, distorted_uv - vec2( bloom_step.x, 0.0)).rgb;
+        vec3 b2 = texture(screen_texture, distorted_uv + vec2( 0.0,  bloom_step.y)).rgb;
+        vec3 b3 = texture(screen_texture, distorted_uv - vec2( 0.0, -bloom_step.y)).rgb;
+        float halo_luma = (dot(b0, vec3(0.299, 0.587, 0.114)) + dot(b1, vec3(0.299, 0.587, 0.114)) + 
+                           dot(b2, vec3(0.299, 0.587, 0.114)) + dot(b3, vec3(0.299, 0.587, 0.114))) * 0.25;
+        float bloom_factor = max(smoothstep(0.60, 0.98, c_luma), smoothstep(0.55, 0.92, halo_luma) * 0.80);
+        vec3 celestial_glow = vec3(0.18, 0.88, 1.0) * (bloom_factor * 0.35);
+        graded += celestial_glow;
+        
+        // 5. Tokusatsu Anamorphic Lens Flare (Horizontal Cyan Streak on Peak Emissives)
+        float h_streak_luma = dot(color, vec3(0.299, 0.587, 0.114));
+        if (h_streak_luma > 0.72) {
+            vec3 s_l1 = texture(screen_texture, distorted_uv - vec2(px.x * 12.0, 0.0)).rgb;
+            vec3 s_r1 = texture(screen_texture, distorted_uv + vec2(px.x * 12.0, 0.0)).rgb;
+            vec3 s_l2 = texture(screen_texture, distorted_uv - vec2(px.x * 26.0, 0.0)).rgb;
+            vec3 s_r2 = texture(screen_texture, distorted_uv + vec2(px.x * 26.0, 0.0)).rgb;
+            vec3 s_l3 = texture(screen_texture, distorted_uv - vec2(px.x * 48.0, 0.0)).rgb;
+            vec3 s_r3 = texture(screen_texture, distorted_uv + vec2(px.x * 48.0, 0.0)).rgb;
+            
+            float streak_sample_luma = (dot(s_l1, vec3(0.299, 0.587, 0.114)) + dot(s_r1, vec3(0.299, 0.587, 0.114)) + 
+                                       dot(s_l2, vec3(0.299, 0.587, 0.114)) + dot(s_r2, vec3(0.299, 0.587, 0.114)) + 
+                                       dot(s_l3, vec3(0.299, 0.587, 0.114)) + dot(s_r3, vec3(0.299, 0.587, 0.114))) * (1.0 / 6.0);
+            float streak_strength = max(smoothstep(0.78, 0.98, h_streak_luma), smoothstep(0.72, 0.94, streak_sample_luma) * 0.85);
+            vec3 anamorphic_cyan = vec3(0.18, 0.90, 1.0) * (streak_strength * 0.38);
+            graded += anamorphic_cyan;
+        }
+        
+        graded = clamp(graded, 0.0, 1.0);
+        color = mix(color, graded, celestial_mix);
     }
 
     

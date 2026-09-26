@@ -26,7 +26,9 @@ Designed to minimize clutter while keeping survival info in the player's periphe
 ### Center
 * **Crosshair:** Dynamic diegetic reticle. Scales on hits. Inner ring tracks water capacity. Flashes red when empty, green on critical hits.
   * *Weapon Shapes:* Unique shapes for each weapon (Standard, Precision, Heavy, Scatter, Gatling, Kitsune Buster IX).
-* **Damage Numbers & Deflection Feedback:** Floating 3D text showing damage (`-%d`), golden weak-point crits, or electric cyan `DEFLECTED` labels when firing at an active Solar Flare Shield.
+  * *Celestial Timer Ring:* During Celestial Awakening, a full 360° depleting cyan ring ($R = 38\text{px}$, $3.5\text{px}$ thick) wraps the reticle clockwise from 12 o'clock with a faint outer glow trail ($R = 40\text{px}$), an expanded diamond bloom accent on the Kitsune reticle, and inline micro-timer readout below. Shifts to orange with faster pulse at $\le 3.0\text{s}$.
+* **Celestial Toast & Ethereal Domain Filter:** On activation, a pill-style toast notification (matching achievement/buff pill design) slides in from the top with celestial cyan border/shadow, "POWER UNLEASHED!" header, and "CELESTIAL AWAKENING" / "신성의 각성" title. Auto-dismisses after 4s. Mode also triggers a Layer 0 "Ethereal Domain" post-process filter (0.45s Tokusatsu Henshin spacetime shockwave, horizontal anamorphic cyan lens flares on peak emissives, indigo shadows, optical highlight bloom, edge refraction; strictly mode-exclusive and absent from regular filter menus) grading only the 3D world while HUD Layer 10 stays clean.
+* **Damage Numbers & Deflection Feedback:** Floating 3D text showing damage (`-%d`), golden weak-point crits, or electric cyan `DEFLECTED` labels. During Celestial Awakening, damage numbers glow radiant electric cyan (`Color(0.17, 0.90, 1.0)`) with a deep navy outline (`Color(0.04, 0.22, 0.38)`).
 * **ComboLabel & Callouts:** Displays combo multiplier (up to 3.0x) and arcade text (e.g., "CHILL!").
 * **FlareRings:** 2D diegetic charging rings projecting the sun's 3D radius to telegraph incoming flares.
 
@@ -40,7 +42,7 @@ Designed to minimize clutter while keeping survival info in the player's periphe
 * **Catastrom Bar:** Purple gauge. Flashes "MAX READY!" at 100%. Only visible and actively charging from Wave 4+ or Level 4+.
 
 ### Bottom-Left
-* **Active Weapon Display:** Glowing vector crosshair with elemental background and localized weapon name.
+* **Active Weapon Display:** Glowing vector crosshair with elemental background and localized weapon name. During Celestial Awakening, gains an inline `[AWAKENED]` / `[신성 각성]` badge and a subtle breathing cyan border and shadow glow (2px-5px halo). Additionally, Top-Left/Top-Right labels (`LVL`, `TIME`, `SCORE`) project a balanced holographic cyan shadow (`Color(0.17, 0.90, 1.0, 0.3)`).
 
 ---
 
@@ -73,3 +75,4 @@ Designed to minimize clutter while keeping survival info in the player's periphe
 ## 5. UI Architecture
 * **UIJuice.gd (Autoload):** Automatically applies 1.03x hover scale bounces and -18dB audio ticks to all buttons and sliders game-wide.
 * **Global Z-Depth:** `HUD.gd` dynamically injects a 4px black drop shadow into all UI panels and stylized labels to create a layered "3D visor" effect.
+* **Celestial Energy Vignette Aura:** On Celestial Awakening, a full-screen shader-driven radial vignette (`celestial_vignette.gdshader`) fades in around screen edges in breathing electric cyan (`Color(0.17, 0.90, 1.0)`, alpha 0.25, 3 rad/s pulse). Shifts to amber with faster pulses at $\le 3.0\text{s}$. HUD elements (gold typography, retro plates) remain completely untouched.

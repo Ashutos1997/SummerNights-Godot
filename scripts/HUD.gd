@@ -151,9 +151,17 @@ var heat_tween: Tween
 var weather_timer_lbl: Label
 
 # Weapon HUD
+var hud_weapon_panel: PanelContainer = null
 var hud_weapon_crosshair: WeaponCrosshairIcon
 var hud_weapon_bg: ColorRect
 var hud_weapon_name_label: Label
+var celestial_weapon_plate_tween: Tween = null
+
+# Celestial Awakening Energy Aura State
+var celestial_vignette: ColorRect = null
+var celestial_vignette_tween: Tween = null
+var celestial_toast_container: Control
+var is_celestial_active: bool = false
 
 var reduce_motion: bool = false
 var vibration_enabled: bool = true
@@ -392,6 +400,23 @@ func _ready() -> void:
 	$HUD.add_child(active_perks_hud)
 	$HUD.move_child(active_perks_hud, 0)
 	
+	# Celestial Awakening energy vignette overlay (shader-driven, starts invisible)
+	celestial_vignette = ColorRect.new()
+	celestial_vignette.name = "CelestialVignette"
+	celestial_vignette.set_anchors_preset(Control.PRESET_FULL_RECT)
+	celestial_vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var vignette_shader = load("res://assets/shaders/celestial_vignette.gdshader")
+	if vignette_shader:
+		var mat = ShaderMaterial.new()
+		mat.shader = vignette_shader
+		mat.set_shader_parameter("energy_color", Color(0.17, 0.90, 1.0, 1.0))
+		mat.set_shader_parameter("energy_alpha", 0.0)
+		mat.set_shader_parameter("pulse_speed", 3.0)
+		mat.set_shader_parameter("pulse_depth", 0.08)
+		celestial_vignette.material = mat
+	$HUD.add_child(celestial_vignette)
+	$HUD.move_child(celestial_vignette, 0)
+	
 	callout_label = Label.new()
 	combo_label.add_sibling(callout_label)
 	callout_label.visible = false
@@ -477,9 +502,16 @@ func _ready() -> void:
 	buff_toast_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	$HUD.add_child(buff_toast_container)
 	
+	celestial_toast_container = Control.new()
+	celestial_toast_container.name = "CelestialToastContainer"
+	celestial_toast_container.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE, 0)
+	celestial_toast_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	$HUD.add_child(celestial_toast_container)
+	
 	if pause_screen:
 		$HUD.move_child(achievement_toast_container, pause_screen.get_index())
 		$HUD.move_child(buff_toast_container, pause_screen.get_index())
+		$HUD.move_child(celestial_toast_container, pause_screen.get_index())
 	GameState.achievement_unlocked.connect(show_achievement_toast)
 	GameState.buff_unlocked.connect(show_buff_toast)
 	
@@ -2589,6 +2621,88 @@ func show_buff_toast(id: String) -> void:
 	if not GameState.BUFFS.has(id): return
 	var buff = GameState.BUFFS[id]
 	_show_toast("버프 활성화!", "BUFF UNLOCKED!", buff["title_kr"], buff["title_en"], buff["icon"], 110.0, buff_toast_container)
+
+func _show_celestial_toast() -> void:
+	if not celestial_toast_container: return
+	
+	var is_kr = GameState.language == "KR"
+	var celestial_cyan = Color(0.17, 0.90, 1.0, 1.0)
+	
+	var panel = Panel.new()
+	panel.custom_minimum_size = Vector2(440, 80)
+	panel.size = Vector2(440, 80)
+	panel.position = Vector2(-220, -100)
+	
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.08, 0.10, 0.18, 0.95)
+	style.border_width_left = 2
+	style.border_width_right = 2
+	style.border_width_top = 2
+	style.border_width_bottom = 2
+	style.border_color = Color(0.17, 0.90, 1.0, 0.9)
+	style.corner_radius_top_left = 12
+	style.corner_radius_top_right = 12
+	style.corner_radius_bottom_left = 12
+	style.corner_radius_bottom_right = 12
+	style.shadow_size = 10
+	style.shadow_color = Color(0.17, 0.90, 1.0, 0.3)
+	style.shadow_offset = Vector2(0, 4)
+	panel.add_theme_stylebox_override("panel", style)
+	
+	var icon_rect = TextureRect.new()
+	icon_rect.texture = load("res://assets/ui/achievements/ball-glow.png")
+	icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon_rect.custom_minimum_size = Vector2(56, 56)
+	icon_rect.position = Vector2(16, 12)
+	icon_rect.pivot_offset = icon_rect.custom_minimum_size / 2.0
+	icon_rect.scale = Vector2.ZERO
+	panel.add_child(icon_rect)
+	
+	var text_vbox = VBoxContainer.new()
+	text_vbox.position = Vector2(84, 0)
+	text_vbox.size = Vector2(340, 80)
+	text_vbox.custom_minimum_size = Vector2(340, 80)
+	text_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	text_vbox.add_theme_constant_override("separation", 2)
+	text_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(text_vbox)
+	
+	var header_lbl = Label.new()
+	header_lbl.text = "신성의 힘 발현!" if is_kr else "POWER UNLEASHED!"
+	_style_lbl(header_lbl, 14 if is_kr else 12, Color(1.0, 1.0, 1.0, 0.9), 2, Color.BLACK, galmuri_font if is_kr else kenney_font)
+	text_vbox.add_child(header_lbl)
+	
+	var title_lbl = Label.new()
+	title_lbl.text = "신성의 각성" if is_kr else "CELESTIAL AWAKENING"
+	_style_lbl(title_lbl, 20 if is_kr else 18, celestial_cyan, 3, Color.BLACK, galmuri_font if is_kr else kenney_font)
+	text_vbox.add_child(title_lbl)
+	
+	panel.process_mode = Node.PROCESS_MODE_PAUSABLE
+	celestial_toast_container.add_child(panel)
+	
+	# SFX
+	var sfx = AudioStreamPlayer.new()
+	sfx.stream = load("res://assets/sounds/ui/ui_tick.wav")
+	sfx.volume_db = linear_to_db(GameState.sfx_volume)
+	panel.add_child(sfx)
+	sfx.play()
+	
+	# Animate Panel
+	var tw = create_tween().bind_node(panel)
+	tw.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	tw.tween_property(panel, "position:y", 20.0, 0.6)
+	tw.tween_interval(4.0)
+	tw.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_BACK)
+	tw.tween_property(panel, "position:y", -120.0, 0.5)
+	tw.tween_callback(panel.queue_free)
+	
+	# Animate Icon Pop
+	var icon_tw = create_tween().bind_node(panel)
+	icon_tw.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	icon_tw.tween_interval(0.3)
+	icon_tw.tween_property(icon_rect, "scale", Vector2.ONE, 0.5)
+
 func hide_win_screen() -> void:
 	if win_screen:
 		win_screen.visible = false
@@ -3158,6 +3272,7 @@ func _setup_weapon_hud() -> void:
 	margin.add_theme_constant_override("margin_top", 16)
 	
 	var panel = PanelContainer.new()
+	hud_weapon_panel = panel
 	var style = StyleBoxFlat.new()
 	style.bg_color = Color(0.0, 0.0, 0.0, 0.45)
 	style.border_color = Color(0.2, 0.84, 1.0, 0.6)
@@ -3233,6 +3348,9 @@ func _update_weapon_hud(w_id: String) -> void:
 				"scatter": w_name = "스캐터\n노즐"
 				"tidal": w_name = "타이달\n개틀링"
 				"kitsune": w_name = "구미호\n버스터"
+		if is_celestial_active and w_id == "kitsune":
+			w_name = "구미호 버스터\n[신성 각성]" if GameState.language == "KR" else "KITSUNE IX\n[AWAKENED]"
+			w_color = Color(0.17, 0.90, 1.0)
 		hud_weapon_name_label.text = w_name
 		hud_weapon_name_label.label_settings.font_color = w_color
 		
@@ -3242,7 +3360,16 @@ func _update_weapon_hud(w_id: String) -> void:
 		if panel:
 			var style = panel.get_theme_stylebox("panel") as StyleBoxFlat
 			if style:
-				style.border_color = Color(w_color, 0.6)
+				if is_celestial_active and w_id == "kitsune":
+					style.border_color = Color(0.17, 0.90, 1.0, 0.85)
+					style.set_border_width_all(1)
+					style.shadow_color = Color(0.17, 0.90, 1.0, 0.25)
+					style.shadow_size = 3
+				else:
+					style.border_color = Color(w_color, 0.6)
+					style.set_border_width_all(1)
+					style.shadow_color = Color(0, 0, 0, 0)
+					style.shadow_size = 0
 			
 			if not reduce_motion:
 				panel.pivot_offset = panel.size / 2.0
@@ -4143,6 +4270,128 @@ func _notification(what: int) -> void:
 			if weapon_wheel and weapon_wheel.active:
 				weapon_wheel.close()
 			_pause_game()
+
+# =========================================================================
+# CELESTIAL AWAKENING (FOX NINE) ENERGY AURA HUD
+# =========================================================================
+
+func _set_vignette_param(param: String, value) -> void:
+	if celestial_vignette and celestial_vignette.material:
+		(celestial_vignette.material as ShaderMaterial).set_shader_parameter(param, value)
+
+func start_celestial_awakening(duration: float = 15.0) -> void:
+	is_celestial_active = true
+	
+	# 1. Brief incandescent screen flash
+	var flash = ColorRect.new()
+	flash.set_anchors_preset(Control.PRESET_FULL_RECT)
+	flash.color = Color(0.85, 0.95, 1.0, 0.3)
+	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	$HUD.add_child(flash)
+	var f_tw = create_tween()
+	f_tw.tween_property(flash, "modulate:a", 0.0, 0.3)
+	f_tw.tween_callback(flash.queue_free)
+	
+	# 2. Pill-style toast notification (matches achievement/buff pill design)
+	_show_celestial_toast()
+	
+	# 3. Fade in energy vignette overlay
+	_set_vignette_param("energy_color", Color(0.17, 0.90, 1.0, 1.0))
+	_set_vignette_param("pulse_speed", 3.0)
+	_set_vignette_param("pulse_depth", 0.08)
+	if celestial_vignette_tween and celestial_vignette_tween.is_valid():
+		celestial_vignette_tween.kill()
+	celestial_vignette_tween = create_tween()
+	celestial_vignette_tween.tween_method(_set_vignette_alpha, 0.0, 0.28, 0.35).set_trans(Tween.TRANS_SINE)
+	
+	# 4. Crosshair full 360° timer ring
+	if crosshair and crosshair.has_method("set_celestial_timer"):
+		crosshair.set_celestial_timer(duration, duration)
+		
+	# 5. Inline weapon badge update & breathing glow
+	_update_weapon_hud(GameState.current_weapon_id)
+	if hud_weapon_panel:
+		var style = hud_weapon_panel.get_theme_stylebox("panel") as StyleBoxFlat
+		if style:
+			if celestial_weapon_plate_tween and celestial_weapon_plate_tween.is_valid():
+				celestial_weapon_plate_tween.kill()
+			style.set_border_width_all(1)
+			celestial_weapon_plate_tween = create_tween().set_loops()
+			# Step 1: Subtle flare up with gentle 5px cyan halo
+			celestial_weapon_plate_tween.tween_property(style, "border_color", Color(0.45, 0.95, 1.0, 0.95), 0.85).set_trans(Tween.TRANS_SINE)
+			celestial_weapon_plate_tween.parallel().tween_property(style, "shadow_color", Color(0.17, 0.90, 1.0, 0.35), 0.85).set_trans(Tween.TRANS_SINE)
+			celestial_weapon_plate_tween.parallel().tween_property(style, "shadow_size", 5, 0.85).set_trans(Tween.TRANS_SINE)
+			# Step 2: Breathe down to calm 2px halo
+			celestial_weapon_plate_tween.chain().tween_property(style, "border_color", Color(0.17, 0.90, 1.0, 0.55), 0.85).set_trans(Tween.TRANS_SINE)
+			celestial_weapon_plate_tween.parallel().tween_property(style, "shadow_color", Color(0.17, 0.90, 1.0, 0.12), 0.85).set_trans(Tween.TRANS_SINE)
+			celestial_weapon_plate_tween.parallel().tween_property(style, "shadow_size", 2, 0.85).set_trans(Tween.TRANS_SINE)
+			
+	# 6. Subtle holographic cyan text shadow for LVL, TIME, SCORE
+	for lbl in [level_label, timer_label, score_label]:
+		if lbl and is_instance_valid(lbl):
+			lbl.add_theme_color_override("font_shadow_color", Color(0.17, 0.90, 1.0, 0.3))
+			lbl.add_theme_constant_override("shadow_outline_size", 1)
+			lbl.add_theme_constant_override("shadow_offset_x", 0)
+			lbl.add_theme_constant_override("shadow_offset_y", 3)
+
+func _set_vignette_alpha(val: float) -> void:
+	_set_vignette_param("energy_alpha", val)
+
+func update_celestial_awakening(time_left: float, max_time: float) -> void:
+	if crosshair and crosshair.has_method("set_celestial_timer"):
+		crosshair.set_celestial_timer(time_left, max_time)
+		
+	# Low-time warning: shift vignette to amber and increase pulse speed
+	if time_left <= 3.0 and time_left > 0.0:
+		_set_vignette_param("energy_color", Color(1.0, 0.55, 0.25, 1.0))
+		_set_vignette_param("pulse_speed", 10.0)
+		_set_vignette_param("pulse_depth", 0.15)
+	elif time_left > 3.0:
+		_set_vignette_param("energy_color", Color(0.17, 0.90, 1.0, 1.0))
+		_set_vignette_param("pulse_speed", 3.0)
+		_set_vignette_param("pulse_depth", 0.08)
+
+func end_celestial_awakening() -> void:
+	is_celestial_active = false
+	
+	# 1. Fade out energy vignette
+	if celestial_vignette_tween and celestial_vignette_tween.is_valid():
+		celestial_vignette_tween.kill()
+	celestial_vignette_tween = create_tween()
+	celestial_vignette_tween.tween_method(_set_vignette_alpha, 0.28, 0.0, 0.4).set_trans(Tween.TRANS_SINE)
+	# Reset vignette color back to cyan for next activation
+	celestial_vignette_tween.tween_callback(func():
+		_set_vignette_param("energy_color", Color(0.17, 0.90, 1.0, 1.0))
+		_set_vignette_param("pulse_speed", 3.0)
+		_set_vignette_param("pulse_depth", 0.08)
+	)
+	
+	# 2. Clear crosshair timer ring
+	if crosshair and crosshair.has_method("set_celestial_timer"):
+		crosshair.set_celestial_timer(0.0)
+		
+	# 3. Clean up title label if still alive
+	# Celestial toast auto-dismisses — no manual cleanup needed
+		
+	# 4. Stop weapon plate breathing glow and restore weapon badge
+	if celestial_weapon_plate_tween and celestial_weapon_plate_tween.is_valid():
+		celestial_weapon_plate_tween.kill()
+		celestial_weapon_plate_tween = null
+	if hud_weapon_panel:
+		var style = hud_weapon_panel.get_theme_stylebox("panel") as StyleBoxFlat
+		if style:
+			style.set_border_width_all(1)
+			style.shadow_size = 0
+			style.shadow_color = Color(0, 0, 0, 0)
+	_update_weapon_hud(GameState.current_weapon_id)
+	
+	# 5. Restore standard drop shadows for LVL, TIME, SCORE
+	for lbl in [level_label, timer_label, score_label]:
+		if lbl and is_instance_valid(lbl):
+			lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.6))
+			lbl.add_theme_constant_override("shadow_outline_size", 2)
+			lbl.add_theme_constant_override("shadow_offset_x", 0)
+			lbl.add_theme_constant_override("shadow_offset_y", 4)
 
 class WeaponCrosshairIcon extends Control:
 	var weapon_id: String = "standard"
