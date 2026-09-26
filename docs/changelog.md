@@ -18,6 +18,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 13th Achievement ("The Highlight" / "클라이맥스"): Added achievement and permanent tracking for triggering Celestial Awakening with the Kitsune Buster IX.
 
 ### Improved
+* Kitsune Buster IX Celestial Model Polish: Enhanced the unified 3D model with authentic Katana curvature (sori), kissaki chisel tip, glowing cyan fuller groove, sculpted multi-layered fox-flame tsuba crossguards with cyber-gold crests, skeletonized receiver windows for direct first-person visibility of the spinning 9-vial Kyubi drum, and aerodynamic mecha fox-ear cowl fins.
 * Weapon Wheel Uniform Spacing: Replaced fixed angular wedge padding with a constant 12px linear gap, keeping slice borders parallel from inner to outer radius.
 * Weapon Wheel Info Panel: Overhauled bottom card layout with centered archetype tags, mini-meter stat bars, critical multiplier badge, golden hairline divider, and standardized typography.
 * Weapon Wheel Stat Bars: Made PWR and CAP progress bars responsive (`SIZE_EXPAND_FILL`) to fit container width, and increased stat group spacing to 10px.
@@ -273,6 +274,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 13번째 신규 업적 ("클라이맥스" / "The Highlight"): 구미호 버스터 IX로 신성의 각성을 최초 발동할 때 해금되는 13번째 업적 및 영구 통계 기록 추가.
 
 ### 개선됨 (Improved)
+* 구미호 버스터 IX 모델 디테일 강화 (Celestial Polish): 단일 3D 모델에 정통 카타나 휨각(소리/Sori) 및 칫솔형 킷사키 칼끝, 발광형 사이언 혈조(Fuller), 골드 깃장식과 결합된 다층형 여우불 츠바 코등이, 1인칭 조준 시 9개 구미호 바이알 회전 드럼이 시원하게 보이는 스켈레톤 리시버 윈도우, 조준경 양옆 메카 여우 귀 카울 핀 추가.
 * 무기 선택 휠 균일 간격: 고정 각도 패딩 대신 일정한 12px 선형 간격을 적용하여 슬라이스 사이 틈새를 평행하게 유지.
 * 무기 정보 패널 개선: 직관적인 아케이드 카드 레이아웃 적용 (아키타입 태그, 파워/용량 미니 게이지, 치명타 배율 배지, 골드 헤어라인 구분선, 폰트 규격화).
 * 무기 휠 스탯 바 개선: PWR/CAP 게이지 바 반응형 확장(`SIZE_EXPAND_FILL`) 및 내부 간격(10px) 확대로 가독성 향상.
