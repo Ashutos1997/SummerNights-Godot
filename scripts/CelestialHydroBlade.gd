@@ -2,32 +2,9 @@ class_name CelestialHydroBlade
 extends Node3D
 
 ## CelestialHydroBlade
-## Manages procedural water-sheath VFX for Kitsune Buster IX Blade Mode:
-## 1. Flowing Hydro-Sheath — tight tube wrapping the katana blade during Celestial Awakening
-## 2. Helical Spiral Streams — 6 water streams orbiting tightly around the blade
-## 3. Sweeping Water Crescent Arc — melee slash visual
-## 4. Flying Celestial Hydro-Crescent Wave — awakening projectile
-
-const SHEATH_RINGS: int = 24          # Cross-section rings along blade length
-const SHEATH_RING_VERTS: int = 10     # Vertices per ring (tube resolution)
-const SPIRAL_STREAMS: int = 6         # Helical streams orbiting the blade
-const SPIRAL_SEGMENTS: int = 28       # Points per spiral stream
-
-@export var water_core_color: Color = Color(0.18, 0.88, 1.00, 0.75)
-@export var water_outer_color: Color = Color(0.06, 0.45, 0.95, 0.40)
-@export var water_highlight_color: Color = Color(1.00, 1.00, 1.00, 0.92)
-@export var water_solar_color: Color = Color(1.00, 0.88, 0.40, 0.80)
-
-# Mesh instances for sheath + spirals
-var sheath_mesh_instance: MeshInstance3D
-var sheath_immediate_mesh: ImmediateMesh
-var sheath_material: StandardMaterial3D
-
-var spiral_mesh_instance: MeshInstance3D
-var spiral_immediate_mesh: ImmediateMesh
-
-var edge_mesh_instance: MeshInstance3D
-var edge_immediate_mesh: ImmediateMesh
+## Manages VFX for Kitsune Buster IX Blade Mode:
+## - Energy Slash Trail — glowing celestial solar arc rendered along the blade
+## - Flying Celestial Solar-Crescent Wave — awakening projectile
 
 var is_blade_awakened: bool = false
 var aura_intensity: float = 0.0
@@ -36,38 +13,6 @@ var anim_time: float = 0.0
 var target_gun_node: Node3D = null
 
 func _ready() -> void:
-	# Shared additive material for all blade VFX
-	sheath_material = StandardMaterial3D.new()
-	sheath_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	sheath_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	sheath_material.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
-	sheath_material.vertex_color_use_as_albedo = true
-	sheath_material.cull_mode = BaseMaterial3D.CULL_DISABLED
-	
-	# Inner tube sheath
-	sheath_immediate_mesh = ImmediateMesh.new()
-	sheath_mesh_instance = MeshInstance3D.new()
-	sheath_mesh_instance.name = "BladeSheath"
-	sheath_mesh_instance.mesh = sheath_immediate_mesh
-	sheath_mesh_instance.material_override = sheath_material
-	add_child(sheath_mesh_instance)
-	
-	# Helical spiral streams
-	spiral_immediate_mesh = ImmediateMesh.new()
-	spiral_mesh_instance = MeshInstance3D.new()
-	spiral_mesh_instance.name = "BladeSpiralStreams"
-	spiral_mesh_instance.mesh = spiral_immediate_mesh
-	spiral_mesh_instance.material_override = sheath_material
-	add_child(spiral_mesh_instance)
-	
-	# Cutting edge glow ribbon
-	edge_immediate_mesh = ImmediateMesh.new()
-	edge_mesh_instance = MeshInstance3D.new()
-	edge_mesh_instance.name = "BladeEdgeGlow"
-	edge_mesh_instance.mesh = edge_immediate_mesh
-	edge_mesh_instance.material_override = sheath_material
-	add_child(edge_mesh_instance)
-	
 	visible = true
 
 func set_blade_active(active: bool, gun_node: Node3D = null) -> void:
@@ -81,18 +26,6 @@ func _process(delta: float) -> void:
 		aura_intensity = min(1.0, aura_intensity + delta * 6.0)
 	else:
 		aura_intensity = max(0.0, aura_intensity - delta * 6.0)
-	
-	if aura_intensity > 0.005:
-		_render_blade_sheath()
-		_render_spiral_streams()
-		_render_edge_glow()
-	else:
-		if sheath_immediate_mesh.get_surface_count() > 0:
-			sheath_immediate_mesh.clear_surfaces()
-		if spiral_immediate_mesh.get_surface_count() > 0:
-			spiral_immediate_mesh.clear_surfaces()
-		if edge_immediate_mesh.get_surface_count() > 0:
-			edge_immediate_mesh.clear_surfaces()
 
 # ══════════════════════════════════════════════════════════════════
 # Blade geometry helpers — compute blade spine in world space
@@ -136,269 +69,7 @@ func _get_blade_axes() -> Dictionary:
 	}
 
 # ══════════════════════════════════════════════════════════════════
-# 1. FLOWING HYDRO-SHEATH — translucent tube hugging the blade
-# ══════════════════════════════════════════════════════════════════
-func _render_blade_sheath() -> void:
-	sheath_immediate_mesh.clear_surfaces()
-	var axes = _get_blade_axes()
-	if axes.is_empty():
-		return
-	
-	var blade_base: Vector3 = axes["base"]
-	var blade_dir: Vector3 = axes["dir"]
-	var blade_len: float = axes["len"]
-	var right_ax: Vector3 = axes["right"]
-	var up_ax: Vector3 = axes["up"]
-	
-	sheath_immediate_mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES, sheath_material)
-	
-	# Build ring cross-sections along blade spine and connect with quads
-	var prev_ring: Array[Vector3] = []
-	var prev_colors: Array[Color] = []
-	
-	for ring_idx in range(SHEATH_RINGS + 1):
-		var t: float = float(ring_idx) / float(SHEATH_RINGS)  # 0.0 = collar, 1.0 = tip
-		
-		# Sori curvature: blade curves upward slightly
-		var sori_offset: Vector3 = up_ax * (0.04 * pow(t, 1.8))
-		var center: Vector3 = blade_base + (blade_dir * (blade_len * t)) + sori_offset
-		
-		# Radius envelope: starts snug at habaki, swells mid-blade, tapers to tip
-		var base_radius: float = 0.032 + sin(t * PI) * 0.048
-		# Animated breathing pulse
-		var pulse: float = sin(anim_time * 10.0 - t * 8.0) * 0.008 + 1.0
-		var radius: float = base_radius * pulse * aura_intensity
-		
-		# Taper to zero at tip
-		if t > 0.85:
-			radius *= (1.0 - t) / 0.15
-		# Taper slightly at collar
-		if t < 0.08:
-			radius *= t / 0.08
-		
-		# Slow rotation of the tube cross-section for flowing water feel
-		var ring_twist: float = anim_time * 4.0 + t * 3.0
-		
-		var cur_ring: Array[Vector3] = []
-		var cur_colors: Array[Color] = []
-		
-		for v_idx in range(SHEATH_RING_VERTS + 1):
-			var theta: float = (float(v_idx) / float(SHEATH_RING_VERTS)) * TAU + ring_twist
-			var offset: Vector3 = (right_ax * cos(theta) + up_ax * sin(theta)) * radius
-			var vert: Vector3 = center + offset
-			cur_ring.append(vert)
-			
-			# Color: flowing gradient with animated wave crests
-			var wave: float = sin(anim_time * 18.0 - t * 12.0 + theta * 2.0) * 0.15 + 0.85
-			var col: Color = water_outer_color.lerp(water_core_color, sin(t * PI) * 0.7)
-			# Highlight crests
-			col = col.lerp(water_highlight_color, max(0.0, sin(anim_time * 14.0 - t * 10.0 + theta * 3.0)) * 0.35)
-			col.a = (0.25 + sin(t * PI) * 0.20) * aura_intensity * wave
-			# Softer at edges for volumetric feel
-			col.a *= 0.7
-			cur_colors.append(col)
-		
-		# Connect this ring to previous ring with quads
-		if ring_idx > 0 and prev_ring.size() == cur_ring.size():
-			for v_idx in range(SHEATH_RING_VERTS):
-				var v0: Vector3 = prev_ring[v_idx]
-				var v1: Vector3 = prev_ring[v_idx + 1]
-				var v2: Vector3 = cur_ring[v_idx]
-				var v3: Vector3 = cur_ring[v_idx + 1]
-				var c0: Color = prev_colors[v_idx]
-				var c1: Color = prev_colors[v_idx + 1]
-				var c2: Color = cur_colors[v_idx]
-				var c3: Color = cur_colors[v_idx + 1]
-				
-				# Triangle 1: v0, v2, v1
-				sheath_immediate_mesh.surface_set_color(c0)
-				sheath_immediate_mesh.surface_add_vertex(v0)
-				sheath_immediate_mesh.surface_set_color(c2)
-				sheath_immediate_mesh.surface_add_vertex(v2)
-				sheath_immediate_mesh.surface_set_color(c1)
-				sheath_immediate_mesh.surface_add_vertex(v1)
-				
-				# Triangle 2: v1, v2, v3
-				sheath_immediate_mesh.surface_set_color(c1)
-				sheath_immediate_mesh.surface_add_vertex(v1)
-				sheath_immediate_mesh.surface_set_color(c2)
-				sheath_immediate_mesh.surface_add_vertex(v2)
-				sheath_immediate_mesh.surface_set_color(c3)
-				sheath_immediate_mesh.surface_add_vertex(v3)
-		
-		prev_ring = cur_ring
-		prev_colors = cur_colors
-	
-	sheath_immediate_mesh.surface_end()
-
-# ══════════════════════════════════════════════════════════════════
-# 2. HELICAL SPIRAL STREAMS — orbiting water torrents around blade
-# ══════════════════════════════════════════════════════════════════
-func _render_spiral_streams() -> void:
-	spiral_immediate_mesh.clear_surfaces()
-	var axes = _get_blade_axes()
-	if axes.is_empty():
-		return
-	
-	var blade_base: Vector3 = axes["base"]
-	var blade_dir: Vector3 = axes["dir"]
-	var blade_len: float = axes["len"]
-	var right_ax: Vector3 = axes["right"]
-	var up_ax: Vector3 = axes["up"]
-	
-	var cam: Camera3D = get_viewport().get_camera_3d()
-	var cam_pos: Vector3 = cam.global_position if cam else Vector3.ZERO
-	
-	spiral_immediate_mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES, sheath_material)
-	
-	for s_idx in range(SPIRAL_STREAMS):
-		var base_phase: float = (float(s_idx) * TAU) / float(SPIRAL_STREAMS)
-		var is_solar: bool = (s_idx % 3 == 0)
-		var stream_col: Color = water_solar_color if is_solar else water_core_color
-		
-		var pts: Array[Vector3] = []
-		var widths: Array[float] = []
-		var colors: Array[Color] = []
-		
-		for seg in range(SPIRAL_SEGMENTS + 1):
-			var t: float = float(seg) / float(SPIRAL_SEGMENTS)
-			
-			# Sori curvature
-			var sori_offset: Vector3 = up_ax * (0.04 * pow(t, 1.8))
-			var spine_pt: Vector3 = blade_base + (blade_dir * (blade_len * t)) + sori_offset
-			
-			# Spiral orbit angle — fast rotation creates the vortex-wrap look
-			var swirl_speed: float = 12.0
-			var helix_turns: float = 5.0  # number of full turns along blade length
-			var angle: float = base_phase + (anim_time * swirl_speed) + (t * helix_turns * TAU)
-			
-			# Orbit radius: tight near collar, expands mid-blade, tapers at tip
-			var orbit_r: float = 0.055 + sin(t * PI) * 0.06
-			orbit_r *= aura_intensity
-			# Taper at tip
-			if t > 0.85:
-				orbit_r *= (1.0 - t) / 0.15
-			if t < 0.06:
-				orbit_r *= t / 0.06
-			
-			var offset: Vector3 = (right_ax * cos(angle) + up_ax * sin(angle)) * orbit_r
-			var pt: Vector3 = spine_pt + offset
-			pts.append(pt)
-			
-			# Ribbon width
-			var w: float = (0.028 + sin(t * PI) * 0.020) * aura_intensity
-			if t > 0.88:
-				w *= (1.0 - t) / 0.12
-			widths.append(w)
-			
-			# Color
-			var pulse: float = sin(anim_time * 20.0 - t * 14.0 + s_idx * 1.1) * 0.15 + 0.85
-			var col: Color = water_highlight_color.lerp(stream_col, 0.4 + 0.4 * sin(t * PI))
-			col.a = (0.65 - t * 0.15) * aura_intensity * pulse
-			colors.append(col)
-		
-		# Build camera-facing ribbon strip
-		var prev_l: Vector3 = Vector3.ZERO
-		var prev_r: Vector3 = Vector3.ZERO
-		var prev_c: Color = Color.TRANSPARENT
-		
-		for seg in range(SPIRAL_SEGMENTS + 1):
-			var pt: Vector3 = pts[seg]
-			var w: float = widths[seg]
-			var col: Color = colors[seg]
-			
-			var tangent: Vector3
-			if seg < SPIRAL_SEGMENTS:
-				tangent = (pts[seg + 1] - pt).normalized()
-			else:
-				tangent = (pt - pts[seg - 1]).normalized()
-			
-			var to_cam: Vector3 = (pt - cam_pos).normalized()
-			var norm: Vector3 = tangent.cross(to_cam).normalized()
-			if norm.length_squared() < 1e-4:
-				norm = right_ax
-			
-			var v_l: Vector3 = pt + norm * (w * 0.5)
-			var v_r: Vector3 = pt - norm * (w * 0.5)
-			
-			if seg > 0:
-				_add_quad_to(spiral_immediate_mesh, prev_l, v_l, prev_r, v_r, prev_c, col)
-			
-			prev_l = v_l
-			prev_r = v_r
-			prev_c = col
-	
-	spiral_immediate_mesh.surface_end()
-
-# ══════════════════════════════════════════════════════════════════
-# 3. CUTTING EDGE GLOW — bright ribbon along the blade's sharp edge
-# ══════════════════════════════════════════════════════════════════
-func _render_edge_glow() -> void:
-	edge_immediate_mesh.clear_surfaces()
-	var axes = _get_blade_axes()
-	if axes.is_empty():
-		return
-	
-	var blade_base: Vector3 = axes["base"]
-	var blade_dir: Vector3 = axes["dir"]
-	var blade_len: float = axes["len"]
-	var right_ax: Vector3 = axes["right"]
-	var up_ax: Vector3 = axes["up"]
-	
-	var cam: Camera3D = get_viewport().get_camera_3d()
-	var cam_pos: Vector3 = cam.global_position if cam else Vector3.ZERO
-	
-	edge_immediate_mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES, sheath_material)
-	
-	var edge_segments: int = 20
-	var prev_l: Vector3 = Vector3.ZERO
-	var prev_r: Vector3 = Vector3.ZERO
-	var prev_c: Color = Color.TRANSPARENT
-	
-	for seg in range(edge_segments + 1):
-		var t: float = float(seg) / float(edge_segments)
-		
-		# Sori curvature
-		var sori_offset: Vector3 = up_ax * (0.04 * pow(t, 1.8))
-		var spine_pt: Vector3 = blade_base + (blade_dir * (blade_len * t)) + sori_offset
-		
-		# Edge is on the cutting side (right side of the blade when held)
-		var edge_offset: Vector3 = right_ax * 0.015
-		var pt: Vector3 = spine_pt + edge_offset
-		
-		# Ribbon width — thin bright line along the edge
-		var w: float = 0.018 * aura_intensity
-		# Taper at ends
-		if t < 0.05:
-			w *= t / 0.05
-		if t > 0.92:
-			w *= (1.0 - t) / 0.08
-		
-		var tangent: Vector3 = blade_dir
-		var to_cam: Vector3 = (pt - cam_pos).normalized()
-		var norm: Vector3 = tangent.cross(to_cam).normalized()
-		if norm.length_squared() < 1e-4:
-			norm = up_ax
-		
-		var v_l: Vector3 = pt + norm * (w * 0.5)
-		var v_r: Vector3 = pt - norm * (w * 0.5)
-		
-		# Bright white-cyan with flowing pulse
-		var pulse: float = sin(anim_time * 24.0 - t * 16.0) * 0.2 + 0.8
-		var col: Color = water_highlight_color.lerp(water_core_color, 0.25)
-		col.a = (0.7 + sin(t * PI) * 0.25) * aura_intensity * pulse
-		
-		if seg > 0:
-			_add_quad_to(edge_immediate_mesh, prev_l, v_l, prev_r, v_r, prev_c, col)
-		
-		prev_l = v_l
-		prev_r = v_r
-		prev_c = col
-	
-	edge_immediate_mesh.surface_end()
-
-# ══════════════════════════════════════════════════════════════════
-# 4. ENERGY SLASH TRAIL — glowing arc rendered along the blade
+# 1. CELESTIAL ENERGY SLASH TRAIL — glowing arc rendered along the blade
 # ══════════════════════════════════════════════════════════════════
 func trigger_slash_arc(camera: Camera3D, slash_dir: float, is_awakened: bool, _aim_target: Vector3 = Vector3.ZERO) -> void:
 	if not camera:
@@ -445,10 +116,10 @@ func trigger_slash_arc(camera: Camera3D, slash_dir: float, is_awakened: bool, _a
 	var sweep_axis: Vector3 = blade_dir  # Rotation axis for the arc
 	var start_vec: Vector3 = (right_ax * slash_dir + up_ax * 0.3).normalized()
 	
-	# Color palette
-	var col_core: Color = Color(0.30, 0.95, 1.0, 0.95) if not is_awakened else Color(1.0, 1.0, 1.0, 0.98)
-	var col_edge: Color = Color(0.10, 0.55, 0.90, 0.50) if not is_awakened else Color(1.0, 0.88, 0.40, 0.85)
-	var col_tip: Color = Color(0.85, 0.98, 1.0, 0.25)
+	# Color palette: Solar celestial energy (warm golden amber + brilliant white)
+	var col_core: Color = Color(1.00, 0.98, 0.90, 0.96) if not is_awakened else Color(1.0, 1.0, 1.0, 0.98)
+	var col_edge: Color = Color(1.00, 0.72, 0.18, 0.60) if not is_awakened else Color(1.00, 0.85, 0.35, 0.85)
+	var col_tip: Color = Color(1.00, 0.82, 0.35, 0.25)
 	
 	imm_mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES, slash_mat)
 	
@@ -497,7 +168,7 @@ func trigger_slash_arc(camera: Camera3D, slash_dir: float, is_awakened: bool, _a
 		# Color: bright core in center, fading to edges
 		var col: Color = col_edge.lerp(col_core, profile)
 		if is_awakened and profile > 0.5:
-			col = col.lerp(Color(1.0, 0.92, 0.55, 0.95), (profile - 0.5) * 0.8)
+			col = col.lerp(Color(1.0, 0.95, 0.65, 0.95), (profile - 0.5) * 0.8)
 		# Fade tips
 		var tip_fade: float = 1.0
 		if u < 0.1:
@@ -647,8 +318,8 @@ class FlyingHydroCrescent extends Node3D:
 			var v_trail = Vector3(x * 0.92, y * 0.5, -z_trail)
 			
 			var c_apex = Color(1.0, 1.0, 1.0, 0.95)
-			var c_wing = Color(0.20, 0.90, 1.0, 0.85)
-			var c_solar = Color(1.0, 0.88, 0.40, 0.90)
+			var c_wing = Color(1.00, 0.75, 0.20, 0.85)
+			var c_solar = Color(1.00, 0.90, 0.45, 0.90)
 			
 			var col: Color = c_wing.lerp(c_apex, profile)
 			if profile > 0.75:

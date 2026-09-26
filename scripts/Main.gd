@@ -4542,7 +4542,7 @@ func _spawn_celestial_crescent_slash(origin: Vector3, dir: Vector3) -> void:
 	
 	var mat = StandardMaterial3D.new()
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mat.albedo_color = Color(0.25, 0.95, 1.0, 0.92)
+	mat.albedo_color = Color(1.0, 0.85, 0.30, 0.92)
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	crescent.material_override = mat
 	
