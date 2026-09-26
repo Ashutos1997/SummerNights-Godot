@@ -184,8 +184,8 @@ func _load_weapon_model() -> void:
 		
 	var w_cfg = GameState.WEAPONS[GameState.current_weapon_id]
 	var model_path = w_cfg.model
-	if GameState.current_weapon_id == "kitsune" and GameState.kitsune_mode == "blade":
-		model_path = w_cfg.get("blade_model", "res://assets/blaster_kitsune_blade.glb")
+	if GameState.current_weapon_id == "kitsune":
+		model_path = "res://assets/blaster_kitsune_unified.glb"
 	gun_model = load(model_path).instantiate()
 	gun_model.rotation_degrees = Vector3(0, 180, 0)
 	gun_model.scale = w_cfg.scale
@@ -194,6 +194,8 @@ func _load_weapon_model() -> void:
 	if GameState.current_weapon_id == "tidal":
 		# Tidal Gatling model pivot is slightly offset, push it left to center the barrels
 		gun_model.position.x -= 0.15
+	elif GameState.current_weapon_id == "kitsune":
+		_apply_kitsune_mode_visuals(GameState.kitsune_mode, true)
 		
 	_adjust_gun_materials(gun_model)
 	gun.add_child(gun_model)
@@ -229,10 +231,6 @@ func toggle_kitsune_mode() -> void:
 	else:
 		GameState.kitsune_mode = "cannon"
 	
-	if kitsune_mode_switch_sfx:
-		kitsune_mode_switch_sfx.pitch_scale = 1.30 if GameState.kitsune_mode == "blade" else 0.95
-		kitsune_mode_switch_sfx.play()
-	
 	# Cut continuous cannon spray if entering blade mode
 	if GameState.kitsune_mode == "blade":
 		gun_spray.emitting = false
@@ -241,28 +239,153 @@ func toggle_kitsune_mode() -> void:
 		if celestial_hydro_cannon:
 			celestial_hydro_cannon.set_firing(false, Vector3.ZERO, Vector3.ZERO)
 	
-	# Rapid mechanical transform twirl
-	if gun_model and is_instance_valid(gun_model):
-		var w_cfg = GameState.WEAPONS["kitsune"]
-		var target_model = w_cfg.get("blade_model", "res://assets/blaster_kitsune_blade.glb") if GameState.kitsune_mode == "blade" else w_cfg.model
-		var tw = create_tween()
-		tw.tween_property(gun_model, "rotation_degrees:z", gun_model.rotation_degrees.z + 180.0, 0.10).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-		tw.tween_callback(func():
-			if gun_model: gun_model.queue_free()
-			gun_model = load(target_model).instantiate()
-			gun_model.rotation_degrees = Vector3(0, 180, 0)
-			gun_model.scale = w_cfg.scale
-			gun_model.position = Vector3(0, -0.3, -0.1)
-			_adjust_gun_materials(gun_model)
-			gun.add_child(gun_model)
-		)
-		tw.tween_property(gun, "position:y", gun_base_pos.y - 0.06, 0.08).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		tw.tween_property(gun, "position:y", gun_base_pos.y, 0.10)
+	_animate_kitsune_mode_transition(GameState.kitsune_mode)
 	
 	if hud and hud.has_method("notify_weapon_style"):
 		hud.notify_weapon_style("kitsune_blade" if GameState.kitsune_mode == "blade" else "kitsune")
 	if hud and hud.has_method("update_kitsune_mode_display"):
 		hud.update_kitsune_mode_display(GameState.kitsune_mode)
+
+func _apply_kitsune_mode_visuals(mode: String, _instant: bool = true) -> void:
+	if not gun_model or not is_instance_valid(gun_model):
+		return
+	if GameState.current_weapon_id != "kitsune":
+		return
+		
+	var barrel = gun_model.find_child("BarrelAssembly", true, false)
+	var tsuba_l = gun_model.find_child("TsubaLeft", true, false)
+	var tsuba_r = gun_model.find_child("TsubaRight", true, false)
+	var blade = gun_model.find_child("BladeAssembly", true, false)
+	
+	if mode == "cannon":
+		if barrel:
+			barrel.position = Vector3(0.0, 0.48, 0.55)
+			barrel.scale = Vector3.ONE
+			barrel.visible = true
+		if tsuba_l:
+			tsuba_l.rotation_degrees = Vector3(0.0, 0.0, -35.0)
+			tsuba_l.scale = Vector3(0.7, 0.7, 0.7)
+			tsuba_l.visible = true
+		if tsuba_r:
+			tsuba_r.rotation_degrees = Vector3(0.0, 0.0, 35.0)
+			tsuba_r.scale = Vector3(0.7, 0.7, 0.7)
+			tsuba_r.visible = true
+		if blade:
+			blade.position = Vector3(0.0, 0.52, 0.40)
+			blade.scale = Vector3(1.0, 1.0, 0.001)
+			blade.visible = false
+		gun_model.position = Vector3(0.0, -0.30, -0.10)
+		gun_model.rotation_degrees = Vector3(0.0, 180.0, 0.0)
+	else: # blade mode
+		if barrel:
+			barrel.position = Vector3(0.0, 0.48, 0.35)
+			barrel.scale = Vector3(0.01, 0.01, 0.01)
+			barrel.visible = false
+		if tsuba_l:
+			tsuba_l.rotation_degrees = Vector3.ZERO
+			tsuba_l.scale = Vector3.ONE
+			tsuba_l.visible = true
+		if tsuba_r:
+			tsuba_r.rotation_degrees = Vector3.ZERO
+			tsuba_r.scale = Vector3.ONE
+			tsuba_r.visible = true
+		if blade:
+			blade.position = Vector3(0.0, 0.52, 0.60)
+			blade.scale = Vector3.ONE
+			blade.visible = true
+		gun_model.position = Vector3(0.06, -0.26, -0.05)
+		gun_model.rotation_degrees = Vector3(-12.0, 162.0, 24.0)
+
+func _animate_kitsune_mode_transition(to_mode: String) -> void:
+	if not gun_model or not is_instance_valid(gun_model):
+		return
+		
+	var cyl = gun_model.find_child("Cylinder", true, false)
+	var barrel = gun_model.find_child("BarrelAssembly", true, false)
+	var tsuba_l = gun_model.find_child("TsubaLeft", true, false)
+	var tsuba_r = gun_model.find_child("TsubaRight", true, false)
+	var blade = gun_model.find_child("BladeAssembly", true, false)
+	
+	is_swapping_weapon = true
+	
+	if kitsune_mode_switch_sfx:
+		kitsune_mode_switch_sfx.pitch_scale = 1.35 if to_mode == "blade" else 0.95
+		kitsune_mode_switch_sfx.play()
+		
+	var tw = create_tween().set_parallel(true)
+	
+	if to_mode == "blade":
+		# 1. Cylinder Chamber 360° accelerated spin
+		if cyl:
+			tw.tween_property(cyl, "rotation_degrees:z", cyl.rotation_degrees.z + 360.0, 0.32).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			
+		# 2. Barrel retracts into receiver and scales down
+		if barrel:
+			barrel.visible = true
+			tw.tween_property(barrel, "position:z", 0.35, 0.16).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+			tw.tween_property(barrel, "scale", Vector3(0.01, 0.01, 0.01), 0.16).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+			
+		# 3. Tsuba crossguard wings unfold outward with spring bounce
+		if tsuba_l:
+			tsuba_l.visible = true
+			tw.tween_property(tsuba_l, "rotation_degrees:z", 0.0, 0.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			tw.tween_property(tsuba_l, "scale", Vector3.ONE, 0.22)
+		if tsuba_r:
+			tsuba_r.visible = true
+			tw.tween_property(tsuba_r, "rotation_degrees:z", 0.0, 0.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			tw.tween_property(tsuba_r, "scale", Vector3.ONE, 0.22)
+			
+		# 4. Katana Blade telescopes forward with an elastic snap
+		if blade:
+			blade.visible = true
+			blade.scale = Vector3(1.0, 1.0, 0.01)
+			blade.position = Vector3(0.0, 0.52, 0.40)
+			var b_tw = create_tween().set_parallel(true)
+			b_tw.tween_interval(0.08)
+			b_tw.chain().tween_property(blade, "position:z", 0.60, 0.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			b_tw.parallel().tween_property(blade, "scale", Vector3.ONE, 0.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			
+		# 5. First-person viewmodel stance tilts dynamically into Katana guard
+		tw.tween_property(gun_model, "position", Vector3(0.02, -0.34, -0.12), 0.08).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+		tw.chain().tween_property(gun_model, "position", Vector3(0.06, -0.26, -0.05), 0.24).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.parallel().tween_property(gun_model, "rotation_degrees", Vector3(-12.0, 162.0, 24.0), 0.32).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		
+	else:
+		# 1. Cylinder Chamber 360° reverse spin
+		if cyl:
+			tw.tween_property(cyl, "rotation_degrees:z", cyl.rotation_degrees.z - 360.0, 0.30).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			
+		# 2. Katana Blade retracts inside receiver
+		if blade:
+			tw.tween_property(blade, "position:z", 0.40, 0.15).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+			tw.tween_property(blade, "scale", Vector3(1.0, 1.0, 0.001), 0.15).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+			
+		# 3. Tsuba wings fold flush against collar
+		if tsuba_l:
+			tw.tween_property(tsuba_l, "rotation_degrees:z", -35.0, 0.18).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+			tw.tween_property(tsuba_l, "scale", Vector3(0.7, 0.7, 0.7), 0.18)
+		if tsuba_r:
+			tw.tween_property(tsuba_r, "rotation_degrees:z", 35.0, 0.18).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+			tw.tween_property(tsuba_r, "scale", Vector3(0.7, 0.7, 0.7), 0.18)
+			
+		# 4. Barrel slides forward into locked firing position
+		if barrel:
+			barrel.visible = true
+			barrel.scale = Vector3(0.01, 0.01, 0.01)
+			barrel.position = Vector3(0.0, 0.48, 0.35)
+			var bar_tw = create_tween().set_parallel(true)
+			bar_tw.tween_interval(0.08)
+			bar_tw.chain().tween_property(barrel, "position:z", 0.55, 0.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			bar_tw.parallel().tween_property(barrel, "scale", Vector3.ONE, 0.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			
+		# 5. First-person viewmodel stance returns to centered level sightline
+		tw.tween_property(gun_model, "position", Vector3(0.0, -0.30, -0.10), 0.30).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.parallel().tween_property(gun_model, "rotation_degrees", Vector3(0.0, 180.0, 0.0), 0.30).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+
+	tw.chain().tween_callback(func():
+		is_swapping_weapon = false
+		_apply_kitsune_mode_visuals(to_mode, true)
+	)
 		
 func _recalculate_stats() -> void:
 	var w_cfg = GameState.WEAPONS[GameState.current_weapon_id]
@@ -2561,6 +2684,10 @@ func _process(delta: float) -> void:
 				if GameState.weapons_used_this_run.size() >= 5:
 					GameState.unlock_achievement("weapon_mastery")
 			gun_spray.emitting = true
+			if GameState.current_weapon_id == "kitsune" and GameState.kitsune_mode == "cannon":
+				var cyl = gun_model.find_child("Cylinder", true, false) if (gun_model and is_instance_valid(gun_model)) else null
+				if cyl:
+					cyl.rotation.z += delta * 8.0
 			
 			if celestial_hydro_cannon:
 				var target_pt = result.position if result else (aim_origin + aim_dir * 100.0)
@@ -4315,6 +4442,12 @@ func _perform_kitsune_blade_slash() -> void:
 	tw.parallel().tween_property(gun, "position:z", gun_base_pos.z, 0.16)
 	tw.parallel().tween_property(gun, "rotation_degrees:z", 0.0, 0.16)
 	tw.parallel().tween_property(gun, "rotation_degrees:y", 180.0, 0.16)
+	
+	if gun_model and is_instance_valid(gun_model):
+		var cyl = gun_model.find_child("Cylinder", true, false)
+		if cyl:
+			var tw_c = create_tween()
+			tw_c.tween_property(cyl, "rotation_degrees:z", cyl.rotation_degrees.z + (90.0 * blade_slash_dir), 0.16).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	
 	# Melee flare cleaving / parry
 	var aim_origin = camera.global_position

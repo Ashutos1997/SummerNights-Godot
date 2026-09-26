@@ -316,8 +316,8 @@ const WEAPONS = {
 	},
 	"kitsune": {
 		"name": "Kitsune Buster IX",
-		"model": "res://assets/blaster_kitsune.glb",
-		"blade_model": "res://assets/blaster_kitsune_blade.glb",
+		"model": "res://assets/blaster_kitsune_unified.glb",
+		"blade_model": "res://assets/blaster_kitsune_unified.glb",
 		"scale": Vector3(1.0, 1.0, 1.0),
 		"water_capacity": 180.0,
 		"water_drain": 8.0,
