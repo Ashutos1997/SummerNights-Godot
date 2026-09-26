@@ -74,18 +74,9 @@ func _get_blade_axes() -> Dictionary:
 func trigger_slash_arc(_camera: Camera3D, _slash_dir: float, _is_awakened: bool, _aim_target: Vector3 = Vector3.ZERO) -> void:
 	# Disabled: slash arc mesh removed to avoid unwanted bottom-center arc visual
 	pass
-# ══════════════════════════════════════════════════════════════════
-# 5. FLYING CELESTIAL HYDRO-CRESCENT (Awakening Projectile)
-# ══════════════════════════════════════════════════════════════════
-func spawn_flying_hydro_crescent(origin: Vector3, dir: Vector3, main_scene: Node) -> void:
-	var mat = StandardMaterial3D.new()
-	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
-	mat.vertex_color_use_as_albedo = true
-	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	var proj = FlyingHydroCrescent.new(origin, dir, main_scene, mat)
-	main_scene.add_child(proj)
+func spawn_flying_hydro_crescent(_origin: Vector3, _dir: Vector3, _main_scene: Node) -> void:
+	# Disabled: pure melee parry weapon without projectile waves
+	pass
 
 func _add_quad_to(imm: ImmediateMesh, v0: Vector3, v1: Vector3, v2: Vector3, v3: Vector3, c0: Color, c1: Color) -> void:
 	# Triangle 1

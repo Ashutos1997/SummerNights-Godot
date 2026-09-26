@@ -4526,34 +4526,7 @@ func _perform_kitsune_blade_slash() -> void:
 		# Check victory
 		if temperature <= 0.0:
 			_check_sun_defeat()
-	
-	# In Celestial Awakening: launch colossal flying celestial hydro-crescent wave
-	if is_celestial_awakened:
-		if celestial_hydro_blade:
-			celestial_hydro_blade.spawn_flying_hydro_crescent(aim_origin, aim_forward, self)
-		else:
-			_spawn_celestial_crescent_slash(aim_origin, aim_forward)
 
-func _spawn_celestial_crescent_slash(origin: Vector3, dir: Vector3) -> void:
-	var crescent = MeshInstance3D.new()
-	var p_mesh = BoxMesh.new()
-	p_mesh.size = Vector3(3.2, 0.22, 0.8)
-	crescent.mesh = p_mesh
-	
-	var mat = StandardMaterial3D.new()
-	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mat.albedo_color = Color(1.0, 0.85, 0.30, 0.92)
-	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	crescent.material_override = mat
-	
-	add_child(crescent)
-	crescent.global_position = origin + dir * 1.5
-	crescent.look_at(crescent.global_position + dir, Vector3.UP)
-	
-	var tw = create_tween()
-	tw.tween_property(crescent, "global_position", crescent.global_position + dir * 45.0, 0.5).set_trans(Tween.TRANS_LINEAR)
-	tw.parallel().tween_property(mat, "albedo_color:a", 0.0, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	tw.chain().tween_callback(crescent.queue_free)
 
 func _shoot_ice() -> void:
 	GameState.ice_charges_remaining -= 1

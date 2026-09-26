@@ -36,8 +36,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Settings Refined Spacing: Fine-tuned vertical separation (VBox 10→12px, category clearance 28px, divider2 18px) to provide balanced breathing room between rows while preserving comfortable 70px+ top/bottom clearance on 720p.
 * Celestial Awakening Pill Toast: Replaced bespoke centered title label with a standardized pill-style toast notification matching the achievement/buff toast design, using celestial cyan border/shadow, dark indigo background, centered VBox typography ("POWER UNLEASHED!" / "신성의 힘 발현!" header, "CELESTIAL AWAKENING" / "신성의 각성" title) vertically aligned with the icon, and 4s auto-dismiss.
 * Celestial Awakening Ethereal Filter Contrast: Upgraded mode-exclusive post-process grading curve (strictly active during Celestial Awakening; excluded from standard retro filter settings) with high-clarity S-curve contrast and zero-lift multiplicative cosmic indigo split-toning (`vec3(0.70, 0.84, 1.32)`), eliminating milky shadow wash while preserving inky deep blacks and radiant highlight luminescence.
-* Celestial Awakening Tokusatsu Post-Process FX: Integrated a 0.45s dynamic Henshin spacetime shockwave ripple expanding from screen center on activation in sync with audio feedback, paired with horizontal anamorphic cyan lens flare streaks radiating from peak emissives (Sun core, hydro-cannon, converging streams) throughout awakening.
-* Celestial Blade Visual Clarification: Streamlined Kitsune Buster IX Blade Mode visuals by removing bulky procedural water sheaths and orbiting torrents from the katana, transitioning to dynamic blade-local golden solar energy slash ribbons and golden solar-crescent projectiles while keeping Cannon mode's 9-stream hydro-vortex 100% intact.
+* Kitsune Blade Pure Melee Parry Redesign: Refined Kitsune Buster IX Blade Mode into a pure melee parry weapon. Removed all intrusive bottom-center slash arc meshes and flying crescent projectiles, focusing on tactile first-person Katana swings, close-range solar flare parrying (+DEFLECTED feedback and water refund), and direct Sun cooling strikes (1.5x during Awakening) with zero visual clutter.
 
 ### Known Issues (Critical)
 * Fullscreen End-of-Run Dimming: Win ("Cool Down") and Lose ("The Sun Won") screens render at low brightness in Normal and Endless modes despite modulate 1.0. Root rendering cause under active investigation.
@@ -295,7 +294,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 신성의 각성 필 토스트 알림: 기존 중앙 고정 타이틀 라벨을 업적/버프와 동일한 필 스타일 토스트 알림으로 교체. 사이언 테두리/그림자, 다크 인디고 배경, 아이콘과 수직 중앙 정렬된 VBox 타이포그래피("신성의 힘 발현!" 헤더, "신성의 각성" 타이틀) 적용 후 4초 자동 퇴장.
 * 신성의 각성 에테리얼 필터 명암 개선: 모드 전용 후처리 그레이딩 곡선(신성의 각성 중에만 한정 동작하며 일반 레트로 필터 메뉴에서 완전 제외)을 S-커브 명암 강화 및 블랙 리프트가 없는 승산 방식 코스믹 인디고 분할 톤(`vec3(0.70, 0.84, 1.32)`)으로 개편하여, 그림자 영역의 뿌연 물빠짐 현상을 제거하고 깊은 암부 대비와 선명한 하이라이트 광채를 확보.
 * 신성의 각성 특촬(토쿠사츠) 후처리 효과: 변신 효과음에 맞춰 화면 중앙에서 외곽으로 0.45초간 확산되는 시공간 렌즈 왜곡 헨신(Henshin) 충격파 연출과, 각성 중 태양 코어 및 수류 수렴 광선 등 최고 발광체에서 가로 방향으로 뻗어나가는 사이언 아나모픽 렌즈 플레어 광조 효과 추가.
-* 신성의 검 시각 효과 간소화 및 정제: 구미호 버스터 IX 검 모드에서 카타나를 감싸던 부피감 있는 절차적 수류 검집 및 궤도 선회 수류를 제거하고, 칼날 축을 따르는 황금빛 신성 태양 에너지 참격 궤적과 황금 초승달 투사체로 정제하여 깔끔한 실루엣을 확보 (포격 모드의 9줄기 하이드로 볼텍스 캐논은 100% 온전히 유지).
+* 신성의 검 순수 근접 패링 무기 재설계: 구미호 버스터 IX 검 모드를 순수 근접 패링 무기로 개편. 화면 하단 중앙의 거슬리는 참격 호(Arc) 메시 및 비행 초승달 투사체를 완전 제거하고, 1인칭 카타나 휘두르기 모션, 근접 태양 플레어 절단 요격(+DEFLECTED 피드백 및 물탱크 환급), 태양 직접 냉각 공격(각성 시 1.5배 피해)에 집중하여 시야 간섭 없는 쾌적한 조작감 구현.
 
 ### 알려진 문제 (Known Issues - Critical)
 * 전체화면 라운드 종료 화면 밝기 저하: 일반 및 무한 모드 모두에서 승리("Cool Down") 및 패배("The Sun Won") 화면의 UI modulate 값이 1.0임에도 불구하고 화면이 어둡게 렌더링되는 중요 버그 발생. 렌더링 원인 추적 및 해결 진행 중.
