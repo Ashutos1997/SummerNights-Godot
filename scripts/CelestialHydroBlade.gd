@@ -406,6 +406,7 @@ func trigger_slash_arc(camera: Camera3D, slash_dir: float, is_awakened: bool, ai
 		
 	var slash_node = Node3D.new()
 	slash_node.name = "WaterSlashArc"
+	slash_node.top_level = true
 	add_child(slash_node)
 	
 	var cam_pos: Vector3 = camera.global_position
