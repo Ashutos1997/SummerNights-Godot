@@ -3232,6 +3232,7 @@ func _update_weapon_hud(w_id: String) -> void:
 				"precision": w_name = "정밀\n스트림"
 				"scatter": w_name = "스캐터\n노즐"
 				"tidal": w_name = "타이달\n개틀링"
+				"kitsune": w_name = "구미호\n버스터"
 		hud_weapon_name_label.text = w_name
 		hud_weapon_name_label.label_settings.font_color = w_color
 		
@@ -4195,3 +4196,11 @@ class WeaponCrosshairIcon extends Control:
 				var c_arm = 4.0
 				draw_line(center + Vector2(-c_arm, 0), center + Vector2(c_arm, 0), icon_color, 2.0, true)
 				draw_line(center + Vector2(0, -c_arm), center + Vector2(0, c_arm), icon_color, 2.0, true)
+			"kitsune":
+				var d = 5.0
+				draw_line(center + Vector2(0, -d), center + Vector2(d, 0), icon_color, 2.0, true)
+				draw_line(center + Vector2(d, 0), center + Vector2(0, d), icon_color, 2.0, true)
+				draw_line(center + Vector2(0, d), center + Vector2(-d, 0), icon_color, 2.0, true)
+				draw_line(center + Vector2(-d, 0), center + Vector2(0, -d), icon_color, 2.0, true)
+				draw_circle(center, 1.5, Color(0.25, 0.9, 1.0))
+				draw_arc(center, 16.0, 0, TAU, 16, icon_color, 2.0, true)

@@ -203,6 +203,8 @@ func _load_weapon_model() -> void:
 			_base_weapon_pitch = 1.5
 		elif GameState.current_weapon_id == "tidal":
 			_base_weapon_pitch = 0.5
+		elif GameState.current_weapon_id == "kitsune":
+			_base_weapon_pitch = 1.3
 		else:
 			_base_weapon_pitch = 1.0
 		shoot_loop_sfx.pitch_scale = _base_weapon_pitch
@@ -250,6 +252,13 @@ func _recalculate_stats() -> void:
 			g_mat.albedo_color = Color(0.2, 0.7, 1.0, 0.8) 
 			p_mat.initial_velocity_min = 25.0
 			p_mat.initial_velocity_max = 35.0
+		elif GameState.current_weapon_id == "kitsune":
+			gun_spray.amount = 220
+			p_mat.spread = 4.0
+			g_mesh.size = Vector3(0.12, 0.12, 0.4)
+			g_mat.albedo_color = Color(0.3, 0.95, 1.0, 0.95)
+			p_mat.initial_velocity_min = 34.0
+			p_mat.initial_velocity_max = 44.0
 		else: # Standard / Scatter
 			gun_spray.amount = 100
 			p_mat.spread = 8.0 # Preserving new splashy spread
@@ -2363,6 +2372,8 @@ func _process(delta: float) -> void:
 			target_fov = 70.0 # Slight zoom-in for sniping focus
 		elif GameState.current_weapon_id == "tidal":
 			target_fov = 80.0 # Aggressive pushback for gatling recoil
+		elif GameState.current_weapon_id == "kitsune":
+			target_fov = 79.0 # Crisp push
 		else:
 			target_fov = 77.0 # Slight push
 	
@@ -3090,6 +3101,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 		if GameState.current_weapon_id == "heavy": strength = 0.025
 		elif GameState.current_weapon_id == "precision": strength = 0.005
 		elif GameState.current_weapon_id == "tidal": strength = 0.035
+		elif GameState.current_weapon_id == "kitsune": strength = 0.02
 		shake(0.12, strength)
 	var is_critical: bool = false
 	if is_shooting:

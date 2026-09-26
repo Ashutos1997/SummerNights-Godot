@@ -10,7 +10,8 @@ const ARCHETYPES_EN = {
 	"heavy": "HIGH IMPACT",
 	"precision": "HIGH CRIT",
 	"scatter": "WIDE SPREAD",
-	"tidal": "RAPID FIRE"
+	"tidal": "RAPID FIRE",
+	"kitsune": "CELESTIAL BUSTER"
 }
 
 const ARCHETYPES_KR = {
@@ -18,7 +19,8 @@ const ARCHETYPES_KR = {
 	"heavy": "고화력",
 	"precision": "고치명타",
 	"scatter": "산탄",
-	"tidal": "속사 개틀링"
+	"tidal": "속사 개틀링",
+	"kitsune": "신성의 버스터"
 }
 
 var font_header_en: Font = preload("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
@@ -687,6 +689,7 @@ func _update_info_panel(idx: int) -> void:
 			"precision": w_name = "정밀 스트림"
 			"scatter": w_name = "스캐터 노즐"
 			"tidal": w_name = "타이달 개틀링"
+			"kitsune": w_name = "구미호 버스터 IX"
 	name_label.text = w_name
 	
 	if is_locked:

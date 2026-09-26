@@ -306,6 +306,17 @@ const WEAPONS = {
 		"crit_multiplier": 1.0,
 		"recharge_rate": 8.0,
 		"unlock_achievement": "arcade_legend"
+	},
+	"kitsune": {
+		"name": "Kitsune Buster IX",
+		"model": "res://assets/blaster_kitsune.glb",
+		"scale": Vector3(1.0, 1.0, 1.0),
+		"water_capacity": 180.0,
+		"water_drain": 8.0,
+		"cooling_power": 36.0,
+		"crit_multiplier": 3.0,
+		"recharge_rate": 20.0,
+		"unlock_level": 1
 	}
 }
 var has_shown_splash: bool = false

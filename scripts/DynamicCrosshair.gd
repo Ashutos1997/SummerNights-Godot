@@ -119,8 +119,25 @@ func _draw() -> void:
 			_draw_scatter(center, col)
 		"tidal":
 			_draw_tidal(center, col)
+		"kitsune":
+			_draw_kitsune(center, col)
 		_:
 			_draw_water_ring(center, 28.0, 3.0)
+
+# ── Kitsune: Celestial 9-point radial diamond reticle ───────────────────────
+func _draw_kitsune(center: Vector2, col: Color) -> void:
+	var d = 6.0
+	draw_line(center + Vector2(0, -d), center + Vector2(d, 0), col, 2.0, true)
+	draw_line(center + Vector2(d, 0), center + Vector2(0, d), col, 2.0, true)
+	draw_line(center + Vector2(0, d), center + Vector2(-d, 0), col, 2.0, true)
+	draw_line(center + Vector2(-d, 0), center + Vector2(0, -d), col, 2.0, true)
+	draw_circle(center, 1.8, Color(0.25, 0.9, 1.0))
+	for i in range(9):
+		var a = (TAU / 9.0) * i - PI/2
+		var s = center + Vector2(cos(a), sin(a)) * 18.0
+		var e = center + Vector2(cos(a), sin(a)) * 26.0
+		draw_line(s, e, col, 1.8, true)
+	_draw_water_ring(center, 30.0, 3.0)
 
 # ── Precision: Tight + crosshair with scanning center dot ─────────────────────
 func _draw_precision(center: Vector2, col: Color) -> void:

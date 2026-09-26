@@ -15,5 +15,10 @@ builds/
 # Local agent notes
 local_notes/
 
+# Python cache
+__pycache__/
+*.pyc
+
 # Ignored assets
 assets/ui/logo/
+
