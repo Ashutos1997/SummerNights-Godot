@@ -413,8 +413,10 @@ func trigger_slash_arc(camera: Camera3D, slash_dir: float, is_awakened: bool) ->
 	var cam_right: Vector3 = camera.global_basis.x.normalized()
 	var cam_up: Vector3 = camera.global_basis.y.normalized()
 	
-	# Center arc in front of camera
-	slash_node.global_position = cam_pos + cam_forward * 1.6 + cam_up * -0.1
+	# Place arc center along the camera's aim line (where crosshair points)
+	# No vertical offset — the arc follows exactly where the player is looking
+	var arc_distance: float = 2.2 if not is_awakened else 2.8
+	slash_node.global_position = cam_pos + cam_forward * arc_distance
 	
 	# Slash plane orientation (tilted diagonally following sword strike)
 	var swing_tilt: float = deg_to_rad(28.0 * slash_dir)
@@ -434,8 +436,8 @@ func trigger_slash_arc(camera: Camera3D, slash_dir: float, is_awakened: bool) ->
 	mesh_inst.material_override = slash_mat
 	slash_node.add_child(mesh_inst)
 	
-	var arc_radius_in: float = 1.1 if not is_awakened else 1.4
-	var arc_radius_out: float = 2.4 if not is_awakened else 3.4
+	var arc_radius_in: float = 0.8 if not is_awakened else 1.1
+	var arc_radius_out: float = 2.0 if not is_awakened else 2.8
 	var span_angle: float = deg_to_rad(120.0)
 	var arc_segs: int = 24
 	
@@ -452,14 +454,15 @@ func trigger_slash_arc(camera: Camera3D, slash_dir: float, is_awakened: bool) ->
 		var cos_a: float = cos(cur_angle)
 		var sin_a: float = sin(cur_angle)
 		
-		var radial_dir: Vector3 = (swing_tangent * cos_a + cam_forward * sin_a * 0.4).normalized()
+		# Arc sweeps in the plane perpendicular to aim direction
+		var radial_dir: Vector3 = (swing_tangent * cos_a + cam_forward * sin_a * 0.3).normalized()
 		
 		var thick_profile: float = sin(u * PI)
-		var r_in: float = arc_radius_in + (1.0 - thick_profile) * 0.25
-		var r_out: float = arc_radius_out + thick_profile * 0.4
+		var r_in: float = arc_radius_in + (1.0 - thick_profile) * 0.2
+		var r_out: float = arc_radius_out + thick_profile * 0.35
 		
-		var v_inner: Vector3 = radial_dir * r_in + swing_normal * ((u - 0.5) * 0.3 * slash_dir)
-		var v_outer: Vector3 = radial_dir * r_out + swing_normal * ((u - 0.5) * 0.5 * slash_dir)
+		var v_inner: Vector3 = radial_dir * r_in + swing_normal * ((u - 0.5) * 0.25 * slash_dir)
+		var v_outer: Vector3 = radial_dir * r_out + swing_normal * ((u - 0.5) * 0.4 * slash_dir)
 		
 		var col_lead: Color = water_highlight_color if is_awakened else Color(0.85, 0.96, 1.0, 0.95)
 		var col_trail: Color = water_solar_color if (is_awakened and thick_profile > 0.6) else water_core_color
@@ -480,6 +483,7 @@ func trigger_slash_arc(camera: Camera3D, slash_dir: float, is_awakened: bool) ->
 	tw.tween_property(slash_node, "scale", Vector3(1.22, 1.22, 1.22), 0.26).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tw.tween_property(mesh_inst, "transparency", 1.0, 0.26).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	tw.chain().tween_callback(slash_node.queue_free)
+
 
 # ══════════════════════════════════════════════════════════════════
 # 5. FLYING CELESTIAL HYDRO-CRESCENT (Awakening Projectile)
