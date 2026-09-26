@@ -6,6 +6,7 @@ All notable changes to the Summer Nights project will be documented in this file
 *(Note: This release corresponds to v1.6 on itch.io)*
 
 ### Added
+* Celestial Awakening (Fox Nine 3D Tails): Implemented procedural 9-tail celestial hydro-ribbon system (CelestialTails.gd) with staggered henshin bloom, multi-octave traveling waves, 3D ribbon twist, aim inertia sway, and additive cyan/frost glow framing the first-person view.
 * 6th Secret Weapon (Kitsune Buster IX): Added a custom tokusatsu-inspired celestial water blaster featuring an open holographic reflex sight, 6-way weapon wheel integration, a translucent amber-gold revolving Kyubi chamber exposing 9 pressurized cyan water vials, custom spray particles, and dedicated diamond crosshair.
 * 4 New Achievements: Expanded achievements from 8 to 12 total ("Endurance" for surviving 25 Endless waves, "Marathon Runner" for 50 Endless waves, "Arsenal Expert" for using all 5 weapons in a single run, and "Ice Breaker" for 50 lifetime Ice Blasts) with real-time progress tracking, localized English/Korean titles & descriptions, and automatic scrollable menu presentation.
 * Best Endless Wave Tracking: Added persistent `best_wave` tracking that saves/loads alongside survival time, displays on the title screen ("BEST ENDLESS: WAVE X (MM:SS)"), includes an in-game "NEW BEST!" celebration badge upon game over, and records to the Lifetime Stats screen alongside new Ice Blasts Used metrics.
@@ -249,6 +250,7 @@ All notable changes to the Summer Nights project will be documented in this file
 *(참고: 이 릴리스는 itch.io의 v1.6 버전에 해당합니다)*
 
 ### 추가됨 (Added)
+* 신성의 각성 (구미호 3D 수압 꼬리): 1인칭 시야를 감싸는 절차적 9꼬리 신성 수압 리본 시스템(CelestialTails.gd) 구현. 중앙 꼬리부터 양 날개로 번지는 단계별 변신 만개(Henshin Bloom), 다중 주파수 흐름 파동, 3D 리본 트위스트, 마우스 조준 관성 드래그 및 가산 혼합 청록/백색 발광 적용.
 * 6번째 비밀 무기 (구미호 버스터 IX): 가면라이더 기츠 IX 오마주 기반의 커스텀 신성 수압 버스터 무기 추가. 시야 간섭 없는 오픈 홀로그래픽 리플렉스 사이트, 6분할 무기 선택 휠 연동, 내부 9개 수압 바이알이 비치는 반투명 호박빛 골드 회전식 실린더 챔버, 전용 다이아몬드 크로스헤어 및 전용 물줄기 파티클 구현.
 * 신규 업적 4종 추가: 총 업적 수를 8개에서 12개로 확장 ("인내심" - 엔들리스 모드 25웨이브 생존, "마라톤 주자" - 50웨이브 생존, "무기 전문가" - 한 게임에서 5가지 무기 모두 사용, "얼음 파괴자" - 얼음 폭발 통산 50회 사용). 실시간 진행도 게이지 및 카운터 지원, 영어/한국어 완벽 현지화, 자동 스크롤 업적 메뉴 지원.
 * 엔들리스 모드 최고 웨이브 추적: 생존 시간과 함께 최고 도달 웨이브(`best_wave`)를 영구 저장 및 불러오기 지원. 타이틀 화면("최고 기록: X 웨이브 (MM:SS)") 및 게임 오버 화면("최고 기록!" 배지) 표시, 통산 기록 화면에 최고 웨이브 및 사용한 얼음 폭발 횟수 추가.

@@ -283,6 +283,9 @@ var splash_particles_pool: Array[GPUParticles3D] = []
 var splash_idx: int = 0
 var dir_light:   DirectionalLight3D
 var camera:      Camera3D
+var celestial_tails: CelestialTails
+var is_celestial_awakened: bool = false
+var celestial_awakened_timer: float = 0.0
 var sun:         Node3D
 var sun_mesh:    MeshInstance3D
 var sun_mat:     StandardMaterial3D
@@ -1019,6 +1022,11 @@ func _build_scene() -> void:
 	camera = Camera3D.new()
 	camera.position = Vector3(0, 0, 5)
 	add_child(camera)
+	
+	# ── Celestial Tails (Fox Nine Awakening) ──────────────────────────────────
+	celestial_tails = CelestialTails.new()
+	celestial_tails.name = "CelestialTails"
+	camera.add_child(celestial_tails)
 	
 	# ── Weather Rain Particles ───────────────────────────────────────────────
 	weather_rain_particles = GPUParticles3D.new()
@@ -1915,6 +1923,12 @@ func _process(delta: float) -> void:
 
 	_process_heat_warning(delta)
 	
+	# Celestial Awakening countdown
+	if is_celestial_awakened:
+		celestial_awakened_timer -= delta
+		if celestial_awakened_timer <= 0.0:
+			end_celestial_awakening()
+	
 	if shield_deflect_cooldown > 0.0:
 		shield_deflect_cooldown -= delta
 	if shield_ripple_time < 2.0:
@@ -2392,6 +2406,14 @@ func _process(delta: float) -> void:
 	var result = space.intersect_ray(ray_params)
 	
 	crosshair_moved.emit(virtual_mouse_pos, is_catastrom_active)
+	
+	if celestial_tails and celestial_tails.is_active:
+		var vp_sz = get_viewport().get_visible_rect().size
+		var norm_aim = Vector2(
+			(virtual_mouse_pos.x - vp_sz.x * 0.5) / (vp_sz.x * 0.5),
+			(virtual_mouse_pos.y - vp_sz.y * 0.5) / (vp_sz.y * 0.5)
+		)
+		celestial_tails.update_aim(norm_aim, delta)
 			
 	# Prevent sputtering when empty
 	empty_sfx_timer -= delta
@@ -2695,6 +2717,10 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_ice_blast") and not event.is_echo():
 		if GameState.ice_charges_remaining > 0:
 			_shoot_ice()
+
+	# Debug key: Press K to toggle Celestial Awakening (Fox Nine)
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_K:
+		toggle_celestial_awakening()
 
 	if event.is_action_pressed("ui_catastrom") and not event.is_echo():
 		var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
@@ -4014,6 +4040,24 @@ func _trigger_phase2() -> void:
 	
 	await get_tree().create_timer(0.6).timeout
 	timer_running = true
+
+func start_celestial_awakening(duration: float = 15.0) -> void:
+	is_celestial_awakened = true
+	celestial_awakened_timer = duration
+	if celestial_tails:
+		celestial_tails.activate_awakening()
+
+func end_celestial_awakening() -> void:
+	is_celestial_awakened = false
+	celestial_awakened_timer = 0.0
+	if celestial_tails:
+		celestial_tails.deactivate_awakening()
+
+func toggle_celestial_awakening() -> void:
+	if is_celestial_awakened:
+		end_celestial_awakening()
+	else:
+		start_celestial_awakening(15.0)
 
 func _shoot_ice() -> void:
 	GameState.ice_charges_remaining -= 1

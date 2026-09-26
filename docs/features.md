@@ -27,6 +27,7 @@ This document serves as the master record for all currently implemented features
   * *Kitsune Buster IX:* High-tier celestial buster with translucent revolving Kyubi drum, 3.0x crit multiplier, and dual-blade frame.
 * **Ice Burst (Secondary):** Instantly freezes sun heat generation and movement. Unlocked on Wave 2 (Endless) / Level 3 (Campaign). Tracked via a unified 200x24 cyan-frost meter with discrete charge notches and numerical counter.
 * **Catastrom (Ultimate):** Grab the sun and dunk it into the ocean to instantly clear the wave. Unlocked on Wave 4 (Endless) / Level 4 (Campaign) with a dedicated unlock banner toast; charge gain is disabled until unlocked.
+* **Celestial Awakening (Nine Tails):** 15-second super state generating 9 procedural cyan/white hydro-ribbon tails cascading from an overhead celestial canopy. Features staggered henshin bloom (center crown erupts first, rippling outward with elastic spring), multi-octave traveling hydro-waves, 3D ribbon twist, responsive player aim inertia/sway, and subtle solar wisp tips without obstructing the beach or reticle.
 
 ## 3. Rogue-lite Perks (Endless Mode)
 * **Drafting:** After every boss wave, choose 1 of 3 randomized perks. Features staggered card deal entrance animation with sound ticks, 6px drop shadows, and rarity tags (`[ RARE ]`, `[ UNCOMMON ]`, `[ COMMON ]`).
