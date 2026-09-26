@@ -14,7 +14,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Best Endless Wave Tracking: Added persistent `best_wave` tracking that saves/loads alongside survival time, displays on the title screen ("BEST ENDLESS: WAVE X (MM:SS)"), includes an in-game "NEW BEST!" celebration badge upon game over, and records to the Lifetime Stats screen alongside new Ice Blasts Used metrics.
 * Celestial Awakening Audio Cues: Integrated dedicated CC0 sound effects for mode activation (anime/ki Henshin power swell, `celestial_activate.wav` by TheLittleCrow) and deactivation (decelerating sci-fi cooldown dissipation, `celestial_deactivate.wav` by bevibeldesign) with mutual playback cancellation.
 * Kitsune Buster IX Dual-Mode Transformation (Cannon & Blade): Added seamless weapon transformation between Cannon Mode (`blaster_kitsune.glb`) and Blade Mode (`blaster_kitsune_blade.glb` - Heavenly Katana with cyan plasma cutting edge, golden winged tsuba, and crimson accents). Toggle with `[X]`, Middle Mouse, or Controller `[X]` featuring a 360° mechanical twirl animation, tactile switch audio (`switch-b.ogg`), and dynamic HUD reticle (`kitsune_blade` with katana crescent brackets).
-* Kitsune Blade Melee Slash & Flare Parry: Implemented high-impact sweeping melee arc ($60^\circ$ FOV, 8.5m range) with CC0 sound effects (`celestial_slash.wav` by Nomagician), direct cooling burst damage to the Sun ($45\text{ base} \times \text{crit} \times \text{cooling}$), solar flare cleaving with 15% water parry refund, and radiant cyan crescent shockwave projectiles during Celestial Awakening.
+* Kitsune Blade Melee Slash & Flare Parry: Implemented high-impact sweeping melee arc ($60^\circ$ FOV, 8.5m range) with CC0 sound effects (`celestial_slash.wav` by Nomagician), direct cooling burst damage to the Sun ($8.5\text{ base} \times \text{crit} \times \text{cooling}$), solar flare cleaving with 15% water parry refund, and radiant cyan crescent shockwave projectiles during Celestial Awakening.
 * 13th Achievement ("The Highlight" / "클라이맥스"): Added achievement and permanent tracking for triggering Celestial Awakening with the Kitsune Buster IX.
 
 ### Improved
@@ -40,6 +40,8 @@ All notable changes to the Summer Nights project will be documented in this file
 * Fullscreen End-of-Run Dimming: Win ("Cool Down") and Lose ("The Sun Won") screens render at low brightness in Normal and Endless modes despite modulate 1.0. Root rendering cause under active investigation.
 
 ### Fixed
+* Kitsune Blade Sun Over-Damage: Rebalanced Blade Mode base strike cooling damage from 45.0 to 8.5 (1.5x crit) to match sustained v1.5 weapon pacing (~24 DPS), preventing instant one-shotting of the Sun.
+* Level Transition Double-Clearing: Fixed an issue where Blade Mode strikes and continuous raycasts fired during screen fade transitions, instantly clearing consecutive levels. Isolated melee input and locked firing during level reloads until the screen fully fades in.
 * Weapon Wheel Overlay Safety: Guaranteed background blur/dim overlay hides immediately upon closing or switching to full-screen menus.
 
 ## [v1.5.5] - 2026-09-22
@@ -267,7 +269,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 엔들리스 모드 최고 웨이브 추적: 생존 시간과 함께 최고 도달 웨이브(`best_wave`)를 영구 저장 및 불러오기 지원. 타이틀 화면("최고 기록: X 웨이브 (MM:SS)") 및 게임 오버 화면("최고 기록!" 배지) 표시, 통산 기록 화면에 최고 웨이브 및 사용한 얼음 폭발 횟수 추가.
 * 신성의 각성 활성화 및 비활성화 사운드 효과: 모드 발동 시의 애니메이션 기/변신 파워업 스웰(`celestial_activate.wav`, TheLittleCrow 제작 CC0)과 모드 종료 시의 감속형 SF 에너지 분산 쿨다운 효과음(`celestial_deactivate.wav`, bevibeldesign 제작 CC0)을 전용 사운드로 연동하고 상호 정지 로직 적용.
 * 구미호 버스터 IX 듀얼 모드 변형 (포격 및 검 모드): 포격 모드(`blaster_kitsune.glb`)와 검 모드(`blaster_kitsune_blade.glb` - 사이언 플라즈마 절단면과 진홍/금빛 날개형 츠바 코등이를 갖춘 천상 카타나) 간의 매끄러운 인게임 무기 변형 구현. `[X]` 키, 마우스 휠 클릭, 패드 `[X]` 버튼으로 전환 가능하며, 360° 기계식 트월 회전 애니메이션, 전용 스위치 사운드(`switch-b.ogg`), 카타나 초승달 브래킷 형태의 동적 HUD 조준선(`kitsune_blade`) 적용.
-* 구미호 검 근접 베기 및 플레어 패링: 60° 시야각, 8.5m 사거리의 고위력 근접 베기 공격 구현. 전용 사운드(`celestial_slash.wav`, Nomagician 제작 CC0), 태양 직접 냉각 피해($45\text{ 기본} \times \text{치명타} \times \text{냉각}$), 플레어 절단 요격 및 15% 물탱크 패링 환급, 신성의 각성 중 발사되는 사이언 초승달 충격파 투사체 적용.
+* 구미호 검 근접 베기 및 플레어 패링: 60° 시야각, 8.5m 사거리의 고위력 근접 베기 공격 구현. 전용 사운드(`celestial_slash.wav`, Nomagician 제작 CC0), 태양 직접 냉각 피해($8.5\text{ 기본} \times \text{치명타} \times \text{냉각}$), 플레어 절단 요격 및 15% 물탱크 패링 환급, 신성의 각성 중 발사되는 사이언 초승달 충격파 투사체 적용.
 * 13번째 신규 업적 ("클라이맥스" / "The Highlight"): 구미호 버스터 IX로 신성의 각성을 최초 발동할 때 해금되는 13번째 업적 및 영구 통계 기록 추가.
 
 ### 개선됨 (Improved)
@@ -293,6 +295,8 @@ All notable changes to the Summer Nights project will be documented in this file
 * 전체화면 라운드 종료 화면 밝기 저하: 일반 및 무한 모드 모두에서 승리("Cool Down") 및 패배("The Sun Won") 화면의 UI modulate 값이 1.0임에도 불구하고 화면이 어둡게 렌더링되는 중요 버그 발생. 렌더링 원인 추적 및 해결 진행 중.
 
 ### 수정됨 (Fixed)
+* 구미호 검 태양 과다 냉각 버그 수정: 검 모드 기본 냉각 피해량을 45.0에서 8.5(치명타 1.5배)로 재조정하여 v1.5 무기 밸런스 규격(~24 DPS)에 맞추고 태양이 1타에 즉시 격파되던 현상 해결.
+* 레벨 전환 시 2단계 연속 클리어 버그 수정: 검 모드 공격 및 물줄기 판정이 화면 페이드 전환 중에 조기 실행되어 다음 레벨이 즉각 클리어되던 문제를 해결. 근접 공격 로직을 연속 분사와 엄격히 분리하고, 레벨 페이드인이 완전히 끝날 때까지 사격을 잠금 처리.
 * 무기 선택 휠 오버레이 안전성 강화: 메뉴 전환 및 휠 종료 시 배경 블러/딤 오버레이가 즉시 비활성화되도록 수정.
 
 ## [v1.5.5] - 2026-09-22

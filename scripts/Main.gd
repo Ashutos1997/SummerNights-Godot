@@ -2533,7 +2533,7 @@ func _process(delta: float) -> void:
 			empty_sfx_timer = 0.35
 	
 	# Shooting mechanics
-	if is_shooting and can_shoot and not is_swapping_weapon:
+	if is_shooting and can_shoot and not is_swapping_weapon and timer_running and not defeat_triggered:
 		if GameState.current_weapon_id == "kitsune" and GameState.kitsune_mode == "blade":
 			# Kitsune Buster IX - Blade Mode (Melee Arc Cadence)
 			gun_spray.emitting = false
@@ -2573,200 +2573,200 @@ func _process(delta: float) -> void:
 				camera.position.z += 0.015 * delta
 				camera.rotation.x += 0.004 * delta
 		
-		# Spawn wet marks on environment when water spray hits it
-		if result and wet_spawn_timer <= 0.0:
-			var hit_pos = result.position
-			var hit_normal = result.normal
-			if hit_pos.distance_to(sun.position) > 4.5:
-				_spawn_wet_mark(hit_pos, hit_normal)
-				wet_spawn_timer = 0.08
-				_spawn_splash(hit_pos)
+			# Spawn wet marks on environment when water spray hits it
+			if result and wet_spawn_timer <= 0.0:
+				var hit_pos = result.position
+				var hit_normal = result.normal
+				if hit_pos.distance_to(sun.position) > 4.5:
+					_spawn_wet_mark(hit_pos, hit_normal)
+					wet_spawn_timer = 0.08
+					_spawn_splash(hit_pos)
 				
-		# Check Seagull Interception
-		if is_instance_valid(seagull_layer):
-			for bird in seagull_layer.birds:
-				var state = bird.get("state", "")
-				if state == "sitting" or state == "landing":
-					var b_node = bird["node"] as Node3D
-					if is_instance_valid(b_node):
-						var b_pos = b_node.global_position
-						var vec_to_bird = b_pos - aim_origin
-						var proj_t = vec_to_bird.dot(aim_dir)
-						if proj_t > 0.0:
-							var closest_pt = aim_origin + aim_dir * proj_t
-							if b_pos.distance_to(closest_pt) < 1.5:
-								seagull_layer.scare_bird(bird)
-								GameState.seagulls_shooed += 1
-								if GameState.seagulls_shooed >= 50 and not "bird_watcher" in GameState.unlocked_achievements:
-									GameState.unlock_achievement("bird_watcher")
-								else:
-									GameState.save_settings()
+			# Check Seagull Interception
+			if is_instance_valid(seagull_layer):
+				for bird in seagull_layer.birds:
+					var state = bird.get("state", "")
+					if state == "sitting" or state == "landing":
+						var b_node = bird["node"] as Node3D
+						if is_instance_valid(b_node):
+							var b_pos = b_node.global_position
+							var vec_to_bird = b_pos - aim_origin
+							var proj_t = vec_to_bird.dot(aim_dir)
+							if proj_t > 0.0:
+								var closest_pt = aim_origin + aim_dir * proj_t
+								if b_pos.distance_to(closest_pt) < 1.5:
+									seagull_layer.scare_bird(bird)
+									GameState.seagulls_shooed += 1
+									if GameState.seagulls_shooed >= 50 and not "bird_watcher" in GameState.unlocked_achievements:
+										GameState.unlock_achievement("bird_watcher")
+									else:
+										GameState.save_settings()
 		
-		# Check Solar Flare Interception (Requires ~0.33s of tracking water spray)
-		var intercepted_flares = []
-		for flare in active_flares:
-			var f_node = flare["node"] as Node3D
-			if is_instance_valid(f_node):
-				var flare_pos = f_node.global_position
-				var vec_to_flare = flare_pos - ray_origin
-				var proj_t = vec_to_flare.dot(ray_normal)
-				if proj_t > 0.0:
-					var closest_pt = ray_origin + ray_normal * proj_t
-					var dist_to_ray = flare_pos.distance_to(closest_pt)
-					if dist_to_ray < 2.8: # Focused 2.8m radius requiring tracking aim
-						# Cool & shrink flare over 0.33s of sustained hit
-						flare["hp"] = (flare["hp"] as float) - (3.0 * delta)
-						var cur_hp = clamp(flare["hp"] as float, 0.0, 1.0)
-						f_node.scale = Vector3(cur_hp, cur_hp, cur_hp)
+			# Check Solar Flare Interception (Requires ~0.33s of tracking water spray)
+			var intercepted_flares = []
+			for flare in active_flares:
+				var f_node = flare["node"] as Node3D
+				if is_instance_valid(f_node):
+					var flare_pos = f_node.global_position
+					var vec_to_flare = flare_pos - ray_origin
+					var proj_t = vec_to_flare.dot(ray_normal)
+					if proj_t > 0.0:
+						var closest_pt = ray_origin + ray_normal * proj_t
+						var dist_to_ray = flare_pos.distance_to(closest_pt)
+						if dist_to_ray < 2.8: # Focused 2.8m radius requiring tracking aim
+							# Cool & shrink flare over 0.33s of sustained hit
+							flare["hp"] = (flare["hp"] as float) - (3.0 * delta)
+							var cur_hp = clamp(flare["hp"] as float, 0.0, 1.0)
+							f_node.scale = Vector3(cur_hp, cur_hp, cur_hp)
 						
-						if steam_particles and randf() < 0.2:
-							steam_particles.global_position = flare_pos
-							steam_particles.restart()
-						if randf() < 0.2:
-							_spawn_splash(flare_pos)
+							if steam_particles and randf() < 0.2:
+								steam_particles.global_position = flare_pos
+								steam_particles.restart()
+							if randf() < 0.2:
+								_spawn_splash(flare_pos)
 							
-						if cur_hp <= 0.0:
-							intercepted_flares.append(flare)
+							if cur_hp <= 0.0:
+								intercepted_flares.append(flare)
 					
-		for flare in intercepted_flares:
-			var f_node = flare["node"] as Node3D
-			if is_instance_valid(f_node):
-				var flare_pos = f_node.global_position
-				steam_particles.global_position = flare_pos
-				steam_particles.emitting = true
-				if sizzle_sfx:
-					sizzle_sfx.play()
-				if flare_intercept_sfx:
-					flare_intercept_sfx.play()
-				shake(0.2, 0.03)
+			for flare in intercepted_flares:
+				var f_node = flare["node"] as Node3D
+				if is_instance_valid(f_node):
+					var flare_pos = f_node.global_position
+					steam_particles.global_position = flare_pos
+					steam_particles.emitting = true
+					if sizzle_sfx:
+						sizzle_sfx.play()
+					if flare_intercept_sfx:
+						flare_intercept_sfx.play()
+					shake(0.2, 0.03)
 				
-				_spawn_flare_explosion(flare_pos)
+					_spawn_flare_explosion(flare_pos)
 				
-				# Reward: Instantly refill Water Tank & +2% Catastrom Charge (scaled by buff)!
-				var refill_amount = 0.40 if "flare_catcher" in GameState.unlocked_achievements else 0.30
-				water_tank = min(MAX_WATER, water_tank + (MAX_WATER * refill_amount))
-				var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
-				if can_catastrom:
-					GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (0.02 * catastrom_buff * GameState.catastrom_charge_mult))
-				var c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2)) if combo_active else 1.0
-				GameState.add_score(int(500.0 * c_mult))
-				water_refill_count += 1
-				water_changed.emit(water_tank, MAX_WATER)
+					# Reward: Instantly refill Water Tank & +2% Catastrom Charge (scaled by buff)!
+					var refill_amount = 0.40 if "flare_catcher" in GameState.unlocked_achievements else 0.30
+					water_tank = min(MAX_WATER, water_tank + (MAX_WATER * refill_amount))
+					var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
+					if can_catastrom:
+						GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (0.02 * catastrom_buff * GameState.catastrom_charge_mult))
+					var c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2)) if combo_active else 1.0
+					GameState.add_score(int(500.0 * c_mult))
+					water_refill_count += 1
+					water_changed.emit(water_tank, MAX_WATER)
 				
-				GameState.flares_intercepted += 1
-				if GameState.flares_intercepted >= 10 and not "flare_catcher" in GameState.unlocked_achievements:
-					GameState.unlock_achievement("flare_catcher")
-				else:
-					GameState.save_settings()
+					GameState.flares_intercepted += 1
+					if GameState.flares_intercepted >= 10 and not "flare_catcher" in GameState.unlocked_achievements:
+						GameState.unlock_achievement("flare_catcher")
+					else:
+						GameState.save_settings()
 
 				
-				if hud and hud.has_method("_on_projectile_hit"):
-					hud._on_projectile_hit()
+					if hud and hud.has_method("_on_projectile_hit"):
+						hud._on_projectile_hit()
 					
-				f_node.queue_free()
-				active_flares.erase(flare)
+					f_node.queue_free()
+					active_flares.erase(flare)
 
-		# Check Magma Rock Interception (Cleaning up debris)
-		var rocks_to_free = []
-		for rock in active_magma_rocks:
-			if is_instance_valid(rock):
-				var r_pos = rock.global_position
-				var vec_to_rock = r_pos - ray_origin
-				var proj_t = vec_to_rock.dot(ray_normal)
-				if proj_t > 0.0:
-					var closest_pt = ray_origin + ray_normal * proj_t
-					var dist_to_ray = r_pos.distance_to(closest_pt)
-					if dist_to_ray < 2.0: # Generous hitbox for rocks
-						# Rock hit by water! Evaporate it visually
-						rock.scale -= Vector3(1.0, 1.0, 1.0) * delta * 1.5
-						if not "rock_solid" in GameState.unlocked_achievements:
-							GameState.unlock_achievement("rock_solid")
-						if steam_particles and randf() < 0.2:
-							steam_particles.global_position = r_pos
-							steam_particles.restart()
-						if rock.scale.x <= 0.05:
-							rocks_to_free.append(rock)
-		for rock in rocks_to_free:
-			if is_instance_valid(rock):
-				if sizzle_sfx:
-					sizzle_sfx.play()
-				var c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2)) if combo_active else 1.0
-				GameState.add_score(int(150.0 * c_mult))
-				rock.queue_free()
-				active_magma_rocks.erase(rock)
-				if not "rock_solid" in GameState.unlocked_achievements:
-					GameState.unlock_achievement("rock_solid")
-		# Check Heat Mirage Hits
-		var hit_mirage: bool = false
-		var closest_mirage_dist = 999.0
-		var closest_mirage_pos = Vector3.ZERO
-		for m in active_mirages:
-			var node = m["node"] as Node3D
-			if is_instance_valid(node):
-				var m_dist = target_pos.distance_to(node.position)
-				if m_dist < 5.0 and m_dist < closest_mirage_dist:
-					closest_mirage_dist = m_dist
-					closest_mirage_pos = node.position
-					hit_mirage = true
+			# Check Magma Rock Interception (Cleaning up debris)
+			var rocks_to_free = []
+			for rock in active_magma_rocks:
+				if is_instance_valid(rock):
+					var r_pos = rock.global_position
+					var vec_to_rock = r_pos - ray_origin
+					var proj_t = vec_to_rock.dot(ray_normal)
+					if proj_t > 0.0:
+						var closest_pt = ray_origin + ray_normal * proj_t
+						var dist_to_ray = r_pos.distance_to(closest_pt)
+						if dist_to_ray < 2.0: # Generous hitbox for rocks
+							# Rock hit by water! Evaporate it visually
+							rock.scale -= Vector3(1.0, 1.0, 1.0) * delta * 1.5
+							if not "rock_solid" in GameState.unlocked_achievements:
+								GameState.unlock_achievement("rock_solid")
+							if steam_particles and randf() < 0.2:
+								steam_particles.global_position = r_pos
+								steam_particles.restart()
+							if rock.scale.x <= 0.05:
+								rocks_to_free.append(rock)
+			for rock in rocks_to_free:
+				if is_instance_valid(rock):
+					if sizzle_sfx:
+						sizzle_sfx.play()
+					var c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2)) if combo_active else 1.0
+					GameState.add_score(int(150.0 * c_mult))
+					rock.queue_free()
+					active_magma_rocks.erase(rock)
+					if not "rock_solid" in GameState.unlocked_achievements:
+						GameState.unlock_achievement("rock_solid")
+			# Check Heat Mirage Hits
+			var hit_mirage: bool = false
+			var closest_mirage_dist = 999.0
+			var closest_mirage_pos = Vector3.ZERO
+			for m in active_mirages:
+				var node = m["node"] as Node3D
+				if is_instance_valid(node):
+					var m_dist = target_pos.distance_to(node.position)
+					if m_dist < 5.0 and m_dist < closest_mirage_dist:
+						closest_mirage_dist = m_dist
+						closest_mirage_pos = node.position
+						hit_mirage = true
 					
-		# Check real sun hit
-		var aim_dist = target_pos.distance_to(sun.position)
-		if hit_mirage and closest_mirage_dist < aim_dist:
-			# Hit a mirage! Deal damage to the mirage shield
-			if steam_particles and randf() < 0.2:
-				steam_particles.global_position = target_pos
-				steam_particles.restart()
-			if sizzle_sfx and not sizzle_sfx.playing and randf() < 0.3:
-				sizzle_sfx.play()
+			# Check real sun hit
+			var aim_dist = target_pos.distance_to(sun.position)
+			if hit_mirage and closest_mirage_dist < aim_dist:
+				# Hit a mirage! Deal damage to the mirage shield
+				if steam_particles and randf() < 0.2:
+					steam_particles.global_position = target_pos
+					steam_particles.restart()
+				if sizzle_sfx and not sizzle_sfx.playing and randf() < 0.3:
+					sizzle_sfx.play()
 				
-			var damage_mult: float = 1.0
-			if is_celestial_awakened:
-				damage_mult *= 2.0
-			if GameState.is_survival_mode and GameState.current_wave >= 5:
-				damage_mult = 1.0 + (GameState.current_wave - 4) * 0.15
+				var damage_mult: float = 1.0
+				if is_celestial_awakened:
+					damage_mult *= 2.0
+				if GameState.is_survival_mode and GameState.current_wave >= 5:
+					damage_mult = 1.0 + (GameState.current_wave - 4) * 0.15
 				
-			var dmg = current_weapon_power * (current_weapon_crit * GameState.crit_damage_mult) * damage_mult * delta
-			if mirage_hp > 0.0:
-				mirage_hp -= dmg
-				if hud and hud.has_method("update_mirage_hp"):
-					hud.update_mirage_hp(mirage_hp, max_mirage_hp)
-				if mirage_hp <= 0.0:
-					_end_mirage()
-					active_mirages.clear()
+				var dmg = current_weapon_power * (current_weapon_crit * GameState.crit_damage_mult) * damage_mult * delta
+				if mirage_hp > 0.0:
+					mirage_hp -= dmg
 					if hud and hud.has_method("update_mirage_hp"):
-						hud.update_mirage_hp(0, 100)
+						hud.update_mirage_hp(mirage_hp, max_mirage_hp)
+					if mirage_hp <= 0.0:
+						_end_mirage()
+						active_mirages.clear()
+						if hud and hud.has_method("update_mirage_hp"):
+							hud.update_mirage_hp(0, 100)
 						
-			combo_timer += delta
-			if combo_timer >= 1.5:
-				if not combo_active:
-					combo_active = true
-					if hud and hud.has_method("show_combo"): hud.show_combo(true)
-				var current_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
-				if current_mult >= 3.0:
-					GameState.unlock_achievement("untouchable")
-				if hud and hud.has_method("update_combo_text"):
-					hud.update_combo_text(current_mult)
-			combo_grace_timer = 0.5 if "untouchable" in GameState.unlocked_achievements else 0.0
+				combo_timer += delta
+				if combo_timer >= 1.5:
+					if not combo_active:
+						combo_active = true
+						if hud and hud.has_method("show_combo"): hud.show_combo(true)
+					var current_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
+					if current_mult >= 3.0:
+						GameState.unlock_achievement("untouchable")
+					if hud and hud.has_method("update_combo_text"):
+						hud.update_combo_text(current_mult)
+				combo_grace_timer = 0.5 if "untouchable" in GameState.unlocked_achievements else 0.0
 					
-		elif aim_dist < 5.0: # Close enough to hit the larger sun
-			_on_hit(delta, target_pos)
-			combo_timer += delta
-			if combo_timer >= 1.5:
-				if not combo_active:
-					combo_active = true
-					if hud and hud.has_method("show_combo"): hud.show_combo(true)
+			elif aim_dist < 5.0: # Close enough to hit the larger sun
+				_on_hit(delta, target_pos)
+				combo_timer += delta
+				if combo_timer >= 1.5:
+					if not combo_active:
+						combo_active = true
+						if hud and hud.has_method("show_combo"): hud.show_combo(true)
 				
-				var current_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
-				if current_mult >= 3.0:
-					GameState.unlock_achievement("untouchable")
-				if hud and hud.has_method("update_combo_text"):
-					hud.update_combo_text(current_mult)
-			combo_grace_timer = 0.5 if "untouchable" in GameState.unlocked_achievements else 0.0
-		else:
-			combo_timer = 0.0
-			if combo_active:
-				combo_active = false
-				if hud and hud.has_method("show_combo"): hud.show_combo(false)
+					var current_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
+					if current_mult >= 3.0:
+						GameState.unlock_achievement("untouchable")
+					if hud and hud.has_method("update_combo_text"):
+						hud.update_combo_text(current_mult)
+				combo_grace_timer = 0.5 if "untouchable" in GameState.unlocked_achievements else 0.0
+			else:
+				combo_timer = 0.0
+				if combo_active:
+					combo_active = false
+					if hud and hud.has_method("show_combo"): hud.show_combo(false)
 	else:
 		if combo_grace_timer > 0.0:
 			combo_grace_timer -= delta
@@ -2877,7 +2877,7 @@ func _input(event: InputEvent) -> void:
 				if hud and hud.has_method("hide_tutorial_prompt"):
 					hud.hide_tutorial_prompt()
 			if GameState.current_weapon_id == "kitsune" and GameState.kitsune_mode == "blade" and can_shoot and not is_swapping_weapon:
-				if blade_slash_cooldown <= 0.0:
+				if blade_slash_cooldown <= 0.0 and timer_running and not defeat_triggered and not game_over:
 					_perform_kitsune_blade_slash()
 		
 		if is_catastrom_active and event.is_pressed() and not is_dragging_sun:
@@ -3384,109 +3384,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 	# Force an immediate visual update override which will be reset next frame by _update_sky
 	
 	if temperature <= 0.0:
-		if is_two_phase and not phase2_triggered:
-			phase2_triggered = true
-			_trigger_phase2()
-		elif GameState.is_survival_mode:
-			if sun_defeated_sfx: sun_defeated_sfx.play()
-			if not GameState.is_dev_mode:
-				GameState.current_wave += 1
-				if GameState.current_wave > GameState.best_wave:
-					GameState.best_wave = GameState.current_wave
-					GameState.save_settings()
-				if (GameState.current_wave - 1) >= 25:
-					GameState.unlock_achievement("wave_survivor")
-				if (GameState.current_wave - 1) >= 50:
-					GameState.unlock_achievement("wave_master")
-			GameState.ice_charges_remaining = min(10, GameState.ice_charges_remaining + 1)
-			
-			# Boss wave reward
-			if (GameState.current_wave - 1) % 5 == 0:
-				water_tank = MAX_WATER
-				GameState.ice_charges_remaining += 1 + GameState.bonus_ice_charges
-				water_changed.emit(water_tank, MAX_WATER)
-				
-				# Trigger Rogue-lite Drafting System after Boss Waves (cinematic transition)
-				if hud:
-					_cinematic_boss_draft()
-				
-			max_survival_ice_charges = max(max_survival_ice_charges, GameState.ice_charges_remaining)
-			if hud:
-				hud.update_ice_charges(GameState.ice_charges_remaining, max_survival_ice_charges + GameState.bonus_ice_charges)
-				
-				if GameState.current_wave == 2 or GameState.current_wave == 3 or GameState.current_wave == 4:
-					hud.show_weapon_unlock()
-				if GameState.current_wave == 2:
-					hud.show_ice_unlock()
-				if GameState.current_wave == 4 and hud.has_method("show_catastrom_unlock"):
-					hud.show_catastrom_unlock()
-					
-				if GameState.language == "KR":
-					hud.level_label.text = "웨이브 %02d" % GameState.current_wave
-				else:
-					hud.level_label.text = "WAVE %02d" % GameState.current_wave
-				
-				var flash = ColorRect.new()
-				flash.color = Color(0.3, 0.7, 1.0, 0.6) if (GameState.current_wave - 1) % 5 == 0 else Color(1.0, 0.9, 0.5, 0.6)
-				flash.anchor_right = 1.0
-				flash.anchor_bottom = 1.0
-				flash.z_index = 150
-				flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
-				hud.add_child(flash)
-				var tw = create_tween()
-				tw.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-				tw.tween_property(flash, "modulate:a", 0.0, 0.4)
-				tw.tween_callback(flash.queue_free)
-				
-			sun_figure8 = GameState.current_wave >= 3
-			var prev_solar_wind = solar_wind_enabled
-			solar_wind_enabled = GameState.current_wave >= 4
-			flare_spawn_timer = min(flare_spawn_timer, max(2.5, 8.0 - (GameState.current_wave * 0.5)))
-			
-			sun_sway_amplitude = min(8.0, GameState.current_wave * 1.5)
-			sun_sway_speed = min(2.0, 0.5 + GameState.current_wave * 0.2)
-			
-			# Prepare next boss wave
-			if GameState.current_wave % 5 == 0:
-				is_two_phase = true
-				phase2_triggered = false
-				phase2_heat = min(150.0, 80.0 + (GameState.current_wave * 5.0))
-				sun_shield_cooldown = 2.5 # Initial delay before shield deploys on boss wave
-			else:
-				is_two_phase = false
-				phase2_triggered = false
-				is_sun_shielded = false
-				if sun_shield_mesh:
-					sun_shield_mesh.visible = false
-					sun_shield_mesh.scale = Vector3.ONE
-			
-			wind_level_mult = min(2.5, 1.0 + (GameState.current_wave - 4) * 0.15)
-			if solar_wind_enabled and not prev_solar_wind:
-				wind_state = 0
-				wind_timer = randf_range(4.0, 7.0)
-				wind_strength = 0.0
-				if wind_warn_label:
-					wind_warn_label.visible = false
-					wind_warn_label.modulate.a = 0.0
-				if wind_particles: wind_particles.emitting = false
-				if wind_sfx: wind_sfx.stop()
-			
-			temperature = MAX_TEMP
-			heat_changed.emit(temperature, MAX_TEMP)
-			level_timer = min(120.0, 60.0 + (level_timer * 0.5)) # Bank 50% of remaining time
-			wave_timer = 0.0
-			is_catastrom_active = false
-			_end_mirage()
-			active_mirages.clear()
-			var viewport_size = get_viewport().get_visible_rect().size
-			virtual_mouse_pos = viewport_size * 0.5
-			if gun:
-				gun.visible = true
-				gun.position = gun_base_pos
-				gun.rotation = Vector3.ZERO
-		else:
-			_win()
-
+		_check_sun_defeat()
 # ─────────────────────────────────────────────────────────────────────────────
 # Temp system / Middle States
 # ─────────────────────────────────────────────────────────────────────────────
@@ -3754,9 +3652,122 @@ func _cinematic_boss_draft() -> void:
 	if hud and hud.has_method("fade_from_black"):
 		await hud.fade_from_black(0.8, false)
 
+func _check_sun_defeat() -> void:
+	if defeat_triggered or game_over or not timer_running or is_title_screen:
+		return
+	if temperature > 0.0:
+		return
+	
+	if is_two_phase and not phase2_triggered:
+		phase2_triggered = true
+		_trigger_phase2()
+	elif GameState.is_survival_mode:
+		if sun_defeated_sfx: sun_defeated_sfx.play()
+		if not GameState.is_dev_mode:
+			GameState.current_wave += 1
+			if GameState.current_wave > GameState.best_wave:
+				GameState.best_wave = GameState.current_wave
+				GameState.save_settings()
+			if (GameState.current_wave - 1) >= 25:
+				GameState.unlock_achievement("wave_survivor")
+			if (GameState.current_wave - 1) >= 50:
+				GameState.unlock_achievement("wave_master")
+		GameState.ice_charges_remaining = min(10, GameState.ice_charges_remaining + 1)
+		
+		# Boss wave reward
+		if (GameState.current_wave - 1) % 5 == 0:
+			water_tank = MAX_WATER
+			GameState.ice_charges_remaining += 1 + GameState.bonus_ice_charges
+			water_changed.emit(water_tank, MAX_WATER)
+			
+			# Trigger Rogue-lite Drafting System after Boss Waves (cinematic transition)
+			if hud:
+				_cinematic_boss_draft()
+			
+		max_survival_ice_charges = max(max_survival_ice_charges, GameState.ice_charges_remaining)
+		if hud:
+			hud.update_ice_charges(GameState.ice_charges_remaining, max_survival_ice_charges + GameState.bonus_ice_charges)
+			
+			if GameState.current_wave == 2 or GameState.current_wave == 3 or GameState.current_wave == 4:
+				hud.show_weapon_unlock()
+			if GameState.current_wave == 2:
+				hud.show_ice_unlock()
+			if GameState.current_wave == 4 and hud.has_method("show_catastrom_unlock"):
+				hud.show_catastrom_unlock()
+				
+			if GameState.language == "KR":
+				hud.level_label.text = "웨이브 %02d" % GameState.current_wave
+			else:
+				hud.level_label.text = "WAVE %02d" % GameState.current_wave
+			
+			var flash = ColorRect.new()
+			flash.color = Color(0.3, 0.7, 1.0, 0.6) if (GameState.current_wave - 1) % 5 == 0 else Color(1.0, 0.9, 0.5, 0.6)
+			flash.anchor_right = 1.0
+			flash.anchor_bottom = 1.0
+			flash.z_index = 150
+			flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			hud.add_child(flash)
+			var tw = create_tween()
+			tw.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+			tw.tween_property(flash, "modulate:a", 0.0, 0.4)
+			tw.tween_callback(flash.queue_free)
+			
+		sun_figure8 = GameState.current_wave >= 3
+		var prev_solar_wind = solar_wind_enabled
+		solar_wind_enabled = GameState.current_wave >= 4
+		flare_spawn_timer = min(flare_spawn_timer, max(2.5, 8.0 - (GameState.current_wave * 0.5)))
+		
+		sun_sway_amplitude = min(8.0, GameState.current_wave * 1.5)
+		sun_sway_speed = min(2.0, 0.5 + GameState.current_wave * 0.2)
+		
+		# Prepare next boss wave
+		if GameState.current_wave % 5 == 0:
+			is_two_phase = true
+			phase2_triggered = false
+			phase2_heat = min(150.0, 80.0 + (GameState.current_wave * 5.0))
+			sun_shield_cooldown = 2.5 # Initial delay before shield deploys on boss wave
+		else:
+			is_two_phase = false
+			phase2_triggered = false
+			is_sun_shielded = false
+			if sun_shield_mesh:
+				sun_shield_mesh.visible = false
+				sun_shield_mesh.scale = Vector3.ONE
+		
+		wind_level_mult = min(2.5, 1.0 + (GameState.current_wave - 4) * 0.15)
+		if solar_wind_enabled and not prev_solar_wind:
+			wind_state = 0
+			wind_timer = randf_range(4.0, 7.0)
+			wind_strength = 0.0
+			if wind_warn_label:
+				wind_warn_label.visible = false
+				wind_warn_label.modulate.a = 0.0
+			if wind_particles: wind_particles.emitting = false
+			if wind_sfx: wind_sfx.stop()
+		
+		temperature = MAX_TEMP
+		heat_changed.emit(temperature, MAX_TEMP)
+		level_timer = min(120.0, 60.0 + (level_timer * 0.5)) # Bank 50% of remaining time
+		wave_timer = 0.0
+		is_catastrom_active = false
+		_end_mirage()
+		active_mirages.clear()
+		var viewport_size = get_viewport().get_visible_rect().size
+		virtual_mouse_pos = viewport_size * 0.5
+		if gun:
+			gun.visible = true
+			gun.position = gun_base_pos
+			gun.rotation = Vector3.ZERO
+	else:
+		_win()
+
 func _win() -> void:
 	if defeat_triggered: return
 	defeat_triggered = true
+	game_over = true
+	timer_running = false
+	is_shooting = false
+	can_shoot = false
 	if is_celestial_awakened:
 		end_celestial_awakening()
 	if active_weather == "eclipse":
@@ -3804,6 +3815,8 @@ func _win() -> void:
 			water_tank = MAX_WATER
 			game_over = false
 			defeat_triggered = false
+			is_shooting = false
+			can_shoot = false
 			cooldown_timer = 0.0
 			water_refill_count = 0
 			is_measuring = false
@@ -3915,6 +3928,8 @@ func _win() -> void:
 			
 		is_measuring = true
 		timer_running = true
+		can_shoot = true
+		is_shooting = false
 		if ocean_wave_timer: ocean_wave_timer.paused = false
 		
 		# 9. Trigger unlock popups NOW that the level has fully started
@@ -4263,6 +4278,13 @@ func toggle_celestial_awakening() -> void:
 		start_celestial_awakening(15.0)
 
 func _perform_kitsune_blade_slash() -> void:
+	if game_over or defeat_triggered or not timer_running or is_title_screen:
+		return
+	if is_swapping_weapon or not can_shoot:
+		return
+	if hud and (hud.settings_screen.visible or (hud.get("filters_screen") and hud.filters_screen.visible) or hud.credits_screen.visible or hud.pause_screen.visible or (hud.get("controller_screen") and hud.controller_screen.visible)):
+		return
+	
 	blade_slash_cooldown = 0.35
 	
 	# Drain water unless Awakened
@@ -4323,15 +4345,16 @@ func _perform_kitsune_blade_slash() -> void:
 	var to_sun = (sun.global_position - aim_origin).normalized()
 	var sun_dot = aim_forward.dot(to_sun)
 	if sun_dot > 0.82: # Aimed at Sun
-		var base_dmg = 45.0
+		var base_dmg = 8.5 # Balanced cadence cooling (~24 DPS matching Kitsune weapon tier)
 		var is_crit = (sun_dot > 0.95)
-		var crit_m = 3.0 if is_crit else 1.0
+		var crit_m = 1.5 if is_crit else 1.0
 		var total_dmg = base_dmg * crit_m * GameState.cooling_power_mult
 		if is_celestial_awakened:
 			total_dmg *= 1.5
 		
 		temperature = max(0.0, temperature - total_dmg)
 		heat_changed.emit(temperature, MAX_TEMP)
+		_spawn_damage_number(total_dmg, is_crit, sun.global_position)
 		sun_hit_reaction_timer = 0.22
 		sun_hit_was_crit = is_crit
 		if is_crit:
@@ -4346,7 +4369,7 @@ func _perform_kitsune_blade_slash() -> void:
 		
 		# Check victory
 		if temperature <= 0.0:
-			_win()
+			_check_sun_defeat()
 	
 	# In Celestial Awakening: spawn glowing crescent shockwave projectile
 	if is_celestial_awakened:
