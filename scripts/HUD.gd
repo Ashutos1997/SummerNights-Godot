@@ -1508,7 +1508,7 @@ func _apply_language(lang: String) -> void:
 			var itm_3d2 = credits_list.get_node_or_null("Itm3D2")
 			if itm_3d2: itm_3d2.text = "3D 태양 모델 (PS1 Style Low Poly Sun)  ·  albert_buscio (Sketchfab)  ·  CC0" if is_kr else "PS1 Style Low Poly Sun  ·  albert_buscio (Sketchfab)  ·  CC0"
 			var itm_3d3 = credits_list.get_node_or_null("Itm3D3")
-			if itm_3d3: itm_3d3.text = "3D 총기 모델 (구미호 버스터 IX)  ·  절차적 파이썬 glTF  ·  오픈소스" if is_kr else "3D Gun Model (Kitsune Buster IX)  ·  Procedural Python glTF  ·  Open Source"
+			if itm_3d3: itm_3d3.text = "3D 무기 모델 (구미호 버스터 IX - 포격 & 검 모드)  ·  절차적 파이썬 glTF  ·  오픈소스" if is_kr else "3D Weapon Model (Kitsune Buster IX - Cannon & Blade)  ·  Procedural Python glTF  ·  Open Source"
 
 			var itm_tex1 = credits_list.get_node_or_null("ItmTextures1")
 			if itm_tex1: itm_tex1.text = "모래 텍스처 (Coast Sand 01)  ·  Poly Haven  ·  CC0" if is_kr else "Coast Sand 01  ·  Poly Haven  ·  CC0"
@@ -1547,6 +1547,8 @@ func _apply_language(lang: String) -> void:
 			if itm_audio16: itm_audio16.text = "SFX - 신성의 각성 활성화음  ·  TheLittleCrow (Freesound)  ·  CC0" if is_kr else "SFX - Celestial Awakening Activation  ·  TheLittleCrow (Freesound)  ·  CC0"
 			var itm_audio17 = credits_list.get_node_or_null("ItmAudio17")
 			if itm_audio17: itm_audio17.text = "SFX - 신성의 각성 비활성화음  ·  bevibeldesign (Freesound)  ·  CC0" if is_kr else "SFX - Celestial Awakening Deactivation  ·  bevibeldesign (Freesound)  ·  CC0"
+			var itm_audio18 = credits_list.get_node_or_null("ItmAudio18")
+			if itm_audio18: itm_audio18.text = "SFX - 신성의 참격 효과음  ·  Nomagician (Freesound)  ·  CC0" if is_kr else "SFX - Celestial Blade Slash  ·  Nomagician (Freesound)  ·  CC0"
 
 			var itm_engine_logo = credits_list.get_node_or_null("ItmEngineLogo")
 			if itm_engine_logo: itm_engine_logo.text = "고도 엔진 로고 및 브랜딩  ·  Andrea Calabró (Godot Foundation)  ·  CC BY 4.0" if is_kr else "Godot Engine Logo & Branding  ·  Andrea Calabró (Godot Foundation)  ·  CC BY 4.0"
@@ -3346,16 +3348,23 @@ func _update_weapon_hud(w_id: String) -> void:
 		
 	if hud_weapon_name_label and GameState.WEAPONS.has(w_id):
 		var w_name = GameState.WEAPONS[w_id].name.to_upper().replace(" ", "\n")
-		if GameState.language == "KR":
+		var is_kr = (GameState.language == "KR")
+		var is_blade = (GameState.kitsune_mode == "blade")
+		if is_kr:
 			match w_id:
 				"standard": w_name = "표준\n블래스터"
 				"heavy": w_name = "헤비\n캐논"
 				"precision": w_name = "정밀\n스트림"
 				"scatter": w_name = "스캐터\n노즐"
 				"tidal": w_name = "타이달\n개틀링"
-				"kitsune": w_name = "구미호\n버스터"
+				"kitsune": w_name = "구미호 버스터\n[검 모드]" if is_blade else "구미호 버스터\n[포격 모드]"
+		elif w_id == "kitsune":
+			w_name = "KITSUNE IX\n[BLADE]" if is_blade else "KITSUNE IX\n[CANNON]"
 		if is_celestial_active and w_id == "kitsune":
-			w_name = "구미호 버스터\n[신성 각성]" if GameState.language == "KR" else "KITSUNE IX\n[AWAKENED]"
+			if is_kr:
+				w_name = "구미호 버스터\n[신성 · 검]" if is_blade else "구미호 버스터\n[신성 · 포격]"
+			else:
+				w_name = "KITSUNE IX\n[AWAKENED · BLADE]" if is_blade else "KITSUNE IX\n[AWAKENED · CANNON]"
 			w_color = Color(0.17, 0.90, 1.0)
 		hud_weapon_name_label.text = w_name
 		hud_weapon_name_label.label_settings.font_color = w_color
@@ -3382,6 +3391,10 @@ func _update_weapon_hud(w_id: String) -> void:
 				var pop_tween = create_tween()
 				panel.scale = Vector2(1.15, 1.15)
 				pop_tween.tween_property(panel, "scale", Vector2.ONE, 0.3).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+
+func update_kitsune_mode_display(_mode: String = "") -> void:
+	if GameState.current_weapon_id == "kitsune":
+		_update_weapon_hud(GameState.current_weapon_id)
 
 func _on_score_updated(new_score: int) -> void:
 	if not score_label: return

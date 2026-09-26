@@ -183,7 +183,10 @@ func _load_weapon_model() -> void:
 		gun_model.queue_free()
 		
 	var w_cfg = GameState.WEAPONS[GameState.current_weapon_id]
-	gun_model = load(w_cfg.model).instantiate()
+	var model_path = w_cfg.model
+	if GameState.current_weapon_id == "kitsune" and GameState.kitsune_mode == "blade":
+		model_path = w_cfg.get("blade_model", "res://assets/blaster_kitsune_blade.glb")
+	gun_model = load(model_path).instantiate()
 	gun_model.rotation_degrees = Vector3(0, 180, 0)
 	gun_model.scale = w_cfg.scale
 	gun_model.position = Vector3(0, -0.3, -0.1)
@@ -199,7 +202,10 @@ func _load_weapon_model() -> void:
 	
 	# Notify crosshair of new weapon style
 	if hud and hud.has_method("notify_weapon_style"):
-		hud.notify_weapon_style(GameState.current_weapon_id)
+		var style_id = GameState.current_weapon_id
+		if style_id == "kitsune" and GameState.kitsune_mode == "blade":
+			style_id = "kitsune_blade"
+		hud.notify_weapon_style(style_id)
 	
 	if shoot_loop_sfx:
 		if GameState.current_weapon_id == "heavy":
@@ -213,6 +219,50 @@ func _load_weapon_model() -> void:
 		else:
 			_base_weapon_pitch = 1.0
 		shoot_loop_sfx.pitch_scale = _base_weapon_pitch
+
+func toggle_kitsune_mode() -> void:
+	if GameState.current_weapon_id != "kitsune" or is_swapping_weapon:
+		return
+	
+	if GameState.kitsune_mode == "cannon":
+		GameState.kitsune_mode = "blade"
+	else:
+		GameState.kitsune_mode = "cannon"
+	
+	if kitsune_mode_switch_sfx:
+		kitsune_mode_switch_sfx.pitch_scale = 1.30 if GameState.kitsune_mode == "blade" else 0.95
+		kitsune_mode_switch_sfx.play()
+	
+	# Cut continuous cannon spray if entering blade mode
+	if GameState.kitsune_mode == "blade":
+		gun_spray.emitting = false
+		if shoot_loop_sfx.playing:
+			shoot_loop_sfx.stop()
+		if celestial_hydro_cannon:
+			celestial_hydro_cannon.set_firing(false, Vector3.ZERO, Vector3.ZERO)
+	
+	# Rapid mechanical transform twirl
+	if gun_model and is_instance_valid(gun_model):
+		var w_cfg = GameState.WEAPONS["kitsune"]
+		var target_model = w_cfg.get("blade_model", "res://assets/blaster_kitsune_blade.glb") if GameState.kitsune_mode == "blade" else w_cfg.model
+		var tw = create_tween()
+		tw.tween_property(gun_model, "rotation_degrees:z", gun_model.rotation_degrees.z + 180.0, 0.10).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+		tw.tween_callback(func():
+			if gun_model: gun_model.queue_free()
+			gun_model = load(target_model).instantiate()
+			gun_model.rotation_degrees = Vector3(0, 180, 0)
+			gun_model.scale = w_cfg.scale
+			gun_model.position = Vector3(0, -0.3, -0.1)
+			_adjust_gun_materials(gun_model)
+			gun.add_child(gun_model)
+		)
+		tw.tween_property(gun, "position:y", gun_base_pos.y - 0.06, 0.08).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(gun, "position:y", gun_base_pos.y, 0.10)
+	
+	if hud and hud.has_method("notify_weapon_style"):
+		hud.notify_weapon_style("kitsune_blade" if GameState.kitsune_mode == "blade" else "kitsune")
+	if hud and hud.has_method("update_kitsune_mode_display"):
+		hud.update_kitsune_mode_display(GameState.kitsune_mode)
 		
 func _recalculate_stats() -> void:
 	var w_cfg = GameState.WEAPONS[GameState.current_weapon_id]
@@ -292,6 +342,10 @@ var celestial_tails: CelestialTails
 var celestial_hydro_cannon: CelestialHydroCannon
 var celestial_henshin_sfx: AudioStreamPlayer
 var celestial_deactivate_sfx: AudioStreamPlayer
+var celestial_slash_sfx: AudioStreamPlayer
+var kitsune_mode_switch_sfx: AudioStreamPlayer
+var blade_slash_cooldown: float = 0.0
+var blade_slash_dir: int = 1
 var is_celestial_awakened: bool = false
 var celestial_awakened_timer: float = 0.0
 var celestial_filter_tween: Tween = null
@@ -446,6 +500,18 @@ func _ready() -> void:
 	celestial_deactivate_sfx.volume_db = 0.0
 	celestial_deactivate_sfx.bus = "SFX_WEAPON"
 	add_child(celestial_deactivate_sfx)
+	
+	celestial_slash_sfx = AudioStreamPlayer.new()
+	celestial_slash_sfx.stream = preload("res://assets/audio/sfx/celestial_slash.wav")
+	celestial_slash_sfx.volume_db = 1.0
+	celestial_slash_sfx.bus = "SFX_WEAPON"
+	add_child(celestial_slash_sfx)
+	
+	kitsune_mode_switch_sfx = AudioStreamPlayer.new()
+	kitsune_mode_switch_sfx.stream = preload("res://assets/ui/kenney_ui_pack/Sounds/switch-b.ogg")
+	kitsune_mode_switch_sfx.volume_db = -1.0
+	kitsune_mode_switch_sfx.bus = "SFX_WEAPON"
+	add_child(kitsune_mode_switch_sfx)
 	
 	var hum_gen = AudioStreamGenerator.new()
 	hum_gen.mix_rate = 44100
@@ -1963,6 +2029,8 @@ func _process(delta: float) -> void:
 			if celestial_awakened_timer <= 0.0:
 				end_celestial_awakening()
 	
+	if blade_slash_cooldown > 0.0:
+		blade_slash_cooldown -= delta
 	if shield_deflect_cooldown > 0.0:
 		shield_deflect_cooldown -= delta
 	if shield_ripple_time < 2.0:
@@ -2466,34 +2534,44 @@ func _process(delta: float) -> void:
 	
 	# Shooting mechanics
 	if is_shooting and can_shoot and not is_swapping_weapon:
-		_vibrate(0.1, 0.0, 0.1)
-		is_firing = true
-		if hud and hud.has_method("notify_firing"): hud.notify_firing(true)
-		fire_stop_timer = FIRE_STOP_DELAY
-		if not shoot_loop_sfx.playing:
-			shoot_loop_sfx.play()
-			
-		if not is_celestial_awakened:
-			water_tank -= WATER_DRAIN_RATE * delta
+		if GameState.current_weapon_id == "kitsune" and GameState.kitsune_mode == "blade":
+			# Kitsune Buster IX - Blade Mode (Melee Arc Cadence)
+			gun_spray.emitting = false
+			if shoot_loop_sfx.playing:
+				shoot_loop_sfx.stop()
+			if celestial_hydro_cannon:
+				celestial_hydro_cannon.set_firing(false, Vector3.ZERO, Vector3.ZERO)
+			if blade_slash_cooldown <= 0.0:
+				_perform_kitsune_blade_slash()
 		else:
-			water_tank = MAX_WATER
-		GameState.total_water_sprayed += WATER_DRAIN_RATE * delta
-		if not GameState.current_weapon_id in GameState.weapons_used_this_run:
-			GameState.weapons_used_this_run.append(GameState.current_weapon_id)
-			if GameState.weapons_used_this_run.size() >= 5:
-				GameState.unlock_achievement("weapon_mastery")
-		gun_spray.emitting = true
-		
-		if celestial_hydro_cannon:
-			var target_pt = result.position if result else (aim_origin + aim_dir * 100.0)
-			celestial_hydro_cannon.set_firing(is_celestial_awakened, aim_origin, target_pt)
-		
-		# Subtle accessibility-friendly recoil kick (push gun and camera back slightly)
-		if not reduce_motion:
-			gun.position.z += 0.06 * delta
-			gun.position.y += 0.02 * delta
-			camera.position.z += 0.015 * delta
-			camera.rotation.x += 0.004 * delta
+			_vibrate(0.1, 0.0, 0.1)
+			is_firing = true
+			if hud and hud.has_method("notify_firing"): hud.notify_firing(true)
+			fire_stop_timer = FIRE_STOP_DELAY
+			if not shoot_loop_sfx.playing:
+				shoot_loop_sfx.play()
+				
+			if not is_celestial_awakened:
+				water_tank -= WATER_DRAIN_RATE * delta
+			else:
+				water_tank = MAX_WATER
+			GameState.total_water_sprayed += WATER_DRAIN_RATE * delta
+			if not GameState.current_weapon_id in GameState.weapons_used_this_run:
+				GameState.weapons_used_this_run.append(GameState.current_weapon_id)
+				if GameState.weapons_used_this_run.size() >= 5:
+					GameState.unlock_achievement("weapon_mastery")
+			gun_spray.emitting = true
+			
+			if celestial_hydro_cannon:
+				var target_pt = result.position if result else (aim_origin + aim_dir * 100.0)
+				celestial_hydro_cannon.set_firing(is_celestial_awakened, aim_origin, target_pt)
+			
+			# Subtle accessibility-friendly recoil kick (push gun and camera back slightly)
+			if not reduce_motion:
+				gun.position.z += 0.06 * delta
+				gun.position.y += 0.02 * delta
+				camera.position.z += 0.015 * delta
+				camera.rotation.x += 0.004 * delta
 		
 		# Spawn wet marks on environment when water spray hits it
 		if result and wet_spawn_timer <= 0.0:
@@ -2765,11 +2843,23 @@ func _input(event: InputEvent) -> void:
 		if GameState.ice_charges_remaining > 0:
 			_shoot_ice()
 
+	# Mode switch for Kitsune Buster IX (Cannon <-> Blade)
+	if GameState.current_weapon_id == "kitsune":
+		var is_mode_key = (event is InputEventKey and event.pressed and not event.echo and (event.keycode == KEY_X or event.keycode == KEY_C))
+		var is_mode_mouse = (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_MIDDLE)
+		var is_mode_joy = (event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_X)
+		if is_mode_key or is_mode_mouse or is_mode_joy:
+			toggle_kitsune_mode()
+
 	# Debug key: Press K to toggle Celestial Awakening (Fox Nine)
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_K:
 		toggle_celestial_awakening()
 
 	if event.is_action_pressed("ui_catastrom") and not event.is_echo():
+		if GameState.current_weapon_id == "kitsune":
+			if (GameState.celestial_charge >= 1.0 or GameState.catastrom_charge >= 1.0) and not is_celestial_awakened:
+				start_celestial_awakening(15.0)
+				return
 		var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
 		if can_catastrom and GameState.catastrom_charge >= 1.0 and not is_catastrom_active:
 			is_catastrom_active = true
@@ -2786,6 +2876,9 @@ func _input(event: InputEvent) -> void:
 				GameState.save_settings()
 				if hud and hud.has_method("hide_tutorial_prompt"):
 					hud.hide_tutorial_prompt()
+			if GameState.current_weapon_id == "kitsune" and GameState.kitsune_mode == "blade" and can_shoot and not is_swapping_weapon:
+				if blade_slash_cooldown <= 0.0:
+					_perform_kitsune_blade_slash()
 		
 		if is_catastrom_active and event.is_pressed() and not is_dragging_sun:
 			is_dragging_sun = true
@@ -4106,6 +4199,8 @@ func start_celestial_awakening(duration: float = 15.0) -> void:
 
 	is_celestial_awakened = true
 	celestial_awakened_timer = duration
+	GameState.celestial_charge = 0.0
+	GameState.unlock_achievement("the_highlight")
 	if celestial_tails:
 		celestial_tails.activate_awakening()
 	if celestial_deactivate_sfx and celestial_deactivate_sfx.is_playing():
@@ -4166,6 +4261,117 @@ func toggle_celestial_awakening() -> void:
 		end_celestial_awakening()
 	else:
 		start_celestial_awakening(15.0)
+
+func _perform_kitsune_blade_slash() -> void:
+	blade_slash_cooldown = 0.35
+	
+	# Drain water unless Awakened
+	if not is_celestial_awakened:
+		water_tank = max(0.0, water_tank - 12.0)
+	else:
+		water_tank = MAX_WATER
+	water_changed.emit(water_tank, MAX_WATER)
+	
+	# SFX & Haptics
+	if celestial_slash_sfx:
+		celestial_slash_sfx.pitch_scale = randf_range(1.05, 1.25)
+		celestial_slash_sfx.play()
+	_vibrate(0.35, 0.35, 0.12)
+	
+	# Slash sweep animation on gun
+	blade_slash_dir *= -1
+	var end_rot_z = -45.0 * blade_slash_dir
+	var end_x = 0.22 * blade_slash_dir
+	
+	var tw = create_tween().set_parallel(true)
+	tw.tween_property(gun, "position:x", end_x, 0.12).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tw.tween_property(gun, "position:z", gun_base_pos.z - 0.22, 0.10).set_trans(Tween.TRANS_BACK)
+	tw.tween_property(gun, "rotation_degrees:z", end_rot_z, 0.12).set_trans(Tween.TRANS_EXPO)
+	tw.tween_property(gun, "rotation_degrees:y", 180.0 + (25.0 * blade_slash_dir), 0.12)
+	
+	tw.chain().tween_property(gun, "position:x", 0.0, 0.16).set_trans(Tween.TRANS_SINE)
+	tw.parallel().tween_property(gun, "position:z", gun_base_pos.z, 0.16)
+	tw.parallel().tween_property(gun, "rotation_degrees:z", 0.0, 0.16)
+	tw.parallel().tween_property(gun, "rotation_degrees:y", 180.0, 0.16)
+	
+	# Melee flare cleaving / parry
+	var aim_origin = camera.global_position
+	var aim_forward = -camera.global_basis.z
+	var severed_count = 0
+	for flare in active_flares:
+		var f_node = flare.get("node") as Node3D
+		if is_instance_valid(f_node):
+			var f_pos = f_node.global_position
+			var to_f = f_pos - aim_origin
+			var dist = to_f.length()
+			if dist < 8.5:
+				var angle = rad_to_deg(aim_forward.angle_to(to_f.normalized()))
+				if angle < 60.0:
+					flare["hp"] = 0.0
+					severed_count += 1
+					_spawn_deflected_number(f_pos)
+	
+	if severed_count > 0:
+		if shield_deflect_sfx: shield_deflect_sfx.play()
+		# Water parry refund
+		water_tank = min(MAX_WATER, water_tank + 15.0 * severed_count)
+		water_changed.emit(water_tank, MAX_WATER)
+		GameState.flares_intercepted += severed_count
+		GameState.celestial_charge = min(1.0, GameState.celestial_charge + 0.10 * severed_count)
+	
+	# Direct or Ranged Strike on Sun
+	var to_sun = (sun.global_position - aim_origin).normalized()
+	var sun_dot = aim_forward.dot(to_sun)
+	if sun_dot > 0.82: # Aimed at Sun
+		var base_dmg = 45.0
+		var is_crit = (sun_dot > 0.95)
+		var crit_m = 3.0 if is_crit else 1.0
+		var total_dmg = base_dmg * crit_m * GameState.cooling_power_mult
+		if is_celestial_awakened:
+			total_dmg *= 1.5
+		
+		temperature = max(0.0, temperature - total_dmg)
+		heat_changed.emit(temperature, MAX_TEMP)
+		sun_hit_reaction_timer = 0.22
+		sun_hit_was_crit = is_crit
+		if is_crit:
+			sun_face_shake = 0.08
+		else:
+			sun_face_shake = 0.04
+		
+		if not is_sun_frozen:
+			sun_mat.emission = Color(1.8, 1.8, 2.4)
+		
+		GameState.celestial_charge = min(1.0, GameState.celestial_charge + 0.06)
+		
+		# Check victory
+		if temperature <= 0.0:
+			_win()
+	
+	# In Celestial Awakening: spawn glowing crescent shockwave projectile
+	if is_celestial_awakened:
+		_spawn_celestial_crescent_slash(aim_origin, aim_forward)
+
+func _spawn_celestial_crescent_slash(origin: Vector3, dir: Vector3) -> void:
+	var crescent = MeshInstance3D.new()
+	var p_mesh = BoxMesh.new()
+	p_mesh.size = Vector3(3.2, 0.22, 0.8)
+	crescent.mesh = p_mesh
+	
+	var mat = StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = Color(0.25, 0.95, 1.0, 0.92)
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	crescent.material_override = mat
+	
+	add_child(crescent)
+	crescent.global_position = origin + dir * 1.5
+	crescent.look_at(crescent.global_position + dir, Vector3.UP)
+	
+	var tw = create_tween()
+	tw.tween_property(crescent, "global_position", crescent.global_position + dir * 45.0, 0.5).set_trans(Tween.TRANS_LINEAR)
+	tw.parallel().tween_property(mat, "albedo_color:a", 0.0, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tw.chain().tween_callback(crescent.queue_free)
 
 func _shoot_ice() -> void:
 	GameState.ice_charges_remaining -= 1

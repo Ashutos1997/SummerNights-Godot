@@ -88,6 +88,13 @@ const ACHIEVEMENTS: Dictionary = {
 		"title_kr": "얼음 파괴자",
 		"desc_en": "Use Ice Blast 50 times.",
 		"desc_kr": "얼음 폭발을 통산 50회 사용하세요."
+	},
+	"the_highlight": {
+		"icon": "res://assets/ui/achievements/sunset.png",
+		"title_en": "The Highlight",
+		"title_kr": "클라이맥스",
+		"desc_en": "Activate Celestial Awakening with Kitsune Buster IX.",
+		"desc_kr": "구미호 버스터 IX로 신성의 각성을 발동하세요."
 	}
 }
 
@@ -310,6 +317,7 @@ const WEAPONS = {
 	"kitsune": {
 		"name": "Kitsune Buster IX",
 		"model": "res://assets/blaster_kitsune.glb",
+		"blade_model": "res://assets/blaster_kitsune_blade.glb",
 		"scale": Vector3(1.0, 1.0, 1.0),
 		"water_capacity": 180.0,
 		"water_drain": 8.0,
@@ -321,6 +329,8 @@ const WEAPONS = {
 }
 var has_shown_splash: bool = false
 var current_weapon_id: String = "standard"
+var kitsune_mode: String = "cannon"  # "cannon" or "blade"
+var celestial_charge: float = 0.0    # 0.0 to 1.0 combat charge for Kitsune Buster IX
 var level: int = 1
 var sfx_volume: float = 1.0
 var mouse_sensitivity: float = 1.0
@@ -446,6 +456,8 @@ func reset() -> void:
 	heat_resistance = 0.0
 	bonus_ice_charges = 0
 	catastrom_charge = 0.0
+	kitsune_mode = "cannon"
+	celestial_charge = 0.0
 	crit_damage_mult = 1.0
 	catastrom_charge_mult = 1.0
 	sun_sway_mult = 1.0

@@ -192,7 +192,7 @@ SummerNights-Godot/
 |---|---|---|
 | 3D 태양 모델 - PS1 Style Low Poly Sun | albert_buscio (Sketchfab) | CC0 |
 | 3D 총기 모델 - 3D Blaster | Kenney | CC0 |
-| 3D 총기 모델 - 구미호 버스터 IX (Kitsune Buster IX) | 절차적 파이썬 glTF 합성 (Procedural Python glTF Synthesis) | 오픈소스 (Open Source) |
+| 3D 총기 모델 - 구미호 버스터 IX (포격 및 검 모드) | 절차적 파이썬 glTF 합성 (Procedural Python glTF Synthesis) | 오픈소스 (Open Source) |
 | 식물 및 바위 - Ultimate Stylized Nature | Quaternius | CC0 |
 | 모래 텍스처 - Coast Sand 01 | Poly Haven | CC0 |
 | 양식화된 하늘 셰이더 | MinionsArt | CC0 |
@@ -216,6 +216,7 @@ SummerNights-Godot/
 | SFX - 실드 튕김음 (Shield Deflection) | OpenGameArt | CC0 |
 | SFX - 신성의 각성 활성화음 (Celestial Awakening Activation) | TheLittleCrow (Freesound) | CC0 |
 | SFX - 신성의 각성 비활성화음 (Celestial Awakening Deactivation) | bevibeldesign (Freesound) | CC0 |
+| SFX - 신성 참격 효과음 (Celestial Slash) | Nomagician (Freesound) | CC0 |
 | SFX - 갈매기 앰비언스 (Seagull Ambiance) | Half-Life | 모드 에셋 (Mod Asset) |
 | SFX - PS1 스타일 신스 부팅 오디오 (PS1 Style Synth Boot Audio) | nihilanth217 (SampleFocus) | 표준 라이선스 (Standard License) |
 | SFX - 심장 박동음 (죽음의 문턱) (Heartbeat - Death's Door) | Wikimedia Commons | 퍼블릭 도메인 (Public Domain) |

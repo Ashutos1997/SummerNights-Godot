@@ -132,6 +132,8 @@ func _draw() -> void:
 			_draw_tidal(center, col)
 		"kitsune":
 			_draw_kitsune(center, col)
+		"kitsune_blade":
+			_draw_kitsune_blade(center, col)
 		_:
 			_draw_water_ring(center, 28.0, 3.0)
 			
@@ -196,6 +198,33 @@ func _draw_kitsune(center: Vector2, col: Color) -> void:
 		var e = center + Vector2(cos(a), sin(a)) * 26.0
 		draw_line(s, e, col, 1.8, true)
 	_draw_water_ring(center, 30.0, 3.0)
+
+# ── Kitsune Blade: Celestial Katana Crescent Slash Reticle ────────────────────
+func _draw_kitsune_blade(center: Vector2, _col: Color) -> void:
+	var cyan_edge = Color(0.25, 0.92, 1.0, 0.95)
+	if is_celestial_active:
+		draw_arc(center, 36.0, 0, TAU, 32, Color(0.17, 0.90, 1.0, 0.20), 4.0, true)
+	
+	# Dual curved blade brackets (left & right slicing crescents)
+	var radius = 22.0
+	var arc_len = deg_to_rad(65.0)
+	draw_arc(center, radius, PI - arc_len * 0.5, PI + arc_len * 0.5, 16, cyan_edge, 2.5, true)
+	draw_arc(center, radius, -arc_len * 0.5, arc_len * 0.5, 16, cyan_edge, 2.5, true)
+	
+	# Winged tsuba diamond tips
+	var wing = 14.0
+	draw_line(center + Vector2(-wing, -wing * 0.6), center + Vector2(-wing * 0.5, -wing * 0.2), Color(0.98, 0.78, 0.16, 0.9), 2.0, true)
+	draw_line(center + Vector2(wing, wing * 0.6), center + Vector2(wing * 0.5, wing * 0.2), Color(0.98, 0.78, 0.16, 0.9), 2.0, true)
+	
+	# Center razor diamond pip
+	var d = 3.5
+	draw_line(center + Vector2(0, -d), center + Vector2(d, 0), cyan_edge, 2.0, true)
+	draw_line(center + Vector2(d, 0), center + Vector2(0, d), cyan_edge, 2.0, true)
+	draw_line(center + Vector2(0, d), center + Vector2(-d, 0), cyan_edge, 2.0, true)
+	draw_line(center + Vector2(-d, 0), center + Vector2(0, -d), cyan_edge, 2.0, true)
+	draw_circle(center, 1.2, Color(1.0, 1.0, 1.0, 0.95))
+	
+	_draw_water_ring(center, 30.0, 2.5)
 
 # ── Precision: Tight + crosshair with scanning center dot ─────────────────────
 func _draw_precision(center: Vector2, col: Color) -> void:
