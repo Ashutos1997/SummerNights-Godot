@@ -398,41 +398,27 @@ func _render_edge_glow() -> void:
 	edge_immediate_mesh.surface_end()
 
 # ══════════════════════════════════════════════════════════════════
-# 4. SWEEPING WATER CRESCENT ARC (melee slash visual)
+# 4. ENERGY SLASH TRAIL — glowing arc rendered along the blade
 # ══════════════════════════════════════════════════════════════════
-func trigger_slash_arc(camera: Camera3D, slash_dir: float, is_awakened: bool, aim_target: Vector3 = Vector3.ZERO) -> void:
+func trigger_slash_arc(camera: Camera3D, slash_dir: float, is_awakened: bool, _aim_target: Vector3 = Vector3.ZERO) -> void:
 	if not camera:
 		return
-		
-	var slash_node = Node3D.new()
-	slash_node.name = "WaterSlashArc"
-	slash_node.top_level = true
-	add_child(slash_node)
 	
-	var cam_pos: Vector3 = camera.global_position
+	var axes = _get_blade_axes()
+	if axes.is_empty():
+		return
 	
-	# Compute actual aim direction from camera to crosshair target
-	var aim_dir: Vector3
-	if aim_target != Vector3.ZERO:
-		aim_dir = (aim_target - cam_pos).normalized()
-	else:
-		aim_dir = -camera.global_basis.z.normalized()
+	# Build the trail geometry anchored to the blade tip — no world-space projection
+	var blade_tip: Vector3 = axes["tip"]
+	var blade_base: Vector3 = axes["base"]
+	var blade_dir: Vector3 = axes["dir"]
+	var right_ax: Vector3 = axes["right"]
+	var up_ax: Vector3 = axes["up"]
+	var local_up: Vector3 = axes["local_up"]
 	
-	# Build orthonormal frame around the aim direction
-	var world_up: Vector3 = Vector3.UP
-	if abs(aim_dir.dot(world_up)) > 0.95:
-		world_up = Vector3.RIGHT
-	var aim_right: Vector3 = aim_dir.cross(world_up).normalized()
-	var aim_up: Vector3 = aim_right.cross(aim_dir).normalized()
-	
-	# Place arc center along the aim line (where crosshair points)
-	var arc_distance: float = 2.2 if not is_awakened else 2.8
-	slash_node.global_position = cam_pos + aim_dir * arc_distance
-	
-	# Slash plane orientation (tilted diagonally following sword strike)
-	var swing_tilt: float = deg_to_rad(28.0 * slash_dir)
-	var swing_normal: Vector3 = (aim_up * cos(swing_tilt) + aim_right * sin(swing_tilt)).normalized()
-	var swing_tangent: Vector3 = swing_normal.cross(aim_dir).normalized()
+	var trail_node = Node3D.new()
+	trail_node.name = "EnergySlashTrail"
+	add_child(trail_node)
 	
 	var slash_mat = StandardMaterial3D.new()
 	slash_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -445,55 +431,130 @@ func trigger_slash_arc(camera: Camera3D, slash_dir: float, is_awakened: bool, ai
 	var mesh_inst = MeshInstance3D.new()
 	mesh_inst.mesh = imm_mesh
 	mesh_inst.material_override = slash_mat
-	slash_node.add_child(mesh_inst)
+	trail_node.add_child(mesh_inst)
 	
-	var arc_radius_in: float = 0.8 if not is_awakened else 1.1
-	var arc_radius_out: float = 2.0 if not is_awakened else 2.8
-	var span_angle: float = deg_to_rad(120.0)
-	var arc_segs: int = 24
+	# Arc parameters — trail fans out from the blade tip
+	var arc_segs: int = 20
+	var sweep_angle: float = deg_to_rad(140.0)  # Total arc sweep
+	var trail_radius_min: float = 0.15 if not is_awakened else 0.20
+	var trail_radius_max: float = 1.2 if not is_awakened else 1.8
+	var trail_width: float = 0.08 if not is_awakened else 0.14
+	
+	# Sweep plane: the arc fans around the blade forward axis
+	# Slash direction determines which way the arc curves
+	var sweep_axis: Vector3 = blade_dir  # Rotation axis for the arc
+	var start_vec: Vector3 = (right_ax * slash_dir + up_ax * 0.3).normalized()
+	
+	# Color palette
+	var col_core: Color = Color(0.30, 0.95, 1.0, 0.95) if not is_awakened else Color(1.0, 1.0, 1.0, 0.98)
+	var col_edge: Color = Color(0.10, 0.55, 0.90, 0.50) if not is_awakened else Color(1.0, 0.88, 0.40, 0.85)
+	var col_tip: Color = Color(0.85, 0.98, 1.0, 0.25)
 	
 	imm_mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES, slash_mat)
 	
-	var prev_in: Vector3 = Vector3.ZERO
-	var prev_out: Vector3 = Vector3.ZERO
+	var cam_pos: Vector3 = camera.global_position
+	
+	var prev_inner: Vector3 = Vector3.ZERO
+	var prev_outer: Vector3 = Vector3.ZERO
 	var prev_col: Color = Color.TRANSPARENT
 	
 	for i in range(arc_segs + 1):
 		var u: float = float(i) / float(arc_segs)
-		var cur_angle: float = (u - 0.5) * span_angle * slash_dir
+		var angle: float = (u - 0.5) * sweep_angle * slash_dir
 		
-		var cos_a: float = cos(cur_angle)
-		var sin_a: float = sin(cur_angle)
+		# Rotate the start vector around the blade axis
+		var rotated: Vector3 = start_vec.rotated(sweep_axis, angle)
 		
-		# Arc sweeps in the plane perpendicular to aim direction
-		var radial_dir: Vector3 = (swing_tangent * cos_a + aim_dir * sin_a * 0.3).normalized()
+		# Radius grows from blade tip outward, peaks in the middle
+		var profile: float = sin(u * PI)
+		var radius: float = trail_radius_min + (trail_radius_max - trail_radius_min) * profile
 		
-		var thick_profile: float = sin(u * PI)
-		var r_in: float = arc_radius_in + (1.0 - thick_profile) * 0.2
-		var r_out: float = arc_radius_out + thick_profile * 0.35
+		# Inner and outer edges of the ribbon
+		var center: Vector3 = blade_tip + rotated * radius
+		var width: float = trail_width * (0.3 + profile * 0.7)
 		
-		var v_inner: Vector3 = radial_dir * r_in + swing_normal * ((u - 0.5) * 0.25 * slash_dir)
-		var v_outer: Vector3 = radial_dir * r_out + swing_normal * ((u - 0.5) * 0.4 * slash_dir)
+		# Camera-facing normal for ribbon width
+		var tangent: Vector3
+		if i < arc_segs:
+			var next_angle: float = (float(i + 1) / float(arc_segs) - 0.5) * sweep_angle * slash_dir
+			var next_rot: Vector3 = start_vec.rotated(sweep_axis, next_angle)
+			var next_r: float = trail_radius_min + (trail_radius_max - trail_radius_min) * sin(float(i + 1) / float(arc_segs) * PI)
+			tangent = ((blade_tip + next_rot * next_r) - center).normalized()
+		else:
+			var prev_angle: float = (float(i - 1) / float(arc_segs) - 0.5) * sweep_angle * slash_dir
+			var prev_rot: Vector3 = start_vec.rotated(sweep_axis, prev_angle)
+			var prev_r: float = trail_radius_min + (trail_radius_max - trail_radius_min) * sin(float(i - 1) / float(arc_segs) * PI)
+			tangent = (center - (blade_tip + prev_rot * prev_r)).normalized()
 		
-		var col_lead: Color = water_highlight_color if is_awakened else Color(0.85, 0.96, 1.0, 0.95)
-		var col_trail: Color = water_solar_color if (is_awakened and thick_profile > 0.6) else water_core_color
-		var col: Color = col_trail.lerp(col_lead, thick_profile)
-		col.a = thick_profile * (0.95 if is_awakened else 0.80)
+		var to_cam: Vector3 = (center - cam_pos).normalized()
+		var norm: Vector3 = tangent.cross(to_cam).normalized()
+		if norm.length_squared() < 1e-4:
+			norm = up_ax
+		
+		var v_in: Vector3 = center - norm * (width * 0.5)
+		var v_out: Vector3 = center + norm * (width * 0.5)
+		
+		# Color: bright core in center, fading to edges
+		var col: Color = col_edge.lerp(col_core, profile)
+		if is_awakened and profile > 0.5:
+			col = col.lerp(Color(1.0, 0.92, 0.55, 0.95), (profile - 0.5) * 0.8)
+		# Fade tips
+		var tip_fade: float = 1.0
+		if u < 0.1:
+			tip_fade = u / 0.1
+		elif u > 0.9:
+			tip_fade = (1.0 - u) / 0.1
+		col.a *= tip_fade
 		
 		if i > 0:
-			_add_quad_to(imm_mesh, prev_in, v_inner, prev_out, v_outer, prev_col, col)
-			
-		prev_in = v_inner
-		prev_out = v_outer
-		prev_col = col
+			_add_quad_to(imm_mesh, prev_inner, v_in, prev_outer, v_out, prev_col, col)
 		
+		prev_inner = v_in
+		prev_outer = v_out
+		prev_col = col
+	
+	# Second layer: thinner bright core ribbon for intensity
+	var prev_l2: Vector3 = Vector3.ZERO
+	var prev_r2: Vector3 = Vector3.ZERO
+	var prev_c2: Color = Color.TRANSPARENT
+	var core_width: float = trail_width * 0.35
+	
+	for i in range(arc_segs + 1):
+		var u: float = float(i) / float(arc_segs)
+		var angle: float = (u - 0.5) * sweep_angle * slash_dir
+		var rotated: Vector3 = start_vec.rotated(sweep_axis, angle)
+		var profile: float = sin(u * PI)
+		var radius: float = trail_radius_min + (trail_radius_max - trail_radius_min) * profile
+		var center: Vector3 = blade_tip + rotated * radius
+		var w: float = core_width * (0.4 + profile * 0.6)
+		
+		# Simple up-axis offset for the core ribbon
+		var v_l: Vector3 = center + up_ax * (w * 0.5)
+		var v_r: Vector3 = center - up_ax * (w * 0.5)
+		
+		var col: Color = Color(1.0, 1.0, 1.0, 0.9 * profile)
+		if is_awakened:
+			col = col.lerp(Color(1.0, 0.95, 0.70, 0.95), profile * 0.5)
+		# Fade tips
+		if u < 0.08:
+			col.a *= u / 0.08
+		elif u > 0.92:
+			col.a *= (1.0 - u) / 0.08
+		
+		if i > 0:
+			_add_quad_to(imm_mesh, prev_l2, v_l, prev_r2, v_r, prev_c2, col)
+		
+		prev_l2 = v_l
+		prev_r2 = v_r
+		prev_c2 = col
+	
 	imm_mesh.surface_end()
 	
-	# Animate crescent expansion and dissipate
+	# Animate: expand slightly then fade out
 	var tw = create_tween().set_parallel(true)
-	tw.tween_property(slash_node, "scale", Vector3(1.22, 1.22, 1.22), 0.26).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tw.tween_property(mesh_inst, "transparency", 1.0, 0.26).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	tw.chain().tween_callback(slash_node.queue_free)
+	tw.tween_property(trail_node, "scale", Vector3(1.15, 1.15, 1.15), 0.22).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tw.tween_property(mesh_inst, "transparency", 1.0, 0.22).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tw.chain().tween_callback(trail_node.queue_free)
 # ══════════════════════════════════════════════════════════════════
 # 5. FLYING CELESTIAL HYDRO-CRESCENT (Awakening Projectile)
 # ══════════════════════════════════════════════════════════════════
