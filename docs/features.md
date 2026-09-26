@@ -72,4 +72,5 @@ This document serves as the master record for all currently implemented features
 * **Shield Materialize SFX:** Dedicated CC0 energy shield spawn audio (`shield_spawn.wav` by bart) with subtle pitch randomization playing as the procedural shield materializes.
 * **Shield Deflection SFX:** Dedicated hydro-repellent barrier deflection audio (`shield_deflect.wav`) featuring a punchy water impact slap and rapid droplet dispersal with zero glass/metallic ringing, throttled for rapid-fire automatic weapons.
 * **Shield Shatter SFX:** Dedicated CC0 high-impact shatter audio (`shield_break.ogg` by IgnasD) with subtle pitch randomization upon Ice Blast shield break.
+* **Celestial Awakening SFX:** Dedicated CC0 audio cues featuring an anime Henshin ki-charge swell (`celestial_activate.wav` by TheLittleCrow) on activation and a decelerating sci-fi cooldown dissipation (`celestial_deactivate.wav` by bevibeldesign) on deactivation or timer expiry, with mutual playback cancellation.
 * **Catastrom VO:** Royalty-free fallback for itch.io exports, original audio for GitHub builds.

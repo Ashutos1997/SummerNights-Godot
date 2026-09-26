@@ -1507,6 +1507,8 @@ func _apply_language(lang: String) -> void:
 			if itm_3d1: itm_3d1.text = "3D 총기 모델 (3D Blaster)  ·  Kenney  ·  CC0" if is_kr else "3D Blaster (Gun Model)  ·  Kenney  ·  CC0"
 			var itm_3d2 = credits_list.get_node_or_null("Itm3D2")
 			if itm_3d2: itm_3d2.text = "3D 태양 모델 (PS1 Style Low Poly Sun)  ·  albert_buscio (Sketchfab)  ·  CC0" if is_kr else "PS1 Style Low Poly Sun  ·  albert_buscio (Sketchfab)  ·  CC0"
+			var itm_3d3 = credits_list.get_node_or_null("Itm3D3")
+			if itm_3d3: itm_3d3.text = "3D 총기 모델 (구미호 버스터 IX)  ·  절차적 파이썬 glTF  ·  오픈소스" if is_kr else "3D Gun Model (Kitsune Buster IX)  ·  Procedural Python glTF  ·  Open Source"
 
 			var itm_tex1 = credits_list.get_node_or_null("ItmTextures1")
 			if itm_tex1: itm_tex1.text = "모래 텍스처 (Coast Sand 01)  ·  Poly Haven  ·  CC0" if is_kr else "Coast Sand 01  ·  Poly Haven  ·  CC0"
@@ -1541,6 +1543,10 @@ func _apply_language(lang: String) -> void:
 			if itm_audio14: itm_audio14.text = "SFX - 실드 생성음  ·  bart (OpenGameArt)  ·  CC0" if is_kr else "SFX - Shield Materialize  ·  bart (OpenGameArt)  ·  CC0"
 			var itm_audio15 = credits_list.get_node_or_null("ItmAudio15")
 			if itm_audio15: itm_audio15.text = "SFX - 실드 튕김음  ·  OpenGameArt  ·  CC0" if is_kr else "SFX - Shield Deflection  ·  OpenGameArt  ·  CC0"
+			var itm_audio16 = credits_list.get_node_or_null("ItmAudio16")
+			if itm_audio16: itm_audio16.text = "SFX - 신성의 각성 활성화음  ·  TheLittleCrow (Freesound)  ·  CC0" if is_kr else "SFX - Celestial Awakening Activation  ·  TheLittleCrow (Freesound)  ·  CC0"
+			var itm_audio17 = credits_list.get_node_or_null("ItmAudio17")
+			if itm_audio17: itm_audio17.text = "SFX - 신성의 각성 비활성화음  ·  bevibeldesign (Freesound)  ·  CC0" if is_kr else "SFX - Celestial Awakening Deactivation  ·  bevibeldesign (Freesound)  ·  CC0"
 
 			var itm_engine_logo = credits_list.get_node_or_null("ItmEngineLogo")
 			if itm_engine_logo: itm_engine_logo.text = "고도 엔진 로고 및 브랜딩  ·  Andrea Calabró (Godot Foundation)  ·  CC BY 4.0" if is_kr else "Godot Engine Logo & Branding  ·  Andrea Calabró (Godot Foundation)  ·  CC BY 4.0"
@@ -1604,7 +1610,7 @@ func _apply_language(lang: String) -> void:
 
 			var itm_disclaimer = credits_list.get_node_or_null("ItmDisclaimer")
 			if itm_disclaimer:
-				itm_disclaimer.text = "*면책 조항: 가면라이더 및 관련 캐릭터(가면라이더 제츠 포함)는 토에이 주식회사 및 이시모리 프로덕션의 자산입니다. 본 게임은 비영리 팬 제작물이며 토에이의 공식 인가를 받지 않았습니다." if is_kr else "*Disclaimer: Kamen Rider and related characters (including Kamen Rider Zeztz) are the property of Toei Company, Ltd. and Ishimori Productions. This game is a non-profit, unofficial fan work and is not affiliated with or endorsed by Toei Company."
+				itm_disclaimer.text = "*면책 조항: 가면라이더 및 관련 캐릭터(가면라이더 제츠 및 가면라이더 기츠 포함)는 토에이 주식회사 및 이시모리 프로덕션의 자산입니다. 본 게임은 비영리 팬 제작물이며 토에이의 공식 인가를 받지 않았습니다." if is_kr else "*Disclaimer: Kamen Rider and related characters (including Kamen Rider Zeztz & Kamen Rider Geats) are the property of Toei Company, Ltd. and Ishimori Productions. This game is a non-profit, unofficial fan work and is not affiliated with or endorsed by Toei Company."
 
 			for child in credits_list.get_children():
 					if child is Label:

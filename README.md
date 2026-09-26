@@ -192,6 +192,7 @@ SummerNights-Godot/
 |---|---|---|
 | 3D Sun Model - PS1 Style Low Poly Sun | albert_buscio (Sketchfab) | CC0 |
 | 3D Gun Model - 3D Blaster | Kenney | CC0 |
+| 3D Gun Model - Kitsune Buster IX | Procedural Python glTF Synthesis | Open Source |
 | Foliage & Rocks - Ultimate Stylized Nature | Quaternius | CC0 |
 | Sand Texture - Coast Sand 01 | Poly Haven | CC0 |
 | Stylized Sky Shader | MinionsArt | CC0 |
@@ -213,6 +214,8 @@ SummerNights-Godot/
 | SFX - Shield Shatter | IgnasD (OpenGameArt) | CC0 |
 | SFX - Shield Materialize | bart (OpenGameArt) | CC0 |
 | SFX - Shield Deflection | OpenGameArt | CC0 |
+| SFX - Celestial Awakening Activation | TheLittleCrow (Freesound) | CC0 |
+| SFX - Celestial Awakening Deactivation | bevibeldesign (Freesound) | CC0 |
 | SFX - Seagull Ambiance | Half-Life | Mod Asset |
 | SFX - PS1 Style Synth Boot Audio | nihilanth217 (SampleFocus) | Standard License |
 | SFX - Heartbeat (Death's Door) | Wikimedia Commons | Public Domain |
@@ -237,4 +240,4 @@ SummerNights-Godot/
 | VFX - Flare Interception Golden Ember Pop | Procedural Radial Particles & Bloom | - |
 | UI - Stats & Achievement Icon Plates | Procedural Retro Flat Plates & Tinted Vector Icons | - |
 
-*Disclaimer: Kamen Rider and related characters (including Kamen Rider Zeztz) are the property of Toei Company, Ltd. and Ishimori Productions. This game is a non-profit, unofficial fan work and is not affiliated with or endorsed by Toei Company.*
+*Disclaimer: Kamen Rider and related characters (including Kamen Rider Zeztz & Kamen Rider Geats) are the property of Toei Company, Ltd. and Ishimori Productions. This game is a non-profit, unofficial fan work and is not affiliated with or endorsed by Toei Company.*

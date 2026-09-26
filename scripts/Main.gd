@@ -291,6 +291,7 @@ var camera:      Camera3D
 var celestial_tails: CelestialTails
 var celestial_hydro_cannon: CelestialHydroCannon
 var celestial_henshin_sfx: AudioStreamPlayer
+var celestial_deactivate_sfx: AudioStreamPlayer
 var is_celestial_awakened: bool = false
 var celestial_awakened_timer: float = 0.0
 var celestial_filter_tween: Tween = null
@@ -435,11 +436,16 @@ func _ready() -> void:
 	add_child(catastrom_sfx)
 	
 	celestial_henshin_sfx = AudioStreamPlayer.new()
-	celestial_henshin_sfx.stream = preload("res://assets/audio/sfx/shield_spawn.wav")
-	celestial_henshin_sfx.pitch_scale = 1.35
-	celestial_henshin_sfx.volume_db = 1.5
+	celestial_henshin_sfx.stream = preload("res://assets/audio/sfx/celestial_activate.wav")
+	celestial_henshin_sfx.volume_db = 0.0
 	celestial_henshin_sfx.bus = "SFX_WEAPON"
 	add_child(celestial_henshin_sfx)
+	
+	celestial_deactivate_sfx = AudioStreamPlayer.new()
+	celestial_deactivate_sfx.stream = preload("res://assets/audio/sfx/celestial_deactivate.wav")
+	celestial_deactivate_sfx.volume_db = 0.0
+	celestial_deactivate_sfx.bus = "SFX_WEAPON"
+	add_child(celestial_deactivate_sfx)
 	
 	var hum_gen = AudioStreamGenerator.new()
 	hum_gen.mix_rate = 44100
@@ -4102,6 +4108,8 @@ func start_celestial_awakening(duration: float = 15.0) -> void:
 	celestial_awakened_timer = duration
 	if celestial_tails:
 		celestial_tails.activate_awakening()
+	if celestial_deactivate_sfx and celestial_deactivate_sfx.is_playing():
+		celestial_deactivate_sfx.stop()
 	if celestial_henshin_sfx:
 		celestial_henshin_sfx.play()
 	if hud and hud.has_method("start_celestial_awakening"):
@@ -4128,8 +4136,13 @@ func start_celestial_awakening(duration: float = 15.0) -> void:
 			)
 
 func end_celestial_awakening() -> void:
+	var was_awakened = is_celestial_awakened
 	is_celestial_awakened = false
 	celestial_awakened_timer = 0.0
+	if celestial_henshin_sfx and celestial_henshin_sfx.is_playing():
+		celestial_henshin_sfx.stop()
+	if was_awakened and celestial_deactivate_sfx:
+		celestial_deactivate_sfx.play()
 	if celestial_tails:
 		celestial_tails.deactivate_awakening()
 	if celestial_hydro_cannon:

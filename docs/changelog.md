@@ -12,6 +12,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 6th Secret Weapon (Kitsune Buster IX): Added a custom tokusatsu-inspired celestial water blaster featuring an open holographic reflex sight, 6-way weapon wheel integration, a translucent amber-gold revolving Kyubi chamber exposing 9 pressurized cyan water vials, custom spray particles, and dedicated diamond crosshair.
 * 4 New Achievements: Expanded achievements from 8 to 12 total ("Endurance" for surviving 25 Endless waves, "Marathon Runner" for 50 Endless waves, "Arsenal Expert" for using all 5 weapons in a single run, and "Ice Breaker" for 50 lifetime Ice Blasts) with real-time progress tracking, localized English/Korean titles & descriptions, and automatic scrollable menu presentation.
 * Best Endless Wave Tracking: Added persistent `best_wave` tracking that saves/loads alongside survival time, displays on the title screen ("BEST ENDLESS: WAVE X (MM:SS)"), includes an in-game "NEW BEST!" celebration badge upon game over, and records to the Lifetime Stats screen alongside new Ice Blasts Used metrics.
+* Celestial Awakening Audio Cues: Integrated dedicated CC0 sound effects for mode activation (anime/ki Henshin power swell, `celestial_activate.wav` by TheLittleCrow) and deactivation (decelerating sci-fi cooldown dissipation, `celestial_deactivate.wav` by bevibeldesign) with mutual playback cancellation.
 
 ### Improved
 * Weapon Wheel Uniform Spacing: Replaced fixed angular wedge padding with a constant 12px linear gap, keeping slice borders parallel from inner to outer radius.
@@ -22,7 +23,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Flare Interception Golden Ember Pop: Added a high-energy radiant golden ember particle burst with bloom when extinguishing solar flares with water.
 * Coronal Halo & Heat Waves: Added an unshaded additive coronal halo with organic concentric heat ripples that dynamically pulse, expand, and extinguish with the Sun's temperature (100°C to 0°C).
 * Lifetime Stats Icon Plates: Added 32x32 retro flat plates with gold monochrome category icons to each row in the Lifetime Stats screen.
-* Credits Synchronization: Synchronized in-game HUD Credits screen and bilingual READMEs with attributions for Coronal Halo, Flare Interception Ember Pop, and Lifetime Stats icon plates.
+* Credits Synchronization: Synchronized in-game HUD Credits screen and bilingual READMEs with attributions for Kitsune Buster IX 3D model, Coronal Halo, Flare Interception Ember Pop, Lifetime Stats icon plates, and updated Kamen Rider Geats fan-project disclaimers.
 * Achievement & Buff Retro Icon Plates: Enclosed achievement and buff card icons in 64x64 retro flat plates (4px radii; gold border with monochrome gold icon for unlocked, steel border with mystery dark silhouette for locked) across Title Screen and HUD.
 * Game Over Frameless Stats Flow: Replaced bare end-of-run labels with a clean, dynamic frameless stats recap (32x32 retro plates with gold monochrome icons, localized typography, and inline milestone badges for Wave Reached, Survival Time, and Final Score) avoiding nested container clutter.
 * Settings Categorized Section Badges: Grouped settings rows into 3 distinct logical sections ("AUDIO", "GAMEPLAY & CONTROLS", "DISPLAY & SYSTEM") using tactile retro plate badges (4px radii, gold border), trailing golden hairline rules, balanced section clearance (36px between categories, 26px title/footer gap), and dynamic bilingual typography.
@@ -261,6 +262,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 6번째 비밀 무기 (구미호 버스터 IX): 가면라이더 기츠 IX 오마주 기반의 커스텀 신성 수압 버스터 무기 추가. 시야 간섭 없는 오픈 홀로그래픽 리플렉스 사이트, 6분할 무기 선택 휠 연동, 내부 9개 수압 바이알이 비치는 반투명 호박빛 골드 회전식 실린더 챔버, 전용 다이아몬드 크로스헤어 및 전용 물줄기 파티클 구현.
 * 신규 업적 4종 추가: 총 업적 수를 8개에서 12개로 확장 ("인내심" - 엔들리스 모드 25웨이브 생존, "마라톤 주자" - 50웨이브 생존, "무기 전문가" - 한 게임에서 5가지 무기 모두 사용, "얼음 파괴자" - 얼음 폭발 통산 50회 사용). 실시간 진행도 게이지 및 카운터 지원, 영어/한국어 완벽 현지화, 자동 스크롤 업적 메뉴 지원.
 * 엔들리스 모드 최고 웨이브 추적: 생존 시간과 함께 최고 도달 웨이브(`best_wave`)를 영구 저장 및 불러오기 지원. 타이틀 화면("최고 기록: X 웨이브 (MM:SS)") 및 게임 오버 화면("최고 기록!" 배지) 표시, 통산 기록 화면에 최고 웨이브 및 사용한 얼음 폭발 횟수 추가.
+* 신성의 각성 활성화 및 비활성화 사운드 효과: 모드 발동 시의 애니메이션 기/변신 파워업 스웰(`celestial_activate.wav`, TheLittleCrow 제작 CC0)과 모드 종료 시의 감속형 SF 에너지 분산 쿨다운 효과음(`celestial_deactivate.wav`, bevibeldesign 제작 CC0)을 전용 사운드로 연동하고 상호 정지 로직 적용.
 
 ### 개선됨 (Improved)
 * 무기 선택 휠 균일 간격: 고정 각도 패딩 대신 일정한 12px 선형 간격을 적용하여 슬라이스 사이 틈새를 평행하게 유지.
@@ -271,7 +273,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 태양 플레어 요격 골든 엠버 팝: 물줄기로 태양 플레어를 소화할 때 사방으로 터지는 황금빛 불티(엠버) 파티클 피드백 추가.
 * 코로나 헤일로 및 열파(Heat Waves): 태양 온도(100°C~0°C)에 따라 유기적으로 펄스하며 확산/소화되는 가산 혼합 대기 코로나 아우라 및 동심원 열파 효과 구현.
 * 기록 메뉴 아이콘 플레이트: 기록(Lifetime Stats) 화면의 각 항목에 골드 모노크롬 카테고리 아이콘과 32x32 레트로 플레이트 적용.
-* 크레딧 동기화: 인게임 HUD 크레딧 화면 및 국/영문 README에 대기 코로나 헤일로, 플레어 요격 엠버 팝, 기록 메뉴 아이콘 플레이트 항목 추가 및 동기화.
+* 크레딧 동기화: 인게임 HUD 크레딧 화면 및 국/영문 README에 구미호 버스터 IX 3D 모델, 대기 코로나 헤일로, 플레어 요격 엠버 팝, 기록 메뉴 아이콘 플레이트 항목 추가 및 가면라이더 기츠 오마주 비영리 팬 제작물 면책 조항 동기화.
 * 업적 및 영구 강화 레트로 아이콘 플레이트: 타이틀 화면과 인게임 HUD의 업적 및 버프 카드 아이콘에 64x64 레트로 플랫 플레이트(4px 모서리 곡률, 해금 시 골드 테두리/모노크롬 골드 아이콘, 미해금 시 스틸 테두리/신비로운 실루엣) 적용.
 * 게임 오버 프레임리스 기록 플로우: 기존 단순 텍스트 라벨을 중첩 박스 없이 깔끔한 동적 프레임리스 기록 요약(32x32 레트로 플레이트, 골드 모노크롬 아이콘, 국/영문 폰트 규격화, 도달 웨이브/생존 시간/최종 점수 및 신기록 인라인 배지)으로 개편.
 * 설정 메뉴 카테고리 섹션 배지: 설정 항목들을 3개의 논리적 섹션("오디오", "조작 및 편의", "화면 및 시스템")으로 구조화하고, 4px 모서리 곡률의 골드 테두리 레트로 플레이트 배지, 골드 헤어라인 구분선, 균형 잡힌 섹션 여백(카테고리 간 36px, 상/하단 26px), 실시간 국/영문 폰트 동기화를 적용.

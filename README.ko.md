@@ -192,6 +192,7 @@ SummerNights-Godot/
 |---|---|---|
 | 3D 태양 모델 - PS1 Style Low Poly Sun | albert_buscio (Sketchfab) | CC0 |
 | 3D 총기 모델 - 3D Blaster | Kenney | CC0 |
+| 3D 총기 모델 - 구미호 버스터 IX (Kitsune Buster IX) | 절차적 파이썬 glTF 합성 (Procedural Python glTF Synthesis) | 오픈소스 (Open Source) |
 | 식물 및 바위 - Ultimate Stylized Nature | Quaternius | CC0 |
 | 모래 텍스처 - Coast Sand 01 | Poly Haven | CC0 |
 | 양식화된 하늘 셰이더 | MinionsArt | CC0 |
@@ -213,6 +214,8 @@ SummerNights-Godot/
 | SFX - 실드 파괴음 (Shield Shatter) | IgnasD (OpenGameArt) | CC0 |
 | SFX - 실드 생성음 (Shield Materialize) | bart (OpenGameArt) | CC0 |
 | SFX - 실드 튕김음 (Shield Deflection) | OpenGameArt | CC0 |
+| SFX - 신성의 각성 활성화음 (Celestial Awakening Activation) | TheLittleCrow (Freesound) | CC0 |
+| SFX - 신성의 각성 비활성화음 (Celestial Awakening Deactivation) | bevibeldesign (Freesound) | CC0 |
 | SFX - 갈매기 앰비언스 (Seagull Ambiance) | Half-Life | 모드 에셋 (Mod Asset) |
 | SFX - PS1 스타일 신스 부팅 오디오 (PS1 Style Synth Boot Audio) | nihilanth217 (SampleFocus) | 표준 라이선스 (Standard License) |
 | SFX - 심장 박동음 (죽음의 문턱) (Heartbeat - Death's Door) | Wikimedia Commons | 퍼블릭 도메인 (Public Domain) |
@@ -237,4 +240,4 @@ SummerNights-Godot/
 | VFX - 태양 플레어 요격 골든 엠버 팝 (Flare Interception Ember Pop) | 절차적 방사형 파티클 및 블룸 | - |
 | UI - 기록 및 업적 아이콘 플레이트 (Stats & Achievement Icon Plates) | 절차적 레트로 플랫 플레이트 및 틴트 벡터 아이콘 | - |
 
-*면책 조항: 가면라이더 및 관련 캐릭터(가면라이더 제츠 포함)는 Toei Company, Ltd. 및 Ishimori Productions의 자산입니다. 본 게임은 비영리적인 비공식 팬 창작물이며 Toei Company와 제휴하거나 보증을 받지 않았습니다.*
+*면책 조항: 가면라이더 및 관련 캐릭터(가면라이더 제츠 및 가면라이더 기츠 포함)는 Toei Company, Ltd. 및 Ishimori Productions의 자산입니다. 본 게임은 비영리적인 비공식 팬 창작물이며 Toei Company와 제휴하거나 보증을 받지 않았습니다.*

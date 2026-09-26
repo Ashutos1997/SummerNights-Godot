@@ -2027,6 +2027,14 @@ theme_override_font_sizes/font_size = 12
 text = "PS1 Style Low Poly Sun  ·  Sketchfab  ·  CC0"
 horizontal_alignment = 1
 
+[node name="Itm3D3" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "3D Gun Model (Kitsune Buster IX)  ·  Procedural Python glTF  ·  Open Source"
+horizontal_alignment = 1
+
 [node name="Spacer3D" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
 layout_mode = 2
 mouse_filter = 2
@@ -2125,6 +2133,22 @@ mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.85)
 theme_override_font_sizes/font_size = 12
 text = "SFX - Shield Deflection  ·  OpenGameArt  ·  CC0"
+horizontal_alignment = 1
+
+[node name="ItmAudio16" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "SFX - Celestial Awakening Activation  ·  TheLittleCrow (Freesound)  ·  CC0"
+horizontal_alignment = 1
+
+[node name="ItmAudio17" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "SFX - Celestial Awakening Deactivation  ·  bevibeldesign (Freesound)  ·  CC0"
 horizontal_alignment = 1
 
 [node name="ItmAudio3" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
@@ -2465,7 +2489,7 @@ layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.5)
 theme_override_font_sizes/font_size = 11
-text = "*Disclaimer: Kamen Rider and related characters (including Kamen Rider Zeztz) are the property of Toei Company, Ltd. and Ishimori Productions. This game is a non-profit, unofficial fan work and is not affiliated with or endorsed by Toei Company."
+text = "*Disclaimer: Kamen Rider and related characters (including Kamen Rider Zeztz & Kamen Rider Geats) are the property of Toei Company, Ltd. and Ishimori Productions. This game is a non-profit, unofficial fan work and is not affiliated with or endorsed by Toei Company."
 horizontal_alignment = 1
 autowrap_mode = 2
 
