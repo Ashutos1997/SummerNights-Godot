@@ -34,7 +34,7 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 * **Gauge Dimensions:** Uniform 200x24 gauges with 10px rounded corners.
   * *Water:* Blue fill, red pulse below 20%.
   * *Ice Burst:* Cyan-frost fill with notch dividers and numeric counter (`charges / max`). Unlocks Wave 2 / Level 3.
-  * *Catastrom / Celestial Awakening (Power Up):* Shared pool gauge. Standard weapons render purple Catastrom; Kitsune Buster IX renders cyan Celestial Awakening with active countdown. Reaching 100% triggers a dedicated toast alert.
+  * *Catastrom / Celestial Awakening (Power Up):* Shared pool gauge. Standard weapons render purple Catastrom; Kitsune Buster IX renders cyan Celestial Awakening with active countdown. Dedicated toast alerts at 100%.
 
 ### Buttons (StyleBoxFlat)
 * **Size:** Minimum `280x52`, font size `22px`, `0px` radius.
@@ -48,9 +48,9 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 * **Settings Screen:** 3 categorized sections (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`) using retro badges, 12px VBox separation, 28px category clearance, and 17px off-white body labels (`Color(0.92, 0.92, 0.92, 0.95)`).
 * **Game Over Recap:** Frameless 380px stat rows with 32x32 retro plates and milestone badges (`[ NEW BEST! ]`).
 * **Celestial Awakening Presentation:**
-  * *Layer 0 (World):* "Ethereal Domain" post-process filter with indigo split-toning and anamorphic cyan lens flares.
-  * *Layer 10 (HUD):* Breathing cyan energy vignette (`celestial_vignette.gdshader`), 360° reticle timer ring, and holographic text shadows.
-  * *Audio:* CC0 activation swell (`celestial_activate.wav`) and deactivation dissipation (`celestial_deactivate.wav`).
+  * *World (Layer 0):* Ethereal Domain filter with indigo split-toning and cyan anamorphic flares.
+  * *HUD (Layer 10):* Breathing cyan energy vignette, 360° reticle timer ring, and holographic text shadows.
+  * *Audio:* CC0 activation swell and deactivation dissipation SFX.
 
 ### Boot Splash & Startup Continuity
 * **Window Initialization:** Launches directly with dark background `Color(0.02, 0.01, 0.05, 1)` with stock splash disabled.

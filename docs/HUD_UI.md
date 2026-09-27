@@ -24,8 +24,8 @@ Architectural map and layout reference for `HUD.tscn`.
 
 ### Center
 * **Crosshair:** Dynamic reticle scaling on hits. Inner ring tracks water capacity. Flashes red when empty, green on crits.
-  * *Weapon Shapes:* Unique geometry per weapon. Blade Mode uses katana crescent brackets ($R = 24\text{px}$) with tsuba accents.
-  * *Celestial Timer Ring:* 360° depleting cyan ring ($R = 38\text{px}$) with diamond accent and micro-timer countdown. Pulses orange at $\le 3.0\text{s}$.
+  * *Weapon Shapes:* Unique geometry per weapon. Blade Mode uses katana crescent brackets with tsuba accents.
+  * *Celestial Timer Ring:* 360° depleting cyan ring with micro-timer countdown. Pulses orange at ≤3.0s.
 * **Damage Numbers:** Floating 3D text for hits, golden crits, and cyan/gold `DEFLECTED` feedback. Electric cyan during Celestial Awakening.
 * **ComboLabel & Callouts:** Displays combo multiplier (up to 3.0x) and arcade text (e.g., "CHILL!").
 * **FlareRings:** 2D diegetic charging rings telegraphing incoming flares.
@@ -34,7 +34,7 @@ Architectural map and layout reference for `HUD.tscn`.
 * **Retro Flat Plates:** 38x38 dark plates (4px radii) housing vector icons.
   * *Water:* Cyan border. Flashes red below 20%. Always visible.
   * *Ice Burst:* Frost border. Dims when empty. Unlocks Wave 2 / Level 3.
-  * *Catastrom / Celestial Awakening (Power Up):* Dynamic plate with 200x24 gauge powered by a shared pool. Standard weapons use purple border, `meter_catastrom.svg`, and "[F] CATASTROM READY!" at 100%. Kitsune Buster IX uses cyan border, `meter_celestial.svg`, and "[F] CELESTIAL AWAKEN!" with active countdown. Reaching 100% displays a matching toast alert.
+  * *Catastrom / Celestial Awakening:* Dynamic 200x24 gauge. Standard weapons display purple Catastrom plate; Kitsune Buster IX displays cyan Celestial Awakening plate with countdown. Dedicated toast alerts at 100%.
 * **Water Bar:** Oceanic blue gauge (200x24).
 * **Ice Bar:** Cyan-frost gauge with charge notches and numeric counter (`charges / max`).
 * **Catastrom / Celestial Bar:** Purple or luminous cyan gauge tracking 0%–100% charge or active duration.
