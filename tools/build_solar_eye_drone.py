@@ -3,15 +3,14 @@
 build_solar_eye_drone.py - Generates an authentic, high-detail, low-poly
 Solar Eye Drone ("Helios Drone / Audience Glare") 3D model in GLB format.
 
-Design Language:
-- Retro PS1/Arcade Tokusatsu aesthetic matching Summer Nights and Kitsune Buster IX.
-- Octagonal cyber-gold armored chassis with beveled panel lines and cardinal verniers.
-- Sweeping audience-glare eyebrow wing crests with Shinto crimson inlays.
-- Multi-tier internal gimbal spherical core with dark obsidian gunmetal plating.
-- Stepped focusing aperture with interlocking steel iris blades.
-- Deep, radiant convex solar pupil lens with incandescent amber-crimson bloom.
-- Rear coronal heatsink radiator fins and micro-thruster nozzle.
-- Forward sightline aligned to -Z (standard Godot forward direction).
+Upgraded Enhancements:
+- 8 Segmented Armor Plates with recessed expansion joints and glowing cyan conduits.
+- Tiered Falcon Wing Plumes (Triple Swept Feathers) with Shinto crimson inlays and cyan plasma vents.
+- Aggressive Lower Cybernetic Predator Mandibles ("Sun-Fangs") framing the lower eye.
+- 8-Point Omni-Directional Vernier Thruster System (4 Cardinal + 4 Diagonal Pods).
+- 4 Inward-Facing Laser Collimator Needle Pins at 45° diagonal corners.
+- Multi-tier Concentric Iris Reticle with Core Focal Lens and Protective Optical Glass.
+- Rear High-Output Propulsion Vectoring Bell with 8 Radial Radiator Cooling Fins.
 """
 
 import os
@@ -163,83 +162,16 @@ def create_tapered_cylinder(cx, cy, z0, z1, r0, r1, sides=16, caps=True):
         pts1.append([cx + math.cos(ang) * r1, cy + math.sin(ang) * r1])
     return create_tapered_extrusion(pts0, pts1, z0, z1, caps=caps)
 
-def create_ring_octagonal(cx, cy, z0, z1, r_in, r_out, sides=16):
-    """Creates a hollow octagonal/polygonal armor ring."""
-    verts = []
-    normals = []
-    indices = []
-    
-    angles = [(i / float(sides)) * math.tau for i in range(sides)]
-    
-    # Outer cylinder wall
-    v_out, n_out, i_out = create_cylinder(cx, cy, z0, z1, r_out, sides=sides, caps=False)
-    verts.extend(v_out)
-    normals.extend(n_out)
-    indices.extend(i_out)
-    
-    # Inner cylinder wall (reversed normals for interior)
-    base_in = len(verts)
-    for i in range(sides):
-        next_i = (i + 1) % sides
-        a0 = angles[i]
-        a1 = angles[next_i]
-        p0 = [cx + math.cos(a0) * r_in, cy + math.sin(a0) * r_in]
-        p1 = [cx + math.cos(a1) * r_in, cy + math.sin(a1) * r_in]
-        
-        # Inward facing normals
-        nx0 = -math.cos(a0)
-        ny0 = -math.sin(a0)
-        nx1 = -math.cos(a1)
-        ny1 = -math.sin(a1)
-        
-        idx = len(verts)
-        verts.extend([
-            [p0[0], p0[1], z0],
-            [p1[0], p1[1], z0],
-            [p1[0], p1[1], z1],
-            [p0[0], p0[1], z1]
-        ])
-        normals.extend([[nx0, ny0, 0.0], [nx1, ny1, 0.0], [nx1, ny1, 0.0], [nx0, ny0, 0.0]])
-        indices.extend([idx, idx + 2, idx + 1, idx, idx + 3, idx + 2])
-        
-    # Front and back end caps (connecting r_in to r_out)
-    for z_pos, norm_z in [(z1, 1.0), (z0, -1.0)]:
-        base_cap = len(verts)
-        for i in range(sides):
-            a = angles[i]
-            ca = math.cos(a)
-            sa = math.sin(a)
-            verts.append([cx + ca * r_out, cy + sa * r_out, z_pos])
-            normals.append([0.0, 0.0, norm_z])
-            verts.append([cx + ca * r_in, cy + sa * r_in, z_pos])
-            normals.append([0.0, 0.0, norm_z])
-            
-        for i in range(sides):
-            next_i = (i + 1) % sides
-            o0 = base_cap + i * 2
-            i0 = base_cap + i * 2 + 1
-            o1 = base_cap + next_i * 2
-            i1 = base_cap + next_i * 2 + 1
-            if norm_z > 0:
-                indices.extend([o0, o1, i1, o0, i1, i0])
-            else:
-                indices.extend([o0, i1, o1, o0, i0, i1])
-                
-    return verts, normals, indices
-
 def create_convex_lens_dome(cx, cy, z_base, z_tip, radius, rings=6, sides=16):
-    """Creates a high-precision convex ocular lens dome."""
     verts = []
     normals = []
     indices = []
     
-    # Vertex at tip
     verts.append([cx, cy, z_tip])
     normals.append([0.0, 0.0, -1.0 if z_tip < z_base else 1.0])
     
     for r in range(1, rings + 1):
         frac = r / float(rings)
-        # Spherical dome profile
         theta = frac * (math.pi * 0.5)
         rad = radius * math.sin(theta)
         z = z_tip + (z_base - z_tip) * (1.0 - math.cos(theta))
@@ -251,7 +183,6 @@ def create_convex_lens_dome(cx, cy, z_base, z_tip, radius, rings=6, sides=16):
             vx = cx + ca * rad
             vy = cy + sa * rad
             
-            # Normal calculation for spherical surface
             nx = ca * math.sin(theta)
             ny = sa * math.sin(theta)
             nz = -math.cos(theta) if z_tip < z_base else math.cos(theta)
@@ -259,12 +190,10 @@ def create_convex_lens_dome(cx, cy, z_base, z_tip, radius, rings=6, sides=16):
             verts.append([vx, vy, z])
             normals.append([nx, ny, nz])
             
-    # Triangles from tip to first ring
     for s in range(sides):
         next_s = (s + 1) % sides
         indices.extend([0, 1 + next_s, 1 + s])
         
-    # Quad strips between rings
     for r in range(rings - 1):
         r0 = 1 + r * sides
         r1 = 1 + (r + 1) * sides
@@ -302,36 +231,31 @@ class GLBBuilder:
             "doubleSided": True
         }
         if emissive_rgb is not None:
-            mat["emissiveFactor"] = emissive_rgb
-            mat["extensions"] = {
-                "KHR_materials_emissive_strength": {
-                    "emissiveStrength": 2.5
-                }
-            }
+            mat["emissiveFactor"] = emissive_rgb[:3]
         self.materials.append(mat)
         return mat_idx
 
     def _add_buffer_view(self, data, target=None):
+        bv_idx = len(self.buffer_views)
         offset = len(self.bin_data)
         self.bin_data.extend(data)
         pad = (4 - (len(self.bin_data) % 4)) % 4
         self.bin_data.extend(b'\x00' * pad)
         
-        bv_idx = len(self.buffer_views)
         bv = {
             "buffer": 0,
             "byteOffset": offset,
             "byteLength": len(data)
         }
-        if target:
+        if target is not None:
             bv["target"] = target
         self.buffer_views.append(bv)
         return bv_idx
 
-    def _add_accessor(self, bv_idx, count, component_type, acc_type, min_val=None, max_val=None):
+    def _add_accessor(self, buffer_view_idx, count, component_type, acc_type, min_val=None, max_val=None):
         acc_idx = len(self.accessors)
         acc = {
-            "bufferView": bv_idx,
+            "bufferView": buffer_view_idx,
             "byteOffset": 0,
             "componentType": component_type,
             "count": count,
@@ -388,7 +312,7 @@ class GLBBuilder:
 
     def export(self, filepath):
         gltf = {
-            "asset": {"version": "2.0", "generator": "SummerNights Solar Drone Synthesizer"},
+            "asset": {"version": "2.0", "generator": "SummerNights Enhanced Solar Drone Synthesizer"},
             "scene": 0,
             "scenes": [{"name": "DefaultScene", "nodes": [len(self.nodes) - 1]}],
             "nodes": self.nodes,
@@ -429,98 +353,188 @@ def build_solar_eye_drone_model(output_path):
     builder = GLBBuilder()
 
     # Materials
-    m_gold    = builder.add_material("Mat_CyberGold", [0.98, 0.78, 0.16, 1.0], metallic=0.85, roughness=0.18)
-    m_dark    = builder.add_material("Mat_DarkCharcoal", [0.10, 0.11, 0.14, 1.0], metallic=0.75, roughness=0.25)
-    m_crimson = builder.add_material("Mat_Crimson", [0.88, 0.10, 0.16, 1.0], metallic=0.25, roughness=0.20)
-    m_steel   = builder.add_material("Mat_KatanaSteel", [0.86, 0.88, 0.92, 1.0], metallic=0.92, roughness=0.15)
-    m_solar   = builder.add_material("Mat_SolarCore", [1.0, 0.42, 0.08, 1.0], metallic=0.10, roughness=0.08, emissive_rgb=[1.0, 0.45, 0.10])
-    m_cyan    = builder.add_material("Mat_CyanEnergy", [0.22, 0.92, 1.0, 1.0], metallic=0.15, roughness=0.10, emissive_rgb=[0.8, 1.5, 1.8])
-    m_glass   = builder.add_material("Mat_LensGlass", [0.95, 0.80, 0.25, 0.35], metallic=0.10, roughness=0.05, alpha_mode="BLEND")
+    m_gold    = builder.add_material("Mat_CyberGold", [0.98, 0.78, 0.16, 1.0], metallic=0.88, roughness=0.18)
+    m_dark    = builder.add_material("Mat_DarkCharcoal", [0.09, 0.10, 0.13, 1.0], metallic=0.80, roughness=0.25)
+    m_crimson = builder.add_material("Mat_Crimson", [0.92, 0.08, 0.14, 1.0], metallic=0.30, roughness=0.20)
+    m_steel   = builder.add_material("Mat_KatanaSteel", [0.86, 0.88, 0.92, 1.0], metallic=0.95, roughness=0.15)
+    m_solar   = builder.add_material("Mat_SolarCore", [1.0, 0.44, 0.08, 1.0], metallic=0.10, roughness=0.08, emissive_rgb=[1.2, 0.50, 0.10])
+    m_cyan    = builder.add_material("Mat_CyanEnergy", [0.22, 0.94, 1.0, 1.0], metallic=0.15, roughness=0.10, emissive_rgb=[0.9, 1.6, 2.0])
+    m_glass   = builder.add_material("Mat_LensGlass", [0.95, 0.82, 0.28, 0.35], metallic=0.10, roughness=0.05, alpha_mode="BLEND")
 
     mesh_body = builder.create_mesh("Mesh_SolarEyeDrone")
 
-    # 1. Outer Faceted Octagonal Armor Ring (Cyber-Gold)
-    # Forward face is at -Z, rear at +Z
-    v, n, idx = create_ring_octagonal(0.0, 0.0, z0=-0.14, z1=0.14, r_in=0.48, r_out=0.68, sides=16)
-    builder.add_mesh_primitive(mesh_body, m_gold, v, n, idx)
+    # 1. Inner Obsidian Chassis Ring
+    v, n, idx = create_tapered_cylinder(0.0, 0.0, z0=-0.14, z1=0.14, r0=0.48, r1=0.52, sides=16, caps=False)
+    builder.add_mesh_primitive(mesh_body, m_dark, v, n, idx)
 
-    # Chamfered Front Bezel Lip on Outer Ring
-    v, n, idx = create_tapered_cylinder(0.0, 0.0, z0=-0.14, z1=-0.19, r0=0.68, r1=0.63, sides=16, caps=False)
-    builder.add_mesh_primitive(mesh_body, m_gold, v, n, idx)
+    # 2. Eight Segmented Beveled Cyber-Gold Armor Plates (with recessed expansion joints)
+    # Each plate spans (tau / 8) minus a gap angle, creating sharp panel separation
+    gap_rad = 0.065
+    for i in range(8):
+        ang_mid = (i / 8.0) * math.tau
+        a0 = ang_mid - (math.pi / 8.0) + gap_rad
+        a1 = ang_mid + (math.pi / 8.0) - gap_rad
+        
+        # Plate 2D polygon with beveled outer corners
+        r_in = 0.49
+        r_out = 0.70
+        pts_plate = [
+            [math.cos(a0) * r_in, math.sin(a0) * r_in],
+            [math.cos(a0) * r_out, math.sin(a0) * r_out],
+            [math.cos(ang_mid) * (r_out + 0.03), math.sin(ang_mid) * (r_out + 0.03)],
+            [math.cos(a1) * r_out, math.sin(a1) * r_out],
+            [math.cos(a1) * r_in, math.sin(a1) * r_in]
+        ]
+        v, n, idx = create_extrusion(pts_plate, z0=-0.14, z1=0.14, caps=True)
+        builder.add_mesh_primitive(mesh_body, m_gold, v, n, idx)
 
-    # 2. Four Cardinal Vernier Thruster Blocks (Top, Bottom, Left, Right)
-    vernier_positions = [
-        (0.0, 0.72, 0.0),   # Top
-        (0.0, -0.72, 0.0),  # Bottom
-        (-0.72, 0.0, 0.0),  # Left
-        (0.72, 0.0, 0.0)    # Right
-    ]
-    for vx, vy, vz in vernier_positions:
-        # Mounting block
-        v, n, idx = create_chamfered_box(vx, vy, width=0.18, height=0.14, z0=-0.12, z1=0.12, chamfer=0.03)
-        builder.add_mesh_primitive(mesh_body, m_dark, v, n, idx)
-        # Micro exhaust nozzle
-        v, n, idx = create_cylinder(vx, vy, z0=0.12, z1=0.17, radius=0.05, sides=12)
-        builder.add_mesh_primitive(mesh_body, m_steel, v, n, idx)
-        # Emissive cyan sensor slit on front
-        v, n, idx = create_chamfered_box(vx, vy, width=0.12, height=0.04, z0=-0.13, z1=-0.11, chamfer=0.01)
+        # Recessed thermal expansion joint with glowing cyan conduit pill
+        joint_ang = ang_mid + (math.pi / 8.0)
+        jx = math.cos(joint_ang) * 0.61
+        jy = math.sin(joint_ang) * 0.61
+        v, n, idx = create_cylinder(jx, jy, z0=-0.145, z1=-0.11, radius=0.024, sides=8)
         builder.add_mesh_primitive(mesh_body, m_cyan, v, n, idx)
 
-    # 3. Audience Glare Eyebrow Wings (Sweeping Falcon Horns)
-    # Sweeping back and outward from top corners
+    # Chamfered Front Bezel Lip on Armor Ring
+    v, n, idx = create_tapered_cylinder(0.0, 0.0, z0=-0.14, z1=-0.21, r0=0.69, r1=0.63, sides=16, caps=False)
+    builder.add_mesh_primitive(mesh_body, m_gold, v, n, idx)
+
+    # 3. Eight-Point Omni-Directional Vernier System (4 Cardinal + 4 Diagonal)
+    # Cardinal Verniers (Heavy Duty)
+    cardinal_pos = [(0.0, 0.76, 0.0), (0.0, -0.76, 0.0), (-0.76, 0.0, 0.0), (0.76, 0.0, 0.0)]
+    for vx, vy, vz in cardinal_pos:
+        v, n, idx = create_chamfered_box(vx, vy, width=0.19, height=0.15, z0=-0.12, z1=0.12, chamfer=0.03)
+        builder.add_mesh_primitive(mesh_body, m_dark, v, n, idx)
+        v, n, idx = create_cylinder(vx, vy, z0=0.12, z1=0.18, radius=0.055, sides=12)
+        builder.add_mesh_primitive(mesh_body, m_steel, v, n, idx)
+        v, n, idx = create_chamfered_box(vx, vy, width=0.13, height=0.045, z0=-0.13, z1=-0.11, chamfer=0.01)
+        builder.add_mesh_primitive(mesh_body, m_cyan, v, n, idx)
+
+    # Diagonal Auxiliary Micro-Verniers (Agility Roll Pods)
+    diag_dist = 0.71
+    diag_pos = [
+        (-diag_dist * 0.707, diag_dist * 0.707),
+        (diag_dist * 0.707, diag_dist * 0.707),
+        (-diag_dist * 0.707, -diag_dist * 0.707),
+        (diag_dist * 0.707, -diag_dist * 0.707)
+    ]
+    for dx, dy in diag_pos:
+        v, n, idx = create_cylinder(dx, dy, z0=-0.10, z1=0.10, radius=0.05, sides=8)
+        builder.add_mesh_primitive(mesh_body, m_dark, v, n, idx)
+        v, n, idx = create_cylinder(dx, dy, z0=0.10, z1=0.15, radius=0.035, sides=8)
+        builder.add_mesh_primitive(mesh_body, m_cyan, v, n, idx)
+
+    # 4. Tiered Falcon Wing Plumes (Triple Swept Feathers per side)
     for sign_x in [-1.0, 1.0]:
-        wing_base_x = sign_x * 0.45
-        wing_tip_x  = sign_x * 0.88
-        
-        # Outer Gold Fin Blade
-        fin_pts = [
-            [wing_base_x, 0.35],
-            [wing_base_x + sign_x * 0.12, 0.65],
-            [wing_tip_x, 0.88],
-            [wing_tip_x - sign_x * 0.15, 0.60],
-            [wing_base_x - sign_x * 0.05, 0.28]
+        # --- Feather 1: Upper Primary Glare Blade (Longest, most aggressive) ---
+        f1_base_x = sign_x * 0.44
+        f1_tip_x  = sign_x * 0.98
+        f1_pts = [
+            [f1_base_x, 0.36],
+            [f1_base_x + sign_x * 0.14, 0.70],
+            [f1_tip_x, 0.96],
+            [f1_tip_x - sign_x * 0.16, 0.68],
+            [f1_base_x - sign_x * 0.04, 0.30]
         ]
-        v, n, idx = create_extrusion(fin_pts, z0=-0.08, z1=0.08, caps=True)
+        v, n, idx = create_extrusion(f1_pts, z0=-0.08, z1=0.08, caps=True)
         builder.add_mesh_primitive(mesh_body, m_gold, v, n, idx)
 
-        # Shinto Crimson Accent Inlay Ridge
-        inlay_pts = [
-            [wing_base_x + sign_x * 0.04, 0.40],
-            [wing_base_x + sign_x * 0.10, 0.62],
-            [wing_tip_x - sign_x * 0.06, 0.82],
-            [wing_tip_x - sign_x * 0.16, 0.64],
-            [wing_base_x - sign_x * 0.01, 0.35]
+        # Crimson Inlay Ridge on Primary Blade
+        f1_inlay = [
+            [f1_base_x + sign_x * 0.05, 0.42],
+            [f1_base_x + sign_x * 0.12, 0.67],
+            [f1_tip_x - sign_x * 0.07, 0.90],
+            [f1_tip_x - sign_x * 0.18, 0.70],
+            [f1_base_x + sign_x * 0.01, 0.36]
         ]
-        v, n, idx = create_extrusion(inlay_pts, z0=-0.09, z1=-0.06, caps=True)
+        v, n, idx = create_extrusion(f1_inlay, z0=-0.09, z1=-0.05, caps=True)
         builder.add_mesh_primitive(mesh_body, m_crimson, v, n, idx)
 
-        # Lower Aerodynamic Stabilizer Quill (Cheek Armor)
-        lower_pts = [
-            [sign_x * 0.52, -0.22],
-            [sign_x * 0.74, -0.48],
-            [sign_x * 0.62, -0.56],
-            [sign_x * 0.44, -0.34]
+        # Cyan Plasma Vent Line on Trailing Edge
+        f1_vent = [
+            [f1_tip_x - sign_x * 0.09, 0.88],
+            [f1_tip_x - sign_x * 0.05, 0.92],
+            [f1_tip_x - sign_x * 0.14, 0.72],
+            [f1_tip_x - sign_x * 0.18, 0.71]
         ]
-        v, n, idx = create_extrusion(lower_pts, z0=-0.06, z1=0.06, caps=True)
+        v, n, idx = create_extrusion(f1_vent, z0=-0.085, z1=-0.065, caps=True)
+        builder.add_mesh_primitive(mesh_body, m_cyan, v, n, idx)
+
+        # --- Feather 2: Mid Secondary Feather (Mid-tier wing) ---
+        f2_base_x = sign_x * 0.48
+        f2_tip_x  = sign_x * 0.88
+        f2_pts = [
+            [f2_base_x, 0.22],
+            [f2_base_x + sign_x * 0.16, 0.50],
+            [f2_tip_x, 0.66],
+            [f2_tip_x - sign_x * 0.14, 0.45],
+            [f2_base_x - sign_x * 0.02, 0.16]
+        ]
+        v, n, idx = create_extrusion(f2_pts, z0=-0.06, z1=0.06, caps=True)
         builder.add_mesh_primitive(mesh_body, m_gold, v, n, idx)
 
-    # 4. Internal Gimbal Eyeball Housing (Dark Obsidian Gunmetal)
-    # A faceted spherical sphere nestled in the center
-    v, n, idx = create_convex_lens_dome(0.0, 0.0, z_base=0.16, z_tip=-0.22, radius=0.45, rings=6, sides=16)
-    builder.add_mesh_primitive(mesh_body, m_dark, v, n, idx)
-    v, n, idx = create_convex_lens_dome(0.0, 0.0, z_base=0.16, z_tip=0.28, radius=0.45, rings=6, sides=16)
-    builder.add_mesh_primitive(mesh_body, m_dark, v, n, idx)
+        # --- Feather 3: Lower Tertiary Feather ---
+        f3_base_x = sign_x * 0.52
+        f3_tip_x  = sign_x * 0.76
+        f3_pts = [
+            [f3_base_x, 0.08],
+            [f3_base_x + sign_x * 0.12, 0.32],
+            [f3_tip_x, 0.42],
+            [f3_tip_x - sign_x * 0.12, 0.24],
+            [f3_base_x, 0.04]
+        ]
+        v, n, idx = create_extrusion(f3_pts, z0=-0.05, z1=0.05, caps=True)
+        builder.add_mesh_primitive(mesh_body, m_gold, v, n, idx)
 
-    # Side Gimbal Pivot Bolts
+    # 5. Aggressive Lower Cybernetic Predator Mandibles ("Sun-Fangs")
     for sign_x in [-1.0, 1.0]:
-        v, n, idx = create_cylinder(sign_x * 0.44, 0.0, z0=-0.04, z1=0.04, radius=0.08, sides=12)
-        builder.add_mesh_primitive(mesh_body, m_steel, v, n, idx)
+        # Pincer mandible curving downward and inward
+        fang_pts = [
+            [sign_x * 0.48, -0.25],
+            [sign_x * 0.72, -0.52],
+            [sign_x * 0.60, -0.78],
+            [sign_x * 0.32, -0.84],
+            [sign_x * 0.18, -0.74],
+            [sign_x * 0.38, -0.62],
+            [sign_x * 0.46, -0.42],
+            [sign_x * 0.38, -0.28]
+        ]
+        v, n, idx = create_extrusion(fang_pts, z0=-0.09, z1=0.09, caps=True)
+        builder.add_mesh_primitive(mesh_body, m_gold, v, n, idx)
 
-    # 5. Stepped Concentric Ocular Aperture Rings (Front -Z)
+        # Crimson Fang Center Groove
+        fang_groove = [
+            [sign_x * 0.56, -0.50],
+            [sign_x * 0.52, -0.70],
+            [sign_x * 0.32, -0.75],
+            [sign_x * 0.38, -0.64],
+            [sign_x * 0.48, -0.45]
+        ]
+        v, n, idx = create_extrusion(fang_groove, z0=-0.10, z1=-0.07, caps=True)
+        builder.add_mesh_primitive(mesh_body, m_crimson, v, n, idx)
+
+        # Dark Hydraulic Pivot Joint
+        v, n, idx = create_cylinder(sign_x * 0.44, -0.28, z0=-0.10, z1=0.10, radius=0.065, sides=12)
+        builder.add_mesh_primitive(mesh_body, m_dark, v, n, idx)
+
+    # 6. Internal Multi-Tier Gimbal Eyeball Housing (Dark Obsidian Gunmetal)
+    v, n, idx = create_convex_lens_dome(0.0, 0.0, z_base=0.16, z_tip=-0.22, radius=0.46, rings=6, sides=16)
+    builder.add_mesh_primitive(mesh_body, m_dark, v, n, idx)
+    v, n, idx = create_convex_lens_dome(0.0, 0.0, z_base=0.16, z_tip=0.28, radius=0.46, rings=6, sides=16)
+    builder.add_mesh_primitive(mesh_body, m_dark, v, n, idx)
+
+    # Side Gimbal Heavy Trunnion Pivot Bolts
+    for sign_x in [-1.0, 1.0]:
+        v, n, idx = create_cylinder(sign_x * 0.44, 0.0, z0=-0.06, z1=0.06, radius=0.09, sides=12)
+        builder.add_mesh_primitive(mesh_body, m_steel, v, n, idx)
+        v, n, idx = create_cylinder(sign_x * 0.44, 0.0, z0=-0.07, z1=-0.06, radius=0.05, sides=8)
+        builder.add_mesh_primitive(mesh_body, m_cyan, v, n, idx)
+
+    # 7. Stepped Concentric Ocular Aperture Rings (Front -Z)
     v, n, idx = create_tapered_cylinder(0.0, 0.0, z0=-0.20, z1=-0.28, r0=0.38, r1=0.32, sides=16, caps=False)
     builder.add_mesh_primitive(mesh_body, m_gold, v, n, idx)
 
-    # Mechanical Steel Iris Shutter Blades (8 interlocking blades)
+    # 8 Interlocking Steel Iris Shutter Blades
     for i in range(8):
         ang = (i / 8.0) * math.tau
         blade_pts = [
@@ -532,47 +546,80 @@ def build_solar_eye_drone_model(output_path):
         v, n, idx = create_extrusion(blade_pts, z0=-0.27, z1=-0.29, caps=True)
         builder.add_mesh_primitive(mesh_body, m_steel, v, n, idx)
 
-    # 6. Radiant Central Solar Pupil Lens (Emissive Amber-Crimson Core)
-    # Convex lens protruding through the aperture
-    v, n, idx = create_convex_lens_dome(0.0, 0.0, z_base=-0.26, z_tip=-0.36, radius=0.20, rings=6, sides=16)
+    # 8. Four Inward Laser Collimator Needle Pins (at 45° diagonal corners)
+    for c_idx in range(4):
+        c_ang = (c_idx / 4.0) * math.tau + (math.pi / 4.0)
+        c_cos = math.cos(c_ang)
+        c_sin = math.sin(c_ang)
+        
+        # Needle body extending from r=0.34 to r=0.22
+        n_pts = [
+            [c_cos * 0.34 - c_sin * 0.022, c_sin * 0.34 + c_cos * 0.022],
+            [c_cos * 0.34 + c_sin * 0.022, c_sin * 0.34 - c_cos * 0.022],
+            [c_cos * 0.22 + c_sin * 0.008, c_sin * 0.22 - c_cos * 0.008],
+            [c_cos * 0.22 - c_sin * 0.008, c_sin * 0.22 + c_cos * 0.008]
+        ]
+        v, n, idx = create_extrusion(n_pts, z0=-0.29, z1=-0.32, caps=True)
+        builder.add_mesh_primitive(mesh_body, m_steel, v, n, idx)
+
+        # Glowing cyan focus tip
+        tip_x = c_cos * 0.21
+        tip_y = c_sin * 0.21
+        v, n, idx = create_cylinder(tip_x, tip_y, z0=-0.325, z1=-0.305, radius=0.016, sides=8)
+        builder.add_mesh_primitive(mesh_body, m_cyan, v, n, idx)
+
+    # 9. Concentric Multi-Ring Target Reticle & Solar Pupil Lens
+    # Inner gold target ring
+    v, n, idx = create_tapered_cylinder(0.0, 0.0, z0=-0.28, z1=-0.33, r0=0.23, r1=0.21, sides=16, caps=False)
+    builder.add_mesh_primitive(mesh_body, m_gold, v, n, idx)
+
+    # Radiant Convex Solar Pupil Lens (Emissive Amber-Crimson Core)
+    v, n, idx = create_convex_lens_dome(0.0, 0.0, z_base=-0.26, z_tip=-0.37, radius=0.20, rings=6, sides=16)
     builder.add_mesh_primitive(mesh_body, m_solar, v, n, idx)
 
-    # Central Pinhole Reticle Core (Dark charcoal target)
-    v, n, idx = create_cylinder(0.0, 0.0, z0=-0.37, z1=-0.35, radius=0.045, sides=12)
-    builder.add_mesh_primitive(mesh_body, m_dark, v, n, idx)
+    # Central Cyan Optical Focal Pin
+    v, n, idx = create_cylinder(0.0, 0.0, z0=-0.38, z1=-0.35, radius=0.035, sides=12)
+    builder.add_mesh_primitive(mesh_body, m_cyan, v, n, idx)
 
     # Protective Translucent Optical Dome Cap
-    v, n, idx = create_convex_lens_dome(0.0, 0.0, z_base=-0.24, z_tip=-0.39, radius=0.23, rings=6, sides=16)
+    v, n, idx = create_convex_lens_dome(0.0, 0.0, z_base=-0.24, z_tip=-0.40, radius=0.23, rings=6, sides=16)
     builder.add_mesh_primitive(mesh_body, m_glass, v, n, idx)
 
-    # 7. Rear Propulsion Core & Radiator Fins (+Z rear face)
-    # Rear exhaust bell
-    v, n, idx = create_tapered_cylinder(0.0, 0.0, z0=0.18, z1=0.34, r0=0.30, r1=0.18, sides=16, caps=False)
+    # 10. Rear High-Output Propulsion Vectoring Bell & Radiator Fins (+Z)
+    # Outer exhaust bell
+    v, n, idx = create_tapered_cylinder(0.0, 0.0, z0=0.18, z1=0.36, r0=0.32, r1=0.20, sides=16, caps=False)
     builder.add_mesh_primitive(mesh_body, m_dark, v, n, idx)
 
-    # Central Plasma Exhaust Core
-    v, n, idx = create_cylinder(0.0, 0.0, z0=0.32, z1=0.35, radius=0.14, sides=16)
+    # Stepped Gold Gimbal Vector Ring
+    v, n, idx = create_cylinder(0.0, 0.0, z0=0.30, z1=0.34, radius=0.22, sides=16, caps=False)
+    builder.add_mesh_primitive(mesh_body, m_gold, v, n, idx)
+
+    # Central Plasma Discharge Core
+    v, n, idx = create_cylinder(0.0, 0.0, z0=0.34, z1=0.38, radius=0.15, sides=16)
     builder.add_mesh_primitive(mesh_body, m_solar, v, n, idx)
 
-    # 6 Radial Heat Radiator Grilles
-    for i in range(6):
-        ang = (i / 6.0) * math.tau
+    # Inner Cyan Plasma Emitter
+    v, n, idx = create_cylinder(0.0, 0.0, z0=0.37, z1=0.39, radius=0.07, sides=12)
+    builder.add_mesh_primitive(mesh_body, m_cyan, v, n, idx)
+
+    # 8 Radial Radiator Cooling Fins
+    for i in range(8):
+        ang = (i / 8.0) * math.tau
         fin_pts = [
             [math.cos(ang) * 0.16, math.sin(ang) * 0.16],
-            [math.cos(ang) * 0.36, math.sin(ang) * 0.36],
-            [math.cos(ang) * 0.32, math.sin(ang) * 0.32],
+            [math.cos(ang) * 0.38, math.sin(ang) * 0.38],
+            [math.cos(ang) * 0.34, math.sin(ang) * 0.34],
             [math.cos(ang) * 0.14, math.sin(ang) * 0.14]
         ]
-        v, n, idx = create_extrusion(fin_pts, z0=0.18, z1=0.32, caps=True)
+        v, n, idx = create_extrusion(fin_pts, z0=0.18, z1=0.34, caps=True)
         builder.add_mesh_primitive(mesh_body, m_steel, v, n, idx)
 
     # Build Scene Node
     node_body = builder.add_node("SolarEyeDrone", mesh_idx=mesh_body)
-    builder.add_node("RootNode", children=[node_body])
 
-    os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     builder.export(output_path)
 
 if __name__ == "__main__":
-    out_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "models", "solar_eye_drone.glb")
+    out_file = os.path.abspath("assets/models/solar_eye_drone.glb")
     build_solar_eye_drone_model(out_file)
