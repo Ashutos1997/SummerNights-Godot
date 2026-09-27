@@ -3358,7 +3358,7 @@ func _adjust_gun_materials(node: Node) -> void:
 					new_mat.albedo_color = Color(1.0, 0.85, 0.1) # Solid Gold!
 					new_mat.metallic = 0.8
 					new_mat.roughness = 0.2
-				elif new_mat.metallic > 0.1:
+				elif GameState.current_weapon_id != "kitsune" and new_mat.metallic > 0.1:
 					new_mat.metallic = 0.0
 				node.set_surface_override_material(i, new_mat)
 	for child in node.get_children():

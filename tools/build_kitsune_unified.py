@@ -409,72 +409,83 @@ def build_unified_kitsune(output_path="assets/blaster_kitsune_unified.glb"):
     
     # ── PALETTE MATERIALS ──
     # Pearl white ceramic armour
-    m_white = builder.add_material("Mat_PearlWhite", [0.96, 0.96, 0.98, 1.0], metallic=0.08, roughness=0.16)
+    m_white      = builder.add_material("Mat_PearlWhite", [0.96, 0.96, 0.98, 1.0], metallic=0.08, roughness=0.14)
     # Shinto lacquer crimson
-    m_red   = builder.add_material("Mat_Crimson", [0.88, 0.10, 0.16, 1.0], metallic=0.14, roughness=0.20)
+    m_red        = builder.add_material("Mat_Crimson", [0.88, 0.10, 0.16, 1.0], metallic=0.14, roughness=0.18)
     # Celestial polished cyber-gold
-    m_gold  = builder.add_material("Mat_CyberGold", [0.98, 0.78, 0.16, 1.0], metallic=0.70, roughness=0.18)
-    # Deep tactical charcoal alloy
-    m_dark  = builder.add_material("Mat_DarkCharcoal", [0.10, 0.11, 0.14, 1.0], metallic=0.30, roughness=0.45)
+    m_gold       = builder.add_material("Mat_CyberGold", [0.98, 0.78, 0.16, 1.0], metallic=0.75, roughness=0.16)
+    # Deep tactical charcoal gunmetal
+    m_dark       = builder.add_material("Mat_DarkCharcoal", [0.10, 0.11, 0.14, 1.0], metallic=0.35, roughness=0.38)
     # Radiant celestial cyan energy (high emissive bloom)
-    m_cyan  = builder.add_material("Mat_CyanEnergy", [0.22, 0.90, 1.0, 1.0], metallic=0.05, roughness=0.10, emissive_rgb=[0.80, 1.40, 1.60])
+    m_cyan       = builder.add_material("Mat_CyanEnergy", [0.22, 0.92, 1.0, 1.0], metallic=0.05, roughness=0.10, emissive_rgb=[0.90, 1.50, 1.80])
     # Translucent amber/gold Kyubi drum glass
     m_trans_gold = builder.add_material("Mat_CyberGoldTranslucent", [0.98, 0.80, 0.18, 0.38], metallic=0.20, roughness=0.12, alpha_mode="BLEND")
     # Frosted cyan energy conduits
-    m_trans_cyan = builder.add_material("Mat_CyanTranslucent", [0.25, 0.92, 1.0, 0.45], metallic=0.10, roughness=0.10, emissive_rgb=[0.40, 0.80, 1.0], alpha_mode="BLEND")
+    m_trans_cyan = builder.add_material("Mat_CyanTranslucent", [0.25, 0.92, 1.0, 0.45], metallic=0.10, roughness=0.10, emissive_rgb=[0.45, 0.90, 1.20], alpha_mode="BLEND")
+    # Folded Tamahagane Katana mirror steel
+    m_steel      = builder.add_material("Mat_KatanaSteel", [0.91, 0.93, 0.96, 1.0], metallic=0.92, roughness=0.12)
+    # Radiant undulating Hamon tempering wave
+    m_hamon      = builder.add_material("Mat_HamonLuminescence", [0.55, 0.96, 1.0, 1.0], metallic=0.15, roughness=0.08, emissive_rgb=[0.75, 1.45, 1.85])
+    # Traditional Japanese bronze Seppa spacer
+    m_seppa      = builder.add_material("Mat_SeppaBronze", [0.86, 0.58, 0.28, 1.0], metallic=0.82, roughness=0.22)
 
     # ══════════════════════════════════════════════════════════════
     # 1. CHASSIS MESH (Root Body, Fixed Coordinates)
     # ══════════════════════════════════════════════════════════════
     mesh_chassis = builder.create_mesh("Mesh_Chassis")
     
-    # Ergonomic Grip & Braided Tsuka Wrap Pattern
-    v, n, idx = create_chamfered_box(0.0, 0.22, width=0.17, height=0.38, z0=-0.24, z1=-0.06, chamfer=0.04)
+    # Ergonomic Contoured Grip with Kashira Pommel Cap & Tsuka-Ito Wrap
+    v, n, idx = create_chamfered_box(0.0, 0.20, width=0.16, height=0.36, z0=-0.25, z1=-0.06, chamfer=0.04)
     builder.add_mesh_primitive(mesh_chassis, m_dark, v, n, idx)
-    v, n, idx = create_chamfered_box(0.0, 0.025, width=0.23, height=0.05, z0=-0.28, z1=-0.04, chamfer=0.02)
+    
+    # Golden Kashira Pommel Cap at base of grip
+    v, n, idx = create_chamfered_box(0.0, 0.015, width=0.21, height=0.04, z0=-0.27, z1=-0.04, chamfer=0.015)
+    builder.add_mesh_primitive(mesh_chassis, m_gold, v, n, idx)
+    # Kashira Lanyard Ring (Fox-fire loop)
+    v, n, idx = create_cylinder(0.0, -0.015, z0=-0.17, z1=-0.14, radius=0.028, sides=12)
     builder.add_mesh_primitive(mesh_chassis, m_gold, v, n, idx)
     
-    # Diamond Relief Wrap Accents (Tsuka-Ito cords)
-    for z_wrap in [-0.20, -0.15, -0.10]:
-        v, n, idx = create_chamfered_box(0.0, 0.22, width=0.185, height=0.035, z0=z_wrap - 0.015, z1=z_wrap + 0.015, chamfer=0.008)
+    # Diamond Menuki Tsuka-Ito Braided Wrap Accents
+    for z_wrap in [-0.21, -0.16, -0.11]:
+        v, n, idx = create_chamfered_box(0.0, 0.20, width=0.176, height=0.032, z0=z_wrap - 0.015, z1=z_wrap + 0.015, chamfer=0.007)
         builder.add_mesh_primitive(mesh_chassis, m_red, v, n, idx)
-        for side in [-0.093, 0.093]:
-            v, n, idx = create_chamfered_box(side, 0.22, width=0.012, height=0.025, z0=z_wrap - 0.012, z1=z_wrap + 0.012, chamfer=0.004)
+        for side in [-0.089, 0.089]:
+            v, n, idx = create_chamfered_box(side, 0.20, width=0.012, height=0.024, z0=z_wrap - 0.010, z1=z_wrap + 0.010, chamfer=0.004)
             builder.add_mesh_primitive(mesh_chassis, m_gold, v, n, idx)
             
     # Trigger Guard & Crimson Beveled Trigger
-    v, n, idx = create_chamfered_box(0.0, 0.23, width=0.06, height=0.04, z0=-0.06, z1=0.10, chamfer=0.010)
+    v, n, idx = create_chamfered_box(0.0, 0.21, width=0.055, height=0.04, z0=-0.06, z1=0.10, chamfer=0.008)
     builder.add_mesh_primitive(mesh_chassis, m_dark, v, n, idx)
-    v, n, idx = create_chamfered_box(0.0, 0.32, width=0.06, height=0.16, z0=0.08, z1=0.12, chamfer=0.010)
+    v, n, idx = create_chamfered_box(0.0, 0.30, width=0.055, height=0.15, z0=0.08, z1=0.12, chamfer=0.008)
     builder.add_mesh_primitive(mesh_chassis, m_dark, v, n, idx)
-    v, n, idx = create_chamfered_box(0.0, 0.30, width=0.036, height=0.12, z0=-0.03, z1=0.02, chamfer=0.008)
+    v, n, idx = create_chamfered_box(0.0, 0.28, width=0.034, height=0.11, z0=-0.03, z1=0.02, chamfer=0.007)
     builder.add_mesh_primitive(mesh_chassis, m_red, v, n, idx)
     
-    # Stock Housing & Twin Hydro-Reservoirs with Golden Rings
-    v, n, idx = create_chamfered_box(0.0, 0.46, width=0.30, height=0.16, z0=-0.30, z1=0.02, chamfer=0.04)
+    # Stock Housing & Twin Hydro-Reservoirs
+    v, n, idx = create_chamfered_box(0.0, 0.45, width=0.29, height=0.16, z0=-0.30, z1=0.02, chamfer=0.035)
     builder.add_mesh_primitive(mesh_chassis, m_white, v, n, idx)
-    v, n, idx = create_chamfered_box(0.0, 0.50, width=0.28, height=0.20, z0=-0.54, z1=-0.30, chamfer=0.04)
+    v, n, idx = create_chamfered_box(0.0, 0.49, width=0.27, height=0.19, z0=-0.54, z1=-0.30, chamfer=0.038)
     builder.add_mesh_primitive(mesh_chassis, m_white, v, n, idx)
     
-    # Twin Hydro-Canisters
+    # Twin Hydro-Canisters with High-Pressure Manifold Piping
     for xt in [-0.075, 0.075]:
-        v, n, idx = create_cylinder(xt, 0.50, z0=-0.52, z1=-0.32, radius=0.045, sides=16)
+        v, n, idx = create_cylinder(xt, 0.49, z0=-0.52, z1=-0.32, radius=0.044, sides=16)
         builder.add_mesh_primitive(mesh_chassis, m_cyan, v, n, idx)
-        v, n, idx = create_cylinder(xt, 0.50, z0=-0.53, z1=-0.51, radius=0.052, sides=16)
+        v, n, idx = create_cylinder(xt, 0.49, z0=-0.53, z1=-0.51, radius=0.050, sides=16)
         builder.add_mesh_primitive(mesh_chassis, m_gold, v, n, idx)
-        v, n, idx = create_cylinder(xt, 0.50, z0=-0.33, z1=-0.31, radius=0.052, sides=16)
+        v, n, idx = create_cylinder(xt, 0.49, z0=-0.33, z1=-0.31, radius=0.050, sides=16)
         builder.add_mesh_primitive(mesh_chassis, m_gold, v, n, idx)
-        # Vertical level-gauge sight glass
-        v, n, idx = create_chamfered_box(xt * 1.55, 0.50, width=0.014, height=0.014, z0=-0.48, z1=-0.36, chamfer=0.003)
+        # Gold Fluid Manifold Conduit feeding forward into receiver
+        v, n, idx = create_cylinder(xt, 0.55, z0=-0.30, z1=-0.02, radius=0.015, sides=12)
         builder.add_mesh_primitive(mesh_chassis, m_gold, v, n, idx)
+        v, n, idx = create_cylinder(xt, 0.55, z0=-0.28, z1=-0.04, radius=0.009, sides=12)
+        builder.add_mesh_primitive(mesh_chassis, m_cyan, v, n, idx)
         
     for z_fin in [-0.48, -0.38]:
-        v, n, idx = create_chamfered_box(0.0, 0.59, width=0.26, height=0.025, z0=z_fin - 0.015, z1=z_fin + 0.015, chamfer=0.006)
+        v, n, idx = create_chamfered_box(0.0, 0.585, width=0.25, height=0.022, z0=z_fin - 0.014, z1=z_fin + 0.014, chamfer=0.005)
         builder.add_mesh_primitive(mesh_chassis, m_red, v, n, idx)
 
     # ── SKELETONIZED CYLINDER RECEIVER & SIGHTLINE APERTURE ──
-    # Left & Right Arch Brackets with Viewing Port (Allows seeing Kyubi drum in First-Person)
-    # Lower Keel Rails
     v, n, idx = create_chamfered_box(0.0, 0.28, width=0.16, height=0.06, z0=0.00, z1=0.36, chamfer=0.02)
     builder.add_mesh_primitive(mesh_chassis, m_white, v, n, idx)
     v, n, idx = create_chamfered_box(0.0, 0.29, width=0.18, height=0.02, z0=0.02, z1=0.34, chamfer=0.006)
@@ -492,98 +503,102 @@ def build_unified_kitsune(output_path="assets/blaster_kitsune_unified.glb"):
     v, n, idx = create_chamfered_box(0.0, 0.48, width=0.33, height=0.04, z0=0.325, z1=0.355, chamfer=0.01)
     builder.add_mesh_primitive(mesh_chassis, m_red, v, n, idx)
     
-    # Left & Right Longitudinal Reinforcing Struts with Sightline Windows
+    # Left & Right Sightline Apertures (Permits full view of Kyubi revolving drum)
     for side_x in [-0.155, 0.155]:
-        # Upper structural spar
-        v, n, idx = create_chamfered_box(side_x, 0.60, width=0.025, height=0.04, z0=0.04, z1=0.32, chamfer=0.008)
+        v, n, idx = create_chamfered_box(side_x, 0.60, width=0.024, height=0.038, z0=0.04, z1=0.32, chamfer=0.007)
         builder.add_mesh_primitive(mesh_chassis, m_white, v, n, idx)
-        v, n, idx = create_chamfered_box(side_x, 0.60, width=0.028, height=0.015, z0=0.06, z1=0.30, chamfer=0.004)
+        v, n, idx = create_chamfered_box(side_x, 0.60, width=0.027, height=0.014, z0=0.06, z1=0.30, chamfer=0.004)
         builder.add_mesh_primitive(mesh_chassis, m_red, v, n, idx)
-        # Lower structural spar
-        v, n, idx = create_chamfered_box(side_x, 0.36, width=0.025, height=0.04, z0=0.04, z1=0.32, chamfer=0.008)
+        v, n, idx = create_chamfered_box(side_x, 0.36, width=0.024, height=0.038, z0=0.04, z1=0.32, chamfer=0.007)
         builder.add_mesh_primitive(mesh_chassis, m_white, v, n, idx)
-        # Angled reinforcement diagonal struts
-        v, n, idx = create_chamfered_box(side_x, 0.48, width=0.022, height=0.05, z0=0.16, z1=0.20, chamfer=0.006)
+        v, n, idx = create_chamfered_box(side_x, 0.48, width=0.020, height=0.048, z0=0.16, z1=0.20, chamfer=0.005)
         builder.add_mesh_primitive(mesh_chassis, m_gold, v, n, idx)
 
     # Forward Deck & Collar Base (Z = 0.36 to 0.60)
-    v, n, idx = create_chamfered_box(0.0, 0.63, width=0.28, height=0.12, z0=0.36, z1=0.58, chamfer=0.04)
+    v, n, idx = create_chamfered_box(0.0, 0.62, width=0.27, height=0.11, z0=0.36, z1=0.58, chamfer=0.035)
     builder.add_mesh_primitive(mesh_chassis, m_white, v, n, idx)
-    v, n, idx = create_chamfered_box(0.0, 0.48, width=0.28, height=0.26, z0=0.36, z1=0.60, chamfer=0.045)
+    v, n, idx = create_chamfered_box(0.0, 0.48, width=0.27, height=0.25, z0=0.36, z1=0.60, chamfer=0.040)
     builder.add_mesh_primitive(mesh_chassis, m_white, v, n, idx)
     # Gold collar ring at barrel/blade exit interface
-    v, n, idx = create_cylinder(0.0, 0.48, z0=0.575, z1=0.60, radius=0.115, sides=20)
+    v, n, idx = create_cylinder(0.0, 0.48, z0=0.575, z1=0.60, radius=0.112, sides=20)
     builder.add_mesh_primitive(mesh_chassis, m_gold, v, n, idx)
+    
+    # Tactical Status LEDs on Forward Deck (Cyan / Gold readiness lights)
+    for led_i, z_led in enumerate([0.42, 0.48, 0.54]):
+        v, n, idx = create_cylinder(-0.115, 0.678, z0=z_led - 0.012, z1=z_led + 0.012, radius=0.008, sides=10)
+        builder.add_mesh_primitive(mesh_chassis, m_cyan if led_i < 2 else m_gold, v, n, idx)
+        v, n, idx = create_cylinder(0.115, 0.678, z0=z_led - 0.012, z1=z_led + 0.012, radius=0.008, sides=10)
+        builder.add_mesh_primitive(mesh_chassis, m_cyan if led_i < 2 else m_gold, v, n, idx)
 
     # ── KITSUNE FOX-EAR COWL FINS (Upper Receiver Flanks) ──
-    # Angled mecha fox ears flanking the sightline
     for ear_side in [-1, 1]:
-        # Left Ear (ear_side = -1), Right Ear (ear_side = 1)
-        bx = ear_side * 0.105
-        tip_x = ear_side * 0.155
-        # 3D points forming a swept triangular mecha ear
+        bx = ear_side * 0.102
+        tip_x = ear_side * 0.150
         ear_base = [
-            [bx - ear_side * 0.02, 0.68, -0.06],
-            [bx + ear_side * 0.02, 0.68, -0.06],
-            [bx + ear_side * 0.02, 0.68, 0.08],
-            [bx - ear_side * 0.02, 0.68, 0.08]
+            [bx - ear_side * 0.02, 0.67, -0.06],
+            [bx + ear_side * 0.02, 0.67, -0.06],
+            [bx + ear_side * 0.02, 0.67, 0.08],
+            [bx - ear_side * 0.02, 0.67, 0.08]
         ]
         ear_mid = [
-            [bx * 1.15 - ear_side * 0.015, 0.77, -0.04],
-            [bx * 1.15 + ear_side * 0.015, 0.77, -0.04],
-            [bx * 1.15 + ear_side * 0.015, 0.77, 0.04],
-            [bx * 1.15 - ear_side * 0.015, 0.77, 0.04]
+            [bx * 1.15 - ear_side * 0.015, 0.76, -0.04],
+            [bx * 1.15 + ear_side * 0.015, 0.76, -0.04],
+            [bx * 1.15 + ear_side * 0.015, 0.76, 0.04],
+            [bx * 1.15 - ear_side * 0.015, 0.76, 0.04]
         ]
         ear_tip = [
-            [tip_x - ear_side * 0.005, 0.85, -0.02],
-            [tip_x + ear_side * 0.005, 0.85, -0.02],
-            [tip_x + ear_side * 0.005, 0.85, 0.01],
-            [tip_x - ear_side * 0.005, 0.85, 0.01]
+            [tip_x - ear_side * 0.005, 0.84, -0.02],
+            [tip_x + ear_side * 0.005, 0.84, -0.02],
+            [tip_x + ear_side * 0.005, 0.84, 0.01],
+            [tip_x - ear_side * 0.005, 0.84, 0.01]
         ]
         v, n, idx = create_lofted_poly([ear_base, ear_mid, ear_tip], caps=True)
         builder.add_mesh_primitive(mesh_chassis, m_white, v, n, idx)
         
         # Inner ear crimson bevel accent
         inner_base = [
-            [bx, 0.69, -0.04],
-            [bx + ear_side * 0.015, 0.69, -0.04],
-            [bx + ear_side * 0.015, 0.69, 0.05],
-            [bx, 0.69, 0.05]
+            [bx, 0.68, -0.04],
+            [bx + ear_side * 0.015, 0.68, -0.04],
+            [bx + ear_side * 0.015, 0.68, 0.05],
+            [bx, 0.68, 0.05]
         ]
         inner_tip = [
-            [tip_x - ear_side * 0.005, 0.82, -0.01],
-            [tip_x + ear_side * 0.005, 0.82, -0.01],
-            [tip_x + ear_side * 0.005, 0.82, 0.01],
-            [tip_x - ear_side * 0.005, 0.82, 0.01]
+            [tip_x - ear_side * 0.005, 0.81, -0.01],
+            [tip_x + ear_side * 0.005, 0.81, -0.01],
+            [tip_x + ear_side * 0.005, 0.81, 0.01],
+            [tip_x - ear_side * 0.005, 0.81, 0.01]
         ]
         v, n, idx = create_lofted_poly([inner_base, inner_tip], caps=True)
         builder.add_mesh_primitive(mesh_chassis, m_red, v, n, idx)
         
-        # Cyan energy line running up outer ear ridge
-        v, n, idx = create_chamfered_box(bx * 1.05, 0.76, width=0.008, height=0.09, z0=0.065, z1=0.075, chamfer=0.002)
+        # Outer ear radiant cyan conduit
+        v, n, idx = create_chamfered_box(bx * 1.05, 0.75, width=0.008, height=0.08, z0=0.065, z1=0.075, chamfer=0.002)
         builder.add_mesh_primitive(mesh_chassis, m_cyan, v, n, idx)
 
     # ── HOLOGRAPHIC REFLEX SIGHT ──
-    v, n, idx = create_chamfered_box(0.0, 0.695, width=0.11, height=0.018, z0=-0.04, z1=0.08, chamfer=0.005)
+    v, n, idx = create_chamfered_box(0.0, 0.685, width=0.11, height=0.018, z0=-0.04, z1=0.08, chamfer=0.005)
     builder.add_mesh_primitive(mesh_chassis, m_dark, v, n, idx)
-    v, n, idx = create_chamfered_box(-0.060, 0.745, width=0.016, height=0.085, z0=-0.02, z1=0.06, chamfer=0.004)
+    v, n, idx = create_chamfered_box(-0.058, 0.738, width=0.015, height=0.088, z0=-0.02, z1=0.06, chamfer=0.004)
     builder.add_mesh_primitive(mesh_chassis, m_white, v, n, idx)
-    v, n, idx = create_chamfered_box(0.060, 0.745, width=0.016, height=0.085, z0=-0.02, z1=0.06, chamfer=0.004)
+    v, n, idx = create_chamfered_box(0.058, 0.738, width=0.015, height=0.088, z0=-0.02, z1=0.06, chamfer=0.004)
     builder.add_mesh_primitive(mesh_chassis, m_white, v, n, idx)
-    v, n, idx = create_chamfered_box(0.0, 0.785, width=0.136, height=0.015, z0=-0.02, z1=0.06, chamfer=0.003)
+    v, n, idx = create_chamfered_box(0.0, 0.780, width=0.131, height=0.015, z0=-0.02, z1=0.06, chamfer=0.003)
     builder.add_mesh_primitive(mesh_chassis, m_white, v, n, idx)
     
     # Holographic Cyan Reticle Emitter Glass
-    reticle_pts = [[-0.048, 0.705], [0.048, 0.705], [0.045, 0.775], [-0.045, 0.775]]
+    reticle_pts = [[-0.046, 0.698], [0.046, 0.698], [0.043, 0.770], [-0.043, 0.770]]
     v, n, idx = create_extrusion(reticle_pts, z0=0.015, z1=0.025, caps=True)
     builder.add_mesh_primitive(mesh_chassis, m_trans_cyan, v, n, idx)
     # Central glowing diamond Kitsune pip inside the glass
-    v, n, idx = create_chamfered_box(0.0, 0.740, width=0.012, height=0.012, z0=0.018, z1=0.022, chamfer=0.004)
+    v, n, idx = create_chamfered_box(0.0, 0.735, width=0.011, height=0.011, z0=0.018, z1=0.022, chamfer=0.003)
     builder.add_mesh_primitive(mesh_chassis, m_cyan, v, n, idx)
+    # Side chevron range brackets on reticle
+    for ret_side in [-0.022, 0.022]:
+        v, n, idx = create_chamfered_box(ret_side, 0.735, width=0.003, height=0.014, z0=0.018, z1=0.022, chamfer=0.001)
+        builder.add_mesh_primitive(mesh_chassis, m_cyan, v, n, idx)
 
     # ══════════════════════════════════════════════════════════════
     # 2. REVOLVING CYLINDER MESH (Pivot at X=0.0, Y=0.48, Z=0.18)
-    # Coordinates centered locally around (0, 0, 0)
     # ══════════════════════════════════════════════════════════════
     mesh_cylinder = builder.create_mesh("Mesh_Cylinder")
     
@@ -597,28 +612,23 @@ def build_unified_kitsune(output_path="assets/blaster_kitsune_unified.glb"):
     v, n, idx = create_cylinder(0.0, 0.0, z0=0.118, z1=0.148, radius=0.218, sides=24)
     builder.add_mesh_primitive(mesh_cylinder, m_gold, v, n, idx)
     
-    # Central Mechanical Axle & Turbine Hub
+    # Central Mechanical Axle with Swirling Fox-Fire Flux Core
     v, n, idx = create_cylinder(0.0, 0.0, z0=-0.165, z1=0.165, radius=0.065, sides=16)
     builder.add_mesh_primitive(mesh_cylinder, m_dark, v, n, idx)
-    # Gold Turbine Spindle Blades inside the core
+    # Glowing Central Cyan Reactor Spindle
+    v, n, idx = create_cylinder(0.0, 0.0, z0=-0.13, z1=0.13, radius=0.035, sides=14)
+    builder.add_mesh_primitive(mesh_cylinder, m_cyan, v, n, idx)
+    
+    # Gold Turbine Spindle Blades
     for tb in range(6):
         tb_ang = (tb / 6.0) * math.pi
         v, n, idx = create_chamfered_box(0.0, 0.0, width=0.12, height=0.014, z0=-0.12, z1=0.12, chamfer=0.003)
-        # Rotate manually by math
         cos_tb, sin_tb = math.cos(tb_ang), math.sin(tb_ang)
-        v_rot = []
-        for pt in v:
-            rx = pt[0] * cos_tb - pt[1] * sin_tb
-            ry = pt[0] * sin_tb + pt[1] * cos_tb
-            v_rot.append([rx, ry, pt[2]])
-        n_rot = []
-        for norm in n:
-            rx = norm[0] * cos_tb - norm[1] * sin_tb
-            ry = norm[0] * sin_tb + norm[1] * cos_tb
-            n_rot.append([rx, ry, norm[2]])
+        v_rot = [[pt[0] * cos_tb - pt[1] * sin_tb, pt[0] * sin_tb + pt[1] * cos_tb, pt[2]] for pt in v]
+        n_rot = [[norm[0] * cos_tb - norm[1] * sin_tb, norm[0] * sin_tb + norm[1] * cos_tb, norm[2]] for norm in n]
         builder.add_mesh_primitive(mesh_cylinder, m_gold, v_rot, n_rot, idx)
 
-    # 9 Fluted Water Bores with Cyan Vials & Dark Collars
+    # 9 Fluted Water Bores with Cyan Crystal Vials & Internal Luminous Filaments
     for i in range(9):
         ang = (i / 9.0) * 2 * math.pi
         bore_r = 0.145
@@ -627,225 +637,290 @@ def build_unified_kitsune(output_path="assets/blaster_kitsune_unified.glb"):
         # Glowing Cyan Celestial Liquid Vial
         v, n, idx = create_cylinder(bx, by, z0=-0.13, z1=0.13, radius=0.038, sides=14)
         builder.add_mesh_primitive(mesh_cylinder, m_cyan, v, n, idx)
+        # Inner High-Intensity Celestial Filament
+        v, n, idx = create_cylinder(bx, by, z0=-0.12, z1=0.12, radius=0.015, sides=8)
+        builder.add_mesh_primitive(mesh_cylinder, m_hamon, v, n, idx)
         # Brushed Dark Alloy Collars (Front & Back)
         v, n, idx = create_cylinder(bx, by, z0=-0.144, z1=-0.126, radius=0.044, sides=14)
         builder.add_mesh_primitive(mesh_cylinder, m_dark, v, n, idx)
         v, n, idx = create_cylinder(bx, by, z0=0.126, z1=0.144, radius=0.044, sides=14)
         builder.add_mesh_primitive(mesh_cylinder, m_dark, v, n, idx)
         # Gold Retaining Rings on Vials
-        v, n, idx = create_cylinder(bx, by, z0=-0.01, z1=0.01, radius=0.042, sides=14)
+        v, n, idx = create_cylinder(bx, by, z0=-0.012, z1=0.012, radius=0.042, sides=14)
         builder.add_mesh_primitive(mesh_cylinder, m_gold, v, n, idx)
 
     # ══════════════════════════════════════════════════════════════
     # 3. BARREL ASSEMBLY MESH (Pivot at X=0.0, Y=0.48, Z=0.55)
-    # Coordinates relative to Z=0.55 (Cannon configuration)
+    # Extends forward in Cannon mode, commanding high-tech sniper profile
     # ══════════════════════════════════════════════════════════════
     mesh_barrel = builder.create_mesh("Mesh_BarrelAssembly")
     
-    # Inner Steel Rifled Barrel (local Z=0.05 to 0.44)
-    v, n, idx = create_cylinder(0.0, 0.0, z0=0.05, z1=0.44, radius=0.075, sides=18)
+    # Inner Steel Rifled Barrel (local Z=0.04 to 0.52)
+    v, n, idx = create_cylinder(0.0, 0.0, z0=0.04, z1=0.52, radius=0.072, sides=18)
     builder.add_mesh_primitive(mesh_barrel, m_dark, v, n, idx)
     
-    # Outer Octagonal Shroud (local Z=0.05 to 0.34)
-    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.22, height=0.20, z0=0.05, z1=0.34, chamfer=0.038)
+    # Outer Octagonal Faceted Shroud (local Z=0.04 to 0.40)
+    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.21, height=0.19, z0=0.04, z1=0.40, chamfer=0.035)
     builder.add_mesh_primitive(mesh_barrel, m_white, v, n, idx)
     
+    # Crimson Chamfer Highlights along Shroud Ridge
+    for sy in [-0.098, 0.098]:
+        v, n, idx = create_chamfered_box(0.0, sy, width=0.14, height=0.012, z0=0.06, z1=0.38, chamfer=0.003)
+        builder.add_mesh_primitive(mesh_barrel, m_red, v, n, idx)
+        
     # Longitudinal Vented Heat Gills (Left & Right Flanks)
-    for side_x in [-0.112, 0.112]:
-        for vent_z in [0.10, 0.17, 0.24]:
+    for side_x in [-0.107, 0.107]:
+        for vent_z in [0.11, 0.19, 0.27, 0.35]:
             # Recessed glowing cyan plasma vent
-            v, n, idx = create_chamfered_box(side_x, 0.0, width=0.008, height=0.065, z0=vent_z - 0.022, z1=vent_z + 0.022, chamfer=0.002)
+            v, n, idx = create_chamfered_box(side_x, 0.0, width=0.008, height=0.062, z0=vent_z - 0.024, z1=vent_z + 0.024, chamfer=0.002)
             builder.add_mesh_primitive(mesh_barrel, m_cyan, v, n, idx)
             # Dark louver grille cover
-            v, n, idx = create_chamfered_box(side_x * 0.99, 0.0, width=0.004, height=0.060, z0=vent_z - 0.004, z1=vent_z + 0.004, chamfer=0.001)
+            v, n, idx = create_chamfered_box(side_x * 0.99, 0.0, width=0.004, height=0.058, z0=vent_z - 0.004, z1=vent_z + 0.004, chamfer=0.001)
             builder.add_mesh_primitive(mesh_barrel, m_dark, v, n, idx)
             
-    # Dual-Port Compensator Muzzle Brake (local Z=0.34 to 0.44)
-    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.205, height=0.185, z0=0.34, z1=0.44, chamfer=0.032)
+    # Dual-Port Compensator Muzzle Brake (local Z=0.40 to 0.52)
+    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.195, height=0.175, z0=0.40, z1=0.52, chamfer=0.030)
     builder.add_mesh_primitive(mesh_barrel, m_dark, v, n, idx)
     # Side Muzzle Baffle Ports
-    for side_x in [-0.105, 0.105]:
-        v, n, idx = create_chamfered_box(side_x, 0.0, width=0.012, height=0.075, z0=0.36, z1=0.42, chamfer=0.004)
+    for side_x in [-0.100, 0.100]:
+        v, n, idx = create_chamfered_box(side_x, 0.0, width=0.012, height=0.070, z0=0.42, z1=0.50, chamfer=0.004)
         builder.add_mesh_primitive(mesh_barrel, m_red, v, n, idx)
         
     # Luminous Cyan Plasma Muzzle Ring & Gold Crown
-    v, n, idx = create_cylinder(0.0, 0.0, z0=0.435, z1=0.455, radius=0.068, sides=18)
+    v, n, idx = create_cylinder(0.0, 0.0, z0=0.515, z1=0.535, radius=0.066, sides=18)
     builder.add_mesh_primitive(mesh_barrel, m_cyan, v, n, idx)
-    v, n, idx = create_cylinder(0.0, 0.0, z0=0.450, z1=0.465, radius=0.064, sides=18)
+    v, n, idx = create_cylinder(0.0, 0.0, z0=0.530, z1=0.545, radius=0.062, sides=18)
     builder.add_mesh_primitive(mesh_barrel, m_gold, v, n, idx)
     
-    # Top Bayonet Crest (local Z=0.0 to 0.52)
-    bayonet_s = [[0.0, 0.725 - 0.48], [0.042, 0.685 - 0.48], [0.0, 0.580 - 0.48], [-0.042, 0.685 - 0.48]]
-    bayonet_m = [[0.0, 0.690 - 0.48], [0.024, 0.655 - 0.48], [0.0, 0.585 - 0.48], [-0.024, 0.655 - 0.48]]
-    bayonet_e = [[0.0, 0.640 - 0.48], [0.003, 0.615 - 0.48], [0.0, 0.590 - 0.48], [-0.003, 0.615 - 0.48]]
+    # Tri-Prong Magnetic Hydro-Focus Calipers (Particle Accelerator Muzzle Prongs)
+    for prong_i in range(3):
+        p_ang = (prong_i / 3.0) * 2 * math.pi + (math.pi / 6.0)
+        px = math.cos(p_ang) * 0.082
+        py = math.sin(p_ang) * 0.082
+        # Tapered focus needle prong
+        v, n, idx = create_cylinder(px, py, z0=0.48, z1=0.58, radius=0.012, sides=10)
+        builder.add_mesh_primitive(mesh_barrel, m_dark, v, n, idx)
+        v, n, idx = create_cylinder(px, py, z0=0.54, z1=0.59, radius=0.007, sides=8)
+        builder.add_mesh_primitive(mesh_barrel, m_cyan, v, n, idx)
+        v, n, idx = create_cylinder(px, py, z0=0.585, z1=0.595, radius=0.009, sides=8)
+        builder.add_mesh_primitive(mesh_barrel, m_gold, v, n, idx)
+
+    # Top Bayonet Crest (local Z=0.0 to 0.58)
+    bayonet_s = [[0.0, 0.720 - 0.48], [0.040, 0.680 - 0.48], [0.0, 0.580 - 0.48], [-0.040, 0.680 - 0.48]]
+    bayonet_m = [[0.0, 0.680 - 0.48], [0.022, 0.650 - 0.48], [0.0, 0.585 - 0.48], [-0.022, 0.650 - 0.48]]
+    bayonet_e = [[0.0, 0.630 - 0.48], [0.003, 0.610 - 0.48], [0.0, 0.590 - 0.48], [-0.003, 0.610 - 0.48]]
     v, n, idx = create_lofted_poly([
         [[p[0], p[1], 0.0] for p in bayonet_s],
-        [[p[0], p[1], 0.32] for p in bayonet_m],
-        [[p[0], p[1], 0.52] for p in bayonet_e]
+        [[p[0], p[1], 0.35] for p in bayonet_m],
+        [[p[0], p[1], 0.58] for p in bayonet_e]
     ], caps=True)
     builder.add_mesh_primitive(mesh_barrel, m_red, v, n, idx)
     
-    # Under-Barrel Stabilizer Keel (local Z=-0.19 to 0.36)
-    under_s = [[0.0, 0.400 - 0.48], [0.036, 0.355 - 0.48], [0.0, 0.280 - 0.48], [-0.036, 0.355 - 0.48]]
+    # Under-Barrel Stabilizer Keel
+    under_s = [[0.0, 0.400 - 0.48], [0.035, 0.355 - 0.48], [0.0, 0.280 - 0.48], [-0.035, 0.355 - 0.48]]
     under_e = [[0.0, 0.425 - 0.48], [0.003, 0.400 - 0.48], [0.0, 0.375 - 0.48], [-0.003, 0.400 - 0.48]]
-    v, n, idx = create_tapered_extrusion(under_s, under_e, z0=-0.19, z1=0.36, caps=True)
+    v, n, idx = create_tapered_extrusion(under_s, under_e, z0=-0.18, z1=0.42, caps=True)
     builder.add_mesh_primitive(mesh_barrel, m_red, v, n, idx)
 
     # ══════════════════════════════════════════════════════════════
     # 4. SCULPTED FOX-FLAME TSUBA WINGS (Pivots at X=±0.12, Y=0.52, Z=0.59)
-    # Multi-layered flame quillons that fan out majestically in Blade Mode!
+    # 3-Tiered sculpted flame quillons with Sukashi pierced negative space
     # ══════════════════════════════════════════════════════════════
-    # Left Wing (TsubaLeft): Swept outward toward negative X
     mesh_tsuba_l = builder.create_mesh("Mesh_TsubaLeft")
     
-    # Layer 1: Crimson Flame Wing Blade
-    pts_wing_l = [
-        [0.00,  0.035],
-        [-0.07, 0.075],
-        [-0.15, 0.088],
-        [-0.23, 0.055],
-        [-0.26, 0.010],
-        [-0.19, -0.025],
-        [-0.12, -0.045],
-        [0.00,  -0.035]
+    # Tier 1: Dark Tactical Alloy Base Plate
+    pts_base_l = [
+        [0.00,  0.038],
+        [-0.06, 0.072],
+        [-0.14, 0.082],
+        [-0.22, 0.050],
+        [-0.25, 0.005],
+        [-0.18, -0.028],
+        [-0.11, -0.046],
+        [0.00,  -0.038]
     ]
-    v, n, idx = create_extrusion(pts_wing_l, z0=-0.025, z1=0.035, caps=True)
+    v, n, idx = create_extrusion(pts_base_l, z0=-0.022, z1=0.032, caps=True)
+    builder.add_mesh_primitive(mesh_tsuba_l, m_dark, v, n, idx)
+    
+    # Tier 2: Crimson Flame Feather Wing
+    pts_wing_l = [
+        [0.00,  0.034],
+        [-0.07, 0.082],
+        [-0.16, 0.095],
+        [-0.25, 0.058],
+        [-0.28, 0.008],
+        [-0.20, -0.025],
+        [-0.12, -0.042],
+        [0.00,  -0.032]
+    ]
+    v, n, idx = create_extrusion(pts_wing_l, z0=-0.016, z1=0.026, caps=True)
     builder.add_mesh_primitive(mesh_tsuba_l, m_red, v, n, idx)
     
-    # Layer 2: Polished Cyber-Gold Crest Ridge along top quillon
+    # Tier 3: Polished Cyber-Gold Crest Spine
     pts_crest_l = [
-        [-0.02, 0.040],
-        [-0.08, 0.082],
-        [-0.16, 0.096],
-        [-0.24, 0.062],
-        [-0.265, 0.020],
-        [-0.23, 0.032],
-        [-0.15, 0.065],
-        [-0.06, 0.050]
+        [-0.02, 0.042],
+        [-0.08, 0.090],
+        [-0.17, 0.104],
+        [-0.26, 0.066],
+        [-0.285, 0.018],
+        [-0.24, 0.034],
+        [-0.15, 0.070],
+        [-0.06, 0.052]
     ]
-    v, n, idx = create_extrusion(pts_crest_l, z0=-0.015, z1=0.028, caps=True)
+    v, n, idx = create_extrusion(pts_crest_l, z0=-0.010, z1=0.020, caps=True)
     builder.add_mesh_primitive(mesh_tsuba_l, m_gold, v, n, idx)
     
-    # Layer 3: Cyan Energy Conduit Channel
-    v, n, idx = create_chamfered_box(-0.11, 0.015, width=0.12, height=0.016, z0=-0.026, z1=0.036, chamfer=0.004)
+    # Tier 4: Core Radiant Cyan Energy Conduit Channel
+    v, n, idx = create_chamfered_box(-0.11, 0.016, width=0.13, height=0.014, z0=-0.024, z1=0.034, chamfer=0.003)
     builder.add_mesh_primitive(mesh_tsuba_l, m_cyan, v, n, idx)
     
-    # Right Wing (TsubaRight): Mirrored outward toward positive X
+    # Right Wing (TsubaRight): Mirrored outward
     mesh_tsuba_r = builder.create_mesh("Mesh_TsubaRight")
     
+    pts_base_r = [[-p[0], p[1]] for p in reversed(pts_base_l)]
+    v, n, idx = create_extrusion(pts_base_r, z0=-0.022, z1=0.032, caps=True)
+    builder.add_mesh_primitive(mesh_tsuba_r, m_dark, v, n, idx)
+    
     pts_wing_r = [[-p[0], p[1]] for p in reversed(pts_wing_l)]
-    v, n, idx = create_extrusion(pts_wing_r, z0=-0.025, z1=0.035, caps=True)
+    v, n, idx = create_extrusion(pts_wing_r, z0=-0.016, z1=0.026, caps=True)
     builder.add_mesh_primitive(mesh_tsuba_r, m_red, v, n, idx)
     
     pts_crest_r = [[-p[0], p[1]] for p in reversed(pts_crest_l)]
-    v, n, idx = create_extrusion(pts_crest_r, z0=-0.015, z1=0.028, caps=True)
+    v, n, idx = create_extrusion(pts_crest_r, z0=-0.010, z1=0.020, caps=True)
     builder.add_mesh_primitive(mesh_tsuba_r, m_gold, v, n, idx)
     
-    v, n, idx = create_chamfered_box(0.11, 0.015, width=0.12, height=0.016, z0=-0.026, z1=0.036, chamfer=0.004)
+    v, n, idx = create_chamfered_box(0.11, 0.016, width=0.13, height=0.014, z0=-0.024, z1=0.034, chamfer=0.003)
     builder.add_mesh_primitive(mesh_tsuba_r, m_cyan, v, n, idx)
 
     # ══════════════════════════════════════════════════════════════
     # 5. BLADE ASSEMBLY MESH (Pivot at X=0.0, Y=0.52, Z=0.60)
     # Mastercrafted Japanese Katana:
-    # - Polished stepped gold Habaki collar
-    # - Authentic curved Katana spine (Sori curvature)
-    # - Chisel tip (Kissaki) with swept ridge lines
-    # - Inlaid fuller groove (Bo-Hi) with radiant Cyan Plasma
-    # - Radiant Cyan Plasma cutting edge & Crimson reinforced spine
+    # - Stepped Gold Habaki with Seppa Bronze Washers
+    # - Elegant Sori Curvature & Razor Shinogi-Zukuri Proportions
+    # - Undulating Hamon Tempering Wave Ribbon
+    # - Mirror-Polished Folded Tamahagane Katana Steel Body
+    # - Radiant Celestial Cyan Plasma Cutting Edge
+    # - Swept O-Kissaki Chisel Tip with Yokote Line
+    # - Lacquered Crimson Spine Runner & Dual Bo-Hi Fullers
     # ══════════════════════════════════════════════════════════════
     mesh_blade = builder.create_mesh("Mesh_BladeAssembly")
     
-    # ── STEPPED GOLD HABAKI (COLLAR) (local Z = 0.00 to 0.045) ──
-    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.10, height=0.17, z0=0.0, z1=0.035, chamfer=0.015)
+    # ── TRADITIONAL STEPPED GOLD HABAKI & BRONZE SEPPA WASHERS ──
+    # Seppa Bronze Spacer Washer at blade base (local Z = -0.008 to 0.002)
+    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.088, height=0.115, z0=-0.008, z1=0.002, chamfer=0.012)
+    builder.add_mesh_primitive(mesh_blade, m_seppa, v, n, idx)
+    
+    # Stepped Gold Habaki Collar (local Z = 0.002 to 0.046)
+    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.076, height=0.096, z0=0.002, z1=0.032, chamfer=0.012)
     builder.add_mesh_primitive(mesh_blade, m_gold, v, n, idx)
-    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.088, height=0.155, z0=0.035, z1=0.046, chamfer=0.012)
+    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.066, height=0.084, z0=0.032, z1=0.046, chamfer=0.010)
     builder.add_mesh_primitive(mesh_blade, m_gold, v, n, idx)
-    # Diagonal engraved groove across Habaki
-    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.092, height=0.012, z0=0.016, z1=0.024, chamfer=0.003)
+    # Yasurime file stroke groove across Habaki
+    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.070, height=0.008, z0=0.016, z1=0.022, chamfer=0.002)
     builder.add_mesh_primitive(mesh_blade, m_dark, v, n, idx)
 
-    # ── AUTHENTIC CURVED KATANA BLADE BODY (Lofted along Sori Curve) ──
-    # Total blade length = 1.28m!
-    # Sori curvature: Y rises gracefully along Z: y_sori(z) = 0.065 * ((z - 0.04) / 1.24) ** 1.7
-    n_blade_slices = 12
-    blade_slices_white = []
+    # ── AUTHENTIC KATANA BLADE BODY (Lofted along Sori Curve) ──
+    # Length: z_min=0.046 to z_max=1.42 (1.374m Katana reach)
+    # Proportions: Height base 0.078m -> tip 0.046m. Width base 0.020m -> tip 0.010m.
+    n_blade_slices = 16
+    blade_slices_steel = []
+    blade_slices_hamon = []
     blade_slices_cyan_edge = []
     blade_slices_crimson_spine = []
     blade_slices_fuller = []
     
-    z_min = 0.045
-    z_max = 1.28
+    z_min = 0.046
+    z_max = 1.42
     
     for s_idx in range(n_blade_slices):
         t = s_idx / (n_blade_slices - 1) # 0.0 at base to 1.0 at tip
         cur_z = z_min + t * (z_max - z_min)
         
-        # Sori height rise
-        y_cur = 0.065 * (t ** 1.7)
+        # Sori upward curvature
+        y_cur = 0.048 * (t ** 1.6)
         
-        # Taper factors: width and height gently decrease toward tip
-        w_taper = max(0.08, 1.0 - 0.42 * t)
-        h_taper = max(0.12, 1.0 - 0.32 * t)
+        # Proportional taper
+        w_taper = max(0.20, 1.0 - 0.48 * t)
+        h_taper = max(0.25, 1.0 - 0.40 * t)
         
-        # Dimensions at current slice
-        hw_shinogi = 0.022 * w_taper  # Widest ridge half-width
-        hw_edge    = 0.002            # Sharp cutting edge half-width
-        hw_spine   = 0.014 * w_taper  # Reinforced spine half-width
+        # Dimensions: Sleek, lethal, authentic Katana cross-section
+        hw_shinogi = 0.010 * w_taper  # Half-width at ridge line (20mm down to 10mm)
+        hw_edge    = 0.001            # Razor-sharp edge
+        hw_spine   = 0.006 * w_taper  # Flat reinforced spine
         
-        y_spine_top = y_cur + 0.14 * h_taper
-        y_shinogi   = y_cur + 0.01 * h_taper
-        y_edge      = y_cur - 0.12 * h_taper
+        # Vertical blade positions relative to local Y=0
+        blade_h = 0.076 * h_taper
+        y_spine_top = y_cur + 0.50 * blade_h
+        y_shinogi   = y_cur + 0.12 * blade_h
+        y_hamon     = y_cur - 0.20 * blade_h + math.sin(t * 26.0) * 0.003
+        y_edge      = y_cur - 0.50 * blade_h
         
-        # For Kissaki (tip region: t >= 0.85), edge sharply curves up to meet spine!
-        if t >= 0.85:
-            tip_t = (t - 0.85) / 0.15
-            y_edge += tip_t * 0.22 * h_taper
+        # O-Kissaki chisel tip swept geometry (t >= 0.82)
+        if t >= 0.82:
+            tip_t = (t - 0.82) / 0.18
+            # Edge sweeps upward in an aggressive Katana kissaki curve
+            y_edge += tip_t * 0.95 * blade_h
+            y_hamon += tip_t * 0.65 * blade_h
             hw_shinogi *= (1.0 - tip_t * 0.85)
-            hw_spine   *= (1.0 - tip_t * 0.80)
+            hw_spine   *= (1.0 - tip_t * 0.82)
             
-        # 1. Main White Ceramic/Steel Blade Body (Diamond / Shinogi-Zukuri Cross Section)
-        poly_body = [
+        # 1. Main Tamahagane Mirror Steel Blade Body (Shinogi-Zukuri diamond cross-section)
+        poly_steel = [
             [0.0,         y_spine_top, cur_z],
             [hw_shinogi,  y_shinogi,   cur_z],
-            [0.0,         y_edge,      cur_z],
+            [hw_shinogi * 0.5, y_hamon, cur_z],
+            [0.0,         y_hamon,     cur_z],
+            [-hw_shinogi * 0.5, y_hamon, cur_z],
             [-hw_shinogi, y_shinogi,   cur_z]
         ]
-        blade_slices_white.append(poly_body)
+        blade_slices_steel.append(poly_steel)
         
-        # 2. Glowing Cyan Plasma Cutting Edge Ribbon
+        # 2. Undulating Luminescent Hamon Tempering Wave Ribbon
+        poly_hamon = [
+            [hw_shinogi * 0.5, y_hamon,         cur_z],
+            [hw_shinogi * 0.25, (y_hamon + y_edge) * 0.5, cur_z],
+            [-hw_shinogi * 0.25, (y_hamon + y_edge) * 0.5, cur_z],
+            [-hw_shinogi * 0.5, y_hamon,         cur_z]
+        ]
+        blade_slices_hamon.append(poly_hamon)
+        
+        # 3. Glowing Celestial Cyan Plasma Cutting Edge
         poly_edge = [
-            [hw_shinogi * 0.35, y_shinogi - 0.02 * h_taper, cur_z],
-            [hw_edge,           y_edge,                     cur_z],
-            [-hw_edge,          y_edge,                     cur_z],
-            [-hw_shinogi * 0.35, y_shinogi - 0.02 * h_taper, cur_z]
+            [hw_shinogi * 0.25, (y_hamon + y_edge) * 0.5, cur_z],
+            [hw_edge,           y_edge, cur_z],
+            [-hw_edge,          y_edge, cur_z],
+            [-hw_shinogi * 0.25, (y_hamon + y_edge) * 0.5, cur_z]
         ]
         blade_slices_cyan_edge.append(poly_edge)
         
-        # 3. Crimson Reinforced Spine Runner (Back of Blade)
+        # 4. Lacquered Crimson Spine Runner (Mune)
         poly_spine = [
-            [0.0,        y_spine_top + 0.012 * h_taper, cur_z],
-            [hw_spine,   y_spine_top - 0.015 * h_taper, cur_z],
-            [0.0,        y_spine_top - 0.025 * h_taper, cur_z],
-            [-hw_spine,  y_spine_top - 0.015 * h_taper, cur_z]
+            [0.0,        y_spine_top + 0.006 * h_taper, cur_z],
+            [hw_spine,   y_spine_top - 0.005 * h_taper, cur_z],
+            [0.0,        y_spine_top - 0.010 * h_taper, cur_z],
+            [-hw_spine,  y_spine_top - 0.005 * h_taper, cur_z]
         ]
         blade_slices_crimson_spine.append(poly_spine)
         
-        # 4. Inlaid Cyan Energy Fuller (Bo-Hi) running along upper cheek
-        if t <= 0.82:
-            fuller_y = y_shinogi + 0.045 * h_taper
+        # 5. Dual Inlaid Cyan Bo-Hi Fullers running along shinogi flats
+        if t <= 0.80:
+            fuller_y = y_shinogi + 0.012 * h_taper
             poly_fuller = [
-                [hw_shinogi * 0.95,  fuller_y + 0.015, cur_z],
+                [hw_shinogi * 0.92,  fuller_y + 0.006, cur_z],
                 [hw_shinogi * 1.05,  fuller_y,         cur_z],
-                [hw_shinogi * 0.95,  fuller_y - 0.015, cur_z],
-                [-hw_shinogi * 0.95, fuller_y - 0.015, cur_z],
+                [hw_shinogi * 0.92,  fuller_y - 0.006, cur_z],
+                [-hw_shinogi * 0.92, fuller_y - 0.006, cur_z],
                 [-hw_shinogi * 1.05, fuller_y,         cur_z],
-                [-hw_shinogi * 0.95, fuller_y + 0.015, cur_z]
+                [-hw_shinogi * 0.92, fuller_y + 0.006, cur_z]
             ]
             blade_slices_fuller.append(poly_fuller)
 
     # Loft Blade Meshes
-    v, n, idx = create_lofted_poly(blade_slices_white, caps=True)
-    builder.add_mesh_primitive(mesh_blade, m_white, v, n, idx)
+    v, n, idx = create_lofted_poly(blade_slices_steel, caps=True)
+    builder.add_mesh_primitive(mesh_blade, m_steel, v, n, idx)
+    
+    v, n, idx = create_lofted_poly(blade_slices_hamon, caps=True)
+    builder.add_mesh_primitive(mesh_blade, m_hamon, v, n, idx)
     
     v, n, idx = create_lofted_poly(blade_slices_cyan_edge, caps=True)
     builder.add_mesh_primitive(mesh_blade, m_cyan, v, n, idx)
@@ -860,14 +935,6 @@ def build_unified_kitsune(output_path="assets/blaster_kitsune_unified.glb"):
     # ══════════════════════════════════════════════════════════════
     # HIERARCHY NODES (Preserves exact node IDs & names for Main.gd)
     # ══════════════════════════════════════════════════════════════
-    # Node 0: Root
-    # Node 1: Chassis (mesh 0)
-    # Node 2: Cylinder (mesh 1, trans [0.0, 0.48, 0.18])
-    # Node 3: BarrelAssembly (mesh 2, trans [0.0, 0.48, 0.55])
-    # Node 4: TsubaLeft (mesh 3, trans [-0.12, 0.52, 0.59])
-    # Node 5: TsubaRight (mesh 4, trans [0.12, 0.52, 0.59])
-    # Node 6: BladeAssembly (mesh 5, trans [0.0, 0.52, 0.60])
-    
     builder.add_node("KitsuneRoot", children=[1, 2, 3, 4, 5, 6])
     builder.add_node("Chassis", mesh_idx=mesh_chassis)
     builder.add_node("Cylinder", mesh_idx=mesh_cylinder, translation=[0.0, 0.48, 0.18])
@@ -877,6 +944,7 @@ def build_unified_kitsune(output_path="assets/blaster_kitsune_unified.glb"):
     builder.add_node("BladeAssembly", mesh_idx=mesh_blade, translation=[0.0, 0.52, 0.60])
     
     builder.build_glb(output_path)
+
 
 if __name__ == "__main__":
     build_unified_kitsune()
