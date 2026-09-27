@@ -6,60 +6,58 @@ All notable changes to the Summer Nights project will be documented in this file
 *(Note: This release corresponds to v1.6 on itch.io)*
 
 ### Added
-* Celestial Awakening Dedicated HUD Meter & Shared Power Up Pool: Unified Catastrom and Celestial Awakening into a shared Power Up charge pool. Swapping between any weapon preserves the exact charge level on the HUD meter (Purple Catastrom for Guns 1–5, Electric Cyan Celestial Awakening for Kitsune Buster IX). Pressing `[F]` exclusively activates the held weapon's ultimate (Catastrom or Celestial Awakening), consuming the full charge and resetting the shared pool to 0%.
-* Celestial Awakening Full Charge Toast Notification: Added a dedicated toast notification ("CELESTIAL AWAKENING READY [F]" / "신성의 각성 준비됨") that triggers when the unified Power Up meter reaches 100% while wielding the Kitsune Buster IX (or when swapping to the Kitsune Buster IX while fully charged). Features an electric cyan border (`Color(0.35, 0.95, 1.0)`), the bespoke `meter_celestial.svg` starburst icon, and localized action guidance ("UNLEASH THE FOX NINE [F]"), matching the behavior of the Catastrom full charge alert.
-* Celestial Awakening Energy Aura & Ethereal Domain Filter: Implemented a dedicated 3D post-processing filter (`celestial_mix` in `retro_postprocess.gdshader` on CanvasLayer 0) applying midnight indigo shadows, optical highlight bloom on the sun and tails, and peripheral spacetime refraction below the HUD. Paired with a shader-driven radial energy vignette (`celestial_vignette.gdshader`), delicate procedural stardust motes, full 360° depleting crosshair ring with kitsune bloom diamond, breathing weapon plate glow, holographic cyan text shadows on LVL/TIME/SCORE labels, and electric cyan floating damage numbers. Base HUD elements (gold typography, retro plates) remain completely untouched.
-* Celestial Awakening (Fox Nine 3D Tails): Implemented procedural 9-tail celestial hydro-ribbon system (CelestialTails.gd) exclusive to the Kitsune Buster IX, featuring staggered henshin bloom, multi-octave traveling waves, 3D ribbon twist, aim inertia sway, and additive cyan/frost glow framing the first-person view.
-* 9-Stream Converging Hydro-Cannon & Infinite Reservoir: Enabled 9-stream spiraling hydro-vortex cannon (CelestialHydroCannon.gd) during Kitsune Buster's Celestial Awakening, locked water tank at 100% with infinite capacity, 2.0x cooling power, and implemented close-range Creation Aura deflecting flares with '+REWRITE!' combat feedback. Swapping weapons cancels the awakening state.
-* 6th Secret Weapon (Kitsune Buster IX): Added a custom tokusatsu-inspired celestial water blaster featuring an open holographic reflex sight, 6-way weapon wheel integration, a translucent amber-gold revolving Kyubi chamber exposing 9 pressurized cyan water vials, custom spray particles, and dedicated diamond crosshair.
-* 4 New Achievements: Expanded achievements from 8 to 12 total ("Endurance" for surviving 25 Endless waves, "Marathon Runner" for 50 Endless waves, "Arsenal Expert" for using all 5 weapons in a single run, and "Ice Breaker" for 50 lifetime Ice Blasts) with real-time progress tracking, localized English/Korean titles & descriptions, and automatic scrollable menu presentation.
-* Best Endless Wave Tracking: Added persistent `best_wave` tracking that saves/loads alongside survival time, displays on the title screen ("BEST ENDLESS: WAVE X (MM:SS)"), includes an in-game "NEW BEST!" celebration badge upon game over, and records to the Lifetime Stats screen alongside new Ice Blasts Used metrics.
-* Celestial Awakening Audio Cues: Integrated dedicated CC0 sound effects for mode activation (anime/ki Henshin power swell, `celestial_activate.wav` by TheLittleCrow) and deactivation (decelerating sci-fi cooldown dissipation, `celestial_deactivate.wav` by bevibeldesign) with mutual playback cancellation.
-* Kitsune Buster IX Fluid Mode Transformation (Cannon & Blade): Implemented real-time mechanical transformation using a unified articulated 3D model (`blaster_kitsune_unified.glb`). Switching between Cannon Mode and Blade Mode features synchronized multi-component animations: 360° revolving Kyubi chamber spin, retractable barrel/shroud extension and retraction, folding/unfolding winged tsuba crossguard, telescoping katana blade deployment, and dynamic viewmodel stance shifting between centered reflex sightline and diagonal Katana guard. Toggle with `[X]`, Middle Mouse, or Controller `[X]` with tactical switch audio (`switch-b.ogg`) and dynamic HUD reticles.
-* Kitsune Blade Melee Slash & Flare Parry: Implemented high-impact sweeping melee arc ($60^\circ$ FOV, 8.5m range) with CC0 sound effects (`celestial_slash.wav` by Nomagician), direct cooling burst damage to the Sun ($8.5\text{ base} \times \text{crit} \times \text{cooling}$), solar flare cleaving with 15% water parry refund, and radiant cyan crescent shockwave projectiles during Celestial Awakening.
-* Celestial Hydro-Blade & Water Cutting Effects: Implemented procedural water cutting visuals (`CelestialHydroBlade.gd`) for Kitsune Buster IX Blade Mode during Celestial Awakening. Features a tight translucent hydro-tube sheath wrapping the Katana cross-section (24 ring segments, 10-vert resolution with animated breathing pulse), 6 helical spiral water streams orbiting the blade axis with sori-conforming trajectory, a bright cutting-edge glow ribbon, high-impact 120° sweeping water crescent melee ribbons on slashes, and colossal 6.4m flying celestial hydro-crescent projectiles that cleave solar flares along their trajectory and trigger expanding hydro-burst rings on the Sun.
-* 13th Achievement ("The Highlight" / "클라이맥스"): Added achievement and permanent tracking for triggering Celestial Awakening with the Kitsune Buster IX.
-* Celestial Foxfire Slash Wave Emission: Added a razor-sharp golden-white flame crescent projectile with trailing spark embers that travels directly along the crosshair ray at 85 m/s on blade swings, providing clear emission visual feedback analogous to gun water spray.
-* Kitsune Buster IX Dynamic Hydro-Tube Pulsation: Implemented real-time emissive pulsation for the 9 revolving cylinder vials, under-barrel coolant lines, and internal conduits. Features an oceanic cyan breathing pulse when idle/recharging (2.8 rad/s), rapid hydrodynamic discharge surge when firing (10 rad/s), automatic color shift to urgent warning amber/orange when water drops below 25%, dim exhausted twilight cyan when empty, radiant overcharged starlight cyan with optical bloom during Celestial Awakening, and gentle motion-reduced modulation respecting accessibility settings.
-* Kitsune Buster IX Liquid Slosh Inertia & Automatic Barrel Revolving: Implemented physical fluid inertia and rotational momentum for the revolving Kyubi cylinder and water vials. Fast camera rotation triggers physical spring-damper pitch/yaw tilt and internal liquid displacement visible through the skeletonized receiver window, complemented by subtle viewmodel fluid-weight sway. Firing the Cannon automatically accelerates cylinder rotation (up to 22 rad/s in Celestial Awakening) with viscous spin-down drag upon trigger release, while melee Blade slashes impart high-speed rotational spin impulses (32 rad/s) that settle smoothly.
-* Solar Convergence Open-Source CC0 Drone Audio Overhaul: Integrated 7 authentic CC0 sound recordings by rubberduck (OpenGameArt): a multi-variation 4-voice polyphonic metal impact pool (`drone_metal_hit_01.ogg` through `04.ogg`) with randomized stream selection and pitch modulation ($0.94\times - 1.18\times$), multi-layered mechanical water destruction (`drone_shatter_metal.ogg` heavy metal slam + `drone_shatter_glass.ogg` ceramic fracture + sub-bass core blast), and colossal multi-layered cryogenic Ice Shatter (`drone_ice_shatter_glass.ogg` glass cascade + `ice_hit.ogg` glacial detonation + heavy metal rupture).
-* Solar Convergence — Orbital Ocular Swarm & Bespoke 3D Drone Model (Phase 1): Implemented the first phase of the Solar Convergence boss encounter featuring a bespoke low-poly Tokusatsu 3D GLB model (`solar_eye_drone.glb`). The drone is crafted in the game's retro PS1/arcade aesthetic with an octagonal beveled cyber-gold armor ring, 4 cardinal vernier thruster blocks with glowing cyan exhaust slits, sweeping falcon-crest audience glare wings with Shinto crimson inlays, an internal dark obsidian gimbal core, 8 interlocking titanium iris shutter blades, a deep incandescent amber-crimson solar pupil lens with radiant bloom, and rear heatsink radiator grilles. Drones orbit the Sun across multi-axis tilted 3D elliptical trajectories, stare directly down the player's sightline, physically intercept and absorb water streams, visibly transition through 3 health color states (Healthy Gold → Damaged Orange → Critical Overheat Crimson) with electric cyan hit flashes and mechanical recoil twitches, and can be shattered instantly with an Ice Blast (+500 PTS / +COOLING CHILL!). Deploys automatically on Endless Apex Boss Waves (Wave 20+) or via debug toggle ([O]).
+* Power Up Shared Pool & Dynamic Meter: Unified Catastrom and Celestial Awakening into a shared pool; HUD meter swaps dynamically between Purple (Guns 1–5) and Cyan (Kitsune Buster IX) with charge preserved.
+* Celestial Awakening Full Charge Toast: Added cyan toast notification ("CELESTIAL AWAKENING READY [F]") with bespoke starburst icon when the Power Up meter reaches 100% on the Kitsune Buster IX.
+* Celestial Awakening Ethereal Filter & HUD FX: Layer 0 post-processing filter with indigo split-toning, cyan energy vignette, 360° reticle timer ring, and holographic text shadows.
+* Fox Nine 3D Tails: Procedural 9-tail celestial hydro-ribbon system (CelestialTails.gd) with staggered bloom, traveling waves, and cyan glow.
+* 9-Stream Hydro-Cannon: Spiraling 9-stream hydro-vortex with infinite water capacity, 2.0x cooling, and close-range flare-deflecting Creation Aura during Celestial Awakening.
+* Kitsune Buster IX: Tokusatsu-inspired celestial water blaster with 6-way weapon wheel integration, revolving 9-vial Kyubi cylinder, and diamond reticle.
+* 4 New Achievements: Added "Endurance" (Wave 25), "Marathon Runner" (Wave 50), "Arsenal Expert" (5 weapons used), and "Ice Breaker" (50 Ice Blasts) with live progress tracking.
+* Best Endless Wave Tracking: Persistent wave record displayed on the Title Screen ("BEST ENDLESS: WAVE X") and game over celebration badge.
+* Celestial Awakening Audio: Dedicated CC0 activation swell and deactivation cooldown sound effects.
+* Kitsune Buster IX Dual Modes: Seamless real-time transformation between Cannon and Blade modes via `[X]` / MMB with synchronized 3D animations and reticle morphing.
+* Kitsune Blade Melee & Parry: 60° sweeping melee slash (8.5 cooling) that cleaves solar flares for +15% water parry refund.
+* 13th Achievement ("The Highlight"): Added achievement and lifetime stat tracking for triggering Celestial Awakening.
+* Foxfire Slash Wave: Emits an 85 m/s golden-white flame crescent along the crosshair ray on blade swings.
+* Hydro-Tube Emissive Pulsation: Real-time emissive breathing pulse across cylinder vials and coolant lines, shifting to amber below 25% water.
+* Liquid Slosh & Barrel Momentum: Fluid inertia tilt in vials and firing-accelerated cylinder rotation with viscous spin-down drag.
+* Drone CC0 Audio Overhaul: 7 authentic open-source recordings by rubberduck for multi-voice metal impacts, water shatters, and cryogenic ice shatters.
+* Solar Convergence Swarm (Phase 1): Boss encounter on Wave 20+ featuring 6–8 Solar Eye Drones orbiting the Sun, physically intercepting water streams (toggle: `[O]`).
 
-* Solar Eye Drone Stylized Visual & Color Overhaul: Realigned the Solar Eye Drone 3D model and shaders to fit the game's vibrant retro-arcade anime aesthetic. Replaced muddy high-metallic charcoal shading with radiant Sun-Gold & Solar Pearl Ivory armor plating, warm terracotta bronze chassis, Shinto vermilion inlays, and an incandescent amber-gold solar pupil lens featuring dynamic breathing pulsation (3.2–5.5 energy). Integrated Godot Toon shading (DIFFUSE_TOON, SPECULAR_TOON), golden sunset rim lighting (rim 0.85), warm backlight transmission, and enlarged in-game scale to 2.3x (~3.6m wingspan) for crisp silhouette readability and targeting from the beach.
-* Solar Eye Drone Procedural Crack Damage & Pre-Shatter Visuals: Implemented multi-tier procedural 3D crack fracture overlays and critical damage indicators on the Solar Eye Drones. As a drone takes water stream damage, Stage 1 hairline optical fissures appear across the lens and inner aperture ($HP \le 65\%$), transitioning to Stage 2 refined solar amber fracture lines ($HP \le 35\%$) with leaking coolant steam wisps and mechanical gyro shudder. Impending core failure ($HP \le 18\%$) triggers high-frequency structural spasms and subtle strobe pulsing, while preserving the drone's dignified Sun-Gold and Pearl Ivory armor plating without harsh red tinting.
-* Solar Convergence Drone Combat & Beach Terrain Clearance: Elevated the Sun's base height from $Y = 10.5$ to $Y = 13.5$ (+3.0m) and fine-tuned drone orbital geometry ($R = 11.8\text{m}–12.8\text{m}$, $R_y = 10.85\text{m}–11.77\text{m}$), completely preventing drone wings from clipping behind the beach sand dunes ($Y = -2.0\text{m}$) at the bottom of the orbit while keeping a generous clearance gap from the Sun's body (~8m radius) and fitting comfortably below the HUD. Preserved 6.5m Ice Blast cryogenic shockwave, coronal drone shielding, and Coolant Vent refund mechanics (+15% max water tank on destroy, +20% on Ice Shatter).
-* Kitsune Buster IX Blade Mode & Collar Overhaul: Redesigned Blade Mode front interface with 4 articulated mechanical aperture locking clamps and an energized containment well on the receiver collar. Upgraded blade assembly with a multi-tiered bronze Seppa and cyber-gold Habaki featuring illuminated cyan fox-flame micro-vents, 24-slice Sori curvature, distinct Japanese Yokote transverse ridge line dividing the blade body, upward-swept Boshi tempering wave wrapping around the Fukura, and sharp chisel O-Kissaki point geometry.
-* Kitsune Buster IX Cannon Muzzle Overhaul: Redesigned Cannon Mode front assembly with a tapered aerodynamic fox-fang cowl, high-velocity compensator brake with side exhaust baffles, stepped hydro-vortex compression nozzle with concentric gold/cyan injector rings, quad sculpted magnetic fox-fang calipers with cyan plasma guides and cyber-gold needle tips, low-profile optic rail with integrated front post sight, and under-barrel dual coolant manifold lines.
-* Controls Screen Unified "Power Up" Legend: Updated `[F]` (Keyboard) and `[RB]` (Xbox) labels in the Controls screen from "Catastrom" to "Power Up" ("파워 업" in Korean), unifying the ultimate ability label across both standard weapons (Catastrom) and Kitsune Buster IX (Celestial Awakening).
-* Kitsune Buster IX Celestial Model Polish: Enhanced the unified 3D model with authentic Katana curvature (sori), kissaki chisel tip, glowing cyan fuller groove, sculpted multi-layered fox-flame tsuba crossguards with cyber-gold crests, skeletonized receiver windows for direct first-person visibility of the spinning 9-vial Kyubi drum, and aerodynamic mecha fox-ear cowl fins.
-* Weapon Wheel Uniform Spacing: Replaced fixed angular wedge padding with a constant 12px linear gap, keeping slice borders parallel from inner to outer radius.
-* Weapon Wheel Info Panel: Overhauled bottom card layout with centered archetype tags, mini-meter stat bars, critical multiplier badge, golden hairline divider, and standardized typography.
-* Weapon Wheel Stat Bars: Made PWR and CAP progress bars responsive (`SIZE_EXPAND_FILL`) to fit container width, and increased stat group spacing to 10px.
-* Procedural Multi-Joint Seagull Rig: Upgraded seagulls with an articulated 2-joint wing rig (Shoulder/Elbow), aerodynamic folding, thrust bobbing, banked turns, dihedral gliding, and reactive escape behaviors.
-* Cloud Depth Parallax: Linked cloud drift speed dynamically to Z depth in CloudLayer.gd, creating natural atmospheric depth with faster near clouds and slower horizon drift.
-* Flare Interception Golden Ember Pop: Added a high-energy radiant golden ember particle burst with bloom when extinguishing solar flares with water.
-* Coronal Halo & Heat Waves: Added an unshaded additive coronal halo with organic concentric heat ripples that dynamically pulse, expand, and extinguish with the Sun's temperature (100°C to 0°C).
-* Lifetime Stats Icon Plates: Added 32x32 retro flat plates with gold monochrome category icons to each row in the Lifetime Stats screen.
-* Credits Synchronization: Synchronized in-game HUD Credits screen and bilingual READMEs with full attributions for Solar Eye Drone & Kitsune Buster IX 3D models, open-source CC0 drone impact and shatter audio by rubberduck, tactical mode switch SFX, celestial starburst meter icon, and procedural drone swarm and celestial awakening VFX systems.
-* Achievement & Buff Retro Icon Plates: Enclosed achievement and buff card icons in 64x64 retro flat plates (4px radii; gold border with monochrome gold icon for unlocked, steel border with mystery dark silhouette for locked) across Title Screen and HUD.
-* Game Over Frameless Stats Flow: Replaced bare end-of-run labels with a clean, dynamic frameless stats recap (32x32 retro plates with gold monochrome icons, localized typography, and inline milestone badges for Wave Reached, Survival Time, and Final Score) avoiding nested container clutter.
-* Settings Categorized Section Badges: Grouped settings rows into 3 distinct logical sections ("AUDIO", "GAMEPLAY & CONTROLS", "DISPLAY & SYSTEM") using tactile retro plate badges (4px radii, gold border), trailing golden hairline rules, balanced section clearance (36px between categories, 26px title/footer gap), and dynamic bilingual typography.
-* Settings Row Label Typography Contrast: Refined row label colors from uniform gold to high-contrast off-white body text (`Color(0.92, 0.92, 0.92, 0.95)`), establishing clear visual hierarchy between gold category badges/interactive controls and option labels.
-* Settings Refined Spacing: Fine-tuned vertical separation (VBox 10→12px, category clearance 28px, divider2 18px) to provide balanced breathing room between rows while preserving comfortable 70px+ top/bottom clearance on 720p.
-* Weapon Wheel Kitsune Blaster Preview: Configured Kitsune Buster IX in the weapon wheel to always render in its compact blaster form, preventing extended blade overlap and keeping all slices neatly proportioned.
-* Kitsune Buster IX Wave 30 Rebalance: Balanced Kitsune Buster IX as an Endless Wave 30 pinnacle unlock (cooling power 36.0→28.0 to directly match Wave 30 passive sun heat regen, crit multiplier 3.0x→2.2x to prevent runaway damage scaling, water capacity 180.0→160.0, and recharge rate 20.0→14.0/s to emphasize tactical blade flare parries).
-* Celestial Awakening Toast Removal: Streamlined Celestial Awakening activation by removing the redundant top pill toast notification, letting HUD-native visuals (3D tails, energy vignette, ethereal domain filter, 360° timer ring, and weapon badge glow) cleanly signal the state without screen clutter.
-* Celestial Awakening Ethereal Filter Contrast: Upgraded mode-exclusive post-process grading curve (strictly active during Celestial Awakening; excluded from standard retro filter settings) with high-clarity S-curve contrast and zero-lift multiplicative cosmic indigo split-toning (`vec3(0.70, 0.84, 1.32)`), eliminating milky shadow wash while preserving inky deep blacks and radiant highlight luminescence.
-* Kitsune Blade Pure Melee Parry Redesign: Refined Kitsune Buster IX Blade Mode into a pure melee parry weapon. Removed all intrusive bottom-center slash arc meshes and flying crescent projectiles, focusing on tactile first-person Katana swings, close-range solar flare parrying (+DEFLECTED feedback and water refund), and direct Sun cooling strikes (1.5x during Awakening) with zero visual clutter.
-* Kitsune Buster IX 3D Model & Material Overhaul: Overhauled the unified 3D model with authentic Japanese Katana proportions (sleek 1.37m reach, 7.6cm tapering height, mirror-polished tamahagane steel finish, undulating luminescent Hamon wave tempering ribbon, stepped gold Habaki with bronze Seppa spacers, and razor-sharp cyan plasma cutting edge). Upgraded Cannon Mode with an extended faceted barrel, tri-prong magnetic hydro-focus calipers around the muzzle crown, and high-pressure manifold piping. Preserved PBR metallic reflections in engine code to ensure cyber-gold, dark gunmetal, and katana steel maintain their true specular luster.
+### Improved
+* Solar Eye Drone Visual Polish: Radiant Sun-Gold & Pearl Ivory armor plating, warm bronze chassis, vermilion inlays, toon shading, and 2.3x scale for crisp beach silhouette.
+* Procedural Drone Crack Damage: Stage 1 hairline fissures (≤65% HP) and Stage 2 solar amber fractures with leaking coolant steam wisps (≤35% HP, strobe ≤18%) without red tinting.
+* Sun & Drone Geometry: Raised Sun to Y=13.5 (+3m) and adjusted drone orbits ($R = 11.8\text{m}–12.8\text{m}$) to prevent sand dune clipping.
+* Kitsune Blade & Collar Detail: Upgraded receiver collar with aperture clamps, bronze Seppa, cyber-gold Habaki, Yokote ridge line, and chisel O-Kissaki tip.
+* Kitsune Cannon Muzzle Detail: Aerodynamic fox-fang cowl, compensator brake, stepped vortex nozzle, quad magnetic calipers, and front post sight.
+* Controls "Power Up" Legend: Unified `[F]` and `[RB]` input labels from "Catastrom" to "Power Up" across keyboard and gamepad.
+* Kitsune Buster 3D Model Polish: Authentic Katana sori curvature, fuller groove, fox-flame tsuba, and skeletonized cylinder window.
+* Weapon Wheel Spacing: Replaced angular padding with uniform 12px linear gaps between all slices.
+* Weapon Wheel Info Panel: Centered archetype tags, mini-meter stat bars, crit multiplier badge, and hairline dividers.
+* Responsive Wheel Stat Bars: Made PWR and CAP progress bars responsive (`SIZE_EXPAND_FILL`) with 10px spacing.
+* Articulated Seagull Rig: 2-joint wing rig (Shoulder/Elbow) with aerodynamic folding, thrust bobbing, and banked turns.
+* Cloud Depth Parallax: Dynamic cloud drift speeds linked to Z-depth for atmospheric perspective.
+* Flare Interception Embers: High-energy golden ember particle bursts when extinguishing solar flares.
+* Coronal Halo & Heat Waves: Unshaded additive coronal glow and organic heat ripples scaling with sun temperature.
+* Lifetime Stats Icon Plates: 32x32 retro flat plates with gold monochrome icons for each stat category.
+* Credits Sync: In-game Credits and bilingual READMEs synchronized with full 1:1 attributions.
+* Retro Icon Plates: 64x64 flat plates (4px radii) for Title Screen and HUD achievement/buff cards.
+* Game Over Stats Flow: Frameless layout with 32x32 retro plates and inline milestone badges.
+* Settings Categorization & Spacing: 3 categorized sections with retro badges, 12px VBox spacing, and high-contrast off-white body labels.
+* Weapon Wheel Blaster Preview: Kitsune Buster IX always renders in compact blaster form inside the wheel.
+* Kitsune Buster IX Wave 30 Balance: Tuned cooling (28.0), crit (2.2x), water capacity (160), and recharge (14/s) to match Wave 30 sun regen.
+* Streamlined Awakening Activation: Removed redundant top toast in favor of HUD-native tails, vignette, and 360° reticle ring.
+* Awakening Filter Grading: S-curve contrast and zero-lift indigo split-toning to eliminate milky shadow wash.
+* Kitsune Blade Pure Melee: Removed intrusive 2D slash arcs and projectiles in favor of clean 1인칭 tactile flare parrying.
+* PBR Material Preservation: Maintained true specular luster on tamahagane steel, cyber-gold, and dark gunmetal.
 
 ### Known Issues (Critical)
 * Fullscreen End-of-Run Dimming: Win ("Cool Down") and Lose ("The Sun Won") screens render at low brightness in Normal and Endless modes despite modulate 1.0. Root rendering cause under active investigation.
 
 ### Fixed
-* Kitsune Blade Sun Over-Damage: Rebalanced Blade Mode base strike cooling damage from 45.0 to 8.5 (1.5x crit) to match sustained v1.5 weapon pacing (~24 DPS), preventing instant one-shotting of the Sun.
-* Level Transition Double-Clearing: Fixed an issue where Blade Mode strikes and continuous raycasts fired during screen fade transitions, instantly clearing consecutive levels. Isolated melee input and locked firing during level reloads until the screen fully fades in.
-* Kitsune Blade Aim Hit Detection: Fixed a bug where Blade Mode strikes registered hits on the Sun anywhere on screen due to a broad forward dot-product check. Replaced with raycast hit detection matching guns, accurately requiring the crosshair to be over the Sun (or sunspot for crits) to deal damage.
+* Kitsune Blade Sun Over-Damage: Rebalanced Blade Mode base strike cooling damage from 45.0 to 8.5 (1.5x crit) to match sustained v1.5 weapon pacing (~24 DPS).
+* Level Transition Double-Clearing: Locked melee input and raycast damage during screen fade transitions until the new level fully fades in.
+* Kitsune Blade Aim Hit Detection: Replaced broad forward dot-product check with raycast hit detection matching guns.
 * Weapon Wheel Overlay Safety: Guaranteed background blur/dim overlay hides immediately upon closing or switching to full-screen menus.
 
 ## [v1.5.5] - 2026-09-22
@@ -279,63 +277,59 @@ All notable changes to the Summer Nights project will be documented in this file
 *(참고: 이 릴리스는 itch.io의 v1.6 버전에 해당합니다)*
 
 ### 추가됨 (Added)
-* 신성의 각성 전용 HUD 게이지 및 공유 파워 업 충전 풀: 카타스트롬과 신성의 각성을 단일 통합 파워 업 충전 풀로 연동. 무기 교체 시 HUD 게이지의 충전량이 그대로 유지되며(1~5번 총기는 퍼플 카타스트롬 게이지, 구미호 버스터는 일렉트릭 사이언 신성의 각성 게이지로 실시간 전환), `[F]` 키 입력 시 현재 장착 무기에 맞는 궁극기가 발동되고 충전 풀이 0%로 초기화.
-* 신성의 각성 100% 충전 완료 토스트 알림 추가: 구미호 버스터 IX 장착 중 통합 파워 업 게이지가 100%에 도달하거나(또는 충전 완료 상태에서 구미호 버스터로 무기를 교체할 때) 발동되는 전용 토스트 알림("신성의 각성 준비됨 [F]" / "구미호의 권능을 해방하세요 [F]") 추가. 일렉트릭 사이언 테두리(`Color(0.35, 0.95, 1.0)`), 전용 `meter_celestial.svg` 성광 아이콘, 효과음을 연동하여 일반 무기의 카타스트롬 완충 알림과 동일한 직관적인 시각 피드백 제공.
-* 신성의 각성 에너지 아우라 및 에테리얼 도메인 필터: HUD 하단(CanvasLayer 0)에서 동작하는 전용 3D 후처리 필터(`retro_postprocess.gdshader`의 `celestial_mix`)를 적용하여 깊은 미드나이트 인디고 그림자, 태양/꼬리/물줄기 광학 하이라이트 블룸 및 외곽 시공간 굴절 효과 구현. 화면 가장자리 셰이더 기반 사이언 에너지 비네트(`celestial_vignette.gdshader`), 섬세한 절차적 에너지 파티클 모트, 조준선 360° 풀 링 타이머 및 구미호 다이아몬드 블룸, 무기 플레이트 브리딩 글로우, LVL/TIME/SCORE 라벨의 홀로그래픽 사이언 그림자 발광 및 전기 사이언 데미지 숫자 적용. 기본 HUD 요소(골드 타이포그래피, 레트로 플레이트)는 각성 중 변형 없이 유지.
-* 신성의 각성 (구미호 3D 수압 꼬리): 구미호 버스터 IX 전용 1인칭 시야 절차적 9꼬리 신성 수압 리본 시스템(CelestialTails.gd) 구현. 중앙 꼬리부터 양 날개로 번지는 단계별 변신 만개(Henshin Bloom), 다중 주파수 흐름 파동, 3D 리본 트위스트, 마우스 조준 관성 드래그 및 가산 혼합 청록/백색 발광 적용.
-* 9줄기 수렴형 하이드로 캐논 및 무한 수조: 구미호 버스터 신성의 각성 발동 중 9줄기 나선형 수압 볼텍스(CelestialHydroCannon.gd) 집중 사격, 물탱크 100% 무한 유지(소모/재장전 없음), 2.0배 냉각 파워, 반경 5.5m 내 태양 플레어를 즉시 소멸시키며 '+REWRITE!' 피드백을 띄우는 창조의 오라 구현. 무기 교체 시 각성 상태 즉시 해제.
-* 6번째 비밀 무기 (구미호 버스터 IX): 가면라이더 기츠 IX 오마주 기반의 커스텀 신성 수압 버스터 무기 추가. 시야 간섭 없는 오픈 홀로그래픽 리플렉스 사이트, 6분할 무기 선택 휠 연동, 내부 9개 수압 바이알이 비치는 반투명 호박빛 골드 회전식 실린더 챔버, 전용 다이아몬드 크로스헤어 및 전용 물줄기 파티클 구현.
-* 신규 업적 4종 추가: 총 업적 수를 8개에서 12개로 확장 ("인내심" - 엔들리스 모드 25웨이브 생존, "마라톤 주자" - 50웨이브 생존, "무기 전문가" - 한 게임에서 5가지 무기 모두 사용, "얼음 파괴자" - 얼음 폭발 통산 50회 사용). 실시간 진행도 게이지 및 카운터 지원, 영어/한국어 완벽 현지화, 자동 스크롤 업적 메뉴 지원.
-* 엔들리스 모드 최고 웨이브 추적: 생존 시간과 함께 최고 도달 웨이브(`best_wave`)를 영구 저장 및 불러오기 지원. 타이틀 화면("최고 기록: X 웨이브 (MM:SS)") 및 게임 오버 화면("최고 기록!" 배지) 표시, 통산 기록 화면에 최고 웨이브 및 사용한 얼음 폭발 횟수 추가.
-* 신성의 각성 활성화 및 비활성화 사운드 효과: 모드 발동 시의 애니메이션 기/변신 파워업 스웰(`celestial_activate.wav`, TheLittleCrow 제작 CC0)과 모드 종료 시의 감속형 SF 에너지 분산 쿨다운 효과음(`celestial_deactivate.wav`, bevibeldesign 제작 CC0)을 전용 사운드로 연동하고 상호 정지 로직 적용.
-* 구미호 버스터 IX 유기적 듀얼 모드 변형 (포격 및 검 모드): 단순 모델 교체 방식을 단일 다관절 3D 모델(`blaster_kitsune_unified.glb`)로 전면 개편. 포격 모드와 검 모드 전환 시 실시간 기계식 변형 연출 적용: 구미호 회전식 실린더 360° 고속 회전, 총열 수축/전진, 날개형 츠바 코등이 전개/접힘, 신축식 카타나 칼날 전개, 정조준 시야와 대각선 카타나 자세 간 1인칭 뷰모델 모핑 동기화. `[X]` 키, 마우스 휠 클릭, 패드 `[X]` 버튼으로 전환 가능하며, 전용 스위치 사운드(`switch-b.ogg`), 카타나 초승달 브래킷 형태의 동적 HUD 조준선(`kitsune_blade`) 적용.
-* 구미호 검 근접 베기 및 플레어 패링: 60° 시야각, 8.5m 사거리의 고위력 근접 베기 공격 구현. 전용 사운드(`celestial_slash.wav`, Nomagician 제작 CC0), 태양 직접 냉각 피해($8.5\text{ 기본} \times \text{치명타} \times \text{냉각}$), 플레어 절단 요격 및 15% 물탱크 패링 환급, 신성의 각성 중 발사되는 사이언 초승달 충격파 투사체 적용.
-* 신성의 수류검 및 물베기 이펙트 (Celestial Hydro-Blade): 구미호 버스터 IX 검 모드에 전용 절차적 물베기 시각 효과(`CelestialHydroBlade.gd`) 구현. 신성의 각성 중 카타나 칼날 단면을 밀착 감싸는 반투명 수류 튜브 검집(24 링 단면, 10정점 해상도, 호흡 맥동 애니메이션), 칼날 축 주위를 궤도 선회하는 6줄기 나선형 수류 스트림(소리 곡률 추종), 밝은 발광 커팅 엣지 리본, 베기 시야를 가로지르는 120° 절차적 초승달 물베기 리본, 비행 궤적 상의 태양 플레어를 즉시 절단 요격하고 태양 충돌 시 수압 팽창 링을 폭발시키는 6.4m 초대형 비행 신성 초승달 투사체 적용.
-* 13번째 신규 업적 ("클라이맥스" / "The Highlight"): 구미호 버스터 IX로 신성의 각성을 최초 발동할 때 해금되는 13번째 업적 및 영구 통계 기록 추가.
-* 신성의 여우불 참격파(Foxfire Slash Wave) 방출 연출: 구미호 검 휘두르기 시 조준선 광선을 따라 85m/s 속도로 직진하는 황금백색 초승달 화염 및 불티(엠버) 궤적 투사체 추가. 시야 간섭 없이 총기 물줄기처럼 직관적인 조준 타격 궤적 피드백 제공.
-* 구미호 버스터 IX 동적 수압 튜브 및 바이알 맥동 연출: 9개 회전식 실린더 바이알, 하부 냉각 라인 및 내부 도관에 실시간 발광 맥동 시스템 구현. 대기/충전 시 차분한 해양 사이언 호흡 펄스(2.8 rad/s), 사격 시 고속 수압 방출 서지(10 rad/s), 잔여 수량 25% 미만 시 긴급 경고 호박색/주황색 전이, 수량 소진 시 감쇄된 황혼 사이언, 신성의 각성 시 광학 블룸을 동반한 성광 사이언 과충전, 접근성 모션 감소(reduce_motion) 옵션 대응 적용.
-* 구미호 버스터 IX 유체 관성 슬로싱 및 자동 회전 총열: 회전식 실린더 및 수압 바이알에 물리적 유체 관성과 회전 각운동량 시스템 구현. 마우스/시야 회전 가속도에 반응하는 스프링-감쇠 피치/요 틸트 및 미세 유체 변위가 스켈레톤 리시버 윈도우를 통해 시각화되며, 뷰모델 전체에 묵직한 수압 유체 무게감이 반영됨. 포격 사격 시 실린더가 자동 가속 회전(신성의 각성 시 최대 22 rad/s)하고 방아쇠를 놓으면 점성 마찰에 의해 부드럽게 감속 정지하며, 검 모드 근접 베기 시 32 rad/s의 고속 회전 임펄스가 부여되어 역동적으로 연동 회전.
-* 태양 수렴 오픈소스 CC0 드론 사운드 전면 개편: OpenGameArt의 rubberduck 제작 정품 CC0 사운드 7종을 연동: 4가지 실제 금속 타격 녹음(`drone_metal_hit_01.ogg`~`04.ogg`)을 무작위 추출 및 피치 변조($0.94\times\sim 1.18\times$)하는 4보이스 폴리포닉 수류 피격 풀, 다층 기계식 수압 파괴음(`drone_shatter_metal.ogg` 중금속 슬램 + `drone_shatter_glass.ogg` 세라믹 파쇄 + 서브베이스 코어 폭발), 다층 극저온 얼음 분쇄음(`drone_ice_shatter_glass.ogg` 대형 유리 눈사태 + `ice_hit.ogg` 빙하 폭발 + 중금속 파열).
-* 태양 수렴(Solar Convergence) — 궤도 아이 드론 군체 및 전용 3D 드론 모델 (1단계): 태양 수렴 보스 인카운터 1단계를 전용 저폴리곤 특장풍 3D GLB 모델(`solar_eye_drone.glb`)과 함께 구현. 8각 베벨 사이버 골드 장갑 링, 발광형 사이언 슬릿이 각인된 4방위 버니어 스러스터 블록, 신토 크림슨 인레이가 장식된 날렵한 송골매 깃 형태의 오디언스 글레어 윙, 내부 흑요석 건메탈 짐벌 코어, 8중 맞물림 티타늄 조리개 셔터 블레이드, 심층 발광 호박-진홍 태양 동공 렌즈, 후방 방열 라디에이터 그릴 등 레트로 PS1/아케이드 미학을 정밀 반영. 태양 주위를 다축 3D 타원 궤도로 공전하며 플레이어 조준선을 정면 응시하고, 물줄기를 물리적으로 흡수 요격하며, 체력 상태에 따라 3단계 시각 색상(정상 골드 → 손상 주황 → 과열 진홍) 전이 및 전기 사이언 피격 플래시와 기계식 반동 틱 연출 제공. 얼음 폭발(Ice Blast)로 즉시 결빙 분쇄(+500점 / +COOLING CHILL!) 가능하며 무한 모드 정점 보스 웨이브(20웨이브 이상)에 자동 전개 및 디버그 단축키([O])로 전환 가능.
+* 파워 업 공유 풀 및 동적 게이지: 카타스트롬과 신성의 각성을 단일 파워 업 충전 풀로 연동; 무기 전환 시 충전량이 보존되며 HUD 게이지가 퍼플(1~5번 총기)과 사이언(구미호 버스터)으로 실시간 전환.
+* 신성의 각성 완충 토스트 알림: 구미호 버스터 장착 중 파워 업 게이지 100% 도달 시 전용 성광 아이콘과 사이언 테두리의 토스트 알림("신성의 각성 준비됨 [F]") 표시.
+* 신성의 각성 에테리얼 필터 및 HUD 효과: 인디고 분할 톤의 0번 레이어 후처리 필터, 사이언 에너지 비네트, 360° 조준선 타이머 링, 홀로그래픽 텍스트 그림자 적용.
+* 구미호 3D 수압 꼬리: 단계별 변신 만개 연출, 흐름 파동 및 사이언 발광을 갖춘 1인칭 9꼬리 절차적 수류 리본 시스템(CelestialTails.gd) 구현.
+* 9줄기 집중 하이드로 캐논: 신성의 각성 중 무한 수조, 2.0배 냉각력, 5.5m 근접 플레어 소멸 창조의 오라를 갖춘 나선형 수압 볼텍스 사격 지원.
+* 6번째 비밀 무기 (구미호 버스터 IX): 6분할 무기 휠 연동, 9개 바이알 회전식 실린더 챔버, 전용 다이아몬드 조준선을 갖춘 특촬풍 신성 수압 블래스터 추가.
+* 신규 업적 4종: "인내심"(25웨이브), "마라톤 주자"(50웨이브), "무기 전문가"(5개 무기 사용), "얼음 파괴자"(얼음 폭발 50회) 추가 및 실시간 진행도 추적 지원.
+* 엔들리스 최고 웨이브 추적: 생존 시간과 함께 최고 웨이브(`best_wave`)를 영구 저장하여 타이틀 화면 표시 및 게임 오버 신기록 배지 연동.
+* 신성의 각성 전용 효과음: CC0 변신 파워업 스웰 및 쿨다운 에너지 분산 효과음 연동.
+* 구미호 버스터 IX 듀얼 모드 변형: `[X]` 키 또는 마우스 휠 클릭으로 포격 모드와 검 모드를 실시간 기계식 애니메이션 및 조준선 모핑과 함께 즉시 전환.
+* 구미호 검 근접 베기 및 패링: 태양 플레어를 절단하여 +15% 물탱크를 환급받는 60° 근접 베기(8.5 냉각력) 구현.
+* 13번째 신규 업적 ("클라이맥스"): 구미호 버스터 IX로 신성의 각성 최초 발동 시 해금되는 업적 및 영구 통계 추가.
+* 여우불 참격파 투사체: 검 휘두르기 시 조준선을 따라 85m/s 속도로 직진하는 황금백색 초승달 화염 및 불티 궤적 투사체 방출.
+* 수압 튜브 동적 발광 맥동: 실린더 바이알 및 냉각 파이프의 실시간 호흡 발광 맥동 구현 (수량 25% 미만 시 호박색 경고 전환).
+* 유체 슬로싱 관성 및 총열 자동 회전: 바이알 내부 유체 관성 틸트 및 사격 시 가속 회전/감속 정지하는 실린더 물리 모멘텀 적용.
+* 드론 CC0 효과음 개편: OpenGameArt의 rubberduck 제작 정품 오디오를 활용한 다보이스 금속 피격음, 수압 파괴음, 극저온 얼음 분쇄음 연동.
+* 태양 수렴 드론 군체 (1단계): 20웨이브 이상 보스전에 태양 주위를 공전하며 물줄기를 물리 차단하는 6~8기의 태양 궤도 아이 드론 군체 추가 (토글: `[O]`).
 
 ### 개선됨 (Improved)
-* 태양 궤도 아이 드론 게임 스타일 시각 및 색상 전면 개편: 태양 궤도 아이 드론의 3D 모델 및 셰이더를 게임 본연의 경쾌한 레트로 아케이드/애니메이션 미학에 완벽히 부합하도록 전면 개편. 칙칙한 고메탈릭 암회색 셰이딩을 걷어내고 찬란한 썬-골드 및 솔라 펄 아이보리 투톤 장갑, 따스한 테라코타 브론즈 섀시, 신토 버밀리온 인레이, 동적 호흡 맥동(3.2~5.5 에너지)을 지닌 고발광 호박-골드 태양 동공 렌즈를 적용. 고도 툰 셰이딩(DIFFUSE_TOON, SPECULAR_TOON), 황금빛 석양 림 라이팅(rim 0.85), 온화한 백라이트 투과를 결합하고 인게임 스케일을 2.3배(날개폭 약 3.6m)로 확대하여 해변 시점에서의 실루엣 가독성과 조준 편의성을 극대화.
-* 태양 궤도 아이 드론 절차적 균열 손상 및 파쇄 직전 시각 효과: 태양 궤도 아이 드론에 다단계 절차적 3D 균열 파쇄 오버레이 및 치명적 손상 시각 피드백 시스템 구현. 물줄기 타격을 입어 체력이 감소함에 따라 1단계 미세 렌즈 균열($HP \le 65\%$)이 중앙 광학 조리개에 발현되며, 2단계 심층 솔라 엠버 균열($HP \le 35\%$)로 전이되어 정교한 발광 균열선, 냉각수 증기 스모크 파티클, 자이로 진동 떨림이 연출됨. 과도한 붉은색 틴팅을 제거하여 찬란한 썬-골드 및 펄 아이보리 장갑 본연의 품격을 온전히 유지하고, 파쇄 직전 코어 붕괴 상태($HP \le 18\%$)에서는 기계적 경련과 절제된 스트로브 점멸을 통해 파괴 임박 대상을 직관적으로 식별할 수 있도록 최적화.
-* 태양 수렴 드론 전투 및 해변 지형 간섭 해소: 태양의 기본 위치를 $Y = 10.5$에서 $Y = 13.5$(+3.0m)로 상향 배치하고 드론 공전 궤도 반경을 $11.8\text{m}\sim 12.8\text{m}$($R_y = 10.85\text{m}\sim 11.77\text{m}$)로 미세 조정하여, 궤도 최하단에서 드론 날개가 해변 모래사장 지형($Y = -2.0\text{m}$) 뒤로 파묻히는 클리핑 현상을 완벽히 해소. 태양 본체(반경 약 8m)와의 공중 여유 공간을 안정적으로 유지하고 화면 상단 HUD 간섭 없이 쾌적하게 렌더링되도록 구현. 얼음 폭발(Ice Blast) 6.5m 광역 분쇄, 코로나 보호막, 냉각수 배출 환급(파괴 시 +15%, 결빙 분쇄 시 +20% 즉시 보충) 자원 밸런스는 완벽히 유지.
-* 구미호 버스터 IX 검 모드 및 체결 칼라 전면 개선: 리시버 전면에 4개의 기계식 조리개 잠금 클램프와 발광형 사이언 에너지 수용 웰을 추가하여 칼날 장착부를 견고하게 보강. 다층형 청동 셋파와 측면 발광형 여우불 마이크로 벤트가 각인된 사이버 골드 하바키, 24슬라이스 소리(Sori) 곡률, 칼날 본체와 킷사키를 명확히 구분하는 정통 일본도 요코테(Yokote) 횡단 융기선, 후쿠라 절삭선을 감싸 도는 보시(Boshi) 열처리 담금질선, 예리한 칫솔형 오-킷사키(O-Kissaki) 칼끝 형상으로 전면 개편.
-* 구미호 버스터 IX 포격 총구 전면 개선: 포격 모드 전면부를 공기역학적 구미호 송곳니 형상 카울, 측면 배기 포트를 갖춘 고유속 컴펜세이터 머즐 브레이크, 동심원 골드/사이언 인젝터 링이 적용된 단차식 수류 와류 압축 노즐, 사이언 플라즈마 가이드와 사이버 골드 팁이 결합된 4조각의 자기 집속 캘리퍼 레일, 전면 가늠쇠가 통합된 로우 프로파일 옵틱 레일, 하부 듀얼 고압 냉각 파이프라인으로 전면 개편.
-* 조작 안내 화면 "파워 업" 범용 명칭 적용: 조작 안내(Controls) 화면에서 `[F]` (키보드) 및 `[RB]` (Xbox) 항목의 명칭을 기존 "카타스트롬"에서 "파워 업"("POWER UP")으로 변경하여, 일반 무기의 카타스트롬과 구미호 버스터의 신성의 각성을 아우르는 직관적이고 통일된 궁극기 표기를 적용.
-* 구미호 버스터 IX 모델 디테일 강화 (Celestial Polish): 단일 3D 모델에 정통 카타나 휨각(소리/Sori) 및 칫솔형 킷사키 칼끝, 발광형 사이언 혈조(Fuller), 골드 깃장식과 결합된 다층형 여우불 츠바 코등이, 1인칭 조준 시 9개 구미호 바이알 회전 드럼이 시원하게 보이는 스켈레톤 리시버 윈도우, 조준경 양옆 메카 여우 귀 카울 핀 추가.
-* 무기 선택 휠 균일 간격: 고정 각도 패딩 대신 일정한 12px 선형 간격을 적용하여 슬라이스 사이 틈새를 평행하게 유지.
-* 무기 정보 패널 개선: 직관적인 아케이드 카드 레이아웃 적용 (아키타입 태그, 파워/용량 미니 게이지, 치명타 배율 배지, 골드 헤어라인 구분선, 폰트 규격화).
-* 무기 휠 스탯 바 개선: PWR/CAP 게이지 바 반응형 확장(`SIZE_EXPAND_FILL`) 및 내부 간격(10px) 확대로 가독성 향상.
-* 절차적 다관절 갈매기 리그: 어깨/팔꿈치 2관절 날개 접기 역학, 비행 추력 바운싱, 뱅킹 선회, 활공 주기, 모래사장 대기 및 탈출 상호작용 구현.
-* 구름 깊이 시차(패럴랙스) 개선: CloudLayer.gd에서 구름 이동 속도를 Z축 깊이에 연동하여 원근감 넘치는 자연스러운 3D 하늘 흐름 구현.
-* 태양 플레어 요격 골든 엠버 팝: 물줄기로 태양 플레어를 소화할 때 사방으로 터지는 황금빛 불티(엠버) 파티클 피드백 추가.
-* 코로나 헤일로 및 열파(Heat Waves): 태양 온도(100°C~0°C)에 따라 유기적으로 펄스하며 확산/소화되는 가산 혼합 대기 코로나 아우라 및 동심원 열파 효과 구현.
-* 기록 메뉴 아이콘 플레이트: 기록(Lifetime Stats) 화면의 각 항목에 골드 모노크롬 카테고리 아이콘과 32x32 레트로 플레이트 적용.
-* 크레딧 동기화: 인게임 HUD 크레딧 화면 및 국/영문 README에 태양 궤도 아이 드론 및 구미호 버스터 IX 3D 모델, rubberduck 제작 오픈소스 CC0 드론 피격 및 파쇄 효과음, 전술 모드 전환 효과음, 신성의 성광 미터 아이콘, 절차적 드론 군체 및 신성의 각성 VFX 시스템 항목을 완전 동기화.
-* 업적 및 영구 강화 레트로 아이콘 플레이트: 타이틀 화면과 인게임 HUD의 업적 및 버프 카드 아이콘에 64x64 레트로 플랫 플레이트(4px 모서리 곡률, 해금 시 골드 테두리/모노크롬 골드 아이콘, 미해금 시 스틸 테두리/신비로운 실루엣) 적용.
-* 게임 오버 프레임리스 기록 플로우: 기존 단순 텍스트 라벨을 중첩 박스 없이 깔끔한 동적 프레임리스 기록 요약(32x32 레트로 플레이트, 골드 모노크롬 아이콘, 국/영문 폰트 규격화, 도달 웨이브/생존 시간/최종 점수 및 신기록 인라인 배지)으로 개편.
-* 설정 메뉴 카테고리 섹션 배지: 설정 항목들을 3개의 논리적 섹션("오디오", "조작 및 편의", "화면 및 시스템")으로 구조화하고, 4px 모서리 곡률의 골드 테두리 레트로 플레이트 배지, 골드 헤어라인 구분선, 균형 잡힌 섹션 여백(카테고리 간 36px, 상/하단 26px), 실시간 국/영문 폰트 동기화를 적용.
-* 설정 메뉴 항목 라벨 시각적 대비 개선: 모든 항목 라벨 색상을 기존 단색 골드에서 고대비 오프화이트 본문 텍스트(`Color(0.92, 0.92, 0.92, 0.95)`)로 개편하여, 골드 카테고리 배지 및 대화형 컨트롤(슬라이더, 토글)과의 시각적 위계를 명확히 분리.
-* 설정 메뉴 여백 미세 조정: 수직 요소 간격(VBox 10→12px, 카테고리 여백 28px, 하단 구분선 18px)을 미세 조정하여 항목 간 쾌적한 호흡 공간을 부여하는 동시에 720p 기준 70px 이상의 상/하단 여유 공간 유지.
-* 무기 선택 휠 구미호 블래스터 모델 렌더링: 무기 선택 휠에서 구미호 버스터 IX가 항상 컴팩트한 포격(블래스터) 모드 형태로 표시되도록 고정하여, 긴 칼날의 슬라이스 침범을 방지하고 균일한 휠 레이아웃 유지.
-* 구미호 버스터 IX 30웨이브 밸런스 재조정: 엔들리스 모드 30웨이브 최종 해금 무기 위상에 맞춰 수치를 정밀 재조정(냉각력 36.0→28.0으로 30웨이브 태양 패시브 열기 재생 28°C/s와 일치화, 치명타 배율 3.0x→2.2x로 과도한 데미지 인플레이션 방지, 물탱크 용량 180.0→160.0, 물 재생 속도 20.0→14.0/s로 검 모드 플레어 패링 환급 활용도 극대화).
-* 신성의 각성 상단 토스트 알림 제거: 전용 3D 수압 꼬리, 에너지 비네트, 에테리얼 도메인 필터, 360° 원형 타이머 등 풍부한 HUD 네이티브 시각 효과가 각성 상태를 명확히 안내하므로, 불필요한 상단 팝업 필 토스트 알림을 제거하여 시야 개선.
-* 신성의 각성 에테리얼 필터 명암 개선: 모드 전용 후처리 그레이딩 곡선(신성의 각성 중에만 한정 동작하며 일반 레트로 필터 메뉴에서 완전 제외)을 S-커브 명암 강화 및 블랙 리프트가 없는 승산 방식 코스믹 인디고 분할 톤(`vec3(0.70, 0.84, 1.32)`)으로 개편하여, 그림자 영역의 뿌연 물빠짐 현상을 제거하고 깊은 암부 대비와 선명한 하이라이트 광채를 확보.
-* 신성의 각성 특촬(토쿠사츠) 후처리 효과: 변신 효과음에 맞춰 화면 중앙에서 외곽으로 0.45초간 확산되는 시공간 렌즈 왜곡 헨신(Henshin) 충격파 연출과, 각성 중 태양 코어 및 수류 수렴 광선 등 최고 발광체에서 가로 방향으로 뻗어나가는 사이언 아나모픽 렌즈 플레어 광조 효과 추가.
-* 신성의 검 순수 근접 패링 무기 재설계: 구미호 버스터 IX 검 모드를 순수 근접 패링 무기로 개편. 화면 하단 중앙의 거슬리는 참격 호(Arc) 메시 및 비행 초승달 투사체를 완전 제거하고, 1인칭 카타나 휘두르기 모션, 근접 태양 플레어 절단 요격(+DEFLECTED 피드백 및 물탱크 환급), 태양 직접 냉각 공격(각성 시 1.5배 피해)에 집중하여 시야 간섭 없는 쾌적한 조작감 구현.
-* 구미호 버스터 IX 3D 모델 및 머티리얼 전면 강화: 단일 3D 모델에 정통 일본 카타나 비율 적용(1.37m 슬림 칼날 리치, 7.6cm 테이퍼링 높이, 거울 연마 타마하가네 강철 재질, 물결치는 발광형 하몬/Hamon 열처리 담금질선, 청동 세파/Seppa 와셔가 결합된 계단식 골드 하바키, 면도날 같은 사이언 플라즈마 절삭날). 포격 모드에 각진 연장 총열, 총구 크라운 주변 3구 자기 수류 집속 캘리퍼(Calipers), 고압 매니폴드 배관을 추가. 엔진 코드에서 PBR 메탈릭 반사 손실을 방지하여 사이버 골드, 다크 건메탈, 카타나 강철 본연의 정밀한 금속성 광택 보존.
+* 태양 궤도 아이 드론 외형 개선: 썬-골드 및 펄 아이보리 장갑, 브론즈 섀시, 버밀리온 인레이, 툰 셰이딩 및 2.3배 크기 확대로 해변 조준 실루엣 강화.
+* 드론 절차적 균열 손상: 1단계 미세 렌즈 균열(HP ≤65%) 및 2단계 솔라 엠버 파쇄선과 냉각수 증기(HP ≤35%, 스트로브 ≤18%)를 과도한 붉은 틴팅 없이 품격 있게 구현.
+* 지형 간섭 해소: 태양 기준 높이를 Y=13.5(+3m)로 상향하고 드론 공전 궤도($R = 11.8\text{m}–12.8\text{m}$)를 조정하여 모래사장 클리핑 방지.
+* 구미호 검 모드 체결 칼라 개선: 조리개 잠금 클램프, 청동 셋파, 사이버 골드 하바키, 요코테 융기선, 칫솔형 오-킷사키 칼끝 형상 적용.
+* 구미호 포격 총구 개선: 구미호 송곳니 카울, 컴펜세이터 브레이크, 단차식 볼텍스 노즐, 4조각 자기 집속 캘리퍼, 전면 가늠쇠 레일 적용.
+* 조작 안내 "파워 업" 표기 통일: 조작 안내 화면의 `[F]` 및 `[RB]` 명칭을 "카타스트롬"에서 "파워 업"으로 통합 표기.
+* 구미호 버스터 3D 모델 디테일 강화: 정통 카타나 곡률(소리), 혈조, 여우불 츠바, 스켈레톤 실린더 윈도우 디테일 추가.
+* 무기 선택 휠 균일 간격: 슬라이스 간격을 일정한 12px 선형 갭으로 통일하여 평행한 레이아웃 유지.
+* 무기 정보 패널 개선: 아키타입 태그, 파워/용량 미니 게이지, 치명타 배율 배지, 헤어라인 구분선이 결합된 아케이드 카드 레이아웃 적용.
+* 반응형 스탯 바: PWR/CAP 게이지 바 반응형 확장(`SIZE_EXPAND_FILL`) 및 10px 간격 적용.
+* 다관절 갈매기 리그: 어깨/팔꿈치 2관절 날개 접기, 비행 바운싱, 뱅킹 선회 역학 적용.
+* 구름 깊이 패럴랙스: Z축 깊이에 따른 차등 이동 속도로 입체적인 3D 하늘 흐름 구현.
+* 플레어 요격 골든 엠버: 물줄기로 태양 플레어 소화 시 화려한 황금빛 불티(엠버) 파티클 피드백 추가.
+* 코로나 헤일로 및 열파: 태양 온도에 반응하여 유기적으로 맥동하고 소화되는 대기 코로나 아우라 및 동심원 열파 효과 구현.
+* 기록 메뉴 아이콘 플레이트: 기록 화면 각 항목에 골드 모노크롬 카테고리 아이콘과 32x32 레트로 플레이트 적용.
+* 크레딧 동기화: 인게임 크레딧 화면 및 국/영문 README에 신규 3D 모델, CC0 오디오, 시각 효과 애셋 출처 완전 동기화.
+* 레트로 아이콘 플레이트: 타이틀 및 HUD의 업적/버프 카드 아이콘에 64x64 레트로 플랫 플레이트(4px 모서리) 적용.
+* 게임 오버 프레임리스 기록 요약: 32x32 플레이트와 인라인 신기록 배지를 갖춘 깔끔한 기록 플로우 적용.
+* 설정 메뉴 카테고리화 및 여백: 3개 카테고리 배지, 12px 간격, 고대비 오프화이트 라벨을 적용한 시각적 위계 확립.
+* 무기 휠 블래스터 뷰 고정: 무기 선택 휠에서 구미호 버스터를 항상 컴팩트한 블래스터 모드로 표시하여 휠 균형 유지.
+* 구미호 버스터 30웨이브 밸런스: 30웨이브 태양 패시브 열기 재생에 맞춰 냉각력(28.0), 치명타(2.2x), 물 용량(160), 충전 속도(14/s) 정밀 조율.
+* 불필요한 토스트 알림 제거: 상단 팝업 토스트 대신 3D 꼬리, 비네트, 360° 조준선 링 등 HUD 네이티브 시각 효과로 신성의 각성 안내.
+* 에테리얼 필터 명암 개선: S-커브 명암 강화 및 블랙 리프트 없는 인디고 분할 톤으로 깊은 암부 대비 확보.
+* 순수 근접 패링 특화: 화면 하단 참격 호 메시와 투사체를 제거하고 1인칭 카타나 휘두르기 및 플레어 절단 패링에 집중.
+* PBR 메탈릭 재질 보존: 타마하가네 강철, 사이버 골드, 건메탈 고유의 금속성 반사 광택 보존.
 
 ### 알려진 문제 (Known Issues - Critical)
-* 전체화면 라운드 종료 화면 밝기 저하: 일반 및 무한 모드 모두에서 승리("Cool Down") 및 패배("The Sun Won") 화면의 UI modulate 값이 1.0임에도 불구하고 화면이 어둡게 렌더링되는 중요 버그 발생. 렌더링 원인 추적 및 해결 진행 중.
+* 전체화면 라운드 종료 화면 밝기 저하: 일반 및 무한 모드 모두에서 승리("Cool Down") 및 패배("The Sun Won") 화면이 어둡게 렌더링되는 현상 (원인 추적 중).
 
 ### 수정됨 (Fixed)
-* 구미호 검 태양 과다 냉각 버그 수정: 검 모드 기본 냉각 피해량을 45.0에서 8.5(치명타 1.5배)로 재조정하여 v1.5 무기 밸런스 규격(~24 DPS)에 맞추고 태양이 1타에 즉시 격파되던 현상 해결.
-* 레벨 전환 시 2단계 연속 클리어 버그 수정: 검 모드 공격 및 물줄기 판정이 화면 페이드 전환 중에 조기 실행되어 다음 레벨이 즉각 클리어되던 문제를 해결. 근접 공격 로직을 연속 분사와 엄격히 분리하고, 레벨 페이드인이 완전히 끝날 때까지 사격을 잠금 처리.
-* 구미호 검 조준 타격 판정 수정: 광범위 전방 내적 판정으로 인해 화면 어디를 클릭해도 태양에 타격이 들어가던 버그를 수정. 다른 총기류와 동일하게 가상 마우스 조준선(크로스헤어) 광선 추적(Raycast)을 적용하여 조준선이 태양(또는 흑점 치명타) 위에 정확히 위치할 때만 타격되도록 일원화.
-* 무기 선택 휠 오버레이 안전성 강화: 메뉴 전환 및 휠 종료 시 배경 블러/딤 오버레이가 즉시 비활성화되도록 수정.
+* 구미호 검 태양 과다 냉각 버그 수정: 검 모드 기본 냉각 피해량을 45.0에서 8.5(치명타 1.5배)로 재조정하여 v1.5 무기 규격(~24 DPS)에 맞춤.
+* 레벨 전환 시 연속 클리어 버그 수정: 화면 페이드 전환 중 근접 입력 및 사격을 잠금 처리하여 조기 클리어 방지.
+* 구미호 검 조준 타격 판정 수정: 전방 내적 판정 대신 레이캐스트 조준선 판정을 적용하여 조준선이 태양에 위치할 때만 타격되도록 수정.
+* 무기 선택 휠 오버레이 안전성 강화: 메뉴 전환 및 휠 종료 시 배경 블러/딤 오버레이가 즉시 숨겨지도록 수정.
 
 ## [v1.5.5] - 2026-09-22
 *(참고: 이 릴리스는 itch.io의 v1.5 버전에 해당합니다)*

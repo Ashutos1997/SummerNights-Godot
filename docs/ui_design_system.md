@@ -1,6 +1,6 @@
 # Summer Nights: UI Design System
 
-This document outlines the UI design system, color palette, typography, and component styles for *Summer Nights*.
+Design tokens, color palettes, typography, and component specifications for *Summer Nights*.
 
 ---
 
@@ -11,65 +11,57 @@ This document outlines the UI design system, color palette, typography, and comp
 * **Controller Highlights:** Gold (Pause), Lime (Weapons), Cyan (Ice Blast), Orange (Power Up).
 
 ## 2. Corner Radii
-* **0px:** Standard buttons (Main Menu, popups).
-* **4px:** Retro Flat Plates and Badges (Resource meters, Perks).
-* **16px:** Large panels and cards (Weapon Wheel, Overlays).
+* **0px:** Standard buttons (Main Menu, dialog popups).
+* **4px:** Retro Flat Plates and Badges (Resource meters, Perks, Stat rows).
+* **16px:** Large panels and overlays (Weapon Wheel, Cards).
 
 ## 3. Typography
-* **English (EN):** `Kenney Future.ttf` (Titles/Headers), `Inter-Medium.ttf` (Body).
-* **Korean (KR):** `Galmuri11.ttf` (Used globally for all KR text).
-* **Styling:** All text uses heavy black outlines and drop shadows to ensure legibility against the bright 3D sky.
+* **English (EN):** `Kenney Future.ttf` (Titles/Headers), `Inter-Medium.ttf` (Body/Labels).
+* **Korean (KR):** `Galmuri11.ttf` (Used globally for all Korean text).
+* **Styling:** Heavy black outlines (2–3px) and drop shadows for clear sky legibility.
 
 ## 4. UI Components
 
 ### Global Menus
-* **Borders:** All full-screen menus use a 2px golden border `Color(1.0, 0.85, 0.2, 0.4)` with an 8px radius and 24px screen margin.
-* **Layout:** Strict left-aligned content with a 96px margin (except the centered Lose Screen). Exactly 24px vertical spacing between elements.
-* **Titles:** Use 40x40 dynamically tinted gold icons and a 2px horizontal separator.
+* **Borders:** 2px gold border `Color(1.0, 0.85, 0.2, 0.4)` with 8px radius and 24px screen margin.
+* **Layout:** Strict left-aligned content with a 96px margin (except centered Lose Screen). 24px vertical separation.
+* **Titles:** 40x40 gold icons paired with a 2px horizontal separator rule.
 
-### HUD Alignment
-* **Right-Edge:** Top-Right info (Timer, Score) and Bottom-Right resources (Meters) use a strict 24px right-aligned screen margin.
-* **Resource Plates:** 38x38 dark plates (4px radii, 1px accent border) ensure consistent horizontal starting coordinates regardless of language.
-* **Unified Resource Meters:** All resource rows (Water, Ice, Catastrom) utilize uniform 200x24 gauges with 10px rounded corners. Ice Burst uses a unified cyan-frost bar with discrete vertical notch dividers and an overlaid real-time numeric counter (`charges / max_charges`), avoiding cluttered pill fragmentation at high charge counts. Secondary (Ice Burst) and Ultimate (Catastrom) gauges dynamically remain hidden until unlocked (Wave 2 / Level 3 for Ice, Wave 4 / Level 4 for Catastrom) to prevent peripheral clutter during early waves.
+### HUD Alignment & Resource Meters
+* **Margins:** 24px screen margins for Top-Right info and Bottom-Right resources.
+* **Resource Plates:** 38x38 dark plates (4px radii, 1px accent border) for consistent starting coordinates.
+* **Gauge Dimensions:** Uniform 200x24 gauges with 10px rounded corners.
+  * *Water:* Blue fill, red pulse below 20%.
+  * *Ice Burst:* Cyan-frost fill with notch dividers and numeric counter (`charges / max`). Unlocks Wave 2 / Level 3.
+  * *Catastrom / Celestial Awakening (Power Up):* Shared pool gauge. Standard weapons render purple Catastrom; Kitsune Buster IX renders cyan Celestial Awakening with active countdown. Reaching 100% triggers a dedicated toast alert.
 
 ### Buttons (StyleBoxFlat)
 * **Size:** Minimum `280x52`, font size `22px`, `0px` radius.
-* **States:** 
-  * *Normal:* 40% black bg, 2px gold border.
-  * *Hover:* 20% gold bg.
-  * *Pressed:* 40% gold bg, bright gold border.
-* **Juice:** Global Autoload (`UIJuice.gd`) applies 1.03x hover scale, 0.97x press bounce, and -18dB audio ticks.
+* **States:** Normal (40% black bg, 2px gold border), Hover (20% gold bg), Pressed (40% gold bg, bright gold border).
+* **Juice (`UIJuice.gd`):** 1.03x hover scale, 0.97x press bounce, -18dB audio ticks.
 
 ### Interactive Elements
-* **Sliding Toggle Pill:** Binary toggle (EN/KR, Keyboard/Xbox) with a sliding gold highlight block and smooth color lerping.
-* **Weapon Wheel:** Procedural wedges drawn via `_draw()` for up to 6 weapons with subtle 4px drop shadows matching global HUD panels and constant 12px linear gap spacing between slices (Kitsune Buster IX locked to its compact blaster model for clean slice fit). Plays `-18dB` audio ticks via `UIJuice.play_tick()` on weapon highlight. Features an arcade-style bottom information panel with gold border (unlocked) or steel-grey border (locked), separated by a faint golden hairline divider (`Color(1.0, 0.85, 0.2, 0.28)`), displaying weapon archetype badges, responsive `SIZE_EXPAND_FILL` progress bars for cooling power and water capacity (min 40px, stretching to fill container), critical multipliers, and contextual unlock requirements (e.g. Endless Wave 30 for Kitsune Buster IX). Each stat group uses 10px internal spacing between label, meter, and value for comfortable readability. Typography strictly pairs Kenney Future (gun name) with Inter-Medium (body/stats) in English, and Galmuri11 globally in Korean.
-* **Drafting Screen (Perk Cards):** Tactile staggered card deal entrance (`Tween` scale pop and alpha fade) accompanied by rhythmic audio ticks. Features 6px drop shadows and rarity badges (`[ RARE ]`, `[ UNCOMMON ]`, `[ COMMON ]`) with color-tinted borders.
-* **Achievement & Buff Card Plates:** 3-column layout inside 700x100 cards. Icons sit inside 64x64 retro flat plates (4px radii; 1px gold border for unlocked with gold monochrome icons, 1px steel border for locked with darkened mystery silhouettes). Status column displays mini gold progress bars (8px, 4px radii) or cyber gold completion badges (`[ ✔ COMPLETED ]` / `[ ✔ 완료 ]`).
-* **Stats Menu Icon Plates:** 32x32 retro flat plates (`4px` corner radii, `1px` gold border `Color(1.0, 0.85, 0.2, 0.5)`) housing `20x20` gold monochrome category icons for each stat entry.
-* **Game Over Frameless Stats Flow:** Dynamic stat recap rows (380px wide, centered) featuring 32x32 retro flat plates (4px radii, 1px gold border) with 20x20 gold monochrome icons, Inter-Medium (EN) / Galmuri11 (KR) labels, Kenney Future (EN) / Galmuri11 (KR) values, and inline cyber-gold milestone badges (`[ NEW BEST! ]` / `[ 최고 기록! ]`) flowing directly inside the screen without nested box containers.
-* **Settings Categorized Section Badges & Row Typography:** Tactile retro plate badges (`4px` corner radii, `Color(1.0, 0.85, 0.2, 0.12)` fill, `1px` gold border `Color(1.0, 0.85, 0.2, 0.5)`, margins 10px L/R, 2px T/B) with Kenney Future 13px (EN) / Galmuri11 14px (KR) gold text (`Color(1.0, 0.85, 0.2, 1.0)`), accompanied by a 1px trailing golden hairline rule (`Color(1.0, 0.85, 0.2, 0.28)`) with 12px separation. Categories (Audio, Gameplay & Controls, Display & System) use refined section spacing (28px section clearance, 22px title gap, 12px row spacing). Title uses 28px Kenney/Galmuri with 3px black outline. Row labels use 17px off-white body text (`Color(0.92, 0.92, 0.92, 0.95)`) with 2px black outlines. Toggle buttons are 110x34, back button is 260x38, sliders are 240x28. Divider2 uses 18px separation.
-* **Celestial Awakening Energy Aura & Visual Accents:** Two-tier visual presentation: (1) 3D Scene Layer (`CanvasLayer 0` below HUD): Dedicated "Ethereal Domain" post-process filter (`celestial_mix` uniform in `retro_postprocess.gdshader`, 0.45s ease-out entrance, 0.5s exit; strictly mode-exclusive and excluded from standard retro filter menus) applying high-clarity S-curve contrast, zero-lift multiplicative cosmic indigo split-toning (`vec3(0.70, 0.84, 1.32)`), crystalline highlight grading, optical celestial bloom halation, horizontal Tokusatsu anamorphic cyan lens flare streaks on peak emissives, a 0.45s expanding Henshin spacetime shockwave ripple on activation, and subtle peripheral spacetime refraction. (2) HUD Layer (`CanvasLayer 10`): Shader-driven radial vignette (`celestial_vignette.gdshader`, alpha 0.28, 3 rad/s pulse) with drifting procedural particle motes, full 360° depleting crosshair ring ($R = 38\text{px}$) with kitsune diamond bloom, gentle weapon plate breathing shadow (2px-5px halo), holographic text shadows (`Color(0.17, 0.90, 1.0, 0.3)`), and electric cyan floating damage numbers. HUD typography remains completely untainted. (3) Audio Feedback: Synchronized CC0 acoustic cues featuring an energetic anime Henshin power swell (`celestial_activate.wav` by TheLittleCrow) on activation and a decelerating sci-fi cooldown dissipation (`celestial_deactivate.wav` by bevibeldesign) on deactivation or timer expiry.
-* **Dynamic Resource Gauge Rebranding (Catastrom vs Celestial Awakening):** The 200x24 bottom-right meter dynamically rebrands based on the equipped weapon while sharing a single unified Power Up charge pool. For standard weapons 1-5, it renders the classic royal purple Catastrom meter (`meter_catastrom.svg`, `Color(0.8, 0.4, 1.0)` with a gold pulsing border at 100%). For the Kitsune Buster IX, it dynamically transforms into the Celestial Awakening meter: the plate icon swaps to `meter_celestial.svg` in electric cyan (`Color(0.35, 0.95, 1.0)`), the progress bar displays charging status or remaining active duration in radiant cyan, and the ready label pulses `"[F] CELESTIAL AWAKEN!"` / `"[F] 각성 준비 완료!"` or shows active time `AWAKENED (%.1fs)`. Swapping between weapons preserves the exact charge level. Pressing `[F]` consumes the full charge, activating either Catastrom or Celestial Awakening depending on the held weapon, and resets the shared meter to 0%.
-* **Kitsune Buster IX Dual-Mode HUD Reticle & Mode Display:** In Blade Mode, the dynamic reticle transitions to curved katana crescent brackets ($R = 24\text{px}$, 4px thickness, cyan plasma glow `Color(0.25, 0.95, 1.0, 0.9)`), flanked by winged golden tsuba accents, an interior precision diamond pip, and an expanding water-charge ring. The active weapon panel displays localized mode tags (`[CANNON]` / `[BLADE]` and `[AWAKENED · CANNON]` / `[AWAKENED · BLADE]`) in real time. Blade swings project a razor-sharp golden-white flame crescent (ImmediateMesh, `Color(1.0, 1.0, 1.0)` apex to `Color(1.0, 0.82, 0.22)` core) with trailing spark embers (`GPUParticles3D`) that travel directly along the crosshair aim ray at 85 m/s and trigger radial spark bursts on Sun impact, giving clear emission feedback without obstructing the view. In Celestial Awakening, Blade strikes deal 1.5x damage with an expanded, luminous golden-white crescent wave.
+* **Weapon Wheel:** 6 procedural slices with 12px linear gap spacing, centered 3D previews, and 4px depth shadows. Bottom card displays archetype badges, responsive stat bars, and crit multipliers.
+* **Drafting Screen (Perks):** 3-card deal entrance with 6px drop shadows and rarity badges (`[ RARE ]`, `[ UNCOMMON ]`, `[ COMMON ]`).
+* **Achievement Cards:** 700x100 cards with 64x64 icon plates, progress bars, and cyber gold completion badges.
+* **Settings Screen:** 3 categorized sections (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`) using retro badges, 12px VBox separation, 28px category clearance, and 17px off-white body labels (`Color(0.92, 0.92, 0.92, 0.95)`).
+* **Game Over Recap:** Frameless 380px stat rows with 32x32 retro plates and milestone badges (`[ NEW BEST! ]`).
+* **Celestial Awakening Presentation:**
+  * *Layer 0 (World):* "Ethereal Domain" post-process filter with indigo split-toning and anamorphic cyan lens flares.
+  * *Layer 10 (HUD):* Breathing cyan energy vignette (`celestial_vignette.gdshader`), 360° reticle timer ring, and holographic text shadows.
+  * *Audio:* CC0 activation swell (`celestial_activate.wav`) and deactivation dissipation (`celestial_deactivate.wav`).
 
 ### Boot Splash & Startup Continuity
-* **Engine Window Launch:** Window initializes directly with the theme's dark background `Color(0.02, 0.01, 0.05, 1)` with stock boot splash disabled, avoiding grey screen flashes.
-* **Isolated Void & Subtle Ambient Halo:** During startup, an opaque background curtain `Color(0.02, 0.01, 0.05, 1.0)` isolates the branding sequence in a dark void. Centered behind the emblem is a subtle, warm amber/gold radial backlight (`Color(1.0, 0.72, 0.2, 0.09)`) that gently breathes with the synth chord swell, transforming the flat void into an illuminated studio space.
-* **Monochrome Emblem & Centered Wing Dividers:** Centered official Godot Engine monochrome white logo (`logo_large_monochrome_dark.png`, 400x162) paired with wide letter-tracked "M A D E   W I T H" in refined gold (`Color(1.0, 0.85, 0.2, 0.95)` at 36px / 32px for KR), flanked on left and right by 2px hairline divider wings (`Color(1.0, 0.85, 0.2, 0.4)`) vertically center-aligned with the text and matching the exact 400px width of the Godot logo. Elements fade in with cubic easing (0.0s - 0.7s), perform a majestic slow camera push-in (`0.96 -> 1.015`), and dissolve out with soft sine easing (2.1s - 2.8s).
-* **Golden Frame Tracing:** Dedicated `SplashBorderDrawer` performs progressive vector polyline tracing (`border_progress` 0.0 to 1.0 over 3.0s with quad deceleration) drawing the exact 2px gold border (`Color(1.0, 0.85, 0.2, 0.4)`, 8px radius, 24px screen margin) in sync with `ps1_startup.wav`. At 3.0s, the frame seamlessly handoffs to the permanent `BorderPanel` with zero flicker.
-* **Cinematic Curtain Reveal & Staggered Entrance:** As the golden frame completes, the dark curtain smoothly dissolves (`modulate:a` 1.0 -> 0.0 over 0.85s with sine easing), unveiling the sunny 3D beach world in a cinematic bloom while the "SUMMER NIGHTS" title, language toggle, and credit line glide in with staggered cubic easing (0.12s, 0.15s, 0.18s).
+* **Window Initialization:** Launches directly with dark background `Color(0.02, 0.01, 0.05, 1)` with stock splash disabled.
+* **Branding Sequence:** Monochrome Godot logo with "M A D E   W I T H" gold text, flanked by 2px hairline wings.
+* **Frame Tracing:** Dedicated `SplashBorderDrawer` progressively traces the 2px gold frame over 3.0s in sync with `ps1_startup.wav`, transitioning smoothly to the title screen.
 
 ## 5. Procedural Sun Expressions & Rays
-* **Rendering:** 128x128 RGBA8 procedural texture with a 4px dark-orange outline.
-* **Expressions:** Changes dynamically based on heat (happy, neutral, annoyed, angry) and events (wince, crit_pain, charging, dread, dizzy).
-* **Jitter:** Positional micro-shake applied on water impacts (disabled with Reduce Motion).
-* **Coronal Halo & Heat Ripples:** Unshaded additive coronal glow with concentric heat ripples (`god_rays.gdshader`) and stylized low-poly corona ring (`sun_corona_mesh`). Dynamically expands, pulses, and radiates at 100°C (`Color(1.0, 0.86, 0.45)`), soft lavender at twilight, ultraviolet during eclipse, and cleanly extinguishes at 0°C.
+* **Face Texture:** 128x128 RGBA8 procedural texture with 4px outline, reacting to heat and combat events.
+* **Coronal Halo:** Additive coronal glow and heat ripples (`god_rays.gdshader`) that expand and extinguish with sun temperature.
 
 ## 6. Post-Processing & Screen Effects
-* **Layering:** `retro_postprocess.gdshader` runs on Layer 0 (behind HUD on Layer 10) to keep UI crisp.
-* **Base Effects:** S-Curve contrast, Synthwave split-toning, vignette, and animated film grain.
-* **Dynamic Overlays:** Heat Warning (pulsing red border at 85% heat) and Frost Border (icy blue tint on Ice Burst).
-* **Energy Shield & Deflection FX:** Procedural Fresnel energy shield with dynamic shader ripple rings, localized impact glow (`energy_shield.gdshader`), backward water droplet bounce particles (`GPUParticles3D`), and floating electric cyan `DEFLECTED` feedback labels.
-* **Retro Filters:** Mutually exclusive options (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
-* **Blur/Dim:** Menus apply a 0.3s tweened blur (up to 2.0) and dim (0.6) to the background scene.
-
+* **Layering:** `retro_postprocess.gdshader` on Layer 0 (behind HUD Layer 10) to preserve UI sharpness.
+* **Dynamic Overlays:** Heat Warning (pulsing red border at 85% heat) and Frost Border (icy tint on Ice Burst).
+* **Energy Shield FX:** Fresnel glow with ripple rings and floating cyan `DEFLECTED` combat feedback.
+* **Retro Filters:** Mutually exclusive post-processing (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
