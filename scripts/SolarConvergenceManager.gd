@@ -46,9 +46,9 @@ var driver_anim_time: float = 0.0
 
 # ── Kamen Rider Apex Helmet (Milestone 3 Expansion) ─────────────────────────
 var helmet_root: Node3D = null
-var helmet_crest: Node3D = null
+var helmet_left: Node3D = null
+var helmet_right: Node3D = null
 var helmet_faceplate: Node3D = null
-var helmet_cheeks: Node3D = null
 var helmet_steam_left: CPUParticles3D = null
 var helmet_steam_right: CPUParticles3D = null
 var helmet_ruby_mat: StandardMaterial3D = null
@@ -877,37 +877,31 @@ func materialize_solar_driver(animated: bool = true) -> void:
 	driver_root.visible = true
 
 	if animated and driver_buckle and belt_strap_left and belt_strap_right:
-		# Initial retracted & pre-deployed state
-		belt_strap_left.scale = Vector3(0.01, 1.0, 0.01)
-		belt_strap_left.rotation.y = deg_to_rad(35.0)
-		belt_strap_right.scale = Vector3(0.01, 1.0, 0.01)
-		belt_strap_right.rotation.y = deg_to_rad(-35.0)
+		# 1. Belt straps start completely hidden / collapsed
+		belt_strap_left.scale = Vector3.ZERO
+		belt_strap_left.rotation.y = deg_to_rad(25.0)
+		belt_strap_right.scale = Vector3.ZERO
+		belt_strap_right.rotation.y = deg_to_rad(-25.0)
 
-		# Buckle floats down from front-above
-		driver_buckle.scale = Vector3(0.15, 0.15, 0.15)
-		driver_buckle.position = Vector3(0.0, 2.8, 9.5)
+		# 2. Buckle rushes in laterally from the side flank
+		driver_buckle.scale = Vector3(0.35, 0.35, 0.35)
+		driver_buckle.position = Vector3(18.0, 0.0, 4.5)
 
 		# Energy conduit surge
 		if driver_conduit_mat:
 			driver_conduit_mat.emission_energy_multiplier = 8.0
 
 		var tw = create_tween()
+
+		# Phase 1: Driver Buckle rushes in from side and slams onto center waist (0.36s)
 		tw.set_parallel(true)
+		tw.tween_property(driver_buckle, "position", Vector3.ZERO, 0.36).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(driver_buckle, "scale", Vector3.ONE, 0.36).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
-		# Phase 1: Dual Belt Ribbon Sweep (Holographic energy wrap around waist)
-		tw.tween_property(belt_strap_left, "scale", Vector3.ONE, 0.48).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-		tw.tween_property(belt_strap_left, "rotation:y", 0.0, 0.48).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-		tw.tween_property(belt_strap_right, "scale", Vector3.ONE, 0.48).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-		tw.tween_property(belt_strap_right, "rotation:y", 0.0, 0.48).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-
-		# Phase 2: Driver Buckle Magnetic Acceleration & Slam into Waist
-		tw.chain().tween_property(driver_buckle, "position", Vector3.ZERO, 0.42).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		tw.parallel().tween_property(driver_buckle, "scale", Vector3.ONE, 0.42).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-
-		# Phase 3: Impact Lock-On ("CLANK-CHUNK!"), Shockwave, Core Flash
+		# Phase 2: On Buckle Impact -> SFX, shockwave, core flash, THEN belt appears!
 		tw.chain().tween_callback(func():
 			if sfx_shatter_metal:
-				sfx_shatter_metal.pitch_scale = 0.80
+				sfx_shatter_metal.pitch_scale = 0.85
 				sfx_shatter_metal.play()
 			if sfx_shatter_core:
 				sfx_shatter_core.pitch_scale = 1.30
@@ -917,17 +911,21 @@ func materialize_solar_driver(animated: bool = true) -> void:
 			if driver_core_mat:
 				driver_core_mat.emission_energy_multiplier = 14.0
 				var f_tw = create_tween()
-				f_tw.tween_property(driver_core_mat, "emission_energy_multiplier", 4.0, 0.40).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-			if driver_conduit_mat:
-				var c_tw = create_tween()
-				c_tw.tween_property(driver_conduit_mat, "emission_energy_multiplier", 3.0, 0.40).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+				f_tw.tween_property(driver_core_mat, "emission_energy_multiplier", 4.0, 0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 			var main = get_tree().current_scene if get_tree() else null
 			if main and main.has_method("shake"):
-				main.shake(0.22, 0.035)
+				main.shake(0.20, 0.03)
 
 			solar_driver_equipped.emit(driver_buckle.global_position)
 		)
+
+		# Phase 3: Belt sweeps out from the sides of the buckle around the waist!
+		tw.chain().set_parallel(true)
+		tw.tween_property(belt_strap_left, "scale", Vector3.ONE, 0.36).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tw.tween_property(belt_strap_left, "rotation:y", 0.0, 0.36).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tw.tween_property(belt_strap_right, "scale", Vector3.ONE, 0.36).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tw.tween_property(belt_strap_right, "rotation:y", 0.0, 0.36).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	else:
 		if belt_strap_left:
 			belt_strap_left.scale = Vector3.ONE
@@ -1040,19 +1038,20 @@ func setup_solar_helmet() -> void:
 	helmet_root.add_child(helmet_inst)
 
 	# Locate named sub-assemblies from GLB
-	helmet_crest = helmet_inst.find_child("Helmet_Crest", true, false) as Node3D
+	helmet_left = helmet_inst.find_child("Helmet_Left", true, false) as Node3D
+	helmet_right = helmet_inst.find_child("Helmet_Right", true, false) as Node3D
 	helmet_faceplate = helmet_inst.find_child("Helmet_Faceplate", true, false) as Node3D
-	helmet_cheeks = helmet_inst.find_child("Helmet_Cheeks", true, false) as Node3D
 
 	# Setup Toon materials and extract emissive mats
 	_setup_helmet_materials(helmet_inst)
 
 	# Steam Exhaust Particle Systems on Cheek Cowls
-	if helmet_cheeks:
+	if helmet_left:
 		helmet_steam_left = _create_steam_vent_particles(Vector3(-7.20, 1.10, 2.20), Vector3(-1.0, 0.2, -0.6))
+		helmet_left.add_child(helmet_steam_left)
+	if helmet_right:
 		helmet_steam_right = _create_steam_vent_particles(Vector3(7.20, 1.10, 2.20), Vector3(1.0, 0.2, -0.6))
-		helmet_cheeks.add_child(helmet_steam_left)
-		helmet_cheeks.add_child(helmet_steam_right)
+		helmet_right.add_child(helmet_steam_right)
 
 func _create_steam_vent_particles(pos: Vector3, dir: Vector3) -> CPUParticles3D:
 	var cp = CPUParticles3D.new()
@@ -1134,9 +1133,9 @@ func materialize_solar_helmet(animated: bool = true) -> void:
 	if animated:
 		_assemble_kamen_rider_helmet()
 	else:
-		if helmet_crest: helmet_crest.position = Vector3.ZERO; helmet_crest.scale = Vector3.ONE
+		if helmet_left: helmet_left.position = Vector3.ZERO; helmet_left.rotation.y = 0.0; helmet_left.scale = Vector3.ONE
+		if helmet_right: helmet_right.position = Vector3.ZERO; helmet_right.rotation.y = 0.0; helmet_right.scale = Vector3.ONE
 		if helmet_faceplate: helmet_faceplate.position = Vector3.ZERO; helmet_faceplate.scale = Vector3.ONE
-		if helmet_cheeks: helmet_cheeks.scale = Vector3.ONE
 
 func remove_solar_helmet(animated: bool = true) -> void:
 	if not is_helmet_equipped or not helmet_root:
@@ -1152,20 +1151,18 @@ func remove_solar_helmet(animated: bool = true) -> void:
 			sfx_shatter_metal.pitch_scale = 1.35
 			sfx_shatter_metal.play()
 		var tw = create_tween().set_parallel(true)
-		if helmet_crest:
-			tw.tween_property(helmet_crest, "position:y", 16.0, 0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-			tw.tween_property(helmet_crest, "scale", Vector3(0.01, 0.01, 0.01), 0.35)
+		if helmet_left:
+			tw.tween_property(helmet_left, "position:x", -18.0, 0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+			tw.tween_property(helmet_left, "scale", Vector3(0.01, 0.01, 0.01), 0.35)
+		if helmet_right:
+			tw.tween_property(helmet_right, "position:x", 18.0, 0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+			tw.tween_property(helmet_right, "scale", Vector3(0.01, 0.01, 0.01), 0.35)
 		if helmet_faceplate:
 			tw.tween_property(helmet_faceplate, "position:z", 16.0, 0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
 			tw.tween_property(helmet_faceplate, "scale", Vector3(0.01, 0.01, 0.01), 0.35)
-		if helmet_cheeks:
-			tw.tween_property(helmet_cheeks, "scale", Vector3(1.8, 1.0, 1.8), 0.30)
 		tw.chain().tween_callback(func():
 			if helmet_root and is_instance_valid(helmet_root):
 				helmet_root.visible = false
-				if helmet_crest: helmet_crest.position = Vector3.ZERO; helmet_crest.scale = Vector3.ONE
-				if helmet_faceplate: helmet_faceplate.position = Vector3.ZERO; helmet_faceplate.scale = Vector3.ONE
-				if helmet_cheeks: helmet_cheeks.scale = Vector3.ONE
 		)
 	else:
 		if helmet_root and is_instance_valid(helmet_root):
@@ -1225,6 +1222,7 @@ func trigger_henshin_sequence() -> void:
 			main.on_solar_convergence_sun_powerup()
 
 	# 3. Equip Planetary Belt & Driver at waist (0.35s delay)
+	# Buckle rushes in from the side, slams waist, then belt ribbons appear!
 	var tw_driver = create_tween()
 	tw_driver.tween_interval(0.35)
 	tw_driver.tween_callback(func():
@@ -1232,8 +1230,9 @@ func trigger_henshin_sequence() -> void:
 			materialize_solar_driver(true)
 	)
 
-	# 4. Trigger Helmet Slam Lock (0.80s delay)
-	tw_driver.tween_interval(0.45)
+	# 4. Trigger Helmet Assembly after belt has locked (0.76s delay)
+	# Helmet comes in from the lateral sides and encompasses the Sun!
+	tw_driver.tween_interval(0.76)
 	tw_driver.tween_callback(func():
 		_assemble_kamen_rider_helmet()
 	)
@@ -1249,15 +1248,18 @@ func _assemble_kamen_rider_helmet() -> void:
 
 	helmet_root.visible = true
 
-	# Set initial detached offsets
-	if helmet_crest:
-		helmet_crest.position = Vector3(0.0, 16.0, 0.0) # Drops from high orbit
-		helmet_crest.scale = Vector3(1.2, 1.2, 1.2)
+	# Lateral side entry: Left and right helmet halves clamp in from the flanks!
+	if helmet_left:
+		helmet_left.position = Vector3(-18.0, 0.0, 2.5)
+		helmet_left.rotation.y = deg_to_rad(-22.0)
+		helmet_left.scale = Vector3.ONE
+	if helmet_right:
+		helmet_right.position = Vector3(18.0, 0.0, 2.5)
+		helmet_right.rotation.y = deg_to_rad(22.0)
+		helmet_right.scale = Vector3.ONE
 	if helmet_faceplate:
-		helmet_faceplate.position = Vector3(0.0, 0.0, 14.0) # Slams in from the front towards face!
-		helmet_faceplate.scale = Vector3(0.2, 0.2, 0.2)
-	if helmet_cheeks:
-		helmet_cheeks.scale = Vector3(1.8, 1.0, 1.8) # Clamps in from sides
+		helmet_faceplate.position = Vector3(0.0, 0.0, 12.0)
+		helmet_faceplate.scale = Vector3(0.3, 0.3, 0.3)
 
 	# Pre-impact charge swell audio
 	if sfx_ice_blast:
@@ -1266,15 +1268,16 @@ func _assemble_kamen_rider_helmet() -> void:
 
 	var tw = create_tween().set_parallel(true)
 
-	# Parallel slam lock-on (0.54s, TRANS_BACK, EASE_OUT)
-	if helmet_crest:
-		tw.tween_property(helmet_crest, "position", Vector3.ZERO, 0.54).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		tw.tween_property(helmet_crest, "scale", Vector3.ONE, 0.54).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	# Parallel slam lock-on from lateral sides (0.50s, TRANS_BACK, EASE_OUT)
+	if helmet_left:
+		tw.tween_property(helmet_left, "position", Vector3.ZERO, 0.50).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(helmet_left, "rotation:y", 0.0, 0.50).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	if helmet_right:
+		tw.tween_property(helmet_right, "position", Vector3.ZERO, 0.50).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(helmet_right, "rotation:y", 0.0, 0.50).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	if helmet_faceplate:
-		tw.tween_property(helmet_faceplate, "position", Vector3.ZERO, 0.50).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		tw.tween_property(helmet_faceplate, "scale", Vector3.ONE, 0.50).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	if helmet_cheeks:
-		tw.tween_property(helmet_cheeks, "scale", Vector3.ONE, 0.48).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(helmet_faceplate, "position", Vector3.ZERO, 0.46).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(helmet_faceplate, "scale", Vector3.ONE, 0.46).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 	# On impact: Hydraulic Clamp Lock & Grand Shockwave
 	tw.chain().tween_callback(func():
