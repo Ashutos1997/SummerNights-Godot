@@ -23,8 +23,8 @@ This document serves as the master record for all currently implemented features
   * *Precision Stream:* Low capacity, high critical multiplier.
   * *Heavy Cannon:* High capacity, massive cooling, rapid drain.
   * *Scatter Nozzle:* Wide spray for multi-target intercepts.
-  * *Kitsune Buster IX:* High-tier celestial buster with seamless dual-mode transformation:
-    * *Cannon Mode:* Continuous high-precision stream with translucent revolving Kyubi chamber and 3.0x crit multiplier.
+  * *Kitsune Buster IX:* High-tier celestial buster unlocked at Endless Wave 30 (160 cap, 28 cooling power, 14/s recharge) with seamless dual-mode transformation:
+    * *Cannon Mode:* Continuous high-precision stream with translucent revolving Kyubi chamber, holding the line against Wave 30 heat regen (28°C/s) with a 2.2x crit multiplier.
     * *Blade Mode:* Heavenly Katana melee transformation with authentic curved Katana sori, kissaki chisel tip, glowing cyan fuller groove, sculpted multi-layered fox-flame tsuba crossguard, 60° sweeping melee arc (8.5m range), solar flare parry with 15% water refund, and direct cooling strike on Sun ($8.5\text{ base} \times \text{crit} \times \text{cooling}$). Projects a razor-sharp golden-white Celestial Foxfire Slash Wave with trailing spark embers toward the crosshair for clear emission feedback. Toggled with `[X]`, Middle Mouse, or Controller `[X]` with fluid real-time mechanical transformation (revolving Kyubi cylinder spin, barrel retraction, unfolding tsuba wings, telescoping blade, and dynamic Katana guard stance morph).
 * **Ice Burst (Secondary):** Instantly freezes sun heat generation and movement. Unlocked on Wave 2 (Endless) / Level 3 (Campaign). Tracked via a unified 200x24 cyan-frost meter with discrete charge notches and numerical counter.
 * **Catastrom (Ultimate):** Grab the sun and dunk it into the ocean to instantly clear the wave. Unlocked on Wave 4 (Endless) / Level 4 (Campaign) with a dedicated unlock banner toast; charge gain is disabled until unlocked.

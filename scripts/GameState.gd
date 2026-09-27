@@ -319,12 +319,12 @@ const WEAPONS = {
 		"model": "res://assets/blaster_kitsune_unified.glb",
 		"blade_model": "res://assets/blaster_kitsune_unified.glb",
 		"scale": Vector3(1.0, 1.0, 1.0),
-		"water_capacity": 180.0,
+		"water_capacity": 160.0,
 		"water_drain": 8.0,
-		"cooling_power": 36.0,
-		"crit_multiplier": 3.0,
-		"recharge_rate": 20.0,
-		"unlock_level": 1
+		"cooling_power": 28.0,
+		"crit_multiplier": 2.2,
+		"recharge_rate": 14.0,
+		"unlock_wave": 30
 	}
 }
 var has_shown_splash: bool = false

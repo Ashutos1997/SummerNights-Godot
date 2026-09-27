@@ -423,16 +423,22 @@ func _input(event: InputEvent) -> void:
 		if selected_index >= 0 and selected_index < weapons.size():
 			var w_id = weapons[selected_index]
 			var w_cfg = GameState.WEAPONS[w_id]
-			var is_locked = false
-			if w_cfg.has("unlock_achievement"):
-				is_locked = not (w_cfg.unlock_achievement in GameState.unlocked_achievements)
-			else:
-				var prog = GameState.current_wave if GameState.is_survival_mode else GameState.level
-				is_locked = prog < w_cfg.unlock_level
+			var is_locked = _is_weapon_locked(w_cfg)
 				
 			if not is_locked:
 				close()
 				get_viewport().set_input_as_handled()
+
+func _is_weapon_locked(w_cfg: Dictionary) -> bool:
+	if w_cfg.has("unlock_achievement"):
+		return not (w_cfg.unlock_achievement in GameState.unlocked_achievements)
+	if w_cfg.has("unlock_wave"):
+		if GameState.is_survival_mode:
+			return GameState.current_wave < w_cfg.unlock_wave and GameState.best_wave < w_cfg.unlock_wave
+		else:
+			return GameState.best_wave < w_cfg.unlock_wave
+	var prog = GameState.current_wave if GameState.is_survival_mode else GameState.level
+	return prog < w_cfg.get("unlock_level", 1)
 
 func _apply_kitsune_cannon_visuals(p_model: Node) -> void:
 	var barrel = p_model.find_child("BarrelAssembly", true, false)
@@ -545,12 +551,7 @@ func close() -> void:
 	if selected_index >= 0 and selected_index < weapons.size():
 		var chosen = weapons[selected_index]
 		var w_cfg = GameState.WEAPONS[chosen]
-		var is_locked = false
-		if w_cfg.has("unlock_achievement"):
-			is_locked = not (w_cfg.unlock_achievement in GameState.unlocked_achievements)
-		else:
-			var prog = GameState.current_wave if GameState.is_survival_mode else GameState.level
-			is_locked = prog < w_cfg.unlock_level
+		var is_locked = _is_weapon_locked(w_cfg)
 			
 		if not is_locked:
 			_play_whoosh()
@@ -606,11 +607,7 @@ func _process(delta: float) -> void:
 		target_arrow_anim = 1.0
 		
 		var w_cfg = GameState.WEAPONS[weapons[selected_index]]
-		if w_cfg.has("unlock_achievement"):
-			last_hovered_locked = not (w_cfg.unlock_achievement in GameState.unlocked_achievements)
-		else:
-			var prog = GameState.current_wave if GameState.is_survival_mode else GameState.level
-			last_hovered_locked = prog < w_cfg.unlock_level
+		last_hovered_locked = _is_weapon_locked(w_cfg)
 	else:
 		selected_index = -1
 		target_arrow_anim = 0.0
@@ -631,13 +628,7 @@ func _process(delta: float) -> void:
 		
 		var w_id = weapons[i]
 		var w_cfg = GameState.WEAPONS[w_id]
-		var is_locked = false
-		
-		if w_cfg.has("unlock_achievement"):
-			is_locked = not (w_cfg.unlock_achievement in GameState.unlocked_achievements)
-		else:
-			var prog = GameState.current_wave if GameState.is_survival_mode else GameState.level
-			is_locked = prog < w_cfg.unlock_level
+		var is_locked = _is_weapon_locked(w_cfg)
 		
 		# Rotate model
 		if models[i]:
@@ -698,12 +689,7 @@ func _update_info_panel(idx: int) -> void:
 	lock_badge_label.label_settings.font = font_body
 	lock_req_label.label_settings.font = font_body
 	
-	var is_locked = false
-	if w_cfg.has("unlock_achievement"):
-		is_locked = not (w_cfg.unlock_achievement in GameState.unlocked_achievements)
-	else:
-		var prog = GameState.current_wave if GameState.is_survival_mode else GameState.level
-		is_locked = prog < w_cfg.unlock_level
+	var is_locked = _is_weapon_locked(w_cfg)
 	
 	var w_name = w_cfg.name.to_upper()
 	if is_kr:
@@ -733,6 +719,17 @@ func _update_info_panel(idx: int) -> void:
 				lock_req_label.text = "조건: %s" % ach_desc
 			else:
 				lock_req_label.text = "UNLOCK: %s" % ach_desc.to_upper()
+		elif w_cfg.has("unlock_wave"):
+			if GameState.is_survival_mode:
+				if is_kr:
+					lock_req_label.text = "웨이브 %d 에서 잠금 해제됨" % w_cfg.unlock_wave
+				else:
+					lock_req_label.text = "UNLOCKS AT WAVE %d" % w_cfg.unlock_wave
+			else:
+				if is_kr:
+					lock_req_label.text = "조건: 엔들리스 %d웨이브 달성" % w_cfg.unlock_wave
+				else:
+					lock_req_label.text = "UNLOCK: ENDLESS WAVE %d" % w_cfg.unlock_wave
 		else:
 			if GameState.is_survival_mode:
 				if is_kr:
@@ -801,12 +798,7 @@ func _draw() -> void:
 		
 		var w_id = weapons[i]
 		var w_cfg = GameState.WEAPONS[w_id]
-		var is_locked = false
-		if w_cfg.has("unlock_achievement"):
-			is_locked = not (w_cfg.unlock_achievement in GameState.unlocked_achievements)
-		else:
-			var prog = GameState.current_wave if GameState.is_survival_mode else GameState.level
-			is_locked = prog < w_cfg.unlock_level
+		var is_locked = _is_weapon_locked(w_cfg)
 		
 		# Yellow Colors
 		var fill_color = Color(0.2, 0.18, 0.08, 0.6)
@@ -882,11 +874,7 @@ func _draw() -> void:
 		var is_locked = last_hovered_locked
 		if selected_index != -1:
 			var w_cfg = GameState.WEAPONS[weapons[selected_index]]
-			if w_cfg.has("unlock_achievement"):
-				is_locked = not (w_cfg.unlock_achievement in GameState.unlocked_achievements)
-			else:
-				var prog = GameState.current_wave if GameState.is_survival_mode else GameState.level
-				is_locked = prog < w_cfg.unlock_level
+			is_locked = _is_weapon_locked(w_cfg)
 			last_hovered_locked = is_locked
 		
 		var arr_fill = Color(0.8, 0.7, 0.1, 0.8 * arrow_alpha)

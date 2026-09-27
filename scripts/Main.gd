@@ -389,7 +389,6 @@ func _animate_kitsune_mode_transition(to_mode: String) -> void:
 		
 func _recalculate_stats() -> void:
 	var w_cfg = GameState.WEAPONS[GameState.current_weapon_id]
-	var current_config = GameState.WEAPONS[GameState.current_weapon_id]
 	var old_max = MAX_WATER
 	var old_water = water_tank
 	MAX_WATER = w_cfg.water_capacity * GameState.max_water_mult
@@ -403,7 +402,7 @@ func _recalculate_stats() -> void:
 	current_weapon_recharge = w_cfg.recharge_rate
 	
 	var base_drain = 8.75
-	if current_config.has("water_drain"):
+	if current_config and current_config.has("water_drain"):
 		base_drain = current_config.water_drain
 	WATER_DRAIN_RATE = base_drain + w_cfg.water_drain
 
@@ -3825,7 +3824,7 @@ func _check_sun_defeat() -> void:
 		if hud:
 			hud.update_ice_charges(GameState.ice_charges_remaining, max_survival_ice_charges + GameState.bonus_ice_charges)
 			
-			if GameState.current_wave == 2 or GameState.current_wave == 3 or GameState.current_wave == 4:
+			if GameState.current_wave == 2 or GameState.current_wave == 3 or GameState.current_wave == 4 or GameState.current_wave == 30:
 				hud.show_weapon_unlock()
 			if GameState.current_wave == 2:
 				hud.show_ice_unlock()
