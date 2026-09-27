@@ -75,7 +75,7 @@ func start_orbital_swarm(count: int = 6) -> void:
 func _create_drone(index: int, total: int) -> Dictionary:
 	var drone_root = Node3D.new()
 	drone_root.name = "SolarEyeDrone_%d" % index
-	drone_root.scale = Vector3(1.35, 1.35, 1.35)
+	drone_root.scale = Vector3(0.55, 0.55, 0.55) # Compact, sleek arcade proportion
 
 	# Instantiate the custom low-poly Tokusatsu Solar Eye Drone model
 	var model_inst = DRONE_SCENE.instantiate() as Node3D
@@ -101,39 +101,28 @@ func _create_drone(index: int, total: int) -> Dictionary:
 						if not pupil_mat:
 							pupil_mat = dup_mat
 
-	# Multi-axis Elliptical Orbit Geometry
+	# Dynamic Coronal Orbit Geometry: Fast, sweeping circular rotation around the Sun
 	var angle_fraction = float(index) / float(total)
-	var inclination_deg = -28.0 + (angle_fraction * 56.0)
-	var yaw_deg = angle_fraction * 180.0
-	var roll_deg = (index % 2) * 20.0 - 10.0
-
-	var orbit_basis = Basis.from_euler(Vector3(
-		deg_to_rad(inclination_deg),
-		deg_to_rad(yaw_deg),
-		deg_to_rad(roll_deg)
-	))
-
-	# Direction alternating: every other drone orbits counter-clockwise for crossing paths
-	var orbit_speed = (1.25 + (index * 0.08)) * (1.0 if index % 2 == 0 else -1.0)
+	# Fast, agile rotation speed: 2.2 to 2.8 rad/s alternating clockwise/counter-clockwise
+	var orbit_speed = (2.2 + (index * 0.12)) * (1.0 if index % 2 == 0 else -1.0)
 	var phase_offset = angle_fraction * TAU
 
-	# Wide sweeping radii keeping drones clearly visible around the Sun
-	var rx = 6.4 + (index % 3) * 0.6
-	var ry = 4.6 + (index % 2) * 0.6
-	var rz = 2.4 + (index % 3) * 0.5
+	# Orbital radii closely circling the Sun's coronal perimeter (Sun radius is ~3.5)
+	var rx = 5.2 + (index % 3) * 0.6
+	var ry = 4.2 + (index % 2) * 0.6
+	var rz = 1.2 + (index % 3) * 0.4
 
 	return {
 		"node": drone_root,
 		"casing_mats": casing_mats,
 		"pupil_mat": pupil_mat,
-		"orbit_basis": orbit_basis,
 		"orbit_speed": orbit_speed,
 		"phase_offset": phase_offset,
 		"radius_x": rx,
 		"radius_y": ry,
 		"radius_z": rz,
-		"hp": 40.0,
-		"max_hp": 40.0,
+		"hp": 30.0,
+		"max_hp": 30.0,
 		"hit_flash": 0.0,
 		"index": index
 	}
@@ -156,15 +145,15 @@ func _process(delta: float) -> void:
 		if not is_instance_valid(node):
 			continue
 
-		# 1. Multi-axis 3D Elliptical Orbit Math
+		# 1. Fast Sweeping Coronal Orbit around Sun's center
 		var t = (orbit_time * drone["orbit_speed"]) + drone["phase_offset"]
 		var local_p = Vector3(
 			cos(t) * drone["radius_x"],
 			sin(t) * drone["radius_y"],
-			sin(t * 1.5) * (drone["radius_z"] * 0.45)
+			sin(t * 1.8 + drone["index"]) * drone["radius_z"]
 		)
 
-		var world_pos = sun_pos + (drone["orbit_basis"] as Basis) * local_p
+		var world_pos = sun_pos + local_p
 		node.global_position = world_pos
 
 		# 2. Ocular Focus: Eye drone stares directly down the player's sightline
@@ -178,9 +167,9 @@ func _process(delta: float) -> void:
 		var casing_mats = drone["casing_mats"] as Array[StandardMaterial3D]
 		var pupil_mat = drone["pupil_mat"] as StandardMaterial3D
 
-		# Hit impact recoil recovery
-		if node.scale.x < 1.35:
-			node.scale = node.scale.lerp(Vector3(1.35, 1.35, 1.35), 10.0 * delta)
+		# Hit impact recoil recovery back to 0.55
+		if node.scale.x < 0.55:
+			node.scale = node.scale.lerp(Vector3(0.55, 0.55, 0.55), 10.0 * delta)
 
 		if drone["hit_flash"] > 0.0:
 			drone["hit_flash"] -= delta * 6.0
@@ -244,8 +233,8 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 			var pt_on_ray = ray_origin + ray_normal * proj_t
 			var dist = drone_pos.distance_to(pt_on_ray)
 			
-			# Interception radius: 1.4m matching the 1.4m drone wingspan
-			if dist < 1.4 and dist < min_dist_to_ray:
+			# Interception radius: 0.85m matching 0.55x scaled drone dimensions
+			if dist < 0.85 and dist < min_dist_to_ray:
 				min_dist_to_ray = dist
 				closest_drone = drone
 				hit_world_pt = pt_on_ray
@@ -261,7 +250,7 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 
 	var d_node = closest_drone["node"] as Node3D
 	# Visual mechanical recoil kick on impact
-	d_node.scale = Vector3(1.20, 1.20, 1.20)
+	d_node.scale = Vector3(0.48, 0.48, 0.48)
 
 	# Play metal deflection sound occasionally
 	if sfx_deflect and not sfx_deflect.playing and randf() < 0.3:

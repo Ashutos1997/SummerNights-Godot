@@ -3059,19 +3059,35 @@ func _process(delta: float) -> void:
 						hud.update_combo_text(current_mult)
 				combo_grace_timer = 0.5 if "untouchable" in GameState.unlocked_achievements else 0.0
 			elif aim_dist < 5.0: # Close enough to hit the real sun
-				_on_hit(delta, target_pos)
-				combo_timer += delta
-				if combo_timer >= 1.5:
-					if not combo_active:
-						combo_active = true
-						if hud and hud.has_method("show_combo"): hud.show_combo(true)
-				
-					var current_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
-					if current_mult >= 3.0:
-						GameState.unlock_achievement("untouchable")
-					if hud and hud.has_method("update_combo_text"):
-						hud.update_combo_text(current_mult)
-				combo_grace_timer = 0.5 if "untouchable" in GameState.unlocked_achievements else 0.0
+				if solar_convergence_mgr and solar_convergence_mgr.get_active_drone_count() > 0:
+					# Coronal Drone Shield is active: Drones protect the Sun!
+					_on_shield_deflect(target_pos)
+					combo_timer += delta
+					if combo_timer >= 1.5:
+						if not combo_active:
+							combo_active = true
+							if hud and hud.has_method("show_combo"): hud.show_combo(true)
+						var current_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
+						if current_mult >= 3.0:
+							GameState.unlock_achievement("untouchable")
+						if hud and hud.has_method("update_combo_text"):
+							hud.update_combo_text(current_mult)
+					combo_grace_timer = 0.5 if "untouchable" in GameState.unlocked_achievements else 0.0
+				else:
+					# Drones destroyed or inactive: Real Sun takes cooling damage!
+					_on_hit(delta, target_pos)
+					combo_timer += delta
+					if combo_timer >= 1.5:
+						if not combo_active:
+							combo_active = true
+							if hud and hud.has_method("show_combo"): hud.show_combo(true)
+					
+						var current_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
+						if current_mult >= 3.0:
+							GameState.unlock_achievement("untouchable")
+						if hud and hud.has_method("update_combo_text"):
+							hud.update_combo_text(current_mult)
+					combo_grace_timer = 0.5 if "untouchable" in GameState.unlocked_achievements else 0.0
 			else:
 				combo_timer = 0.0
 				if combo_active:
