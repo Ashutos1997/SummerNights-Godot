@@ -46,6 +46,7 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 * **Rainstorms:** Downpour grants infinite water and passive sun cooling.
 * **Solar Eclipses:** Sky darkens; sun fires rapid Shadow Flares.
 * **Solar Convergence — Orbital Ocular Swarm (Phase 1):** Apex Boss Wave (Wave 20+). 6–8 Solar Eye Drones orbit the Sun ($R = 11.8\text{m}–12.8\text{m}$, Sun at $Y = 13.5$), shielding it from direct water cooling. Features multi-tier crack damage: Stage 1 hairline fissures (≤65% HP) and Stage 2 solar amber fractures with leaking coolant steam (≤35% HP, strobe ≤18%). Plating preserves Sun-Gold & Pearl Ivory without red tinting. Destroying a drone vents coolant (+15% water tank, +20% on Ice Shatter). Ice Blast triggers a 6.5m AOE shatter. Debug toggle: `[O]`.
+* **Solar Convergence — Equatorial Solar Driver & Planetary Belt (Milestone 2):** Low-poly Rider-style Driver Buckle mounted below the Sun's mouth with dark obsidian chassis, beveled Sun-Gold frames, Shinto crimson inlays, lateral drone docking bays with cyan LED runners, breathing amber iris core, and dual celestial equatorial belt ribbons tilted 11°. Sweeps around and snaps shut with an elastic mechanical latch (`CLANK-CHUNK!`) and golden shockwave burst. Debug toggle: `[L]`.
 
 ## 6. Environment & Visuals
 * **Dynamic Ocean:** Procedural Gerstner waves, Voronoi caustics, and subsurface scattering.

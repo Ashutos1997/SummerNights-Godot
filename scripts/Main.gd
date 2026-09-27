@@ -3201,6 +3201,10 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_O:
 		toggle_solar_drones()
 
+	# Debug key: Press L to toggle Solar Convergence Solar Driver & Planetary Belt
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_L:
+		toggle_solar_driver()
+
 	if event.is_action_pressed("ui_catastrom") and not event.is_echo():
 		if GameState.current_weapon_id == "kitsune":
 			if GameState.celestial_charge >= 1.0 and not is_celestial_awakened:
@@ -4585,6 +4589,20 @@ func toggle_solar_drones() -> void:
 			var title = "태양 수렴 경보" if is_kr else "SOLAR CONVERGENCE"
 			var desc = "태양 궤도 아이 드론 6기 전개" if is_kr else "ORBITAL SWARM DEPLOYED (6 DRONES)"
 			hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1.0, 0.8, 0.2))
+
+func toggle_solar_driver() -> void:
+	if not solar_convergence_mgr:
+		return
+	solar_convergence_mgr.toggle_solar_driver()
+	var is_eq = solar_convergence_mgr.is_driver_active()
+	if hud and hud.has_method("show_toast"):
+		var is_kr = GameState.language == "KR"
+		var title = "솔라 드라이버 장착!" if is_eq else "솔라 드라이버 해제"
+		var desc = "적도 행성 벨트 및 드라이버 버클 전개" if is_eq else "솔라 드라이버 수납 완료"
+		if not is_kr:
+			title = "SOLAR DRIVER INSTALLED!" if is_eq else "SOLAR DRIVER REMOVED"
+			desc = "Equatorial Planetary Belt & Driver Buckle Deployed" if is_eq else "Solar Driver Retracted"
+		hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1.0, 0.78, 0.18))
 
 func _on_solar_drone_destroyed(pos: Vector3) -> void:
 	GameState.add_score(250)
