@@ -324,11 +324,11 @@ const WEAPONS = {
 		"cooling_power": 28.0,
 		"crit_multiplier": 2.2,
 		"recharge_rate": 14.0,
-		"unlock_wave": 30
+		"unlock_level": 1
 	}
 }
 var has_shown_splash: bool = false
-var current_weapon_id: String = "standard"
+var current_weapon_id: String = "kitsune"
 var kitsune_mode: String = "cannon"  # "cannon" or "blade"
 var celestial_charge: float = 0.0    # 0.0 to 1.0 combat charge for Kitsune Buster IX
 var level: int = 1
