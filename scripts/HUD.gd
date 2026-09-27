@@ -1604,6 +1604,8 @@ func _apply_language(lang: String) -> void:
 			if itm_audio17: itm_audio17.text = "SFX - 신성의 각성 비활성화음  ·  bevibeldesign (Freesound)  ·  CC0" if is_kr else "SFX - Celestial Awakening Deactivation  ·  bevibeldesign (Freesound)  ·  CC0"
 			var itm_audio18 = credits_list.get_node_or_null("ItmAudio18")
 			if itm_audio18: itm_audio18.text = "SFX - 신성의 참격 효과음  ·  Nomagician (Freesound)  ·  CC0" if is_kr else "SFX - Celestial Blade Slash  ·  Nomagician (Freesound)  ·  CC0"
+			var itm_audio19 = credits_list.get_node_or_null("ItmAudio19")
+			if itm_audio19: itm_audio19.text = "SFX - 전술 모드 전환 효과음  ·  Kenney  ·  CC0" if is_kr else "SFX - Tactical Mode Switch  ·  Kenney  ·  CC0"
 
 			var itm_engine_logo = credits_list.get_node_or_null("ItmEngineLogo")
 			if itm_engine_logo: itm_engine_logo.text = "고도 엔진 로고 및 브랜딩  ·  Andrea Calabró (Godot Foundation)  ·  CC BY 4.0" if is_kr else "Godot Engine Logo & Branding  ·  Andrea Calabró (Godot Foundation)  ·  CC BY 4.0"
@@ -1626,6 +1628,8 @@ func _apply_language(lang: String) -> void:
 			if itm_ui4: itm_ui4.text = "무기 선택 휠 UI  ·  절차적 GDScript Draw API" if is_kr else "Weapon Wheel UI  ·  Procedural GDScript Draw API"
 			var itm_ui5 = credits_list.get_node_or_null("ItmUI5")
 			if itm_ui5: itm_ui5.text = "동적 무기 조준선  ·  절차적 GDScript Draw API" if is_kr else "Dynamic Weapon Crosshairs  ·  Procedural GDScript Draw API"
+			var itm_ui6 = credits_list.get_node_or_null("ItmUI6")
+			if itm_ui6: itm_ui6.text = "UI - 신성의 성광 미터 아이콘  ·  수작업 SVG 벡터 아이콘  ·  CC0" if is_kr else "UI - Celestial Starburst Meter Icon  ·  Hand-crafted SVG Vector Icon  ·  CC0"
 
 			var itm_env = credits_list.get_node_or_null("ItmEnv")
 			if itm_env: itm_env.text = "식물 및 바위 (Ultimate Stylized Nature)  ·  Quaternius  ·  CC0" if is_kr else "Ultimate Stylized Nature  ·  Quaternius  ·  CC0"
@@ -1664,6 +1668,18 @@ func _apply_language(lang: String) -> void:
 			if itm_ember_burst: itm_ember_burst.text = "VFX - 태양 플레어 요격 골든 엠버 팝  ·  절차적 골든 파티클 및 블룸" if is_kr else "VFX - Flare Interception Ember Burst  ·  Procedural Golden Particles & Bloom"
 			var itm_stats_plates = credits_list.get_node_or_null("ItmStatsPlates")
 			if itm_stats_plates: itm_stats_plates.text = "UI - 기록 및 업적 아이콘 플레이트  ·  절차적 레트로 플랫 플레이트 및 변조 아이콘" if is_kr else "UI - Stats & Achievement Icon Plates  ·  Procedural Retro Plates & Modulated Icons"
+			var itm_celestial_tails = credits_list.get_node_or_null("ItmCelestialTails")
+			if itm_celestial_tails: itm_celestial_tails.text = "VFX - 신성의 각성 9미 수류 리본  ·  절차적 3D 지오메트리 및 다중 옥타브 파동" if is_kr else "VFX - Celestial Awakening 9-Tail Hydro-Ribbons  ·  Procedural 3D Geometry & Waves"
+			var itm_celestial_cannon = credits_list.get_node_or_null("ItmCelestialCannon")
+			if itm_celestial_cannon: itm_celestial_cannon.text = "VFX - 9갈래 집중 수류포 & 창조 오라  ·  절차적 나선 볼텍스 및 플레어 왜곡" if is_kr else "VFX - 9-Stream Converging Cannon & Creation Aura  ·  Procedural Helical Vortex & Flare Deflection"
+			var itm_celestial_blade = credits_list.get_node_or_null("ItmCelestialBlade")
+			if itm_celestial_blade: itm_celestial_blade.text = "VFX - 신성의 수류검 및 검신 리본  ·  절차적 메시 수류 칼집 및 나선 궤도" if is_kr else "VFX - Celestial Hydro-Blade & Water Cutting  ·  Procedural Mesh Sheath & Orbiting Spirals"
+			var itm_celestial_ethereal = credits_list.get_node_or_null("ItmCelestialEthereal")
+			if itm_celestial_ethereal: itm_celestial_ethereal.text = "VFX - 영역 분할 3D 후처리 셰이더  ·  스플릿 토닝, 변신 충격파 및 아나모픽 플레어" if is_kr else "VFX - Ethereal Domain 3D Post-Process Shader  ·  Split-Toning, Henshin Shockwave & Anamorphic Flares"
+			var itm_celestial_vignette = credits_list.get_node_or_null("ItmCelestialVignette")
+			if itm_celestial_vignette: itm_celestial_vignette.text = "VFX - 신성의 방사형 에너지 비네트 셰이더  ·  절차적 에너지 펄스 및 스타더스트 입자" if is_kr else "VFX - Celestial Radial Energy Vignette Shader  ·  Procedural Energy Pulsing & Stardust Motes"
+			var itm_foxfire_wave = credits_list.get_node_or_null("ItmFoxfireWave")
+			if itm_foxfire_wave: itm_foxfire_wave.text = "VFX - 신성의 여우불 참격 검기  ·  ImmediateMesh 초승달 화염 및 스파크 궤적" if is_kr else "VFX - Celestial Foxfire Slash Wave  ·  ImmediateMesh Flame Crescent & Trailing Spark Embers"
 
 			var itm_disclaimer = credits_list.get_node_or_null("ItmDisclaimer")
 			if itm_disclaimer:

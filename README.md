@@ -206,6 +206,7 @@ SummerNights-Godot/
 | Godot Engine Logo & Branding | Andrea Calabró (Godot Foundation) | CC BY 4.0 |
 | Menu & Achievement Icons | Game-icons.net | CC BY 3.0 |
 | HUD Meter Icons | Yudhi Restu Pebriyanto, Jaya99, balyanbinmalkan (Noun Project) | CC BY 3.0 |
+| UI - Celestial Starburst Meter Icon | Hand-crafted SVG Vector Icon | CC0 |
 | SFX - 40 CC0 Water/Splash/Slime | OpenGameArt | CC0 |
 | SFX - Water Gun Shot | belanhud (Freesound) | CC0 |
 | SFX - UI Audio Pack | Kenney | CC0 |
@@ -216,7 +217,8 @@ SummerNights-Godot/
 | SFX - Shield Deflection | OpenGameArt | CC0 |
 | SFX - Celestial Awakening Activation | TheLittleCrow (Freesound) | CC0 |
 | SFX - Celestial Awakening Deactivation | bevibeldesign (Freesound) | CC0 |
-| SFX - Celestial Slash | Nomagician (Freesound) | CC0 |
+| SFX - Celestial Blade Slash | Nomagician (Freesound) | CC0 |
+| SFX - Tactical Mode Switch | Kenney | CC0 |
 | SFX - Seagull Ambiance | Half-Life | Mod Asset |
 | SFX - PS1 Style Synth Boot Audio | nihilanth217 (SampleFocus) | Standard License |
 | SFX - Heartbeat (Death's Door) | Wikimedia Commons | Public Domain |
@@ -240,5 +242,11 @@ SummerNights-Godot/
 | VFX - Coronal Halo & Concentric Heat Ripples | Procedural Unshaded Additive Shader & Geometry | - |
 | VFX - Flare Interception Golden Ember Pop | Procedural Radial Particles & Bloom | - |
 | UI - Stats & Achievement Icon Plates | Procedural Retro Flat Plates & Tinted Vector Icons | - |
+| VFX - Celestial Awakening 9-Tail Hydro-Ribbons | Procedural 3D Geometry & Waves | - |
+| VFX - 9-Stream Converging Cannon & Creation Aura | Procedural Helical Vortex & Flare Deflection | - |
+| VFX - Celestial Hydro-Blade & Water Cutting | Procedural Mesh Sheath & Orbiting Spirals | - |
+| VFX - Ethereal Domain 3D Post-Process Shader | Split-Toning, Henshin Shockwave & Anamorphic Flares | - |
+| VFX - Celestial Radial Energy Vignette Shader | Procedural Energy Pulsing & Stardust Motes | - |
+| VFX - Celestial Foxfire Slash Wave | ImmediateMesh Flame Crescent & Trailing Spark Embers | - |
 
 *Disclaimer: Kamen Rider and related characters (including Kamen Rider Zeztz & Kamen Rider Geats) are the property of Toei Company, Ltd. and Ishimori Productions. This game is a non-profit, unofficial fan work and is not affiliated with or endorsed by Toei Company.*

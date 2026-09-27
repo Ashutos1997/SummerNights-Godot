@@ -206,6 +206,7 @@ SummerNights-Godot/
 | 고도 엔진 로고 및 브랜딩 (Godot Engine Logo) | Andrea Calabró (Godot Foundation) | CC BY 4.0 |
 | 메뉴 및 업적 아이콘 (Menu & Achievement Icons) | Game-icons.net | CC BY 3.0 |
 | HUD 미터 아이콘 (HUD Meter Icons) | Yudhi Restu Pebriyanto, Jaya99, balyanbinmalkan (Noun Project) | CC BY 3.0 |
+| UI - 신성의 성광 미터 아이콘 (Celestial Starburst Meter Icon) | 수작업 SVG 벡터 아이콘 (Hand-crafted SVG Vector Icon) | CC0 |
 | SFX - 40가지 CC0 물/물결 효과음 | OpenGameArt | CC0 |
 | SFX - 물총 발사음 | belanhud (Freesound) | CC0 |
 | SFX - UI 오디오 팩 | Kenney | CC0 |
@@ -216,7 +217,8 @@ SummerNights-Godot/
 | SFX - 실드 튕김음 (Shield Deflection) | OpenGameArt | CC0 |
 | SFX - 신성의 각성 활성화음 (Celestial Awakening Activation) | TheLittleCrow (Freesound) | CC0 |
 | SFX - 신성의 각성 비활성화음 (Celestial Awakening Deactivation) | bevibeldesign (Freesound) | CC0 |
-| SFX - 신성 참격 효과음 (Celestial Slash) | Nomagician (Freesound) | CC0 |
+| SFX - 신성의 참격 효과음 (Celestial Blade Slash) | Nomagician (Freesound) | CC0 |
+| SFX - 전술 모드 전환 효과음 (Tactical Mode Switch) | Kenney | CC0 |
 | SFX - 갈매기 앰비언스 (Seagull Ambiance) | Half-Life | 모드 에셋 (Mod Asset) |
 | SFX - PS1 스타일 신스 부팅 오디오 (PS1 Style Synth Boot Audio) | nihilanth217 (SampleFocus) | 표준 라이선스 (Standard License) |
 | SFX - 심장 박동음 (죽음의 문턱) (Heartbeat - Death's Door) | Wikimedia Commons | 퍼블릭 도메인 (Public Domain) |
@@ -240,5 +242,11 @@ SummerNights-Godot/
 | VFX - 대기 코로나 헤일로 및 동심원 열파 (Coronal Halo & Heat Ripples) | 절차적 무음영 가산 혼합 셰이더 및 지오메트리 | - |
 | VFX - 태양 플레어 요격 골든 엠버 팝 (Flare Interception Ember Pop) | 절차적 방사형 파티클 및 블룸 | - |
 | UI - 기록 및 업적 아이콘 플레이트 (Stats & Achievement Icon Plates) | 절차적 레트로 플랫 플레이트 및 틴트 벡터 아이콘 | - |
+| VFX - 신성의 각성 9미 수류 리본 (Celestial Awakening 9-Tail Hydro-Ribbons) | 절차적 3D 지오메트리 및 파동 | - |
+| VFX - 9갈래 집중 수류포 & 창조 오라 (9-Stream Converging Cannon & Aura) | 절차적 나선 볼텍스 및 플레어 왜곡 | - |
+| VFX - 신성의 수류검 및 검신 리본 (Celestial Hydro-Blade & Water Cutting) | 절차적 메시 수류 칼집 및 나선 궤도 | - |
+| VFX - 영역 분할 3D 후처리 셰이더 (Ethereal Domain Post-Process Shader) | 스플릿 토닝, 변신 충격파 및 아나모픽 플레어 | - |
+| VFX - 신성의 방사형 에너지 비네트 셰이더 (Celestial Radial Energy Vignette) | 절차적 에너지 펄스 및 스타더스트 입자 | - |
+| VFX - 신성의 여우불 참격 검기 (Celestial Foxfire Slash Wave) | ImmediateMesh 초승달 화염 및 스파크 궤적 | - |
 
 *면책 조항: 가면라이더 및 관련 캐릭터(가면라이더 제츠 및 가면라이더 기츠 포함)는 Toei Company, Ltd. 및 Ishimori Productions의 자산입니다. 본 게임은 비영리적인 비공식 팬 창작물이며 Toei Company와 제휴하거나 보증을 받지 않았습니다.*
