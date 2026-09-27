@@ -136,6 +136,11 @@ var is_swapping_weapon: bool = false
 var weapon_swap_tween: Tween
 var kitsune_water_materials: Array[StandardMaterial3D] = []
 var kitsune_tube_pulse_phase: float = 0.0
+var kitsune_cyl_spin_speed: float = 0.0
+var kitsune_cyl_spin_angle: float = 0.0
+var kitsune_slosh_angle: Vector2 = Vector2.ZERO
+var kitsune_slosh_vel: Vector2 = Vector2.ZERO
+var prev_virtual_mouse_pos: Vector2 = Vector2.ZERO
 
 func _on_weapon_changed(w_id: String) -> void:
 	if GameState.current_weapon_id == w_id: return
@@ -183,6 +188,10 @@ func _do_weapon_swap(w_id: String) -> void:
 func _load_weapon_model() -> void:
 	kitsune_water_materials.clear()
 	kitsune_tube_pulse_phase = 0.0
+	kitsune_cyl_spin_speed = 0.0
+	kitsune_cyl_spin_angle = 0.0
+	kitsune_slosh_angle = Vector2.ZERO
+	kitsune_slosh_vel = Vector2.ZERO
 	if gun_model:
 		gun_model.queue_free()
 		
@@ -391,22 +400,52 @@ func _animate_kitsune_mode_transition(to_mode: String) -> void:
 		_apply_kitsune_mode_visuals(to_mode, true)
 	)
 
-func _process_kitsune_tube_pulse(delta: float) -> void:
+func _process_kitsune_visuals(delta: float) -> void:
+	# ── 1. Rotational Cylinder Spin Momentum ─────────────────────────────
+	var firing = is_shooting and can_shoot and not is_swapping_weapon
+	if firing and GameState.kitsune_mode == "cannon":
+		var target_speed = 22.0 if is_celestial_awakened else 11.0
+		kitsune_cyl_spin_speed = lerp(kitsune_cyl_spin_speed, target_speed, delta * 9.0)
+	else:
+		# Smooth rotational deceleration with viscous fluid drag
+		kitsune_cyl_spin_speed = lerp(kitsune_cyl_spin_speed, 0.0, delta * 4.5)
+	
+	kitsune_cyl_spin_angle += kitsune_cyl_spin_speed * delta
+	if kitsune_cyl_spin_angle > TAU:
+		kitsune_cyl_spin_angle = fmod(kitsune_cyl_spin_angle, TAU)
+		
+	# ── 2. Fluid Slosh Inertia (Liquid mass angular momentum) ───────────
+	if gun_model and is_instance_valid(gun_model):
+		var cyl = gun_model.find_child("Cylinder", true, false)
+		if cyl:
+			if not reduce_motion and not is_swapping_weapon:
+				# Slosh tilt: X is pitch tilt, Y is yaw tilt, Z is continuous spin
+				cyl.rotation = Vector3(kitsune_slosh_angle.x, kitsune_slosh_angle.y, kitsune_cyl_spin_angle)
+				
+				# Micro fluid mass displacement inside the chamber
+				var slosh_x = kitsune_slosh_angle.y * 0.03
+				var slosh_y = 0.48 - kitsune_slosh_angle.x * 0.03
+				cyl.position = Vector3(slosh_x, slosh_y, 0.18)
+			elif not is_swapping_weapon:
+				cyl.rotation = Vector3(0.0, 0.0, kitsune_cyl_spin_angle)
+				cyl.position = Vector3(0.0, 0.48, 0.18)
+			elif is_swapping_weapon:
+				kitsune_cyl_spin_angle = cyl.rotation.z
+	
+	# ── 3. Hydro-Conduit & Vial Emissive Pulse ────────────────────────────
 	if kitsune_water_materials.is_empty():
 		return
 	
-	# Determine pulse frequency based on state
-	var firing = is_shooting and can_shoot and not is_swapping_weapon
-	var speed: float = 2.8 # Calm oceanic breathing pulse
+	var pulse_speed: float = 2.8 # Calm oceanic breathing pulse
 	if firing:
-		speed = 10.0 # Rapid hydrodynamic discharge surge
+		pulse_speed = 10.0 # Rapid hydrodynamic discharge surge
 	elif is_celestial_awakened:
-		speed = 4.5 # Radiant celestial hum
+		pulse_speed = 4.5 # Radiant celestial hum
 	
 	if reduce_motion:
-		speed = 1.0 # Ultra-gentle slow modulation for accessibility
+		pulse_speed = 1.0 # Ultra-gentle slow modulation for accessibility
 	
-	kitsune_tube_pulse_phase += speed * delta
+	kitsune_tube_pulse_phase += pulse_speed * delta
 	if kitsune_tube_pulse_phase > TAU:
 		kitsune_tube_pulse_phase = fmod(kitsune_tube_pulse_phase, TAU)
 	
@@ -1169,6 +1208,7 @@ func _on_title_start_game(is_survival: bool) -> void:
 	
 	timer_running = true
 	virtual_mouse_pos = get_viewport().get_visible_rect().size / 2.0
+	prev_virtual_mouse_pos = virtual_mouse_pos
 	
 	if GameState.level == 1 and not GameState.is_survival_mode and not GameState.has_completed_tutorial:
 		if hud and hud.has_method("show_tutorial_prompt"):
@@ -2214,7 +2254,7 @@ func _process(delta: float) -> void:
 	_process_heat_warning(delta)
 	
 	if GameState.current_weapon_id == "kitsune":
-		_process_kitsune_tube_pulse(delta)
+		_process_kitsune_visuals(delta)
 	
 	# Celestial Awakening countdown, infinite reservoir & creation aura
 	if is_celestial_awakened:
@@ -2657,6 +2697,28 @@ func _process(delta: float) -> void:
 		mouse_pos = virtual_mouse_pos
 	var ray_origin = camera.project_ray_origin(mouse_pos)
 	var ray_normal = camera.project_ray_normal(mouse_pos)
+	# Mouse / aim angular velocity for fluid inertia simulation
+	var mouse_vel = (virtual_mouse_pos - prev_virtual_mouse_pos) / maxf(delta, 0.0001)
+	prev_virtual_mouse_pos = virtual_mouse_pos
+	
+	if not reduce_motion:
+		# Aim angular momentum impulse: whipping the camera exerts lateral/vertical g-force on liquid
+		var target_tilt_pitch = clampf(-mouse_vel.y * 0.000035, -0.065, 0.065)
+		var target_tilt_yaw   = clampf(-mouse_vel.x * 0.000035, -0.075, 0.075)
+		
+		var spring_k = 22.0
+		var damping = 7.0
+		var accel_pitch = (target_tilt_pitch - kitsune_slosh_angle.x) * spring_k - kitsune_slosh_vel.x * damping
+		var accel_yaw   = (target_tilt_yaw - kitsune_slosh_angle.y) * spring_k - kitsune_slosh_vel.y * damping
+		
+		kitsune_slosh_vel.x += accel_pitch * delta
+		kitsune_slosh_vel.y += accel_yaw * delta
+		kitsune_slosh_angle.x += kitsune_slosh_vel.x * delta
+		kitsune_slosh_angle.y += kitsune_slosh_vel.y * delta
+	else:
+		kitsune_slosh_angle = Vector2.ZERO
+		kitsune_slosh_vel = Vector2.ZERO
+
 	# Project to sun's Z depth
 	var dist = (sun.position.z - ray_origin.z) / ray_normal.z
 	var target_pos = ray_origin + ray_normal * dist
@@ -2672,6 +2734,10 @@ func _process(delta: float) -> void:
 		aim_target.y = clamp(aim_target.y, -2.0, 20.0) # Restrict downward movement
 	
 	gun.look_at(target_pos, Vector3.UP)
+	if not reduce_motion and not is_swapping_weapon:
+		# Blaster fluid-weight inertia sway
+		gun.rotate_object_local(Vector3.RIGHT, kitsune_slosh_angle.x * 0.35)
+		gun.rotate_object_local(Vector3.FORWARD, -kitsune_slosh_angle.y * 0.50)
 	
 	# Smoothly return gun to base position if not actively recoiling
 	# Recoil kicks Z forward (closer to camera) and Y up
@@ -2766,10 +2832,6 @@ func _process(delta: float) -> void:
 				if GameState.weapons_used_this_run.size() >= 5:
 					GameState.unlock_achievement("weapon_mastery")
 			gun_spray.emitting = true
-			if GameState.current_weapon_id == "kitsune" and GameState.kitsune_mode == "cannon":
-				var cyl = gun_model.find_child("Cylinder", true, false) if (gun_model and is_instance_valid(gun_model)) else null
-				if cyl:
-					cyl.rotation.z += delta * 8.0
 			
 			if celestial_hydro_cannon:
 				var target_pt = result.position if result else (aim_origin + aim_dir * 100.0)
@@ -4546,10 +4608,7 @@ func _perform_kitsune_blade_slash() -> void:
 	tw.parallel().tween_property(gun, "rotation_degrees:y", 180.0, 0.16)
 	
 	if gun_model and is_instance_valid(gun_model):
-		var cyl = gun_model.find_child("Cylinder", true, false)
-		if cyl:
-			var tw_c = create_tween()
-			tw_c.tween_property(cyl, "rotation_degrees:z", cyl.rotation_degrees.z + (90.0 * blade_slash_dir), 0.16).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		kitsune_cyl_spin_speed = 32.0 * blade_slash_dir
 	
 	# Crosshair aim ray
 	var ray_origin = camera.project_ray_origin(virtual_mouse_pos)
