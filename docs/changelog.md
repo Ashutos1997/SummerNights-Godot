@@ -32,6 +32,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Sun & Drone Geometry: Raised Sun to Y=13.5 (+3m) and expanded drone orbits ($R = 14.6\text{m}–16.0\text{m}$) to clear both the sand dunes and the 10m Golden Shield.
 * Kitsune Blade & Collar Detail: Upgraded receiver collar with aperture clamps, bronze Seppa, cyber-gold Habaki, Yokote ridge line, and chisel O-Kissaki tip.
 * Kitsune Cannon Muzzle Detail: Aerodynamic fox-fang cowl, compensator brake, stepped vortex nozzle, quad magnetic calipers, and front post sight.
+* Power Up Meter Notification Isolation: When using Kitsune Buster IX, only the Celestial Awakening toast alert triggers at 100% charge; standard weapons only trigger Catastrom alerts. Swapping weapons while fully charged no longer fires duplicate cross-weapon notifications.
 * Controls "Power Up" Legend: Unified `[F]` and `[RB]` input labels from "Catastrom" to "Power Up" across keyboard and gamepad.
 * Controls "Mode Change" Legend: Added `[X]` (Keyboard) and `[Y]` (Xbox) mode change entries with magenta highlight swatches and matching typography.
 * Kitsune Buster 3D Model Polish: Authentic Katana sori curvature, fuller groove, fox-flame tsuba, and skeletonized cylinder window.
@@ -307,6 +308,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 지형 간섭 해소: 태양 기준 높이를 Y=13.5(+3m)로 상향하고 드론 공전 궤도($R = 14.6\text{m}–16.0\text{m}$)를 확장하여 모래사장 클리핑 및 10m 황금 실드 간섭 방지.
 * 구미호 검 모드 체결 칼라 개선: 조리개 잠금 클램프, 청동 셋파, 사이버 골드 하바키, 요코테 융기선, 칫솔형 오-킷사키 칼끝 형상 적용.
 * 구미호 포격 총구 개선: 구미호 송곳니 카울, 컴펜세이터 브레이크, 단차식 볼텍스 노즐, 4조각 자기 집속 캘리퍼, 전면 가늠쇠 레일 적용.
+* 파워 업 충전 알림 분리: 구미호 버스터 IX 사용 시에는 신성의 각성 알림만 표시되며, 일반 무기 사용 시에는 카타스트롬 알림만 표시됩니다. 완충 상태에서 무기를 교체하더라도 상호 간 중복 알림이 발생하지 않도록 개선했습니다.
 * 조작 안내 "파워 업" 표기 통일: 조작 안내 화면의 `[F]` 및 `[RB]` 명칭을 "카타스트롬"에서 "파워 업"으로 통합 표기.
 * 조작 안내 "모드 전환" 범례 추가: 키보드(`[X]`) 및 Xbox(`[Y]`) 조작 안내에 마젠타 색상 스와치와 일관된 타이포그래피를 적용한 모드 변경 항목 추가.
 * 구미호 버스터 3D 모델 디테일 강화: 정통 카타나 곡률(소리), 혈조, 여우불 츠바, 스켈레톤 실린더 윈도우 디테일 추가.
