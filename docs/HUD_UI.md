@@ -36,10 +36,10 @@ Designed to minimize clutter while keeping survival info in the player's periphe
 * **Retro Flat Plates:** 38x38 dark plates (4px radii) housing vector icons.
   * *Water:* Cyan border. Flashes red below 20%. Always visible.
   * *Ice Burst:* Frost border. Dims when empty. Hidden on Wave 1 / Level 1-2 (unless bonus charges held); unlocks on Wave 2 / Level 3.
-  * *Catastrom:* Purple border. Pulses gold when ready. Hidden on Waves 1-3 / Levels 1-3; unlocks on Wave 4 / Level 4 with a dedicated toast notification.
+  * *Catastrom / Celestial Awakening:* Dynamic plate and 200x24 gauge. Standard weapons 1-5 use a purple border, `meter_catastrom.svg`, and pulse gold at 100% with "[F] CATASTROM READY!" (unlocks Wave 4+). When wielding the Kitsune Buster IX, transforms into the Celestial Awakening meter with an electric cyan border, `meter_celestial.svg` starburst icon, "[F] CELESTIAL AWAKEN!" pulse at 100%, and real-time active duration countdown (`AWAKENED (%.1fs)`). Pressing [F] exclusively triggers Celestial Awakening for Kitsune (Catastrom is disabled).
 * **Water Bar:** Oceanic blue gauge.
 * **Ice Bar:** Cyan-frost gauge matching Water & Catastrom dimensions (200x24), featuring etched divider notches per charge and an overlaid numeric counter (e.g., 10 / 10). Dims when depleted. Only displays when unlocked or charges are available.
-* **Catastrom Bar:** Purple gauge. Flashes "MAX READY!" at 100%. Only visible and actively charging from Wave 4+ or Level 4+.
+* **Catastrom / Celestial Bar:** Purple (Catastrom) or luminous cyan (Celestial Awakening) gauge. Displays charging progress, ready state, and active timer.
 
 ### Bottom-Left
 * **Active Weapon Display:** Glowing vector crosshair with elemental background and localized weapon name. Toggling modes on the Kitsune Buster IX dynamically displays `[CANNON]` vs `[BLADE]` (`[포격 모드]` vs `[검 모드]`). During Celestial Awakening, gains `[AWAKENED · CANNON]` / `[AWAKENED · BLADE]` (`[신성 · 포격]` / `[신성 · 검]`) badges with breathing cyan border glow. Top-Left/Top-Right labels project holographic cyan shadows (`Color(0.17, 0.90, 1.0, 0.3)`).

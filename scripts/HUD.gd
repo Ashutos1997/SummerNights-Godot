@@ -161,6 +161,8 @@ var celestial_weapon_plate_tween: Tween = null
 var celestial_vignette: ColorRect = null
 var celestial_vignette_tween: Tween = null
 var is_celestial_active: bool = false
+var celestial_time_left: float = 0.0
+var celestial_max_time: float = 15.0
 
 var reduce_motion: bool = false
 var vibration_enabled: bool = true
@@ -307,38 +309,100 @@ func _process(delta: float) -> void:
 			water_bar.value = lerp(water_bar.value, target_water, 12.0 * delta)
 			
 	if catastrom_bar:
-		var target_catastrom = GameState.catastrom_charge
-		var can_show_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
-		if catastrom_row.visible != can_show_catastrom:
-			catastrom_row.visible = can_show_catastrom
+		var is_kitsune = (GameState.current_weapon_id == "kitsune")
+		var is_kr = (GameState.language == "KR")
+		var target_charge: float = 0.0
+		var can_show: bool = false
+		
+		if is_kitsune:
+			can_show = true
+			if is_celestial_active:
+				target_charge = clamp(celestial_time_left / max(0.001, celestial_max_time), 0.0, 1.0)
+			else:
+				target_charge = clamp(GameState.celestial_charge, 0.0, 1.0)
+		else:
+			can_show = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
+			target_charge = clamp(GameState.catastrom_charge, 0.0, 1.0)
+			
+		if catastrom_row.visible != can_show:
+			catastrom_row.visible = can_show
 			
 		if reduce_motion:
-			catastrom_bar.value = target_catastrom
+			catastrom_bar.value = target_charge
 		else:
-			catastrom_bar.value = lerp(catastrom_bar.value, float(target_catastrom), 12.0 * delta)
+			catastrom_bar.value = lerp(catastrom_bar.value, float(target_charge), 12.0 * delta)
 			
-		if catastrom_bar.value >= 0.99:
-			if ready_label:
-				ready_label.visible = true
-				var pulse = (sin(Time.get_ticks_msec() * 0.008) * 0.5 + 0.5)
-				ready_label.modulate.a = 0.75 + pulse * 0.25
-			if is_instance_valid(catastrom_plate):
-				var p_sb = catastrom_plate.get_theme_stylebox("panel") as StyleBoxFlat
-				if p_sb:
-					var gold_pulse = (sin(Time.get_ticks_msec() * 0.008) * 0.5 + 0.5)
-					p_sb.border_color = Color(1.0, 0.85, 0.2, 0.6 + gold_pulse * 0.4)
-			if Engine.get_frames_drawn() % 30 == 0:
-				catastrom_bar.tint_progress = Color(0.8, 0.4, 1.0, 1.0)
-			elif Engine.get_frames_drawn() % 30 == 15:
-				catastrom_bar.tint_progress = Color(0.6, 0, 1, 1)
+		var pulse = (sin(Time.get_ticks_msec() * 0.008) * 0.5 + 0.5)
+		var ready_font = galmuri_font if is_kr else kenney_font
+		
+		if is_kitsune:
+			if catastrom_icon and is_instance_valid(catastrom_icon):
+				catastrom_icon.texture = preload("res://assets/ui/hud_elements/meter_celestial.svg")
+				catastrom_icon.modulate = Color(0.35, 0.95, 1.0, 1.0)
+			
+			if is_celestial_active:
+				if ready_label:
+					ready_label.visible = true
+					if ready_font: ready_label.add_theme_font_override("font", ready_font)
+					ready_label.text = "신성의 각성 (%.1f초)" % celestial_time_left if is_kr else "AWAKENED (%.1fs)" % celestial_time_left
+					ready_label.modulate.a = 0.85 + pulse * 0.15
+					ready_label.add_theme_color_override("font_color", Color(0.35, 0.95, 1.0, 1.0))
+				if is_instance_valid(catastrom_plate):
+					var p_sb = catastrom_plate.get_theme_stylebox("panel") as StyleBoxFlat
+					if p_sb:
+						p_sb.border_color = Color(0.40, 0.95, 1.0, 0.70 + pulse * 0.30)
+				catastrom_bar.tint_progress = Color(0.20, 0.88, 1.0, 1.0)
+			elif catastrom_bar.value >= 0.99:
+				if ready_label:
+					ready_label.visible = true
+					if ready_font: ready_label.add_theme_font_override("font", ready_font)
+					ready_label.text = "각성 준비 완료! [F]" if is_kr else "CELESTIAL AWAKEN! [F]"
+					ready_label.modulate.a = 0.75 + pulse * 0.25
+					ready_label.add_theme_color_override("font_color", Color(0.45, 0.98, 1.0, 1.0))
+				if is_instance_valid(catastrom_plate):
+					var p_sb = catastrom_plate.get_theme_stylebox("panel") as StyleBoxFlat
+					if p_sb:
+						p_sb.border_color = Color(0.35, 0.95, 1.0, 0.6 + pulse * 0.4)
+				if Engine.get_frames_drawn() % 30 == 0:
+					catastrom_bar.tint_progress = Color(0.50, 0.98, 1.0, 1.0)
+				elif Engine.get_frames_drawn() % 30 == 15:
+					catastrom_bar.tint_progress = Color(0.18, 0.75, 1.0, 1.0)
+			else:
+				if ready_label:
+					ready_label.visible = false
+				if is_instance_valid(catastrom_plate):
+					var p_sb = catastrom_plate.get_theme_stylebox("panel") as StyleBoxFlat
+					if p_sb:
+						p_sb.border_color = Color(0.20, 0.70, 0.90, 0.60)
+				catastrom_bar.tint_progress = Color(0.15, 0.70, 0.95, 1.0)
 		else:
-			if ready_label:
-				ready_label.visible = false
-			if is_instance_valid(catastrom_plate):
-				var p_sb = catastrom_plate.get_theme_stylebox("panel") as StyleBoxFlat
-				if p_sb:
-					p_sb.border_color = Color(0.8, 0.4, 1.0, 0.6)
-			catastrom_bar.tint_progress = Color(0.6, 0, 1, 1)
+			if catastrom_icon and is_instance_valid(catastrom_icon):
+				catastrom_icon.texture = preload("res://assets/ui/hud_elements/meter_catastrom.svg")
+				catastrom_icon.modulate = Color(0.8, 0.4, 1.0, 1.0)
+			
+			if catastrom_bar.value >= 0.99:
+				if ready_label:
+					ready_label.visible = true
+					if ready_font: ready_label.add_theme_font_override("font", ready_font)
+					ready_label.text = "카타스트롬 준비 완료! [F]" if is_kr else "CATASTROM READY! [F]"
+					ready_label.modulate.a = 0.75 + pulse * 0.25
+					ready_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+				if is_instance_valid(catastrom_plate):
+					var p_sb = catastrom_plate.get_theme_stylebox("panel") as StyleBoxFlat
+					if p_sb:
+						p_sb.border_color = Color(1.0, 0.85, 0.2, 0.6 + pulse * 0.4)
+				if Engine.get_frames_drawn() % 30 == 0:
+					catastrom_bar.tint_progress = Color(0.8, 0.4, 1.0, 1.0)
+				elif Engine.get_frames_drawn() % 30 == 15:
+					catastrom_bar.tint_progress = Color(0.6, 0.0, 1.0, 1.0)
+			else:
+				if ready_label:
+					ready_label.visible = false
+				if is_instance_valid(catastrom_plate):
+					var p_sb = catastrom_plate.get_theme_stylebox("panel") as StyleBoxFlat
+					if p_sb:
+						p_sb.border_color = Color(0.8, 0.4, 1.0, 0.6)
+				catastrom_bar.tint_progress = Color(0.6, 0.0, 1.0, 1.0)
 			
 
 	if credits_screen and credits_screen.visible:
@@ -1737,7 +1801,10 @@ func _apply_language(lang: String) -> void:
 		if row_name == "XboxRow": prefix_cat = "RB"
 		var leg_catastrom = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/" + row_name + "/LegendColumn/LegCatastrom/Label")
 		if leg_catastrom:
-			leg_catastrom.text = prefix_cat + " - 카타스트롬" if is_kr else prefix_cat + " - CATASTROM"
+			if GameState.current_weapon_id == "kitsune":
+				leg_catastrom.text = prefix_cat + " - 신성의 각성" if is_kr else prefix_cat + " - CELESTIAL AWAKENING"
+			else:
+				leg_catastrom.text = prefix_cat + " - 카타스트롬" if is_kr else prefix_cat + " - CATASTROM"
 			if font: leg_catastrom.add_theme_font_override("font", font)
 
 		var prefix_mouse = "MOUSE - 조준/발사" if is_kr else "MOUSE - AIM/SHOOT"
@@ -4210,6 +4277,8 @@ func _set_vignette_param(param: String, value) -> void:
 
 func start_celestial_awakening(duration: float = 15.0) -> void:
 	is_celestial_active = true
+	celestial_time_left = duration
+	celestial_max_time = duration
 	
 	# 1. Brief incandescent screen flash
 	var flash = ColorRect.new()
@@ -4264,6 +4333,8 @@ func _set_vignette_alpha(val: float) -> void:
 	_set_vignette_param("energy_alpha", val)
 
 func update_celestial_awakening(time_left: float, max_time: float) -> void:
+	celestial_time_left = time_left
+	celestial_max_time = max_time
 	if crosshair and crosshair.has_method("set_celestial_timer"):
 		crosshair.set_celestial_timer(time_left, max_time)
 		
@@ -4279,6 +4350,7 @@ func update_celestial_awakening(time_left: float, max_time: float) -> void:
 
 func end_celestial_awakening() -> void:
 	is_celestial_active = false
+	celestial_time_left = 0.0
 	
 	# 1. Fade out energy vignette
 	if celestial_vignette_tween and celestial_vignette_tween.is_valid():

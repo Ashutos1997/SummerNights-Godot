@@ -2781,9 +2781,13 @@ func _process(delta: float) -> void:
 					# Reward: Instantly refill Water Tank & +2% Catastrom Charge (scaled by buff)!
 					var refill_amount = 0.40 if "flare_catcher" in GameState.unlocked_achievements else 0.30
 					water_tank = min(MAX_WATER, water_tank + (MAX_WATER * refill_amount))
-					var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
-					if can_catastrom:
-						GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (0.02 * catastrom_buff * GameState.catastrom_charge_mult))
+					if GameState.current_weapon_id == "kitsune":
+						if not is_celestial_awakened:
+							GameState.celestial_charge = min(1.0, GameState.celestial_charge + (0.04 * catastrom_buff * GameState.catastrom_charge_mult))
+					else:
+						var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
+						if can_catastrom:
+							GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (0.02 * catastrom_buff * GameState.catastrom_charge_mult))
 					var c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2)) if combo_active else 1.0
 					GameState.add_score(int(500.0 * c_mult))
 					water_refill_count += 1
@@ -2946,7 +2950,7 @@ func _process(delta: float) -> void:
 	if water_mat and water_mat is StandardMaterial3D:
 		water_mat.uv1_offset += Vector3(0.02 * delta, 0.02 * delta, 0) # Scrolling ripples
 
-	if GameState.catastrom_charge >= 1.0:
+	if GameState.catastrom_charge >= 1.0 and GameState.current_weapon_id != "kitsune":
 		if not was_catastrom_charged:
 			was_catastrom_charged = true
 			if hud and hud.has_method("show_toast"):
@@ -2955,7 +2959,7 @@ func _process(delta: float) -> void:
 				var desc = "태양을 바다로 끌어내리세요 [F]" if is_kr else "DRAG THE SUN DOWN [F]"
 				var icon_path = "res://assets/ui/achievements/ball-glow.png" if OS.has_feature("safe_audio") else "res://assets/ui/Catastrom.png"
 				hud.show_toast(title, desc, icon_path, Color(0.8, 0.4, 1.0, 1.0))
-	else:
+	elif GameState.catastrom_charge < 1.0:
 		was_catastrom_charged = false
 
 func _input(event: InputEvent) -> void:
@@ -2993,9 +2997,9 @@ func _input(event: InputEvent) -> void:
 
 	if event.is_action_pressed("ui_catastrom") and not event.is_echo():
 		if GameState.current_weapon_id == "kitsune":
-			if (GameState.celestial_charge >= 1.0 or GameState.catastrom_charge >= 1.0) and not is_celestial_awakened:
+			if GameState.celestial_charge >= 1.0 and not is_celestial_awakened:
 				start_celestial_awakening(15.0)
-				return
+			return
 		var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
 		if can_catastrom and GameState.catastrom_charge >= 1.0 and not is_catastrom_active:
 			is_catastrom_active = true
@@ -3442,9 +3446,13 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				var c_mult = 1.0
 				if combo_active:
 					c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
-				var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
-				if can_catastrom:
-					GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult / 1200.0))
+				if GameState.current_weapon_id == "kitsune":
+					if not is_celestial_awakened:
+						GameState.celestial_charge = min(1.0, GameState.celestial_charge + (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult / 1200.0))
+				else:
+					var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
+					if can_catastrom:
+						GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult / 1200.0))
 				GameState.add_score(int(dmg * 10.0 * c_mult))
 				if sizzle_sfx and not sizzle_sfx.playing:
 					sizzle_sfx.play()
@@ -3470,9 +3478,13 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				var c_mult = 1.0
 				if combo_active:
 					c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
-				var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
-				if can_catastrom:
-					GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult / 1200.0))
+				if GameState.current_weapon_id == "kitsune":
+					if not is_celestial_awakened:
+						GameState.celestial_charge = min(1.0, GameState.celestial_charge + (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult / 1200.0))
+				else:
+					var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
+					if can_catastrom:
+						GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult / 1200.0))
 				GameState.add_score(int(dmg * 5.0 * c_mult))
 				projectile_hit.emit()
 			
