@@ -635,6 +635,7 @@ var is_dragging_sun: bool = false
 var is_catastrom_active: bool = false
 var catastrom_buff: float = 1.0
 var was_catastrom_charged: bool = false
+var last_charged_powerup_type: String = ""
 var catastrom_sfx: AudioStreamPlayer
 var active_weather: String = "none" # "none", "rain", "eclipse"
 var weather_timer: float = 0.0
@@ -3142,17 +3143,26 @@ func _process(delta: float) -> void:
 	if water_mat and water_mat is StandardMaterial3D:
 		water_mat.uv1_offset += Vector3(0.02 * delta, 0.02 * delta, 0) # Scrolling ripples
 
-	if GameState.catastrom_charge >= 1.0 and GameState.current_weapon_id != "kitsune":
-		if not was_catastrom_charged:
+	if GameState.catastrom_charge >= 1.0:
+		var current_powerup_type = "celestial" if GameState.current_weapon_id == "kitsune" else "catastrom"
+		if last_charged_powerup_type != current_powerup_type:
+			last_charged_powerup_type = current_powerup_type
 			was_catastrom_charged = true
 			if hud and hud.has_method("show_toast"):
 				var is_kr = GameState.language == "KR"
-				var title = "카타스트롬 준비됨" if is_kr else "CATASTROM READY"
-				var desc = "태양을 바다로 끌어내리세요 [F]" if is_kr else "DRAG THE SUN DOWN [F]"
-				var icon_path = "res://assets/ui/achievements/ball-glow.png" if OS.has_feature("safe_audio") else "res://assets/ui/Catastrom.png"
-				hud.show_toast(title, desc, icon_path, Color(0.8, 0.4, 1.0, 1.0))
+				if current_powerup_type == "celestial":
+					var title = "신성의 각성 준비됨" if is_kr else "CELESTIAL AWAKENING READY"
+					var desc = "구미호의 권능을 해방하세요 [F]" if is_kr else "UNLEASH THE FOX NINE [F]"
+					var icon_path = "res://assets/ui/hud_elements/meter_celestial.svg"
+					hud.show_toast(title, desc, icon_path, Color(0.35, 0.95, 1.0, 1.0))
+				else:
+					var title = "카타스트롬 준비됨" if is_kr else "CATASTROM READY"
+					var desc = "태양을 바다로 끌어내리세요 [F]" if is_kr else "DRAG THE SUN DOWN [F]"
+					var icon_path = "res://assets/ui/achievements/ball-glow.png" if OS.has_feature("safe_audio") else "res://assets/ui/Catastrom.png"
+					hud.show_toast(title, desc, icon_path, Color(0.8, 0.4, 1.0, 1.0))
 	elif GameState.catastrom_charge < 1.0:
 		was_catastrom_charged = false
+		last_charged_powerup_type = ""
 
 func _input(event: InputEvent) -> void:
 	if is_title_screen:
