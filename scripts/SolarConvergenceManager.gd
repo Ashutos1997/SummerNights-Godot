@@ -28,10 +28,13 @@ var orbit_time: float = 0.0
 
 const DRONE_SCENE = preload("res://assets/models/solar_eye_drone.glb")
 
-# Audio references
-var sfx_deflect: AudioStreamPlayer
-var sfx_break: AudioStreamPlayer
-var sfx_ice_hit: AudioStreamPlayer
+# Audio references (Bespoke Drone SFX)
+var hit_players: Array[AudioStreamPlayer] = []
+var hit_player_idx: int = 0
+var hit_sfx_cooldown: float = 0.0
+
+var sfx_drone_shatter: AudioStreamPlayer
+var sfx_drone_ice_shatter: AudioStreamPlayer
 
 func _ready() -> void:
 	_init_audio()
@@ -41,23 +44,26 @@ func setup(sun: Node3D, cam: Camera3D) -> void:
 	camera_node = cam
 
 func _init_audio() -> void:
-	sfx_deflect = AudioStreamPlayer.new()
-	sfx_deflect.stream = load("res://assets/audio/sfx/shield_deflect.wav")
-	sfx_deflect.bus = "Master"
-	sfx_deflect.volume_db = -2.0
-	add_child(sfx_deflect)
+	var hit_stream = load("res://assets/audio/sfx/drone_hit.wav")
+	for i in range(4):
+		var hp = AudioStreamPlayer.new()
+		hp.stream = hit_stream
+		hp.bus = "Master"
+		hp.volume_db = 0.8
+		add_child(hp)
+		hit_players.append(hp)
 
-	sfx_break = AudioStreamPlayer.new()
-	sfx_break.stream = load("res://assets/audio/sfx/shield_break.ogg")
-	sfx_break.bus = "Master"
-	sfx_break.volume_db = 1.0
-	add_child(sfx_break)
+	sfx_drone_shatter = AudioStreamPlayer.new()
+	sfx_drone_shatter.stream = load("res://assets/audio/sfx/drone_shatter.wav")
+	sfx_drone_shatter.bus = "Master"
+	sfx_drone_shatter.volume_db = 2.5
+	add_child(sfx_drone_shatter)
 
-	sfx_ice_hit = AudioStreamPlayer.new()
-	sfx_ice_hit.stream = load("res://assets/audio/sfx/ice_hit.ogg")
-	sfx_ice_hit.bus = "Master"
-	sfx_ice_hit.volume_db = 1.5
-	add_child(sfx_ice_hit)
+	sfx_drone_ice_shatter = AudioStreamPlayer.new()
+	sfx_drone_ice_shatter.stream = load("res://assets/audio/sfx/drone_ice_shatter.wav")
+	sfx_drone_ice_shatter.bus = "Master"
+	sfx_drone_ice_shatter.volume_db = 3.2
+	add_child(sfx_drone_ice_shatter)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Phase 1: Orbital Swarm Spawning
@@ -162,6 +168,7 @@ func _process(delta: float) -> void:
 	if not camera_node or not is_instance_valid(camera_node):
 		camera_node = get_viewport().get_camera_3d()
 
+	hit_sfx_cooldown = max(0.0, hit_sfx_cooldown - delta)
 	orbit_time += delta
 	var sun_pos = sun_node.global_position
 	var cam_pos = camera_node.global_position if (camera_node and is_instance_valid(camera_node)) else Vector3(0, 0, 5)
@@ -278,18 +285,21 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 	# Visual mechanical recoil kick on impact
 	d_node.scale = Vector3(1.45, 1.45, 1.45)
 
-	# Play metal deflection sound occasionally
-	if sfx_deflect and not sfx_deflect.playing and randf() < 0.3:
-		sfx_deflect.pitch_scale = randf_range(1.1, 1.35)
-		sfx_deflect.play()
+	# Play crisp rhythmic hydro-metallic hit tick
+	if hit_sfx_cooldown <= 0.0 and not hit_players.is_empty():
+		var p = hit_players[hit_player_idx]
+		hit_player_idx = (hit_player_idx + 1) % hit_players.size()
+		p.pitch_scale = randf_range(0.92, 1.15)
+		p.play()
+		hit_sfx_cooldown = 0.065
 
 	# Check Destruction
 	if cur_hp <= 0.0:
 		var pos = d_node.global_position
 		_spawn_drone_destruction_fx(pos, false)
-		if sfx_break:
-			sfx_break.pitch_scale = randf_range(1.05, 1.25)
-			sfx_break.play()
+		if sfx_drone_shatter:
+			sfx_drone_shatter.pitch_scale = randf_range(0.95, 1.08)
+			sfx_drone_shatter.play()
 
 		active_drones.erase(closest_drone)
 		d_node.queue_free()
@@ -332,12 +342,9 @@ func check_ice_blast_intercept(blast_pos: Vector3, radius: float = 5.5) -> bool:
 		d_node.queue_free()
 		drone_shattered_by_ice.emit(pos)
 
-	if sfx_ice_hit:
-		sfx_ice_hit.pitch_scale = randf_range(1.2, 1.4)
-		sfx_ice_hit.play()
-	if sfx_break:
-		sfx_break.pitch_scale = 1.4
-		sfx_break.play()
+	if sfx_drone_ice_shatter:
+		sfx_drone_ice_shatter.pitch_scale = randf_range(0.96, 1.06)
+		sfx_drone_ice_shatter.play()
 
 	return true
 
