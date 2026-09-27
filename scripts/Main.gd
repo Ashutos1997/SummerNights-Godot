@@ -134,6 +134,8 @@ const SKY := [
 var gun_model: Node3D
 var is_swapping_weapon: bool = false
 var weapon_swap_tween: Tween
+var kitsune_water_materials: Array[StandardMaterial3D] = []
+var kitsune_tube_pulse_phase: float = 0.0
 
 func _on_weapon_changed(w_id: String) -> void:
 	if GameState.current_weapon_id == w_id: return
@@ -179,6 +181,8 @@ func _do_weapon_swap(w_id: String) -> void:
 		is_swapping_weapon = false
 
 func _load_weapon_model() -> void:
+	kitsune_water_materials.clear()
+	kitsune_tube_pulse_phase = 0.0
 	if gun_model:
 		gun_model.queue_free()
 		
@@ -386,6 +390,72 @@ func _animate_kitsune_mode_transition(to_mode: String) -> void:
 		is_swapping_weapon = false
 		_apply_kitsune_mode_visuals(to_mode, true)
 	)
+
+func _process_kitsune_tube_pulse(delta: float) -> void:
+	if kitsune_water_materials.is_empty():
+		return
+	
+	# Determine pulse frequency based on state
+	var firing = is_shooting and can_shoot and not is_swapping_weapon
+	var speed: float = 2.8 # Calm oceanic breathing pulse
+	if firing:
+		speed = 10.0 # Rapid hydrodynamic discharge surge
+	elif is_celestial_awakened:
+		speed = 4.5 # Radiant celestial hum
+	
+	if reduce_motion:
+		speed = 1.0 # Ultra-gentle slow modulation for accessibility
+	
+	kitsune_tube_pulse_phase += speed * delta
+	if kitsune_tube_pulse_phase > TAU:
+		kitsune_tube_pulse_phase = fmod(kitsune_tube_pulse_phase, TAU)
+	
+	var wave = sin(kitsune_tube_pulse_phase)
+	var norm_wave = 0.5 + 0.5 * wave # [0.0, 1.0]
+	
+	var water_pct = clampf(water_tank / maxf(MAX_WATER, 0.001), 0.0, 1.0)
+	
+	var col: Color
+	var energy: float
+	
+	if is_celestial_awakened:
+		# Overcharged celestial starlight cyan with radiant bloom
+		col = Color(0.68, 0.96, 1.0)
+		var base_e = 2.6 if not reduce_motion else 2.8
+		var amp = 1.0 if not reduce_motion else 0.2
+		energy = base_e + amp * norm_wave
+	elif water_pct <= 0.001:
+		# Depleted reservoir: dim exhausted twilight cyan
+		col = Color(0.12, 0.35, 0.45)
+		energy = 0.15 + 0.05 * norm_wave
+	elif water_pct < 0.25:
+		# Low water emergency warning: shifts toward hot amber/orange
+		var warn_t = 1.0 - (water_pct / 0.25)
+		var cyan_col = Color(0.22, 0.92, 1.0)
+		var amber_col = Color(1.0, 0.48, 0.12)
+		col = cyan_col.lerp(amber_col, warn_t)
+		var base_e = 0.8 if not firing else 1.6
+		var amp = 1.2 if not reduce_motion else 0.25
+		energy = base_e + amp * norm_wave
+	else:
+		# Standard oceanic hydro-conduit glow
+		col = Color(0.22, 0.92, 1.0)
+		if firing:
+			var base_e = 1.6 if not reduce_motion else 1.8
+			var amp = 1.0 if not reduce_motion else 0.2
+			energy = base_e + amp * norm_wave
+		else:
+			var base_e = 0.9 if not reduce_motion else 1.2
+			var amp = 0.7 if not reduce_motion else 0.15
+			energy = base_e + amp * norm_wave
+	
+	for mat in kitsune_water_materials:
+		if not is_instance_valid(mat):
+			continue
+		mat.emission_enabled = true
+		mat.emission = col
+		mat.emission_energy_multiplier = energy
+		mat.albedo_color = Color(col.r, col.g, col.b, mat.albedo_color.a)
 		
 func _recalculate_stats() -> void:
 	var w_cfg = GameState.WEAPONS[GameState.current_weapon_id]
@@ -2143,6 +2213,9 @@ func _process(delta: float) -> void:
 
 	_process_heat_warning(delta)
 	
+	if GameState.current_weapon_id == "kitsune":
+		_process_kitsune_tube_pulse(delta)
+	
 	# Celestial Awakening countdown, infinite reservoir & creation aura
 	if is_celestial_awakened:
 		if GameState.current_weapon_id != "kitsune":
@@ -3365,6 +3438,12 @@ func _adjust_gun_materials(node: Node) -> void:
 				elif GameState.current_weapon_id != "kitsune" and new_mat.metallic > 0.1:
 					new_mat.metallic = 0.0
 				node.set_surface_override_material(i, new_mat)
+				
+				if GameState.current_weapon_id == "kitsune":
+					var rname = mat.resource_name
+					if "Cyan" in rname or "Hamon" in rname or (new_mat.emission_enabled and (new_mat.emission.b > 0.5 or new_mat.albedo_color.b > 0.7)):
+						if not kitsune_water_materials.has(new_mat):
+							kitsune_water_materials.append(new_mat)
 	for child in node.get_children():
 		_adjust_gun_materials(child)
 
