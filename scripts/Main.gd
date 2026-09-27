@@ -4628,6 +4628,8 @@ func on_solar_convergence_sun_powerup() -> void:
 func on_solar_convergence_completed() -> void:
 	if is_instance_valid(sun_face):
 		sun_face.visible = false
+	if is_instance_valid(sun_mesh):
+		sun_mesh.visible = false
 	sun_face_shake = 0.0
 	if is_instance_valid(sun):
 		var tw = create_tween()
@@ -4636,6 +4638,8 @@ func on_solar_convergence_completed() -> void:
 func on_solar_helmet_removed() -> void:
 	if is_instance_valid(sun_face):
 		sun_face.visible = true
+	if is_instance_valid(sun_mesh):
+		sun_mesh.visible = true
 
 func _on_solar_drone_destroyed(pos: Vector3) -> void:
 	GameState.add_score(250)
