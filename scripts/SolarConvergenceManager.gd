@@ -187,10 +187,10 @@ func _create_drone(index: int, total: int, wave: int = 1) -> Dictionary:
 	mat_minor.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	mat_minor.cull_mode = BaseMaterial3D.CULL_DISABLED
 	mat_minor.render_priority = 2
-	mat_minor.albedo_color = Color(1.0, 0.72, 0.22, 0.95)
+	mat_minor.albedo_color = Color(1.0, 0.88, 0.45, 0.95)
 	mat_minor.emission_enabled = true
-	mat_minor.emission = Color(1.0, 0.65, 0.18)
-	mat_minor.emission_energy_multiplier = 3.5
+	mat_minor.emission = Color(1.0, 0.84, 0.35)
+	mat_minor.emission_energy_multiplier = 2.8
 	crack_minor.material_override = mat_minor
 	drone_root.add_child(crack_minor)
 
@@ -203,29 +203,29 @@ func _create_drone(index: int, total: int, wave: int = 1) -> Dictionary:
 	mat_major.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	mat_major.cull_mode = BaseMaterial3D.CULL_DISABLED
 	mat_major.render_priority = 3
-	mat_major.albedo_color = Color(1.0, 0.28, 0.08, 0.95)
+	mat_major.albedo_color = Color(1.0, 0.70, 0.24, 0.95)
 	mat_major.emission_enabled = true
-	mat_major.emission = Color(1.0, 0.28, 0.08)
-	mat_major.emission_energy_multiplier = 5.5
+	mat_major.emission = Color(1.0, 0.68, 0.22)
+	mat_major.emission_energy_multiplier = 3.8
 	crack_major.material_override = mat_major
 	drone_root.add_child(crack_major)
 
-	# Thermal Vent Fissure Particles (active when heavily fractured)
+	# Trapped Coolant Steam Wisps (leaking coolant vapor when heavily fractured)
 	var vent_fx = CPUParticles3D.new()
 	vent_fx.name = "VentFX"
 	vent_fx.emitting = false
-	vent_fx.amount = 8
-	vent_fx.lifetime = 0.5
-	vent_fx.direction = Vector3(0, 1, -0.4)
-	vent_fx.spread = 45.0
-	vent_fx.initial_velocity_min = 1.5
-	vent_fx.initial_velocity_max = 3.2
-	vent_fx.gravity = Vector3(0, 4.0, 0)
+	vent_fx.amount = 6
+	vent_fx.lifetime = 0.6
+	vent_fx.direction = Vector3(0, 1, -0.3)
+	vent_fx.spread = 35.0
+	vent_fx.initial_velocity_min = 1.0
+	vent_fx.initial_velocity_max = 2.2
+	vent_fx.gravity = Vector3(0, 3.5, 0)
 	var v_mat = StandardMaterial3D.new()
 	v_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	v_mat.albedo_color = Color(1.0, 0.60, 0.15, 0.85)
+	v_mat.albedo_color = Color(0.55, 0.92, 1.0, 0.65)
 	var v_mesh = BoxMesh.new()
-	v_mesh.size = Vector3(0.08, 0.08, 0.08)
+	v_mesh.size = Vector3(0.05, 0.05, 0.05)
 	v_mesh.material = v_mat
 	vent_fx.mesh = v_mesh
 	vent_fx.position = Vector3(0, 0, -0.36)
@@ -259,9 +259,9 @@ func _build_crack_mesh(seed_val: int, is_major: bool) -> ArrayMesh:
 	var st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 
-	var branch_count = 8 if is_major else 4
-	var max_radius = 1.15 if is_major else 0.45
-	var half_w = 0.038 if is_major else 0.024
+	var branch_count = 5 if is_major else 3
+	var max_radius = 0.58 if is_major else 0.32
+	var half_w = 0.016 if is_major else 0.010
 
 	var rng = RandomNumberGenerator.new()
 	rng.seed = seed_val * 100 + (99 if is_major else 33)
@@ -270,7 +270,7 @@ func _build_crack_mesh(seed_val: int, is_major: bool) -> ArrayMesh:
 
 	for b in range(branch_count):
 		var base_angle = (float(b) / float(branch_count)) * TAU + rng.randf_range(-0.25, 0.25)
-		var num_segs = 6 if is_major else 3
+		var num_segs = 4 if is_major else 3
 		var seg_pts: Array[Vector3] = []
 
 		# Start near center aperture ring
@@ -314,18 +314,17 @@ func _build_crack_mesh(seed_val: int, is_major: bool) -> ArrayMesh:
 			st.add_vertex(v0_r)
 			st.add_vertex(v1_r)
 
-	# Transverse spiderweb cross-fracture chords for major damage
-	if is_major and main_branch_points.size() >= 4:
+	# Subtle hairline connecting fractures for major damage
+	if is_major and main_branch_points.size() >= 3:
 		var cross_half_w = half_w * 0.75
-		for c in range(main_branch_points.size()):
-			var next_c = (c + 1) % main_branch_points.size()
-			var b1 = main_branch_points[c]
-			var b2 = main_branch_points[next_c]
-			if b1.size() > 3 and b2.size() > 3:
-				var idx1 = rng.randi_range(2, b1.size() - 2)
-				var idx2 = rng.randi_range(2, b2.size() - 2)
-				var p0 = b1[idx1]
-				var p1 = b2[idx2]
+		for c in range(2):
+			var idx_a = (c * 2) % main_branch_points.size()
+			var idx_b = (idx_a + 1) % main_branch_points.size()
+			var b1 = main_branch_points[idx_a]
+			var b2 = main_branch_points[idx_b]
+			if b1.size() > 2 and b2.size() > 2:
+				var p0 = b1[1]
+				var p1 = b2[1]
 				var dir2d = Vector2(p1.x - p0.x, p1.y - p0.y)
 				if dir2d.length_squared() >= 0.0001:
 					var norm2d = Vector2(-dir2d.y, dir2d.x).normalized() * cross_half_w
@@ -416,28 +415,28 @@ func _process(delta: float) -> void:
 			if crack_major and crack_major.visible: crack_major.visible = false
 			if vent_fx and vent_fx.emitting: vent_fx.emitting = false
 			if mat_minor and is_instance_valid(mat_minor):
-				var pulse = 0.5 + 0.5 * sin(orbit_time * 6.0 + drone["phase_offset"])
-				mat_minor.emission_energy_multiplier = 3.5 + (pulse * 2.0)
+				var pulse = 0.5 + 0.5 * sin(orbit_time * 5.0 + drone["phase_offset"])
+				mat_minor.emission_energy_multiplier = 2.8 + (pulse * 1.4)
 		else:
-			# Stage 2: Critical spiderweb fissures cutting across entire drone & imminent shatter
+			# Stage 2: Critical hairline fissures across lens and aperture & imminent shatter
 			if crack_minor and not crack_minor.visible: crack_minor.visible = true
 			if crack_major and not crack_major.visible: crack_major.visible = true
 			if vent_fx and not vent_fx.emitting: vent_fx.emitting = true
 
 			# Impending shatter warning: erratic strobe or high-frequency pulse
 			if hp_pct <= 0.18:
-				# Imminent core failure (< 18% HP): violent structural shudder + high-voltage flash
-				var jitter_amt = (1.0 - (hp_pct / 0.18)) * 0.08
+				# Imminent core failure (< 18% HP): structural shudder + high-voltage flash
+				var jitter_amt = (1.0 - (hp_pct / 0.18)) * 0.05
 				node.global_position += Vector3(randf_range(-jitter_amt, jitter_amt), randf_range(-jitter_amt, jitter_amt), 0.0)
 				if mat_major and is_instance_valid(mat_major):
-					var strobe = 1.0 if sin(orbit_time * 24.0) > 0.0 else 0.4
-					mat_major.emission_energy_multiplier = 6.0 + (strobe * 4.0)
+					var strobe = 1.0 if sin(orbit_time * 20.0) > 0.0 else 0.4
+					mat_major.emission_energy_multiplier = 3.8 + (strobe * 2.2)
 			else:
-				var pulse = 0.5 + 0.5 * sin(orbit_time * 12.0 + drone["phase_offset"])
+				var pulse = 0.5 + 0.5 * sin(orbit_time * 10.0 + drone["phase_offset"])
 				if mat_major and is_instance_valid(mat_major):
-					mat_major.emission_energy_multiplier = 5.0 + (pulse * 3.5)
+					mat_major.emission_energy_multiplier = 3.2 + (pulse * 1.8)
 				# Subtle instability tremor
-				node.global_position += Vector3(randf_range(-0.02, 0.02), randf_range(-0.02, 0.02), 0.0)
+				node.global_position += Vector3(randf_range(-0.015, 0.015), randf_range(-0.015, 0.015), 0.0)
 
 		if drone["hit_flash"] > 0.0:
 			drone["hit_flash"] -= delta * 6.0
@@ -453,11 +452,11 @@ func _process(delta: float) -> void:
 				pupil_mat.emission = Color(1.0, 0.78, 0.18).lerp(Color(0.3, 1.0, 1.0), f)
 				pupil_mat.emission_energy_multiplier = 3.5 + (f * 5.0)
 			if mat_minor and is_instance_valid(mat_minor):
-				mat_minor.emission = Color(1.0, 0.65, 0.18).lerp(Color(0.4, 1.0, 1.0), f)
+				mat_minor.emission = Color(1.0, 0.84, 0.35).lerp(Color(0.4, 1.0, 1.0), f)
 			if mat_major and is_instance_valid(mat_major):
-				mat_major.emission = Color(1.0, 0.28, 0.08).lerp(Color(0.4, 1.0, 1.0), f)
+				mat_major.emission = Color(1.0, 0.68, 0.22).lerp(Color(0.4, 1.0, 1.0), f)
 		else:
-			# Visual damage states: Radiant Gold & Pearl (Healthy) -> Molten Solar Orange (Damaged) -> Blazing Crimson (Critical)
+			# Visual damage states: Preserves dignified Sun-Gold & Pearl Ivory armor; pupil heats up with warm solar amber
 			var base_casing_col: Color
 			var base_pearl_col: Color
 			var base_pupil_col: Color
@@ -471,17 +470,17 @@ func _process(delta: float) -> void:
 				pulse_speed = 3.2
 				base_energy = 3.2
 			elif hp_pct > 0.30:
-				base_casing_col = Color(1.0, 0.58, 0.14)
-				base_pearl_col = Color(1.0, 0.82, 0.65)
-				base_pupil_col = Color(1.0, 0.38, 0.08)
-				pulse_speed = 6.0
-				base_energy = 4.2
+				base_casing_col = Color(1.0, 0.80, 0.20)
+				base_pearl_col = Color(0.96, 0.95, 0.92)
+				base_pupil_col = Color(1.0, 0.62, 0.15)
+				pulse_speed = 5.0
+				base_energy = 4.0
 			else:
-				base_casing_col = Color(0.98, 0.22, 0.12)
-				base_pearl_col = Color(1.0, 0.45, 0.35)
-				base_pupil_col = Color(1.0, 0.18, 0.08)
-				pulse_speed = 10.0
-				base_energy = 5.5
+				base_casing_col = Color(0.96, 0.70, 0.18)
+				base_pearl_col = Color(0.94, 0.93, 0.90)
+				base_pupil_col = Color(1.0, 0.48, 0.12)
+				pulse_speed = 8.0
+				base_energy = 4.8
 
 			for c_mat in casing_mats:
 				if is_instance_valid(c_mat):
@@ -497,9 +496,9 @@ func _process(delta: float) -> void:
 				pupil_mat.emission_energy_multiplier = base_energy + (pulse * 2.0)
 
 			if mat_minor and is_instance_valid(mat_minor):
-				mat_minor.emission = Color(1.0, 0.65, 0.18)
+				mat_minor.emission = Color(1.0, 0.84, 0.35)
 			if mat_major and is_instance_valid(mat_major):
-				mat_major.emission = Color(1.0, 0.28, 0.08)
+				mat_major.emission = Color(1.0, 0.68, 0.22)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Water Stream Interception (Absorbs damage, shields Sun behind it)
