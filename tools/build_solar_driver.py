@@ -478,85 +478,84 @@ def build_solar_driver_glb(output_path):
 
     # ═════════════════════════════════════════════════════════════════════════
     # PART 1: DRIVER BUCKLE (Center Tokusatsu Henshin Belt Buckle)
-    # Mounted at the front equator facing the beach (Z ≈ 8.25m, Y ≈ 0m relative to belt center)
+    # Mounted at the Sun's lower waist/equator facing the beach (Z ≈ 7.28m)
     # ═════════════════════════════════════════════════════════════════════════
     mesh_buckle = builder.create_mesh("Mesh_DriverBuckle")
     
-    # 1. Main Obsidian Chassis (6.4m wide x 3.2m high x 1.4m deep)
-    z_b = 8.25
-    v, n, idx = create_chamfered_box_3d(0.0, 0.0, z_b, width=6.40, height=3.20, depth=1.15, chamfer=0.32)
+    # 1. Main Obsidian Chassis (5.8m wide x 2.7m high x 1.1m deep)
+    z_b = 7.28
+    v, n, idx = create_chamfered_box_3d(0.0, 0.0, z_b, width=5.80, height=2.70, depth=1.00, chamfer=0.26)
     builder.add_mesh_primitive(mesh_buckle, m_chassis, v, n, idx)
     
     # 2. Beveled Sun-Gold Frame Bars (Top and Bottom Horizon Bars)
-    v, n, idx = create_chamfered_box_3d(0.0,  1.42, z_b + 0.18, width=6.75, height=0.52, depth=1.25, chamfer=0.14)
+    v, n, idx = create_chamfered_box_3d(0.0,  1.20, z_b + 0.15, width=6.10, height=0.42, depth=1.08, chamfer=0.12)
     builder.add_mesh_primitive(mesh_buckle, m_gold, v, n, idx)
-    v, n, idx = create_chamfered_box_3d(0.0, -1.42, z_b + 0.18, width=6.75, height=0.52, depth=1.25, chamfer=0.14)
+    v, n, idx = create_chamfered_box_3d(0.0, -1.20, z_b + 0.15, width=6.10, height=0.42, depth=1.08, chamfer=0.12)
     builder.add_mesh_primitive(mesh_buckle, m_gold, v, n, idx)
     
-    # 3. Gold Chevron Side Wing Endcaps (Left: X=-3.30m, Right: X=+3.30m)
+    # 3. Gold Chevron Side Wing Endcaps (Left: X=-2.98m, Right: X=+2.98m)
     for sign_x in [-1.0, 1.0]:
-        v, n, idx = create_chamfered_box_3d(sign_x * 3.32, 0.0, z_b + 0.15, width=0.58, height=3.40, depth=1.28, chamfer=0.16)
+        v, n, idx = create_chamfered_box_3d(sign_x * 2.98, 0.0, z_b + 0.12, width=0.48, height=2.88, depth=1.12, chamfer=0.14)
         builder.add_mesh_primitive(mesh_buckle, m_gold, v, n, idx)
         
         # Titanium latch jaw connecting to the belt strap
         v, n, idx = create_box_3d(
-            [sign_x * 3.32 - 0.35, -1.15, z_b - 0.45],
-            [sign_x * 3.32 + 0.35,  1.15, z_b + 0.35]
+            [sign_x * 2.98 - 0.30, -0.98, z_b - 0.38],
+            [sign_x * 2.98 + 0.30,  0.98, z_b + 0.30]
         )
         builder.add_mesh_primitive(mesh_buckle, m_titanium, v, n, idx)
 
     # 4. Shinto Crimson Accent Inlays (Horizontal dual stripes)
-    v, n, idx = create_box_3d([-2.85,  1.10, z_b + 0.62], [2.85,  1.24, z_b + 0.68])
+    v, n, idx = create_box_3d([-2.55,  0.92, z_b + 0.54], [2.55,  1.04, z_b + 0.58])
     builder.add_mesh_primitive(mesh_buckle, m_crimson, v, n, idx)
-    v, n, idx = create_box_3d([-2.85, -1.24, z_b + 0.62], [2.85, -1.10, z_b + 0.68])
+    v, n, idx = create_box_3d([-2.55, -1.04, z_b + 0.54], [2.55, -0.92, z_b + 0.58])
     builder.add_mesh_primitive(mesh_buckle, m_crimson, v, n, idx)
 
-    # 5. Lateral Drone Docking Bays (Left Receptor at X=-2.25m, Right Receptor at X=+2.25m)
-    # The physical chambers where eye drones dock during convergence!
+    # 5. Lateral Drone Docking Bays (Left Receptor at X=-1.95m, Right Receptor at X=+1.95m)
     for sign_x in [-1.0, 1.0]:
-        bx = sign_x * 2.25
+        bx = sign_x * 1.95
         # Outer Receptor Frame (Titanium)
-        v, n, idx = create_chamfered_box_3d(bx, 0.0, z_b + 0.32, width=1.45, height=2.15, depth=0.85, chamfer=0.16)
+        v, n, idx = create_chamfered_box_3d(bx, 0.0, z_b + 0.28, width=1.28, height=1.85, depth=0.72, chamfer=0.14)
         builder.add_mesh_primitive(mesh_buckle, m_titanium, v, n, idx)
         
         # Deep Recessed Docking Port (Obsidian)
-        v, n, idx = create_box_3d([bx - 0.52, -0.85, z_b + 0.20], [bx + 0.52, 0.85, z_b + 0.75])
+        v, n, idx = create_box_3d([bx - 0.45, -0.72, z_b + 0.18], [bx + 0.45, 0.72, z_b + 0.65])
         builder.add_mesh_primitive(mesh_buckle, m_chassis, v, n, idx)
         
         # Vertical Cyan Alignment LED Rails
-        v, n, idx = create_box_3d([bx - 0.06, -0.82, z_b + 0.74], [bx + 0.06, 0.82, z_b + 0.80])
+        v, n, idx = create_box_3d([bx - 0.05, -0.70, z_b + 0.64], [bx + 0.05, 0.70, z_b + 0.70])
         builder.add_mesh_primitive(mesh_buckle, m_cyan, v, n, idx)
         
         # Top and Bottom Gold Grip Teeth
-        v, n, idx = create_box_3d([bx - 0.50,  0.92, z_b + 0.30], [bx + 0.50,  1.06, z_b + 0.78])
+        v, n, idx = create_box_3d([bx - 0.42,  0.78, z_b + 0.25], [bx + 0.42,  0.90, z_b + 0.68])
         builder.add_mesh_primitive(mesh_buckle, m_gold, v, n, idx)
-        v, n, idx = create_box_3d([bx - 0.50, -1.06, z_b + 0.30], [bx + 0.50, -0.92, z_b + 0.78])
+        v, n, idx = create_box_3d([bx - 0.42, -0.90, z_b + 0.25], [bx + 0.42, -0.78, z_b + 0.68])
         builder.add_mesh_primitive(mesh_buckle, m_gold, v, n, idx)
 
     # 6. Central Ocular Iris & Driver Core Lens (Center at X=0, Y=0, Z=z_b)
     # Titanium Iris Base Ring
-    v, n, idx = create_cylinder_z(0.0, 0.0, z0=z_b + 0.48, z1=z_b + 0.72, radius=1.35, sides=28, caps=True)
+    v, n, idx = create_cylinder_z(0.0, 0.0, z0=z_b + 0.42, z1=z_b + 0.62, radius=1.18, sides=28, caps=True)
     builder.add_mesh_primitive(mesh_buckle, m_titanium, v, n, idx)
     
     # Stepped Cyber-Gold Iris Bezel (Torus)
-    v, n, idx = create_torus_z(0.0, 0.0, cz=z_b + 0.74, r_major=1.18, r_minor=0.18, sides_major=28, sides_minor=8)
+    v, n, idx = create_torus_z(0.0, 0.0, cz=z_b + 0.64, r_major=1.04, r_minor=0.15, sides_major=28, sides_minor=8)
     builder.add_mesh_primitive(mesh_buckle, m_gold, v, n, idx)
     
     # 8 Radial Gold Notches around Bezel
     for i in range(8):
         ang = (i / 8.0) * math.tau
         ca, sa = math.cos(ang), math.sin(ang)
-        nx = ca * 1.22
-        ny = sa * 1.22
-        v, n, idx = create_chamfered_box_3d(nx, ny, z_b + 0.78, width=0.24, height=0.24, depth=0.20, chamfer=0.04)
+        nx = ca * 1.08
+        ny = sa * 1.08
+        v, n, idx = create_chamfered_box_3d(nx, ny, z_b + 0.68, width=0.20, height=0.20, depth=0.16, chamfer=0.03)
         builder.add_mesh_primitive(mesh_buckle, m_gold, v, n, idx)
 
     # Radiant Convex Solar Iris Lens (Glowing Amber-Gold Core Dome)
-    v, n, idx = create_convex_lens_dome_z(0.0, 0.0, z_base=z_b + 0.70, z_tip=z_b + 0.95, radius=1.05, rings=6, sides=24)
+    v, n, idx = create_convex_lens_dome_z(0.0, 0.0, z_base=z_b + 0.62, z_tip=z_b + 0.84, radius=0.92, rings=6, sides=24)
     builder.add_mesh_primitive(mesh_buckle, m_conduit, v, n, idx)
 
     # Incandescent Concentric Solar Pupil Core (Blazing Focal Center)
-    v, n, idx = create_convex_lens_dome_z(0.0, 0.0, z_base=z_b + 0.85, z_tip=z_b + 1.05, radius=0.56, rings=5, sides=20)
+    v, n, idx = create_convex_lens_dome_z(0.0, 0.0, z_base=z_b + 0.74, z_tip=z_b + 0.92, radius=0.50, rings=5, sides=20)
     builder.add_mesh_primitive(mesh_buckle, m_core, v, n, idx)
 
     # 4 Crosshair Collimator Needle Pins (at 45° diagonal corners)
@@ -565,29 +564,29 @@ def build_solar_driver_glb(output_path):
         ca, sa = math.cos(c_ang), math.sin(c_ang)
         # Needle body
         pin_pts = [
-            [ca * 1.22 - sa * 0.05, sa * 1.22 + ca * 0.05],
-            [ca * 1.22 + sa * 0.05, sa * 1.22 - ca * 0.05],
-            [ca * 0.65 + sa * 0.02, sa * 0.65 - ca * 0.02],
-            [ca * 0.65 - sa * 0.02, sa * 0.65 + ca * 0.02]
+            [ca * 1.08 - sa * 0.04, sa * 1.08 + ca * 0.04],
+            [ca * 1.08 + sa * 0.04, sa * 1.08 - ca * 0.04],
+            [ca * 0.58 + sa * 0.016, sa * 0.58 - ca * 0.016],
+            [ca * 0.58 - sa * 0.016, sa * 0.58 + ca * 0.016]
         ]
-        v, n, idx = create_extrusion(pin_pts, z0=z_b + 0.80, z1=z_b + 0.98, caps=True)
+        v, n, idx = create_extrusion(pin_pts, z0=z_b + 0.70, z1=z_b + 0.85, caps=True)
         builder.add_mesh_primitive(mesh_buckle, m_chassis, v, n, idx)
         
         # Glowing cyan tip
-        v, n, idx = create_cylinder_z(ca * 0.60, sa * 0.60, z0=z_b + 0.94, z1=z_b + 1.04, radius=0.045, sides=8)
+        v, n, idx = create_cylinder_z(ca * 0.54, sa * 0.54, z0=z_b + 0.82, z1=z_b + 0.90, radius=0.040, sides=8)
         builder.add_mesh_primitive(mesh_buckle, m_cyan, v, n, idx)
 
     # ═════════════════════════════════════════════════════════════════════════
     # PART 2: PLANETARY BELT STRAPS (Left & Right Equatorial Ribbons)
-    # Radii: Sun sphere R ≈ 7.80m, Belt R_inner = 7.92m, R_outer = 8.35m
-    # Belt Height: 1.35m, Conduit Height: 0.42m
-    # Wraps around from front buckle (ang ≈ ±0.38 rad ≈ 22°) to back (ang ≈ ±3.08 rad ≈ 176°)
+    # Radii: Lower waist R_inner = 6.95m, R_outer = 7.35m
+    # Belt Height: 1.10m, Conduit Height: 0.32m
+    # Wraps around from front buckle (ang ≈ ±0.40 rad ≈ 23°) to back (ang ≈ ±3.08 rad ≈ 176°)
     # ═════════════════════════════════════════════════════════════════════════
     
-    r_in = 7.92
-    r_out = 8.35
-    h_belt = 1.35
-    ang_buckle = 0.38 # Buckle spans -0.38 to +0.38 rad
+    r_in = 6.95
+    r_out = 7.35
+    h_belt = 1.10
+    ang_buckle = 0.40 # Buckle spans -0.40 to +0.40 rad
     ang_back = math.pi - 0.06
 
     # ── Left Strap ──
@@ -596,17 +595,17 @@ def build_solar_driver_glb(output_path):
     v, n, idx = build_curved_belt_ribbon(r_in, r_out, h_belt, ang_buckle, ang_back, segments=32)
     builder.add_mesh_primitive(mesh_left, m_gold, v, n, idx)
     # Glowing Amber Conduit Rail (protruding slightly outward)
-    v, n, idx = build_curved_belt_ribbon(r_out - 0.03, r_out + 0.10, 0.42, ang_buckle, ang_back, segments=32)
+    v, n, idx = build_curved_belt_ribbon(r_out - 0.02, r_out + 0.08, 0.32, ang_buckle, ang_back, segments=32)
     builder.add_mesh_primitive(mesh_left, m_conduit, v, n, idx)
     
     # 3 Obsidian Lock Bracket Clasps along Left Strap
-    left_bracket_angles = [0.88, 1.68, 2.48]
+    left_bracket_angles = [0.90, 1.70, 2.50]
     for b_ang in left_bracket_angles:
         cb, sb = math.cos(b_ang), math.sin(b_ang)
-        bx = sb * (r_out + 0.12)
-        bz = cb * (r_out + 0.12)
+        bx = sb * (r_out + 0.10)
+        bz = cb * (r_out + 0.10)
         # Bracket mesh
-        v, n, idx = create_chamfered_box_3d(0.0, 0.0, 0.0, width=0.65, height=1.65, depth=0.38, chamfer=0.09)
+        v, n, idx = create_chamfered_box_3d(0.0, 0.0, 0.0, width=0.55, height=1.38, depth=0.32, chamfer=0.08)
         # Rotate bracket to align with belt tangent
         rot_y = b_ang
         v_rot = []
@@ -624,7 +623,7 @@ def build_solar_driver_glb(output_path):
         builder.add_mesh_primitive(mesh_left, m_chassis, v_rot, n_rot, idx)
         
         # Cyan status diode in center of bracket
-        v_d, n_d, idx_d = create_box_3d([-0.08, -0.22, 0.18], [0.08, 0.22, 0.24])
+        v_d, n_d, idx_d = create_box_3d([-0.06, -0.18, 0.15], [0.06, 0.18, 0.20])
         v_d_rot = []
         n_d_rot = []
         for p in v_d:
@@ -645,17 +644,17 @@ def build_solar_driver_glb(output_path):
     v, n, idx = build_curved_belt_ribbon(r_in, r_out, h_belt, -ang_buckle, -ang_back, segments=32)
     builder.add_mesh_primitive(mesh_right, m_gold, v, n, idx)
     # Glowing Amber Conduit Rail
-    v, n, idx = build_curved_belt_ribbon(r_out - 0.03, r_out + 0.10, 0.42, -ang_buckle, -ang_back, segments=32)
+    v, n, idx = build_curved_belt_ribbon(r_out - 0.02, r_out + 0.08, 0.32, -ang_buckle, -ang_back, segments=32)
     builder.add_mesh_primitive(mesh_right, m_conduit, v, n, idx)
     
     # 3 Obsidian Lock Bracket Clasps along Right Strap
     for b_ang in left_bracket_angles:
         r_ang = -b_ang
         cb, sb = math.cos(r_ang), math.sin(r_ang)
-        bx = sb * (r_out + 0.12)
-        bz = cb * (r_out + 0.12)
+        bx = sb * (r_out + 0.10)
+        bz = cb * (r_out + 0.10)
         # Bracket mesh
-        v, n, idx = create_chamfered_box_3d(0.0, 0.0, 0.0, width=0.65, height=1.65, depth=0.38, chamfer=0.09)
+        v, n, idx = create_chamfered_box_3d(0.0, 0.0, 0.0, width=0.55, height=1.38, depth=0.32, chamfer=0.08)
         rot_y = r_ang
         v_rot = []
         n_rot = []
@@ -672,7 +671,7 @@ def build_solar_driver_glb(output_path):
         builder.add_mesh_primitive(mesh_right, m_chassis, v_rot, n_rot, idx)
         
         # Cyan status diode
-        v_d, n_d, idx_d = create_box_3d([-0.08, -0.22, 0.18], [0.08, 0.22, 0.24])
+        v_d, n_d, idx_d = create_box_3d([-0.06, -0.18, 0.15], [0.06, 0.18, 0.20])
         v_d_rot = []
         n_d_rot = []
         for p in v_d:

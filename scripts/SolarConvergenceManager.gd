@@ -716,9 +716,10 @@ func setup_solar_driver() -> void:
 	driver_root = Node3D.new()
 	driver_root.name = "SolarDriverRoot"
 	driver_root.visible = false
-	# Sit at Sun's lower equator, tilted 11 degrees up to face the beach
-	driver_root.position = Vector3(0.0, -1.6, 0.0)
-	driver_root.rotation.x = deg_to_rad(11.0)
+	# Sit at Sun's lower waist/belly (Y = -3.85m), tilted 14 degrees up towards beach camera
+	# This keeps the Sun's face (eyes, eyebrows, mouth) completely unobstructed above the belt
+	driver_root.position = Vector3(0.0, -3.85, 0.0)
+	driver_root.rotation.x = deg_to_rad(14.0)
 	sun_node.add_child(driver_root)
 
 	var driver_scene = load("res://assets/models/solar_driver.glb")
@@ -759,7 +760,7 @@ func setup_solar_driver() -> void:
 		sp_mesh.size = Vector3(0.24, 0.24, 0.24)
 		sp_mesh.material = sp_mat
 		driver_shockwave_particles.mesh = sp_mesh
-		driver_shockwave_particles.position = Vector3(0.0, 0.0, 9.20)
+		driver_shockwave_particles.position = Vector3(0.0, 0.0, 8.20)
 		driver_buckle.add_child(driver_shockwave_particles)
 
 func _setup_driver_materials(node: Node) -> void:
@@ -808,36 +809,64 @@ func materialize_solar_driver(animated: bool = true) -> void:
 	driver_root.visible = true
 
 	if animated and driver_buckle and belt_strap_left and belt_strap_right:
-		# Initial retracted state
+		# Initial retracted & pre-deployed state
 		belt_strap_left.scale = Vector3(0.01, 1.0, 0.01)
+		belt_strap_left.rotation.y = deg_to_rad(35.0)
 		belt_strap_right.scale = Vector3(0.01, 1.0, 0.01)
-		driver_buckle.scale = Vector3(0.05, 0.05, 0.05)
-		driver_buckle.position = Vector3(0.0, 0.0, 6.0)
+		belt_strap_right.rotation.y = deg_to_rad(-35.0)
+
+		# Buckle floats down from front-above
+		driver_buckle.scale = Vector3(0.15, 0.15, 0.15)
+		driver_buckle.position = Vector3(0.0, 2.8, 9.5)
+
+		# Energy conduit surge
+		if driver_conduit_mat:
+			driver_conduit_mat.emission_energy_multiplier = 8.0
 
 		var tw = create_tween()
 		tw.set_parallel(true)
-		tw.tween_property(belt_strap_left, "scale", Vector3.ONE, 0.55).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-		tw.tween_property(belt_strap_right, "scale", Vector3.ONE, 0.55).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
-		tw.chain().tween_property(driver_buckle, "position", Vector3.ZERO, 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		tw.parallel().tween_property(driver_buckle, "scale", Vector3.ONE, 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		# Phase 1: Dual Belt Ribbon Sweep (Holographic energy wrap around waist)
+		tw.tween_property(belt_strap_left, "scale", Vector3.ONE, 0.48).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tw.tween_property(belt_strap_left, "rotation:y", 0.0, 0.48).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tw.tween_property(belt_strap_right, "scale", Vector3.ONE, 0.48).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tw.tween_property(belt_strap_right, "rotation:y", 0.0, 0.48).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
+		# Phase 2: Driver Buckle Magnetic Acceleration & Slam into Waist
+		tw.chain().tween_property(driver_buckle, "position", Vector3.ZERO, 0.42).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.parallel().tween_property(driver_buckle, "scale", Vector3.ONE, 0.42).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+		# Phase 3: Impact Lock-On ("CLANK-CHUNK!"), Shockwave, Core Flash
 		tw.chain().tween_callback(func():
 			if sfx_shatter_metal:
-				sfx_shatter_metal.pitch_scale = 0.85
+				sfx_shatter_metal.pitch_scale = 0.80
 				sfx_shatter_metal.play()
 			if sfx_shatter_core:
-				sfx_shatter_core.pitch_scale = 1.25
+				sfx_shatter_core.pitch_scale = 1.30
 				sfx_shatter_core.play()
 			if driver_shockwave_particles:
 				driver_shockwave_particles.restart()
 			if driver_core_mat:
-				driver_core_mat.emission_energy_multiplier = 8.0
+				driver_core_mat.emission_energy_multiplier = 14.0
+				var f_tw = create_tween()
+				f_tw.tween_property(driver_core_mat, "emission_energy_multiplier", 4.0, 0.40).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			if driver_conduit_mat:
+				var c_tw = create_tween()
+				c_tw.tween_property(driver_conduit_mat, "emission_energy_multiplier", 3.0, 0.40).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+			var main = get_tree().current_scene if get_tree() else null
+			if main and main.has_method("shake"):
+				main.shake(0.22, 0.035)
+
 			solar_driver_equipped.emit(driver_buckle.global_position)
 		)
 	else:
-		if belt_strap_left: belt_strap_left.scale = Vector3.ONE
-		if belt_strap_right: belt_strap_right.scale = Vector3.ONE
+		if belt_strap_left:
+			belt_strap_left.scale = Vector3.ONE
+			belt_strap_left.rotation.y = 0.0
+		if belt_strap_right:
+			belt_strap_right.scale = Vector3.ONE
+			belt_strap_right.rotation.y = 0.0
 		if driver_buckle:
 			driver_buckle.scale = Vector3.ONE
 			driver_buckle.position = Vector3.ZERO
@@ -849,18 +878,48 @@ func remove_solar_driver(animated: bool = true) -> void:
 	is_driver_equipped = false
 
 	if animated and driver_buckle and belt_strap_left and belt_strap_right:
+		# Unlatch mechanical sound
+		if sfx_shatter_metal:
+			sfx_shatter_metal.pitch_scale = 1.45
+			sfx_shatter_metal.play()
+
+		# Core emission power down
+		if driver_core_mat:
+			driver_core_mat.emission_energy_multiplier = 0.3
+
 		var tw = create_tween().set_parallel(true)
-		tw.tween_property(driver_buckle, "scale", Vector3(0.01, 0.01, 0.01), 0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-		tw.tween_property(driver_buckle, "position:z", 6.0, 0.35)
-		tw.tween_property(belt_strap_left, "scale", Vector3(0.01, 1.0, 0.01), 0.35).set_trans(Tween.TRANS_CUBIC)
-		tw.tween_property(belt_strap_right, "scale", Vector3(0.01, 1.0, 0.01), 0.35).set_trans(Tween.TRANS_CUBIC)
+		# Phase 1: Buckle pops forward with elastic spring
+		tw.tween_property(driver_buckle, "scale", Vector3(0.01, 0.01, 0.01), 0.32).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+		tw.tween_property(driver_buckle, "position", Vector3(0.0, 1.8, 5.0), 0.32).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+
+		# Phase 2: Belt Straps retract and peel outward
+		tw.tween_property(belt_strap_left, "scale", Vector3(0.01, 1.0, 0.01), 0.32).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+		tw.tween_property(belt_strap_left, "rotation:y", deg_to_rad(35.0), 0.32).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+		tw.tween_property(belt_strap_right, "scale", Vector3(0.01, 1.0, 0.01), 0.32).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+		tw.tween_property(belt_strap_right, "rotation:y", deg_to_rad(-35.0), 0.32).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+
 		tw.chain().tween_callback(func():
 			if driver_root and is_instance_valid(driver_root):
 				driver_root.visible = false
+				driver_buckle.scale = Vector3.ONE
+				driver_buckle.position = Vector3.ZERO
+				belt_strap_left.scale = Vector3.ONE
+				belt_strap_left.rotation.y = 0.0
+				belt_strap_right.scale = Vector3.ONE
+				belt_strap_right.rotation.y = 0.0
 		)
 	else:
 		if driver_root and is_instance_valid(driver_root):
 			driver_root.visible = false
+			if driver_buckle:
+				driver_buckle.scale = Vector3.ONE
+				driver_buckle.position = Vector3.ZERO
+			if belt_strap_left:
+				belt_strap_left.scale = Vector3.ONE
+				belt_strap_left.rotation.y = 0.0
+			if belt_strap_right:
+				belt_strap_right.scale = Vector3.ONE
+				belt_strap_right.rotation.y = 0.0
 
 func toggle_solar_driver() -> void:
 	if is_driver_equipped:

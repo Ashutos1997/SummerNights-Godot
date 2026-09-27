@@ -23,7 +23,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Liquid Slosh & Barrel Momentum: Fluid inertia tilt in vials and firing-accelerated cylinder rotation with viscous spin-down drag.
 * Drone CC0 Audio Overhaul: 7 authentic open-source recordings by rubberduck for multi-voice metal impacts, water shatters, and cryogenic ice shatters.
 * Solar Convergence Swarm (Phase 1): Boss encounter on Wave 20+ featuring 6–8 Solar Eye Drones orbiting the Sun, physically intercepting water streams (toggle: `[O]`).
-* Equatorial Solar Driver & Planetary Belt (Milestone 2): Custom low-poly 3D Driver & Belt model (`assets/models/solar_driver.glb`, $R \approx 8.1\text{m}$) mounted to the Sun with obsidian chassis, beveled Sun-Gold frames, lateral eye-drone docking bays ($X = \pm 2.25\text{m}$), breathing amber iris core, and dual celestial belt ribbons tilted 11° that sweep around and latch with an elastic mechanical snap (`[L]`).
+* Equatorial Solar Driver & Planetary Belt (Milestone 2): Custom low-poly 3D Driver & Belt model (`assets/models/solar_driver.glb`, $R \approx 7.15\text{m}$) mounted to the Sun's lower waist ($Y = -3.85\text{m}$, tilted 14° towards camera, keeping the face clear) with obsidian chassis, beveled Sun-Gold frames, lateral eye-drone docking bays ($X = \pm 1.95\text{m}$), and breathing amber iris core. Features authentic Tokusatsu wearing (dual ribbon sweep + magnetic buckle slam + shockwave flash + screen shake) and taking off (unlatch click + buckle spring pop + ribbon peel dissolution) animations (`[L]`).
 
 ### Improved
 * Solar Eye Drone Visual Polish: Radiant Sun-Gold & Pearl Ivory armor plating, warm bronze chassis, vermilion inlays, toon shading, and 2.3x scale for crisp beach silhouette.
@@ -296,7 +296,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 유체 슬로싱 관성 및 총열 자동 회전: 바이알 내부 유체 관성 틸트 및 사격 시 가속 회전/감속 정지하는 실린더 물리 모멘텀 적용.
 * 드론 CC0 효과음 개편: OpenGameArt의 rubberduck 제작 정품 오디오를 활용한 다보이스 금속 피격음, 수압 파괴음, 극저온 얼음 분쇄음 연동.
 * 태양 수렴 드론 군체 (1단계): 20웨이브 이상 보스전에 태양 주위를 공전하며 물줄기를 물리 차단하는 6~8기의 태양 궤도 아이 드론 군체 추가 (토글: `[O]`).
-* 적도 솔라 드라이버 및 행성 벨트 (2단계): 태양 본체($R \approx 8.1\text{m}$)에 장착되는 전용 저폴리곤 3D 드라이버 및 벨트 모델(`assets/models/solar_driver.glb`) 추가 (흑요석 섀시, 썬-골드 프레임, $X = \pm 2.25\text{m}$ 측면 드론 도킹 베이, 호흡 발광 엠버 동공 코어, 11° 기울기의 듀얼 적도 행성 벨트 리본 및 탄성 기계식 래치 연출, 토글: `[L]`).
+* 적도 솔라 드라이버 및 행성 벨트 (2단계): 얼굴을 가리지 않는 태양 하단 허리($Y = -3.85\text{m}$, 14° 기울기, $R \approx 7.15\text{m}$)에 장착되는 전용 저폴리곤 3D 모델(`assets/models/solar_driver.glb`) 추가 (흑요석 섀시, 썬-골드 프레임, $X = \pm 1.95\text{m}$ 측면 드론 도킹 베이, 호흡 발광 엠버 동공 코어). 특촬풍 장착(듀얼 리본 래핑 + 마그네틱 버클 슬램 + 충격파 발광 + 화면 흔들림) 및 해제(언래치 클릭 + 스프링 팝 + 리본 분해 수납) 애니메이션 연동 (`[L]`).
 
 ### 개선됨 (Improved)
 * 태양 궤도 아이 드론 외형 개선: 썬-골드 및 펄 아이보리 장갑, 브론즈 섀시, 버밀리온 인레이, 툰 셰이딩 및 2.3배 크기 확대로 해변 조준 실루엣 강화.
