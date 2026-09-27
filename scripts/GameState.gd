@@ -330,7 +330,6 @@ const WEAPONS = {
 var has_shown_splash: bool = false
 var current_weapon_id: String = "kitsune"
 var kitsune_mode: String = "cannon"  # "cannon" or "blade"
-var celestial_charge: float = 0.0    # 0.0 to 1.0 combat charge for Kitsune Buster IX
 var level: int = 1
 var sfx_volume: float = 1.0
 var mouse_sensitivity: float = 1.0
@@ -364,7 +363,12 @@ var max_water_mult: float = 1.0
 var cooling_power_mult: float = 1.0
 var heat_resistance: float = 0.0
 var bonus_ice_charges: int = 0
-var catastrom_charge: float = 0.0
+var catastrom_charge: float = 0.0  # Shared Power Up charge (0.0 to 1.0)
+var celestial_charge: float:
+	get:
+		return catastrom_charge
+	set(val):
+		catastrom_charge = val
 
 const WAVE_PERKS: Dictionary = {
 	"capacity_boost": {

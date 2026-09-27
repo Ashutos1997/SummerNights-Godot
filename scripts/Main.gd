@@ -4501,7 +4501,8 @@ func _perform_kitsune_blade_slash() -> void:
 		water_tank = min(MAX_WATER, water_tank + 15.0 * severed_count)
 		water_changed.emit(water_tank, MAX_WATER)
 		GameState.flares_intercepted += severed_count
-		GameState.celestial_charge = min(1.0, GameState.celestial_charge + 0.10 * severed_count)
+		if not is_celestial_awakened:
+			GameState.celestial_charge = min(1.0, GameState.celestial_charge + 0.10 * severed_count)
 	
 	# Direct Strike on Sun — raycasts where the crosshair is aimed (matching guns)
 	if abs(ray_normal.z) > 1e-4:
@@ -4538,7 +4539,8 @@ func _perform_kitsune_blade_slash() -> void:
 					if not is_sun_frozen:
 						sun_mat.emission = Color(1.8, 1.8, 2.4)
 					
-					GameState.celestial_charge = min(1.0, GameState.celestial_charge + 0.06)
+					if not is_celestial_awakened:
+						GameState.celestial_charge = min(1.0, GameState.celestial_charge + 0.06)
 					
 					# Check victory
 					if temperature <= 0.0:
