@@ -573,6 +573,8 @@ var celestial_tails: CelestialTails
 var celestial_hydro_cannon: CelestialHydroCannon
 const CelestialHydroBladeScript = preload("res://scripts/CelestialHydroBlade.gd")
 var celestial_hydro_blade: Node3D
+const SolarConvergenceManagerScript = preload("res://scripts/SolarConvergenceManager.gd")
+var solar_convergence_mgr: Node3D
 var celestial_henshin_sfx: AudioStreamPlayer
 var celestial_deactivate_sfx: AudioStreamPlayer
 var celestial_slash_sfx: AudioStreamPlayer
@@ -1357,6 +1359,14 @@ func _build_scene() -> void:
 	celestial_hydro_blade = CelestialHydroBladeScript.new()
 	celestial_hydro_blade.name = "CelestialHydroBlade"
 	add_child(celestial_hydro_blade)
+	
+	# ── Solar Convergence Manager (Regad Omega Boss Mechanics) ────────────────
+	solar_convergence_mgr = SolarConvergenceManagerScript.new()
+	solar_convergence_mgr.name = "SolarConvergenceManager"
+	add_child(solar_convergence_mgr)
+	solar_convergence_mgr.setup(sun, camera)
+	solar_convergence_mgr.drone_destroyed.connect(_on_solar_drone_destroyed)
+	solar_convergence_mgr.drone_shattered_by_ice.connect(_on_solar_drone_ice_shattered)
 	
 	# ── Weather Rain Particles ───────────────────────────────────────────────
 	weather_rain_particles = GPUParticles3D.new()
@@ -2971,6 +2981,19 @@ func _process(delta: float) -> void:
 					active_magma_rocks.erase(rock)
 					if not "rock_solid" in GameState.unlocked_achievements:
 						GameState.unlock_achievement("rock_solid")
+			
+			# Check Solar Convergence Drone Interception (Physical Shielding)
+			var hit_solar_drone: bool = false
+			if solar_convergence_mgr:
+				var drone_hit = solar_convergence_mgr.check_water_stream_intercept(ray_origin, ray_normal, current_weapon_power, delta)
+				if drone_hit.get("hit", false):
+					hit_solar_drone = true
+					var h_pos = drone_hit["position"]
+					_spawn_splash(h_pos)
+					if steam_particles and randf() < 0.25:
+						steam_particles.global_position = h_pos
+						steam_particles.restart()
+
 			# Check Heat Mirage Hits
 			var hit_mirage: bool = false
 			var closest_mirage_dist = 999.0
@@ -3022,8 +3045,21 @@ func _process(delta: float) -> void:
 					if hud and hud.has_method("update_combo_text"):
 						hud.update_combo_text(current_mult)
 				combo_grace_timer = 0.5 if "untouchable" in GameState.unlocked_achievements else 0.0
-					
-			elif aim_dist < 5.0: # Close enough to hit the larger sun
+			
+			if hit_solar_drone:
+				# Water intercepted and absorbed by orbiting drone shield (blocks damage to Sun)
+				combo_timer += delta
+				if combo_timer >= 1.5:
+					if not combo_active:
+						combo_active = true
+						if hud and hud.has_method("show_combo"): hud.show_combo(true)
+					var current_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
+					if current_mult >= 3.0:
+						GameState.unlock_achievement("untouchable")
+					if hud and hud.has_method("update_combo_text"):
+						hud.update_combo_text(current_mult)
+				combo_grace_timer = 0.5 if "untouchable" in GameState.unlocked_achievements else 0.0
+			elif hit_mirage and closest_mirage_dist < aim_dist:
 				_on_hit(delta, target_pos)
 				combo_timer += delta
 				if combo_timer >= 1.5:
@@ -3129,6 +3165,10 @@ func _input(event: InputEvent) -> void:
 	# Debug key: Press K to toggle Celestial Awakening (Fox Nine)
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_K:
 		toggle_celestial_awakening()
+
+	# Debug key: Press O to toggle Solar Convergence Orbital Drones (Helios Swarm)
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_O:
+		toggle_solar_drones()
 
 	if event.is_action_pressed("ui_catastrom") and not event.is_echo():
 		if GameState.current_weapon_id == "kitsune":
@@ -4015,6 +4055,9 @@ func _check_sun_defeat() -> void:
 			phase2_triggered = false
 			phase2_heat = min(150.0, 80.0 + (GameState.current_wave * 5.0))
 			sun_shield_cooldown = 2.5 # Initial delay before shield deploys on boss wave
+			if GameState.current_wave >= 20 and solar_convergence_mgr:
+				var d_count = 6 if GameState.current_wave < 30 else 8
+				solar_convergence_mgr.start_orbital_swarm(d_count)
 		else:
 			is_two_phase = false
 			phase2_triggered = false
@@ -4022,6 +4065,8 @@ func _check_sun_defeat() -> void:
 			if sun_shield_mesh:
 				sun_shield_mesh.visible = false
 				sun_shield_mesh.scale = Vector3.ONE
+			if solar_convergence_mgr:
+				solar_convergence_mgr.clear_drones()
 		
 		wind_level_mult = min(2.5, 1.0 + (GameState.current_wave - 4) * 0.15)
 		if solar_wind_enabled and not prev_solar_wind:
@@ -4490,6 +4535,37 @@ func _trigger_phase2() -> void:
 	
 	await get_tree().create_timer(0.6).timeout
 	timer_running = true
+
+func toggle_solar_drones() -> void:
+	if not solar_convergence_mgr:
+		return
+	if solar_convergence_mgr.get_active_drone_count() > 0:
+		solar_convergence_mgr.clear_drones()
+		if hud and hud.has_method("show_toast"):
+			var is_kr = GameState.language == "KR"
+			var title = "태양 드론 해제" if is_kr else "SOLAR DRONES"
+			var desc = "궤도 방어 드론 제거" if is_kr else "ORBITAL SWARM CLEARED"
+			hud.show_toast(title, desc, "", Color(1.0, 0.5, 0.2))
+	else:
+		solar_convergence_mgr.start_orbital_swarm(6)
+		if hud and hud.has_method("show_toast"):
+			var is_kr = GameState.language == "KR"
+			var title = "태양 수렴 경보" if is_kr else "SOLAR CONVERGENCE"
+			var desc = "태양 궤도 아이 드론 6기 전개" if is_kr else "ORBITAL SWARM DEPLOYED (6 DRONES)"
+			hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1.0, 0.8, 0.2))
+
+func _on_solar_drone_destroyed(pos: Vector3) -> void:
+	GameState.add_score(250)
+	shake(0.2, 0.03)
+
+func _on_solar_drone_ice_shattered(pos: Vector3) -> void:
+	GameState.add_score(500)
+	shake(0.35, 0.06)
+	if hud and hud.has_method("show_toast"):
+		var is_kr = GameState.language == "KR"
+		var title = "냉기 분쇄!" if is_kr else "ICE SHATTER!"
+		var desc = "+500점 · 궤도 드론 결빙 파괴" if is_kr else "+500 PTS · ORBITAL DRONE SHATTERED"
+		hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(0.35, 0.95, 1.0))
 
 func start_celestial_awakening(duration: float = 15.0) -> void:
 	# Exclusively locked to Kitsune Buster IX

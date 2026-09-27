@@ -10,6 +10,11 @@ func _process(delta: float) -> void:
 	distance_traveled += move_dist
 	
 	var main_node = get_tree().current_scene
+	if main_node and "solar_convergence_mgr" in main_node and main_node.solar_convergence_mgr:
+		if main_node.solar_convergence_mgr.check_ice_blast_intercept(global_position, 2.2):
+			queue_free()
+			return
+
 	if main_node and main_node.get("sun"):
 		var dist = global_position.distance_to(main_node.sun.global_position)
 		if dist < 4.5:

@@ -48,6 +48,7 @@ This document serves as the master record for all currently implemented features
 ## 5. Dynamic Weather
 * **Rainstorms:** Massive downpour provides infinite water and passive sun cooling.
 * **Solar Eclipses:** Sky darkens, sun fires rapid "Shadow Flares" that must be intercepted.
+* **Solar Convergence — Orbital Ocular Swarm (Phase 1):** Apex Boss Wave mechanic (Wave 20+) deploying 6–8 metallic cyber-gold Solar Eye drones orbiting the Sun in multi-axis tilted 3D elliptical orbits. Drones physically track the player's sightline, intercepting and absorbing water fire to shield the Sun and its sunspots. Orbiting drones can be worn down with continuous water spray or instantly shattered into crystalline frost shards with an Ice Blast (`+COOLING CHILL!`). Debug toggle with `[O]`.
 
 ## 6. Environment & Visuals
 * **Dynamic Ocean:** Procedural Gerstner waves, Voronoi caustics, and subsurface scattering.
