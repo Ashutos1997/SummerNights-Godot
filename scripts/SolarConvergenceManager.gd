@@ -716,305 +716,83 @@ func setup_solar_driver() -> void:
 	driver_root = Node3D.new()
 	driver_root.name = "SolarDriverRoot"
 	driver_root.visible = false
+	# Sit at Sun's lower equator, tilted 11 degrees up to face the beach
+	driver_root.position = Vector3(0.0, -1.6, 0.0)
+	driver_root.rotation.x = deg_to_rad(11.0)
 	sun_node.add_child(driver_root)
 
-	# Shared Toon Materials matching retro arcade aesthetics
-	var gold_mat = StandardMaterial3D.new()
-	gold_mat.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
-	gold_mat.specular_mode = BaseMaterial3D.SPECULAR_TOON
-	gold_mat.albedo_color = Color(0.96, 0.70, 0.18)
-	gold_mat.metallic = 0.55
-	gold_mat.roughness = 0.22
-	gold_mat.rim_enabled = true
-	gold_mat.rim = 0.85
-	gold_mat.rim_tint = 0.45
-	gold_mat.rim_color = Color(1.0, 0.88, 0.35)
+	var driver_scene = load("res://assets/models/solar_driver.glb")
+	if not driver_scene:
+		push_error("[SolarConvergence] Failed to load res://assets/models/solar_driver.glb")
+		return
 
-	var chassis_mat = StandardMaterial3D.new()
-	chassis_mat.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
-	chassis_mat.specular_mode = BaseMaterial3D.SPECULAR_TOON
-	chassis_mat.albedo_color = Color(0.12, 0.11, 0.15)
-	chassis_mat.metallic = 0.75
-	chassis_mat.roughness = 0.25
-	chassis_mat.rim_enabled = true
-	chassis_mat.rim = 0.50
-	chassis_mat.rim_color = Color(0.7, 0.75, 0.85)
+	var driver_inst = driver_scene.instantiate()
+	driver_root.add_child(driver_inst)
 
-	var crimson_mat = StandardMaterial3D.new()
-	crimson_mat.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
-	crimson_mat.specular_mode = BaseMaterial3D.SPECULAR_TOON
-	crimson_mat.albedo_color = Color(0.85, 0.18, 0.18)
-	crimson_mat.metallic = 0.30
-	crimson_mat.roughness = 0.35
+	# Locate named nodes from GLB
+	driver_buckle = driver_inst.find_child("DriverBuckle", true, false) as Node3D
+	belt_strap_left = driver_inst.find_child("BeltStrap_Left", true, false) as Node3D
+	belt_strap_right = driver_inst.find_child("BeltStrap_Right", true, false) as Node3D
 
-	driver_conduit_mat = StandardMaterial3D.new()
-	driver_conduit_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	driver_conduit_mat.albedo_color = Color(1.0, 0.72, 0.22)
-	driver_conduit_mat.emission_enabled = true
-	driver_conduit_mat.emission = Color(1.0, 0.68, 0.18)
-	driver_conduit_mat.emission_energy_multiplier = 3.0
+	# Setup Toon materials and extract emissive mats for pulsation
+	_setup_driver_materials(driver_inst)
 
-	driver_core_mat = StandardMaterial3D.new()
-	driver_core_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	driver_core_mat.albedo_color = Color(1.0, 0.65, 0.15)
-	driver_core_mat.emission_enabled = true
-	driver_core_mat.emission = Color(1.0, 0.62, 0.12)
-	driver_core_mat.emission_energy_multiplier = 3.6
+	# Shockwave Particle Emitter on Buckle Latch
+	if driver_buckle:
+		driver_shockwave_particles = CPUParticles3D.new()
+		driver_shockwave_particles.emitting = false
+		driver_shockwave_particles.one_shot = true
+		driver_shockwave_particles.explosiveness = 0.95
+		driver_shockwave_particles.amount = 45
+		driver_shockwave_particles.lifetime = 0.75
+		driver_shockwave_particles.direction = Vector3.BACK
+		driver_shockwave_particles.spread = 75.0
+		driver_shockwave_particles.initial_velocity_min = 8.0
+		driver_shockwave_particles.initial_velocity_max = 18.0
+		driver_shockwave_particles.gravity = Vector3.ZERO
+		driver_shockwave_particles.color = Color(1.0, 0.85, 0.28, 0.95)
 
-	var cyan_guide_mat = StandardMaterial3D.new()
-	cyan_guide_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	cyan_guide_mat.albedo_color = Color(0.35, 0.95, 1.0)
-	cyan_guide_mat.emission_enabled = true
-	cyan_guide_mat.emission = Color(0.35, 0.95, 1.0)
-	cyan_guide_mat.emission_energy_multiplier = 2.5
+		var sp_mat = StandardMaterial3D.new()
+		sp_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		sp_mat.albedo_color = Color(1.0, 0.88, 0.32, 0.95)
+		var sp_mesh = BoxMesh.new()
+		sp_mesh.size = Vector3(0.24, 0.24, 0.24)
+		sp_mesh.material = sp_mat
+		driver_shockwave_particles.mesh = sp_mesh
+		driver_shockwave_particles.position = Vector3(0.0, 0.0, 9.20)
+		driver_buckle.add_child(driver_shockwave_particles)
 
-	# Build Left and Right Planetary Belt Straps
-	belt_strap_left = _build_belt_strap(true, gold_mat, chassis_mat, driver_conduit_mat)
-	belt_strap_right = _build_belt_strap(false, gold_mat, chassis_mat, driver_conduit_mat)
-	driver_root.add_child(belt_strap_left)
-	driver_root.add_child(belt_strap_right)
+func _setup_driver_materials(node: Node) -> void:
+	if node is MeshInstance3D and node.mesh:
+		for s_idx in range(node.mesh.get_surface_count()):
+			var orig_mat = node.mesh.surface_get_material(s_idx)
+			if orig_mat is StandardMaterial3D:
+				var dup_mat = orig_mat.duplicate() as StandardMaterial3D
+				dup_mat.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
+				dup_mat.specular_mode = BaseMaterial3D.SPECULAR_TOON
+				dup_mat.rim_enabled = true
+				dup_mat.rim = 0.70
+				dup_mat.rim_tint = 0.45
+				dup_mat.rim_color = Color(1.0, 0.88, 0.35)
+				node.set_surface_override_material(s_idx, dup_mat)
 
-	# Build Solar Driver Buckle
-	driver_buckle = _build_driver_buckle(gold_mat, chassis_mat, crimson_mat, driver_core_mat, cyan_guide_mat)
-	driver_root.add_child(driver_buckle)
-
-func _build_belt_strap(is_left: bool, gold_mat: Material, chassis_mat: Material, conduit_mat: Material) -> Node3D:
-	var strap_root = Node3D.new()
-	strap_root.name = "BeltStrap_Left" if is_left else "BeltStrap_Right"
-
-	var segments = 24
-	var r = 3.58
-	var alpha = deg_to_rad(11.0)
-	var y_base = -0.65
-	var w = 0.34
-	var t = 0.08
-
-	var st_outer = SurfaceTool.new()
-	st_outer.begin(Mesh.PRIMITIVE_TRIANGLES)
-
-	var st_conduit = SurfaceTool.new()
-	st_conduit.begin(Mesh.PRIMITIVE_TRIANGLES)
-
-	var t_start = 0.18
-	var t_end = PI - 0.05
-	var sign_dir = 1.0 if is_left else -1.0
-
-	var prev_pts: Array[Vector3] = []
-	var prev_c_pts: Array[Vector3] = []
-
-	for s in range(segments + 1):
-		var frac = float(s) / float(segments)
-		var theta = (t_start + (t_end - t_start) * frac) * sign_dir
-
-		var px = sin(theta) * r
-		var py = -cos(theta) * sin(alpha) * r + y_base
-		var pz = cos(theta) * cos(alpha) * r
-		var center_pt = Vector3(px, py, pz)
-
-		var radial_dir = Vector3(px, py - y_base, pz).normalized()
-		var width_dir = Vector3(0.0, cos(alpha), sin(alpha)).normalized()
-
-		var v_top = center_pt + width_dir * (w * 0.5) + radial_dir * t
-		var v_bot = center_pt - width_dir * (w * 0.5) + radial_dir * t
-
-		var c_top = center_pt + width_dir * 0.055 + radial_dir * (t + 0.012)
-		var c_bot = center_pt - width_dir * 0.055 + radial_dir * (t + 0.012)
-
-		if s > 0:
-			st_outer.set_normal(radial_dir)
-			st_outer.add_vertex(prev_pts[0])
-			st_outer.add_vertex(v_top)
-			st_outer.add_vertex(prev_pts[1])
-
-			st_outer.add_vertex(v_top)
-			st_outer.add_vertex(v_bot)
-			st_outer.add_vertex(prev_pts[1])
-
-			st_conduit.set_normal(radial_dir)
-			st_conduit.add_vertex(prev_c_pts[0])
-			st_conduit.add_vertex(c_top)
-			st_conduit.add_vertex(prev_c_pts[1])
-
-			st_conduit.add_vertex(c_top)
-			st_conduit.add_vertex(c_bot)
-			st_conduit.add_vertex(prev_c_pts[1])
-
-		prev_pts = [v_top, v_bot]
-		prev_c_pts = [c_top, c_bot]
-
-	var mesh_inst_outer = MeshInstance3D.new()
-	mesh_inst_outer.mesh = st_outer.commit()
-	mesh_inst_outer.material_override = gold_mat
-	strap_root.add_child(mesh_inst_outer)
-
-	var mesh_inst_conduit = MeshInstance3D.new()
-	mesh_inst_conduit.mesh = st_conduit.commit()
-	mesh_inst_conduit.material_override = conduit_mat
-	strap_root.add_child(mesh_inst_conduit)
-
-	# Angular cyber lock brackets along the strap
-	var bracket_angles = [0.70, 1.45, 2.20]
-	for b_ang in bracket_angles:
-		var ang = b_ang * sign_dir
-		var bx = sin(ang) * (r + t * 0.5)
-		var by = -cos(ang) * sin(alpha) * r + y_base
-		var bz = cos(ang) * cos(alpha) * (r + t * 0.5)
-
-		var b_mesh = BoxMesh.new()
-		b_mesh.size = Vector3(0.20, 0.44, 0.14)
-		var b_inst = MeshInstance3D.new()
-		b_inst.mesh = b_mesh
-		b_inst.material_override = chassis_mat
-		b_inst.position = Vector3(bx, by, bz)
-		b_inst.rotation = Vector3(alpha, -ang, 0.0)
-		strap_root.add_child(b_inst)
-
-	return strap_root
-
-func _build_driver_buckle(gold_mat: Material, chassis_mat: Material, crimson_mat: Material, core_mat: Material, cyan_mat: Material) -> Node3D:
-	var buckle = Node3D.new()
-	buckle.name = "DriverBuckle"
-	buckle.position = Vector3(0.0, -1.35, 3.50)
-	buckle.rotation = Vector3(deg_to_rad(11.0), 0.0, 0.0)
-
-	# 1. Main Obsidian Chassis
-	var chassis_mesh = BoxMesh.new()
-	chassis_mesh.size = Vector3(2.30, 1.15, 0.42)
-	var chassis_inst = MeshInstance3D.new()
-	chassis_inst.mesh = chassis_mesh
-	chassis_inst.material_override = chassis_mat
-	buckle.add_child(chassis_inst)
-
-	# 2. Beveled Cyber-Gold Frame Bars (Top and Bottom)
-	var frame_h_mesh = BoxMesh.new()
-	frame_h_mesh.size = Vector3(2.40, 0.16, 0.46)
-
-	var top_frame = MeshInstance3D.new()
-	top_frame.mesh = frame_h_mesh
-	top_frame.material_override = gold_mat
-	top_frame.position = Vector3(0.0, 0.50, 0.02)
-	buckle.add_child(top_frame)
-
-	var bot_frame = MeshInstance3D.new()
-	bot_frame.mesh = frame_h_mesh
-	bot_frame.material_override = gold_mat
-	bot_frame.position = Vector3(0.0, -0.50, 0.02)
-	buckle.add_child(bot_frame)
-
-	# 3. Gold Chevron Side Wing Endcaps
-	var wing_v_mesh = BoxMesh.new()
-	wing_v_mesh.size = Vector3(0.24, 1.25, 0.48)
-
-	var left_wing = MeshInstance3D.new()
-	left_wing.mesh = wing_v_mesh
-	left_wing.material_override = gold_mat
-	left_wing.position = Vector3(-1.18, 0.0, 0.02)
-	buckle.add_child(left_wing)
-
-	var right_wing = MeshInstance3D.new()
-	right_wing.mesh = wing_v_mesh
-	right_wing.material_override = gold_mat
-	right_wing.position = Vector3(1.18, 0.0, 0.02)
-	buckle.add_child(right_wing)
-
-	# 4. Shinto Crimson Accent Inlays
-	var crim_mesh = BoxMesh.new()
-	crim_mesh.size = Vector3(1.70, 0.05, 0.48)
-
-	var top_crim = MeshInstance3D.new()
-	top_crim.mesh = crim_mesh
-	top_crim.material_override = crimson_mat
-	top_crim.position = Vector3(0.0, 0.40, 0.02)
-	buckle.add_child(top_crim)
-
-	var bot_crim = MeshInstance3D.new()
-	bot_crim.mesh = crim_mesh
-	bot_crim.material_override = crimson_mat
-	bot_crim.position = Vector3(0.0, -0.40, 0.02)
-	buckle.add_child(bot_crim)
-
-	# 5. Lateral Drone Docking Bays (Left & Right Receptors)
-	for sign_side in [-1.0, 1.0]:
-		var bay_mesh = BoxMesh.new()
-		bay_mesh.size = Vector3(0.48, 0.65, 0.24)
-		var bay_inst = MeshInstance3D.new()
-		bay_inst.mesh = bay_mesh
-		bay_inst.material_override = chassis_mat
-		bay_inst.position = Vector3(sign_side * 0.92, 0.0, 0.16)
-		buckle.add_child(bay_inst)
-
-		# Cyan alignment LED guide lines
-		var led_mesh = BoxMesh.new()
-		led_mesh.size = Vector3(0.05, 0.54, 0.26)
-		var led_inst = MeshInstance3D.new()
-		led_inst.mesh = led_mesh
-		led_inst.material_override = cyan_mat
-		led_inst.position = Vector3(sign_side * 0.92, 0.0, 0.18)
-		buckle.add_child(led_inst)
-
-	# 6. Central Ocular Iris & Driver Core Lens
-	# Titanium Outer Iris Ring
-	var iris_ring_mesh = CylinderMesh.new()
-	iris_ring_mesh.top_radius = 0.46
-	iris_ring_mesh.bottom_radius = 0.46
-	iris_ring_mesh.height = 0.12
-	var iris_ring = MeshInstance3D.new()
-	iris_ring.mesh = iris_ring_mesh
-	iris_ring.material_override = chassis_mat
-	iris_ring.position = Vector3(0.0, 0.0, 0.22)
-	iris_ring.rotation.x = PI * 0.5
-	buckle.add_child(iris_ring)
-
-	# Cyber-Gold Bezel
-	var bezel_mesh = TorusMesh.new()
-	bezel_mesh.inner_radius = 0.38
-	bezel_mesh.outer_radius = 0.46
-	bezel_mesh.rings = 24
-	bezel_mesh.ring_segments = 8
-	var bezel_inst = MeshInstance3D.new()
-	bezel_inst.mesh = bezel_mesh
-	bezel_inst.material_override = gold_mat
-	bezel_inst.position = Vector3(0.0, 0.0, 0.27)
-	bezel_inst.rotation.x = PI * 0.5
-	buckle.add_child(bezel_inst)
-
-	# Solar Core Pupil / Lens
-	var lens_mesh = CylinderMesh.new()
-	lens_mesh.top_radius = 0.36
-	lens_mesh.bottom_radius = 0.36
-	lens_mesh.height = 0.06
-	var lens_inst = MeshInstance3D.new()
-	lens_inst.mesh = lens_mesh
-	lens_inst.material_override = core_mat
-	lens_inst.position = Vector3(0.0, 0.0, 0.28)
-	lens_inst.rotation.x = PI * 0.5
-	buckle.add_child(lens_inst)
-
-	# 7. Shockwave Particle Emitter on Buckle Latch
-	driver_shockwave_particles = CPUParticles3D.new()
-	driver_shockwave_particles.emitting = false
-	driver_shockwave_particles.one_shot = true
-	driver_shockwave_particles.explosiveness = 0.95
-	driver_shockwave_particles.amount = 35
-	driver_shockwave_particles.lifetime = 0.65
-	driver_shockwave_particles.direction = Vector3.BACK
-	driver_shockwave_particles.spread = 75.0
-	driver_shockwave_particles.initial_velocity_min = 6.0
-	driver_shockwave_particles.initial_velocity_max = 14.0
-	driver_shockwave_particles.gravity = Vector3.ZERO
-	driver_shockwave_particles.color = Color(1.0, 0.82, 0.25, 0.95)
-
-	var sp_mat = StandardMaterial3D.new()
-	sp_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	sp_mat.albedo_color = Color(1.0, 0.85, 0.3, 0.95)
-	var sp_mesh = BoxMesh.new()
-	sp_mesh.size = Vector3(0.12, 0.12, 0.12)
-	sp_mesh.material = sp_mat
-	driver_shockwave_particles.mesh = sp_mesh
-	driver_shockwave_particles.position = Vector3(0.0, 0.0, 0.35)
-	buckle.add_child(driver_shockwave_particles)
-
-	return buckle
+				var m_name = dup_mat.resource_name if dup_mat.resource_name != "" else orig_mat.resource_name
+				if "Core" in m_name or "Pupil" in m_name:
+					driver_core_mat = dup_mat
+					dup_mat.emission_enabled = true
+					dup_mat.emission = Color(1.0, 0.65, 0.15)
+					dup_mat.emission_energy_multiplier = 4.0
+				elif "Conduit" in m_name or "Amber" in m_name:
+					driver_conduit_mat = dup_mat
+					dup_mat.emission_enabled = true
+					dup_mat.emission = Color(1.0, 0.70, 0.20)
+					dup_mat.emission_energy_multiplier = 3.0
+				elif "Cyan" in m_name or "LED" in m_name:
+					dup_mat.emission_enabled = true
+					dup_mat.emission = Color(0.18, 0.90, 1.0)
+					dup_mat.emission_energy_multiplier = 2.5
+	for child in node.get_children():
+		_setup_driver_materials(child)
 
 func materialize_solar_driver(animated: bool = true) -> void:
 	if is_driver_equipped:
@@ -1029,19 +807,19 @@ func materialize_solar_driver(animated: bool = true) -> void:
 
 	driver_root.visible = true
 
-	if animated:
+	if animated and driver_buckle and belt_strap_left and belt_strap_right:
 		# Initial retracted state
 		belt_strap_left.scale = Vector3(0.01, 1.0, 0.01)
 		belt_strap_right.scale = Vector3(0.01, 1.0, 0.01)
 		driver_buckle.scale = Vector3(0.05, 0.05, 0.05)
-		driver_buckle.position = Vector3(0.0, -1.35, 7.5)
+		driver_buckle.position = Vector3(0.0, 0.0, 6.0)
 
 		var tw = create_tween()
 		tw.set_parallel(true)
 		tw.tween_property(belt_strap_left, "scale", Vector3.ONE, 0.55).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		tw.tween_property(belt_strap_right, "scale", Vector3.ONE, 0.55).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
-		tw.chain().tween_property(driver_buckle, "position", Vector3(0.0, -1.35, 3.50), 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.chain().tween_property(driver_buckle, "position", Vector3.ZERO, 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		tw.parallel().tween_property(driver_buckle, "scale", Vector3.ONE, 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 		tw.chain().tween_callback(func():
@@ -1054,25 +832,26 @@ func materialize_solar_driver(animated: bool = true) -> void:
 			if driver_shockwave_particles:
 				driver_shockwave_particles.restart()
 			if driver_core_mat:
-				driver_core_mat.emission_energy_multiplier = 7.5
+				driver_core_mat.emission_energy_multiplier = 8.0
 			solar_driver_equipped.emit(driver_buckle.global_position)
 		)
 	else:
-		belt_strap_left.scale = Vector3.ONE
-		belt_strap_right.scale = Vector3.ONE
-		driver_buckle.scale = Vector3.ONE
-		driver_buckle.position = Vector3(0.0, -1.35, 3.50)
-		solar_driver_equipped.emit(driver_buckle.global_position)
+		if belt_strap_left: belt_strap_left.scale = Vector3.ONE
+		if belt_strap_right: belt_strap_right.scale = Vector3.ONE
+		if driver_buckle:
+			driver_buckle.scale = Vector3.ONE
+			driver_buckle.position = Vector3.ZERO
+			solar_driver_equipped.emit(driver_buckle.global_position)
 
 func remove_solar_driver(animated: bool = true) -> void:
 	if not is_driver_equipped or not driver_root:
 		return
 	is_driver_equipped = false
 
-	if animated:
+	if animated and driver_buckle and belt_strap_left and belt_strap_right:
 		var tw = create_tween().set_parallel(true)
 		tw.tween_property(driver_buckle, "scale", Vector3(0.01, 0.01, 0.01), 0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-		tw.tween_property(driver_buckle, "position:z", 6.5, 0.35)
+		tw.tween_property(driver_buckle, "position:z", 6.0, 0.35)
 		tw.tween_property(belt_strap_left, "scale", Vector3(0.01, 1.0, 0.01), 0.35).set_trans(Tween.TRANS_CUBIC)
 		tw.tween_property(belt_strap_right, "scale", Vector3(0.01, 1.0, 0.01), 0.35).set_trans(Tween.TRANS_CUBIC)
 		tw.chain().tween_callback(func():
