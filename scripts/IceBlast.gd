@@ -11,7 +11,7 @@ func _process(delta: float) -> void:
 	
 	var main_node = get_tree().current_scene
 	if main_node and "solar_convergence_mgr" in main_node and main_node.solar_convergence_mgr:
-		if main_node.solar_convergence_mgr.check_ice_blast_intercept(global_position, 5.5):
+		if main_node.solar_convergence_mgr.check_ice_blast_intercept(global_position, 6.5):
 			queue_free()
 			return
 

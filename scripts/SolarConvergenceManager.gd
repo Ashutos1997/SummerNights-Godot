@@ -149,15 +149,16 @@ func _create_drone(index: int, total: int, wave: int = 1) -> Dictionary:
 						if not pupil_mat:
 							pupil_mat = dup_mat
 
-	# Dynamic Coronal Orbit Geometry: Smooth, stately circular rotation around the Sun
-	# Tuned for tracking gameplay: 0.85 to 1.15 rad/s (~6.5s per revolution)
+	# Dynamic Coronal Orbit Geometry: Smooth, stately circular rotation around the Sun's perimeter
+	# Enlarged circular orbit radius (12.4m - 13.8m) providing generous clearance from the Sun's body (~8m radius)
 	var angle_fraction = float(index) / float(total)
 	var orbit_speed = (0.85 + (index * 0.06)) * (1.0 if index % 2 == 0 else -1.0)
 	var phase_offset = angle_fraction * TAU
 
-	var rx = 9.4 + (index % 3) * 0.8
-	var ry = 8.4 + (index % 2) * 0.8
-	var rz = 2.8 + (index % 3) * 0.6 # Positioned cleanly in front of the Sun along Z
+	var base_r = 12.4 + (index % 3) * 0.7
+	var rx = base_r
+	var ry = base_r * 0.95 # Near-circular orbit with subtle natural celestial tilt
+	var rz = 3.6 + (index % 3) * 0.6 # Positioned cleanly in front of the Sun along Z
 
 	# Ensure sun_node is resolved before positioning
 	if not sun_node or not is_instance_valid(sun_node):
@@ -170,7 +171,7 @@ func _create_drone(index: int, total: int, wave: int = 1) -> Dictionary:
 	drone_root.global_position = sun_pos + Vector3(
 		cos(init_t) * rx,
 		sin(init_t) * ry,
-		rz + sin(init_t * 2.0 + index) * 0.6
+		rz + sin(init_t * 1.6 + index) * 0.4
 	)
 
 	# Dynamic wave-scaled HP (Wave 1: 38.5 HP | Wave 20: 105 HP | Wave 30: 140 HP)
@@ -226,7 +227,7 @@ func _process(delta: float) -> void:
 		var local_p = Vector3(
 			cos(t) * drone["radius_x"],
 			sin(t) * drone["radius_y"],
-			drone["radius_z"] + sin(t * 2.0 + drone["index"]) * 0.6
+			drone["radius_z"] + sin(t * 1.6 + drone["index"]) * 0.4
 		)
 
 		var world_pos = sun_pos + local_p
@@ -386,9 +387,9 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 	}
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Ice Blast Interception (AOE Cryo-Frost: shatters all drones within 5.5m blast radius)
+# Ice Blast Interception (AOE Cryo-Frost: shatters all drones within 6.5m blast radius)
 # ─────────────────────────────────────────────────────────────────────────────
-func check_ice_blast_intercept(blast_pos: Vector3, radius: float = 5.5) -> bool:
+func check_ice_blast_intercept(blast_pos: Vector3, radius: float = 6.5) -> bool:
 	if current_state != State.ORBITAL_SWARM or active_drones.is_empty():
 		return false
 
