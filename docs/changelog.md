@@ -58,6 +58,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Kitsune Blade Sun Over-Damage: Rebalanced Blade Mode base strike cooling damage from 45.0 to 8.5 (1.5x crit) to match sustained v1.5 weapon pacing (~24 DPS).
 * Level Transition Double-Clearing: Locked melee input and raycast damage during screen fade transitions until the new level fully fades in.
 * Kitsune Blade Aim Hit Detection: Replaced broad forward dot-product check with raycast hit detection matching guns.
+* Kitsune Blade Drone Damage: Fixed a bug where Kitsune Buster IX Blade Mode swings passed through Solar Eye Drones without dealing damage. Slashing now accurately damages and shatters drones (~2 hits, 1-hit core crit/Awakened) while shielding the Sun behind them.
 * Weapon Wheel Overlay Safety: Guaranteed background blur/dim overlay hides immediately upon closing or switching to full-screen menus.
 
 ## [v1.5.5] - 2026-09-22
@@ -329,6 +330,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 구미호 검 태양 과다 냉각 버그 수정: 검 모드 기본 냉각 피해량을 45.0에서 8.5(치명타 1.5배)로 재조정하여 v1.5 무기 규격(~24 DPS)에 맞춤.
 * 레벨 전환 시 연속 클리어 버그 수정: 화면 페이드 전환 중 근접 입력 및 사격을 잠금 처리하여 조기 클리어 방지.
 * 구미호 검 조준 타격 판정 수정: 전방 내적 판정 대신 레이캐스트 조준선 판정을 적용하여 조준선이 태양에 위치할 때만 타격되도록 수정.
+* 구미호 검 드론 피격 판정 수정: 구미호 버스터 IX 검 모드 공격 시 태양 궤도 아이 드론에 피해가 들어가지 않던 버그 수정. 검 휘두르기로 드론을 정상 타격 및 파괴(일반 2타, 코어 치명타/각성 시 1타)할 수 있으며 태양 차단 판정이 정확히 적용됨.
 * 무기 선택 휠 오버레이 안전성 강화: 메뉴 전환 및 휠 종료 시 배경 블러/딤 오버레이가 즉시 숨겨지도록 수정.
 
 ## [v1.5.5] - 2026-09-22

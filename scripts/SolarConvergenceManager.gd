@@ -503,7 +503,7 @@ func _process(delta: float) -> void:
 # ─────────────────────────────────────────────────────────────────────────────
 # Water Stream Interception (Absorbs damage, shields Sun behind it)
 # ─────────────────────────────────────────────────────────────────────────────
-func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weapon_damage: float) -> Dictionary:
+func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weapon_damage: float, intercept_radius: float = 2.4) -> Dictionary:
 	if current_state != State.ORBITAL_SWARM or active_drones.is_empty():
 		return { "hit": false }
 
@@ -524,8 +524,8 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 			var pt_on_ray = ray_origin + ray_normal * proj_t
 			var dist = drone_pos.distance_to(pt_on_ray)
 			
-			# Interception radius: 2.4m matching 2.3x scaled drone dimensions
-			if dist < 2.4 and dist < min_dist_to_ray:
+			# Interception radius (default 2.4m, wider for blade slashes)
+			if dist < intercept_radius and dist < min_dist_to_ray:
 				min_dist_to_ray = dist
 				closest_drone = drone
 				hit_world_pt = pt_on_ray
@@ -533,9 +533,12 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 	if closest_drone.is_empty():
 		return { "hit": false }
 
+	var is_core_crit: bool = (min_dist_to_ray < 1.0)
+	var final_damage = weapon_damage * (1.5 if is_core_crit else 1.0)
+
 	# Apply water cooling damage to the intercepted drone
 	var cur_hp = closest_drone["hp"] as float
-	cur_hp -= weapon_damage
+	cur_hp -= final_damage
 	closest_drone["hp"] = cur_hp
 	closest_drone["hit_flash"] = 1.0
 
@@ -548,7 +551,7 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 		var p = hit_players[hit_player_idx]
 		hit_player_idx = (hit_player_idx + 1) % hit_players.size()
 		p.stream = hit_streams.pick_random()
-		p.pitch_scale = randf_range(0.94, 1.18)
+		p.pitch_scale = randf_range(1.15, 1.35) if is_core_crit else randf_range(0.94, 1.18)
 		p.play()
 		hit_sfx_cooldown = 0.065
 
@@ -575,13 +578,15 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 		return {
 			"hit": true,
 			"destroyed": true,
-			"position": pos
+			"position": pos,
+			"is_crit": is_core_crit
 		}
 
 	return {
 		"hit": true,
 		"destroyed": false,
-		"position": hit_world_pt
+		"position": hit_world_pt,
+		"is_crit": is_core_crit
 	}
 
 # ─────────────────────────────────────────────────────────────────────────────

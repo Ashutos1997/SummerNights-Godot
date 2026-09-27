@@ -4760,8 +4760,51 @@ func _perform_kitsune_blade_slash() -> void:
 		if not is_celestial_awakened:
 			GameState.celestial_charge = min(1.0, GameState.celestial_charge + 0.10 * severed_count)
 	
+	# Check Solar Convergence Drone Interception
+	var hit_solar_drone: bool = false
+	if solar_convergence_mgr:
+		var wave_dmg_mult = 1.0
+		if GameState.is_survival_mode and GameState.current_wave >= 5:
+			wave_dmg_mult = 1.0 + (GameState.current_wave - 4) * 0.15
+		
+		# Blade slash deals high burst damage against drones (~2-hit destroy, 1-hit if core crit or Awakened)
+		var base_blade_drone_dmg = 24.0
+		var blade_drone_dmg = base_blade_drone_dmg * wave_dmg_mult * GameState.cooling_power_mult
+		if is_celestial_awakened:
+			blade_drone_dmg *= 1.5
+		
+		var hit_radius = 3.0 if is_celestial_awakened else 2.6
+		var drone_hit = solar_convergence_mgr.check_water_stream_intercept(ray_origin, ray_normal, blade_drone_dmg, hit_radius)
+		if drone_hit.get("hit", false):
+			hit_solar_drone = true
+			var h_pos = drone_hit["position"]
+			_spawn_splash(h_pos)
+			if steam_particles:
+				steam_particles.global_position = h_pos
+				steam_particles.restart()
+			
+			var is_destroyed = drone_hit.get("destroyed", false)
+			var is_core_crit = drone_hit.get("is_crit", false)
+			if not is_destroyed:
+				var display_dmg = blade_drone_dmg * (1.5 if is_core_crit else 1.0)
+				_spawn_damage_number(display_dmg, is_core_crit, h_pos)
+			
+			if not is_celestial_awakened:
+				GameState.celestial_charge = min(1.0, GameState.celestial_charge + 0.06)
+			
+			combo_timer += 0.35
+			if combo_timer >= 1.5:
+				if not combo_active:
+					combo_active = true
+					if hud and hud.has_method("show_combo"): hud.show_combo(true)
+				var current_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
+				if current_mult >= 3.0:
+					GameState.unlock_achievement("untouchable")
+				if hud and hud.has_method("update_combo_text"):
+					hud.update_combo_text(current_mult)
+	
 	# Direct Strike on Sun — raycasts where the crosshair is aimed (matching guns)
-	if abs(ray_normal.z) > 1e-4:
+	if not hit_solar_drone and abs(ray_normal.z) > 1e-4:
 		var dist_to_sun_z = (sun.global_position.z - ray_origin.z) / ray_normal.z
 		if dist_to_sun_z > 0.0:
 			var crosshair_target = ray_origin + ray_normal * dist_to_sun_z

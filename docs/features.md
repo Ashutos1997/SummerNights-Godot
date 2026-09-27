@@ -22,7 +22,7 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
   * *Scatter Nozzle:* Wide spray for multi-target flare intercepts.
   * *Kitsune Buster IX:* Endless Wave 30 pinnacle unlock (160 cap, 28 cooling, 14/s recharge, 2.2x crit). Toggles with `[X]` / MMB:
     * *Cannon Mode:* Precision stream with revolving 9-vial Kyubi cylinder, liquid slosh inertia, and dynamic vial pulsation.
-    * *Blade Mode:* Katana melee strike (60° arc, 8.5m range, 8.5 cooling). Cleaves solar flares for +15% water parry refund. Emits a golden Foxfire slash wave.
+    * *Blade Mode:* Katana melee strike (60° arc, 8.5m range, 8.5 cooling). Cleaves solar flares for +15% water parry refund and damages/shatters Solar Eye Drones (~2 hits, 1-hit core crit/Awakened). Emits a golden Foxfire slash wave.
 * **Ice Burst (Secondary `[R]`):** Freezes heat gain and sun movement. Unlocked Wave 2 / Level 3. Tracked via a 200x24 notched meter.
 * **Catastrom (Ultimate `[F]`):** Dunks the Sun into the ocean to clear the wave. Triggered from shared Power Up pool at 100% charge with purple toast alert ("CATASTROM READY"). Unlocked Wave 4.
 * **Celestial Awakening (Ultimate `[F]`):** 15s super state exclusive to Kitsune Buster IX at 100% charge. Reaching 100% shows cyan toast alert ("CELESTIAL AWAKENING READY"). Swapping weapons preserves charge. Spawns 9 hydro-ribbon tails, infinite water, 2.0x cooling, 5.5m flare-clearing Creation Aura, Ethereal Domain filter, and 360° reticle timer ring.
