@@ -3009,7 +3009,20 @@ func _process(delta: float) -> void:
 					
 			# Check real sun hit
 			var aim_dist = target_pos.distance_to(sun.position)
-			if hit_mirage and closest_mirage_dist < aim_dist:
+			if hit_solar_drone:
+				# Water intercepted and absorbed by orbiting drone shield (blocks damage to Sun)
+				combo_timer += delta
+				if combo_timer >= 1.5:
+					if not combo_active:
+						combo_active = true
+						if hud and hud.has_method("show_combo"): hud.show_combo(true)
+					var current_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
+					if current_mult >= 3.0:
+						GameState.unlock_achievement("untouchable")
+					if hud and hud.has_method("update_combo_text"):
+						hud.update_combo_text(current_mult)
+				combo_grace_timer = 0.5 if "untouchable" in GameState.unlocked_achievements else 0.0
+			elif hit_mirage and closest_mirage_dist < aim_dist:
 				# Hit a mirage! Deal damage to the mirage shield
 				if steam_particles and randf() < 0.2:
 					steam_particles.global_position = target_pos
@@ -3045,21 +3058,7 @@ func _process(delta: float) -> void:
 					if hud and hud.has_method("update_combo_text"):
 						hud.update_combo_text(current_mult)
 				combo_grace_timer = 0.5 if "untouchable" in GameState.unlocked_achievements else 0.0
-			
-			if hit_solar_drone:
-				# Water intercepted and absorbed by orbiting drone shield (blocks damage to Sun)
-				combo_timer += delta
-				if combo_timer >= 1.5:
-					if not combo_active:
-						combo_active = true
-						if hud and hud.has_method("show_combo"): hud.show_combo(true)
-					var current_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
-					if current_mult >= 3.0:
-						GameState.unlock_achievement("untouchable")
-					if hud and hud.has_method("update_combo_text"):
-						hud.update_combo_text(current_mult)
-				combo_grace_timer = 0.5 if "untouchable" in GameState.unlocked_achievements else 0.0
-			elif hit_mirage and closest_mirage_dist < aim_dist:
+			elif aim_dist < 5.0: # Close enough to hit the real sun
 				_on_hit(delta, target_pos)
 				combo_timer += delta
 				if combo_timer >= 1.5:

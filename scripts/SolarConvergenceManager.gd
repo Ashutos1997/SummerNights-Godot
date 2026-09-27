@@ -26,7 +26,7 @@ var camera_node: Camera3D
 var active_drones: Array[Dictionary] = []
 var orbit_time: float = 0.0
 
-# Materials (cached for instancing & performance)
+# Base materials
 var mat_gold_casing: StandardMaterial3D
 var mat_dark_sclera: StandardMaterial3D
 var mat_pupil_glow: StandardMaterial3D
@@ -47,40 +47,40 @@ func setup(sun: Node3D, cam: Camera3D) -> void:
 func _init_materials() -> void:
 	# Outer casing: Cyber-Gold metallic
 	mat_gold_casing = StandardMaterial3D.new()
-	mat_gold_casing.albedo_color = Color(0.98, 0.78, 0.16)
-	mat_gold_casing.metallic = 0.85
-	mat_gold_casing.roughness = 0.18
+	mat_gold_casing.albedo_color = Color(0.98, 0.80, 0.18)
+	mat_gold_casing.metallic = 0.88
+	mat_gold_casing.roughness = 0.16
 
 	# Internal eyeball housing: Dark obsidian metallic
 	mat_dark_sclera = StandardMaterial3D.new()
-	mat_dark_sclera.albedo_color = Color(0.10, 0.11, 0.14)
-	mat_dark_sclera.metallic = 0.90
-	mat_dark_sclera.roughness = 0.22
+	mat_dark_sclera.albedo_color = Color(0.12, 0.13, 0.16)
+	mat_dark_sclera.metallic = 0.92
+	mat_dark_sclera.roughness = 0.20
 
 	# Central ocular pupil/lens: Radiant amber-crimson emissive lens
 	mat_pupil_glow = StandardMaterial3D.new()
-	mat_pupil_glow.albedo_color = Color(1.0, 0.38, 0.08)
+	mat_pupil_glow.albedo_color = Color(1.0, 0.40, 0.08)
 	mat_pupil_glow.emission_enabled = true
-	mat_pupil_glow.emission = Color(1.0, 0.42, 0.10)
-	mat_pupil_glow.emission_energy_multiplier = 2.4
+	mat_pupil_glow.emission = Color(1.0, 0.45, 0.10)
+	mat_pupil_glow.emission_energy_multiplier = 3.0
 
 func _init_audio() -> void:
 	sfx_deflect = AudioStreamPlayer.new()
 	sfx_deflect.stream = load("res://assets/audio/sfx/shield_deflect.wav")
 	sfx_deflect.bus = "Master"
-	sfx_deflect.volume_db = -4.0
+	sfx_deflect.volume_db = -2.0
 	add_child(sfx_deflect)
 
 	sfx_break = AudioStreamPlayer.new()
 	sfx_break.stream = load("res://assets/audio/sfx/shield_break.ogg")
 	sfx_break.bus = "Master"
-	sfx_break.volume_db = -1.0
+	sfx_break.volume_db = 1.0
 	add_child(sfx_break)
 
 	sfx_ice_hit = AudioStreamPlayer.new()
 	sfx_ice_hit.stream = load("res://assets/audio/sfx/ice_hit.ogg")
 	sfx_ice_hit.bus = "Master"
-	sfx_ice_hit.volume_db = 0.0
+	sfx_ice_hit.volume_db = 1.5
 	add_child(sfx_ice_hit)
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -99,23 +99,29 @@ func start_orbital_swarm(count: int = 6) -> void:
 func _create_drone(index: int, total: int) -> Dictionary:
 	var drone_root = Node3D.new()
 	drone_root.name = "SolarEyeDrone_%d" % index
+	drone_root.scale = Vector3(1.5, 1.5, 1.5) # Imposing scale matching Sun proportions
 
-	# 1. Outer Gold Chassis Ring (Torus)
+	# Unique material instances per drone for dynamic damage color shifts & hit flashing
+	var casing_mat = mat_gold_casing.duplicate() as StandardMaterial3D
+	var pupil_mat = mat_pupil_glow.duplicate() as StandardMaterial3D
+
+	# 1. Outer Gold Chassis Ring (Torus rotated 90° on X to face -Z camera)
 	var ring_mesh = TorusMesh.new()
-	ring_mesh.inner_radius = 0.32
-	ring_mesh.outer_radius = 0.46
-	ring_mesh.rings = 14
+	ring_mesh.inner_radius = 0.42
+	ring_mesh.outer_radius = 0.62
+	ring_mesh.rings = 16
 	ring_mesh.ring_segments = 8
 	var ring_inst = MeshInstance3D.new()
 	ring_inst.name = "GoldRing"
 	ring_inst.mesh = ring_mesh
-	ring_inst.material_override = mat_gold_casing
+	ring_inst.rotation_degrees = Vector3(90.0, 0.0, 0.0) # Faces -Z directly toward player
+	ring_inst.material_override = casing_mat
 	drone_root.add_child(ring_inst)
 
 	# 2. Central Sclera Dome (Sphere)
 	var sphere_mesh = SphereMesh.new()
-	sphere_mesh.radius = 0.30
-	sphere_mesh.height = 0.50
+	sphere_mesh.radius = 0.40
+	sphere_mesh.height = 0.65
 	sphere_mesh.radial_segments = 14
 	sphere_mesh.rings = 8
 	var sphere_inst = MeshInstance3D.new()
@@ -124,40 +130,37 @@ func _create_drone(index: int, total: int) -> Dictionary:
 	sphere_inst.material_override = mat_dark_sclera
 	drone_root.add_child(sphere_inst)
 
-	# 3. Ocular Pupil Lens (Emissive Cylinder Disk)
+	# 3. Ocular Pupil Lens (Emissive Cylinder Disk on front -Z face)
 	var pupil_mesh = CylinderMesh.new()
-	pupil_mesh.top_radius = 0.16
-	pupil_mesh.bottom_radius = 0.16
-	pupil_mesh.height = 0.06
+	pupil_mesh.top_radius = 0.22
+	pupil_mesh.bottom_radius = 0.22
+	pupil_mesh.height = 0.08
 	pupil_mesh.radial_segments = 14
 	var pupil_inst = MeshInstance3D.new()
 	pupil_inst.name = "PupilLens"
 	pupil_inst.mesh = pupil_mesh
 	pupil_inst.rotation_degrees = Vector3(90.0, 0.0, 0.0)
-	pupil_inst.position = Vector3(0.0, 0.0, 0.24)
-	
-	# Unique material instance per drone for independent hit flashing
-	var pupil_mat = mat_pupil_glow.duplicate() as StandardMaterial3D
+	pupil_inst.position = Vector3(0.0, 0.0, -0.34) # Front -Z side facing player camera
 	pupil_inst.material_override = pupil_mat
 	drone_root.add_child(pupil_inst)
 
 	# 4. Angled Eyebrow Fins (Audience Glare / Regad aesthetic)
 	for sign_x in [-1.0, 1.0]:
 		var fin_mesh = PrismMesh.new()
-		fin_mesh.size = Vector3(0.12, 0.38, 0.08)
+		fin_mesh.size = Vector3(0.16, 0.50, 0.08)
 		var fin_inst = MeshInstance3D.new()
 		fin_inst.mesh = fin_mesh
-		fin_inst.material_override = mat_gold_casing
-		fin_inst.position = Vector3(sign_x * 0.44, 0.18, 0.02)
+		fin_inst.material_override = casing_mat
+		fin_inst.position = Vector3(sign_x * 0.58, 0.22, -0.06)
 		fin_inst.rotation_degrees = Vector3(0.0, 0.0, -sign_x * 35.0)
 		drone_root.add_child(fin_inst)
 
 	# Multi-axis Elliptical Orbit Geometry
-	# Spread inclinations across multi-angle 3D planes to form a spherical orbital cage
+	# Spread inclinations so drones circle around the Sun's perimeter and front
 	var angle_fraction = float(index) / float(total)
-	var inclination_deg = -35.0 + (angle_fraction * 70.0) # -35° to +35° vertical tilt
-	var yaw_deg = angle_fraction * 180.0                  # Cross-crossing orbital planes
-	var roll_deg = (index % 2) * 25.0 - 12.5
+	var inclination_deg = -30.0 + (angle_fraction * 60.0)
+	var yaw_deg = angle_fraction * 180.0
+	var roll_deg = (index % 2) * 20.0 - 10.0
 
 	var orbit_basis = Basis.from_euler(Vector3(
 		deg_to_rad(inclination_deg),
@@ -165,17 +168,18 @@ func _create_drone(index: int, total: int) -> Dictionary:
 		deg_to_rad(roll_deg)
 	))
 
-	# Direction alternating: every other drone orbits counter-clockwise for dramatic crossing paths
-	var orbit_speed = (1.4 + (index * 0.12)) * (1.0 if index % 2 == 0 else -1.0)
+	# Direction alternating: every other drone orbits counter-clockwise for crossing paths
+	var orbit_speed = (1.3 + (index * 0.10)) * (1.0 if index % 2 == 0 else -1.0)
 	var phase_offset = angle_fraction * TAU
 
-	# Elliptical radii around the Sun
-	var rx = 5.2 + (index % 3) * 0.5
-	var ry = 2.6 + (index % 2) * 0.6
-	var rz = 4.2 + (index % 3) * 0.4
+	# Wide sweeping radii keeping drones clearly visible around the Sun
+	var rx = 6.2 + (index % 3) * 0.6
+	var ry = 4.5 + (index % 2) * 0.5
+	var rz = 2.4 + (index % 3) * 0.5
 
 	return {
 		"node": drone_root,
+		"casing_mat": casing_mat,
 		"pupil_inst": pupil_inst,
 		"pupil_mat": pupil_mat,
 		"orbit_basis": orbit_basis,
@@ -184,8 +188,8 @@ func _create_drone(index: int, total: int) -> Dictionary:
 		"radius_x": rx,
 		"radius_y": ry,
 		"radius_z": rz,
-		"hp": 35.0,
-		"max_hp": 35.0,
+		"hp": 40.0,
+		"max_hp": 40.0,
 		"hit_flash": 0.0,
 		"index": index
 	}
@@ -212,8 +216,8 @@ func _process(delta: float) -> void:
 		var t = (orbit_time * drone["orbit_speed"]) + drone["phase_offset"]
 		var local_p = Vector3(
 			cos(t) * drone["radius_x"],
-			sin(t * 2.0) * (drone["radius_y"] * 0.45),
-			sin(t) * drone["radius_z"]
+			sin(t) * drone["radius_y"],
+			sin(t * 1.5) * (drone["radius_z"] * 0.4)
 		)
 
 		var world_pos = sun_pos + (drone["orbit_basis"] as Basis) * local_p
@@ -222,18 +226,48 @@ func _process(delta: float) -> void:
 		# 2. Ocular Focus: Eye drone always stares directly down the player's sightline
 		node.look_at(cam_pos, Vector3.UP)
 
-		# 3. Dynamic Pupil Breathing Pulse
+		# 3. Dynamic Health Color Progression & Hit Flashing
+		var cur_hp = drone["hp"] as float
+		var max_hp = drone["max_hp"] as float
+		var hp_pct = clampf(cur_hp / max_hp, 0.0, 1.0)
+		
+		var casing_mat = drone["casing_mat"] as StandardMaterial3D
 		var pupil_mat = drone["pupil_mat"] as StandardMaterial3D
-		if pupil_mat:
-			if drone["hit_flash"] > 0.0:
-				drone["hit_flash"] -= delta * 5.0
-				var f = clampf(drone["hit_flash"], 0.0, 1.0)
-				pupil_mat.emission = Color(1.0, 0.42, 0.10).lerp(Color(0.2, 0.9, 1.0), f)
-				pupil_mat.emission_energy_multiplier = 2.4 + (f * 3.5)
+
+		# Hit impact recoil recovery
+		if node.scale.x < 1.5:
+			node.scale = node.scale.lerp(Vector3(1.5, 1.5, 1.5), 10.0 * delta)
+
+		if drone["hit_flash"] > 0.0:
+			drone["hit_flash"] -= delta * 6.0
+			var f = clampf(drone["hit_flash"], 0.0, 1.0)
+			# High-impact electric cyan hit flash
+			casing_mat.albedo_color = Color(0.98, 0.80, 0.18).lerp(Color(0.5, 0.95, 1.0), f)
+			pupil_mat.emission = Color(1.0, 0.45, 0.10).lerp(Color(0.3, 1.0, 1.0), f)
+			pupil_mat.emission_energy_multiplier = 3.0 + (f * 5.0)
+		else:
+			# Visual damage states: Gold (Healthy) -> Orange (Damaged) -> Smoldering Crimson (Critical)
+			var base_casing_col: Color
+			var base_pupil_col: Color
+			var pulse_speed = 3.2
+			
+			if hp_pct > 0.60:
+				base_casing_col = Color(0.98, 0.80, 0.18)
+				base_pupil_col = Color(1.0, 0.45, 0.10)
+				pulse_speed = 3.2
+			elif hp_pct > 0.30:
+				base_casing_col = Color(1.0, 0.50, 0.10)
+				base_pupil_col = Color(1.0, 0.25, 0.05)
+				pulse_speed = 6.0 # Rapid warning pulse
 			else:
-				var pulse = 0.5 + 0.5 * sin(orbit_time * 3.2 + drone["phase_offset"])
-				pupil_mat.emission = Color(1.0, 0.42, 0.10)
-				pupil_mat.emission_energy_multiplier = 2.0 + (pulse * 1.0)
+				base_casing_col = Color(0.95, 0.20, 0.12)
+				base_pupil_col = Color(1.0, 0.10, 0.05)
+				pulse_speed = 10.0 # Violent critical overheat flicker
+
+			casing_mat.albedo_color = base_casing_col
+			pupil_mat.emission = base_pupil_col
+			var pulse = 0.5 + 0.5 * sin(orbit_time * pulse_speed + drone["phase_offset"])
+			pupil_mat.emission_energy_multiplier = 2.4 + (pulse * 1.6)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Water Stream Interception (Absorbs damage, shields Sun behind it)
@@ -259,8 +293,8 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 			var pt_on_ray = ray_origin + ray_normal * proj_t
 			var dist = drone_pos.distance_to(pt_on_ray)
 			
-			# Interception radius: 1.15m (generous enough to shield sunspots behind it)
-			if dist < 1.15 and dist < min_dist_to_ray:
+			# Interception radius: 1.4m matching enlarged 1.5x drone scale
+			if dist < 1.4 and dist < min_dist_to_ray:
 				min_dist_to_ray = dist
 				closest_drone = drone
 				hit_world_pt = pt_on_ray
@@ -275,9 +309,12 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 	closest_drone["hit_flash"] = 1.0
 
 	var d_node = closest_drone["node"] as Node3D
+	# Visual mechanical recoil kick on impact
+	d_node.scale = Vector3(1.32, 1.32, 1.32)
+
 	# Play metal deflection sound occasionally
-	if sfx_deflect and not sfx_deflect.playing and randf() < 0.25:
-		sfx_deflect.pitch_scale = randf_range(1.1, 1.3)
+	if sfx_deflect and not sfx_deflect.playing and randf() < 0.3:
+		sfx_deflect.pitch_scale = randf_range(1.1, 1.35)
 		sfx_deflect.play()
 
 	# Check Destruction
@@ -307,7 +344,7 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 # ─────────────────────────────────────────────────────────────────────────────
 # Ice Blast Interception (Instantly shatters drone into frost chunks)
 # ─────────────────────────────────────────────────────────────────────────────
-func check_ice_blast_intercept(blast_pos: Vector3, radius: float = 2.4) -> bool:
+func check_ice_blast_intercept(blast_pos: Vector3, radius: float = 2.6) -> bool:
 	if current_state != State.ORBITAL_SWARM or active_drones.is_empty():
 		return false
 
@@ -348,39 +385,35 @@ func _spawn_drone_destruction_fx(pos: Vector3, is_ice_shatter: bool) -> void:
 	particles.emitting = false
 	particles.one_shot = true
 	particles.explosiveness = 0.95
-	particles.amount = 28
-	particles.lifetime = 0.8
+	particles.amount = 36
+	particles.lifetime = 0.9
 	particles.global_position = pos
 
-	# Direction & Velocity
 	particles.direction = Vector3.UP
 	particles.spread = 180.0
-	particles.initial_velocity_min = 6.0
-	particles.initial_velocity_max = 14.0
-	particles.gravity = Vector3(0.0, -12.0, 0.0)
+	particles.initial_velocity_min = 8.0
+	particles.initial_velocity_max = 16.0
+	particles.gravity = Vector3(0.0, -14.0, 0.0)
 
 	var p_mat = StandardMaterial3D.new()
 	p_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	p_mat.vertex_color_use_as_albedo = true
 
 	if is_ice_shatter:
-		# Radiant cyan-frost ice shards
-		p_mat.albedo_color = Color(0.35, 0.95, 1.0, 0.9)
+		p_mat.albedo_color = Color(0.35, 0.95, 1.0, 0.95)
 		particles.color = Color(0.65, 0.98, 1.0, 1.0)
 	else:
-		# Molten gold electrical sparks
-		p_mat.albedo_color = Color(1.0, 0.75, 0.15, 0.9)
+		p_mat.albedo_color = Color(1.0, 0.75, 0.15, 0.95)
 		particles.color = Color(1.0, 0.85, 0.3, 1.0)
 
 	var p_mesh = BoxMesh.new()
-	p_mesh.size = Vector3(0.14, 0.14, 0.14)
+	p_mesh.size = Vector3(0.18, 0.18, 0.18)
 	p_mesh.material = p_mat
 	particles.mesh = p_mesh
 
 	add_child(particles)
 	particles.emitting = true
 
-	# Auto cleanup after lifetime
 	var timer = get_tree().create_timer(1.2)
 	timer.timeout.connect(func(): if is_instance_valid(particles): particles.queue_free())
 
