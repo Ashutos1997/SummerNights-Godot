@@ -653,73 +653,173 @@ def build_unified_kitsune(output_path="assets/blaster_kitsune_unified.glb"):
     # 3. BARREL ASSEMBLY MESH (Pivot at X=0.0, Y=0.48, Z=0.55)
     # Extends forward in Cannon mode, commanding high-tech sniper profile
     # ══════════════════════════════════════════════════════════════
+    # 3. BARREL ASSEMBLY MESH (Pivot at X=0.0, Y=0.48, Z=0.55)
+    # Extends forward in Cannon mode, commanding high-tech sniper profile
+    # ══════════════════════════════════════════════════════════════
     mesh_barrel = builder.create_mesh("Mesh_BarrelAssembly")
     
-    # Inner Steel Rifled Barrel (local Z=0.04 to 0.52)
+    # Inner Steel Rifled Barrel Housing (local Z=0.04 to 0.52)
     v, n, idx = create_cylinder(0.0, 0.0, z0=0.04, z1=0.52, radius=0.072, sides=18)
     builder.add_mesh_primitive(mesh_barrel, m_dark, v, n, idx)
     
-    # Outer Octagonal Faceted Shroud (local Z=0.04 to 0.40)
-    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.21, height=0.19, z0=0.04, z1=0.40, chamfer=0.035)
+    # 1. Main Octagonal Faceted Shroud Body (local Z=0.04 to 0.36)
+    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.21, height=0.19, z0=0.04, z1=0.36, chamfer=0.035)
     builder.add_mesh_primitive(mesh_barrel, m_white, v, n, idx)
     
-    # Crimson Chamfer Highlights along Shroud Ridge
+    # 2. Aerodynamic Tapered Fox-Fang Front Cowl (local Z=0.36 to 0.46)
+    cowl_start = [
+        [-0.070, -0.095], [0.070, -0.095], [0.105, -0.060], [0.105, 0.060],
+        [0.070, 0.095], [-0.070, 0.095], [-0.105, 0.060], [-0.105, -0.060]
+    ]
+    cowl_end = [
+        [-0.058, -0.080], [0.058, -0.080], [0.090, -0.050], [0.090, 0.050],
+        [0.058, 0.080], [-0.058, 0.080], [-0.090, 0.050], [-0.090, -0.050]
+    ]
+    v, n, idx = create_tapered_extrusion(cowl_start, cowl_end, z0=0.36, z1=0.46, caps=True)
+    builder.add_mesh_primitive(mesh_barrel, m_white, v, n, idx)
+
+    # Crimson Chamfer Highlights along Shroud Ridges
     for sy in [-0.098, 0.098]:
-        v, n, idx = create_chamfered_box(0.0, sy, width=0.14, height=0.012, z0=0.06, z1=0.38, chamfer=0.003)
+        v, n, idx = create_chamfered_box(0.0, sy * 0.96, width=0.13, height=0.012, z0=0.06, z1=0.35, chamfer=0.003)
         builder.add_mesh_primitive(mesh_barrel, m_red, v, n, idx)
+    # Angled Crimson Cowl Cheeks
+    for side_x in [-0.092, 0.092]:
+        for side_y in [-0.062, 0.062]:
+            v, n, idx = create_chamfered_box(side_x, side_y, width=0.016, height=0.024, z0=0.36, z1=0.45, chamfer=0.004)
+            builder.add_mesh_primitive(mesh_barrel, m_red, v, n, idx)
         
     # Longitudinal Vented Heat Gills (Left & Right Flanks)
     for side_x in [-0.107, 0.107]:
-        for vent_z in [0.11, 0.19, 0.27, 0.35]:
+        for vent_z in [0.11, 0.19, 0.27]:
             # Recessed glowing cyan plasma vent
             v, n, idx = create_chamfered_box(side_x, 0.0, width=0.008, height=0.062, z0=vent_z - 0.024, z1=vent_z + 0.024, chamfer=0.002)
             builder.add_mesh_primitive(mesh_barrel, m_cyan, v, n, idx)
             # Dark louver grille cover
             v, n, idx = create_chamfered_box(side_x * 0.99, 0.0, width=0.004, height=0.058, z0=vent_z - 0.004, z1=vent_z + 0.004, chamfer=0.001)
             builder.add_mesh_primitive(mesh_barrel, m_dark, v, n, idx)
-            
-    # Dual-Port Compensator Muzzle Brake (local Z=0.40 to 0.52)
-    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.195, height=0.175, z0=0.40, z1=0.52, chamfer=0.030)
+
+    # 3. High-Velocity Compensator Muzzle Brake (local Z=0.46 to 0.54)
+    comp_start = cowl_end
+    comp_end = [
+        [-0.048, -0.068], [0.048, -0.068], [0.076, -0.040], [0.076, 0.040],
+        [0.048, 0.068], [-0.048, 0.068], [-0.076, 0.040], [-0.076, -0.040]
+    ]
+    v, n, idx = create_tapered_extrusion(comp_start, comp_end, z0=0.46, z1=0.54, caps=True)
     builder.add_mesh_primitive(mesh_barrel, m_dark, v, n, idx)
-    # Side Muzzle Baffle Ports
-    for side_x in [-0.100, 0.100]:
-        v, n, idx = create_chamfered_box(side_x, 0.0, width=0.012, height=0.070, z0=0.42, z1=0.50, chamfer=0.004)
-        builder.add_mesh_primitive(mesh_barrel, m_red, v, n, idx)
-        
-    # Luminous Cyan Plasma Muzzle Ring & Gold Crown
-    v, n, idx = create_cylinder(0.0, 0.0, z0=0.515, z1=0.535, radius=0.066, sides=18)
-    builder.add_mesh_primitive(mesh_barrel, m_cyan, v, n, idx)
-    v, n, idx = create_cylinder(0.0, 0.0, z0=0.530, z1=0.545, radius=0.062, sides=18)
-    builder.add_mesh_primitive(mesh_barrel, m_gold, v, n, idx)
     
-    # Tri-Prong Magnetic Hydro-Focus Calipers (Particle Accelerator Muzzle Prongs)
-    for prong_i in range(3):
-        p_ang = (prong_i / 3.0) * 2 * math.pi + (math.pi / 6.0)
-        px = math.cos(p_ang) * 0.082
-        py = math.sin(p_ang) * 0.082
-        # Tapered focus needle prong
-        v, n, idx = create_cylinder(px, py, z0=0.48, z1=0.58, radius=0.012, sides=10)
-        builder.add_mesh_primitive(mesh_barrel, m_dark, v, n, idx)
-        v, n, idx = create_cylinder(px, py, z0=0.54, z1=0.59, radius=0.007, sides=8)
+    # Side Muzzle Baffle Ports & Exhaust Slots
+    for side_x in [-0.078, 0.078]:
+        # Glowing cyan interior gas chamber
+        v, n, idx = create_chamfered_box(side_x * 0.96, 0.0, width=0.008, height=0.048, z0=0.47, z1=0.53, chamfer=0.002)
         builder.add_mesh_primitive(mesh_barrel, m_cyan, v, n, idx)
-        v, n, idx = create_cylinder(px, py, z0=0.585, z1=0.595, radius=0.009, sides=8)
+        # Angled crimson port frame
+        v, n, idx = create_chamfered_box(side_x, 0.0, width=0.010, height=0.052, z0=0.48, z1=0.52, chamfer=0.003)
+        builder.add_mesh_primitive(mesh_barrel, m_red, v, n, idx)
+
+    # Top & Bottom Vertical Compensator Gas Slots
+    for py in [-0.070, 0.070]:
+        v, n, idx = create_chamfered_box(0.0, py, width=0.040, height=0.006, z0=0.48, z1=0.525, chamfer=0.002)
+        builder.add_mesh_primitive(mesh_barrel, m_cyan, v, n, idx)
+
+    # 4. Stepped Hydro-Vortex Compression Nozzle & Rifled Muzzle Crown (local Z=0.53 to 0.575)
+    # Outer dark tactical bezel
+    v, n, idx = create_cylinder(0.0, 0.0, z0=0.535, z1=0.552, radius=0.068, sides=18)
+    builder.add_mesh_primitive(mesh_barrel, m_dark, v, n, idx)
+    # Beveled cyber-gold compression collar ring
+    v, n, idx = create_cylinder(0.0, 0.0, z0=0.548, z1=0.565, radius=0.060, sides=18)
+    builder.add_mesh_primitive(mesh_barrel, m_gold, v, n, idx)
+    # Recessed stepped radiant cyan plasma injector ring
+    v, n, idx = create_cylinder(0.0, 0.0, z0=0.542, z1=0.560, radius=0.048, sides=18)
+    builder.add_mesh_primitive(mesh_barrel, m_cyan, v, n, idx)
+    # Deep dark rifled inner bore core
+    v, n, idx = create_cylinder(0.0, 0.0, z0=0.510, z1=0.550, radius=0.036, sides=18)
+    builder.add_mesh_primitive(mesh_barrel, m_dark, v, n, idx)
+    # Concentric gold focal ring inside bore
+    v, n, idx = create_cylinder(0.0, 0.0, z0=0.525, z1=0.545, radius=0.018, sides=14)
+    builder.add_mesh_primitive(mesh_barrel, m_gold, v, n, idx)
+
+    # 5. Sculpted Quad Magnetic Fox-Fang Calipers (Particle Accelerator Muzzle Prongs)
+    # 4 angled aerodynamic rails situated at 45°, 135°, 225°, 315°
+    for fang_i in range(4):
+        f_ang = (fang_i / 4.0) * 2 * math.pi + (math.pi / 4.0)
+        cos_a = math.cos(f_ang)
+        sin_a = math.sin(f_ang)
+        
+        # Base radial position and tip radial position
+        r_base = 0.076
+        r_tip = 0.068
+        bx, by = cos_a * r_base, sin_a * r_base
+        tx, ty = cos_a * r_tip, sin_a * r_tip
+        
+        # Angular caliper blade wedge
+        w_b, h_b = 0.020, 0.016
+        w_t, h_t = 0.008, 0.008
+        
+        p_base = [
+            [bx - w_b*0.5, by - h_b*0.5], [bx + w_b*0.5, by - h_b*0.5],
+            [bx + w_b*0.5, by + h_b*0.5], [bx - w_b*0.5, by + h_b*0.5]
+        ]
+        p_tip = [
+            [tx - w_t*0.5, ty - h_t*0.5], [tx + w_t*0.5, ty - h_t*0.5],
+            [tx + w_t*0.5, ty + h_t*0.5], [tx - w_t*0.5, ty + h_t*0.5]
+        ]
+        # Main dark magnetic rail body
+        v, n, idx = create_tapered_extrusion(p_base, p_tip, z0=0.42, z1=0.62, caps=True)
+        builder.add_mesh_primitive(mesh_barrel, m_dark, v, n, idx)
+        
+        # Inlaid glowing cyan accelerator guide on inner face
+        r_in = r_base - 0.008
+        r_in_tip = r_tip - 0.006
+        ix0, iy0 = cos_a * r_in, sin_a * r_in
+        ix1, iy1 = cos_a * r_in_tip, sin_a * r_in_tip
+        v, n, idx = create_cylinder((ix0+ix1)*0.5, (iy0+iy1)*0.5, z0=0.46, z1=0.61, radius=0.004, sides=8)
+        builder.add_mesh_primitive(mesh_barrel, m_cyan, v, n, idx)
+        
+        # Cyber-Gold reinforced tip emitter needle
+        v, n, idx = create_cylinder(tx, ty, z0=0.605, z1=0.635, radius=0.006, sides=8)
         builder.add_mesh_primitive(mesh_barrel, m_gold, v, n, idx)
 
-    # Top Bayonet Crest (local Z=0.0 to 0.58)
-    bayonet_s = [[0.0, 0.720 - 0.48], [0.040, 0.680 - 0.48], [0.0, 0.580 - 0.48], [-0.040, 0.680 - 0.48]]
-    bayonet_m = [[0.0, 0.680 - 0.48], [0.022, 0.650 - 0.48], [0.0, 0.585 - 0.48], [-0.022, 0.650 - 0.48]]
-    bayonet_e = [[0.0, 0.630 - 0.48], [0.003, 0.610 - 0.48], [0.0, 0.590 - 0.48], [-0.003, 0.610 - 0.48]]
-    v, n, idx = create_lofted_poly([
-        [[p[0], p[1], 0.0] for p in bayonet_s],
-        [[p[0], p[1], 0.35] for p in bayonet_m],
-        [[p[0], p[1], 0.58] for p in bayonet_e]
-    ], caps=True)
+    # 6. Streamlined Low-Profile Optic Rail & Front Post Sight (local Z=0.04 to 0.53)
+    # Dark tactical top rail base
+    v, n, idx = create_chamfered_box(0.0, 0.106, width=0.052, height=0.016, z0=0.04, z1=0.46, chamfer=0.004)
+    builder.add_mesh_primitive(mesh_barrel, m_dark, v, n, idx)
+    
+    # Crimson dorsal spine runner with cooling serrations
+    v, n, idx = create_chamfered_box(0.0, 0.115, width=0.028, height=0.008, z0=0.06, z1=0.44, chamfer=0.002)
     builder.add_mesh_primitive(mesh_barrel, m_red, v, n, idx)
     
-    # Under-Barrel Stabilizer Keel
-    under_s = [[0.0, 0.400 - 0.48], [0.035, 0.355 - 0.48], [0.0, 0.280 - 0.48], [-0.035, 0.355 - 0.48]]
-    under_e = [[0.0, 0.425 - 0.48], [0.003, 0.400 - 0.48], [0.0, 0.375 - 0.48], [-0.003, 0.400 - 0.48]]
-    v, n, idx = create_tapered_extrusion(under_s, under_e, z0=-0.18, z1=0.42, caps=True)
+    # Inlaid glowing cyan sightline trace runner
+    v, n, idx = create_chamfered_box(0.0, 0.119, width=0.010, height=0.004, z0=0.10, z1=0.46, chamfer=0.001)
+    builder.add_mesh_primitive(mesh_barrel, m_cyan, v, n, idx)
+    
+    # Aerodynamic Front Post Sight Hood & Tritium Bead (local Z=0.47 to 0.52)
+    # Winged sight protector hood
+    v, n, idx = create_chamfered_box(0.0, 0.102, width=0.040, height=0.022, z0=0.47, z1=0.515, chamfer=0.006)
+    builder.add_mesh_primitive(mesh_barrel, m_dark, v, n, idx)
+    # Cyber-Gold front sight post
+    v, n, idx = create_cylinder(0.0, 0.108, z0=0.48, z1=0.51, radius=0.005, sides=8)
+    builder.add_mesh_primitive(mesh_barrel, m_gold, v, n, idx)
+    # Radiant cyan tritium aiming pip
+    v, n, idx = create_cylinder(0.0, 0.113, z0=0.485, z1=0.505, radius=0.0035, sides=8)
+    builder.add_mesh_primitive(mesh_barrel, m_cyan, v, n, idx)
+    
+    # 7. Under-Barrel High-Pressure Hydro-Manifold & Stabilizer Keel (local Z=-0.12 to 0.44)
+    # Dual parallel high-pressure coolant conduits
+    for px in [-0.036, 0.036]:
+        v, n, idx = create_cylinder(px, -0.112, z0=0.06, z1=0.38, radius=0.011, sides=12)
+        builder.add_mesh_primitive(mesh_barrel, m_cyan, v, n, idx)
+        # Gold manifold compression brackets
+        for b_z in [0.10, 0.22, 0.34]:
+            v, n, idx = create_cylinder(px, -0.112, z0=b_z - 0.010, z1=b_z + 0.010, radius=0.015, sides=12)
+            builder.add_mesh_primitive(mesh_barrel, m_gold, v, n, idx)
+            
+    # Tapered dark tactical keel with angled heat vents
+    keel_s = [[0.0, -0.145], [0.038, -0.108], [0.0, -0.092], [-0.038, -0.108]]
+    keel_e = [[0.0, -0.115], [0.018, -0.096], [0.0, -0.088], [-0.018, -0.096]]
+    v, n, idx = create_tapered_extrusion(keel_s, keel_e, z0=-0.08, z1=0.42, caps=True)
+    builder.add_mesh_primitive(mesh_barrel, m_dark, v, n, idx)
+    # Crimson keel accent blade runner
+    v, n, idx = create_chamfered_box(0.0, -0.132, width=0.012, height=0.016, z0=0.04, z1=0.38, chamfer=0.003)
     builder.add_mesh_primitive(mesh_barrel, m_red, v, n, idx)
 
     # ══════════════════════════════════════════════════════════════
