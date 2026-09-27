@@ -28,13 +28,17 @@ var orbit_time: float = 0.0
 
 const DRONE_SCENE = preload("res://assets/models/solar_eye_drone.glb")
 
-# Audio references (Bespoke Drone SFX)
+# Audio references (Open-Source CC0 Drone SFX by rubberduck / OpenGameArt)
+var hit_streams: Array[AudioStream] = []
 var hit_players: Array[AudioStreamPlayer] = []
 var hit_player_idx: int = 0
 var hit_sfx_cooldown: float = 0.0
 
-var sfx_drone_shatter: AudioStreamPlayer
-var sfx_drone_ice_shatter: AudioStreamPlayer
+var sfx_shatter_metal: AudioStreamPlayer
+var sfx_shatter_glass: AudioStreamPlayer
+var sfx_shatter_core: AudioStreamPlayer
+var sfx_ice_shatter_glass: AudioStreamPlayer
+var sfx_ice_blast: AudioStreamPlayer
 
 func _ready() -> void:
 	_init_audio()
@@ -44,26 +48,51 @@ func setup(sun: Node3D, cam: Camera3D) -> void:
 	camera_node = cam
 
 func _init_audio() -> void:
-	var hit_stream = load("res://assets/audio/sfx/drone_hit.wav")
+	# 4 variations of CC0 metal impact recordings
+	hit_streams = [
+		load("res://assets/audio/sfx/drone_metal_hit_01.ogg"),
+		load("res://assets/audio/sfx/drone_metal_hit_02.ogg"),
+		load("res://assets/audio/sfx/drone_metal_hit_03.ogg"),
+		load("res://assets/audio/sfx/drone_metal_hit_04.ogg")
+	]
 	for i in range(4):
 		var hp = AudioStreamPlayer.new()
-		hp.stream = hit_stream
 		hp.bus = "Master"
-		hp.volume_db = 0.8
+		hp.volume_db = 2.0
 		add_child(hp)
 		hit_players.append(hp)
 
-	sfx_drone_shatter = AudioStreamPlayer.new()
-	sfx_drone_shatter.stream = load("res://assets/audio/sfx/drone_shatter.wav")
-	sfx_drone_shatter.bus = "Master"
-	sfx_drone_shatter.volume_db = 2.5
-	add_child(sfx_drone_shatter)
+	# Water Destruction (Mechanical Rupture + Glass Fracture + Core Blast)
+	sfx_shatter_metal = AudioStreamPlayer.new()
+	sfx_shatter_metal.stream = load("res://assets/audio/sfx/drone_shatter_metal.ogg")
+	sfx_shatter_metal.bus = "Master"
+	sfx_shatter_metal.volume_db = 3.0
+	add_child(sfx_shatter_metal)
 
-	sfx_drone_ice_shatter = AudioStreamPlayer.new()
-	sfx_drone_ice_shatter.stream = load("res://assets/audio/sfx/drone_ice_shatter.wav")
-	sfx_drone_ice_shatter.bus = "Master"
-	sfx_drone_ice_shatter.volume_db = 3.2
-	add_child(sfx_drone_ice_shatter)
+	sfx_shatter_glass = AudioStreamPlayer.new()
+	sfx_shatter_glass.stream = load("res://assets/audio/sfx/drone_shatter_glass.ogg")
+	sfx_shatter_glass.bus = "Master"
+	sfx_shatter_glass.volume_db = 2.5
+	add_child(sfx_shatter_glass)
+
+	sfx_shatter_core = AudioStreamPlayer.new()
+	sfx_shatter_core.stream = load("res://assets/audio/sfx/shield_break.ogg")
+	sfx_shatter_core.bus = "Master"
+	sfx_shatter_core.volume_db = 1.0
+	add_child(sfx_shatter_core)
+
+	# Ice Blast Shatter (Cryo-Frost Glacial Shatter + Glass Cascade)
+	sfx_ice_shatter_glass = AudioStreamPlayer.new()
+	sfx_ice_shatter_glass.stream = load("res://assets/audio/sfx/drone_ice_shatter_glass.ogg")
+	sfx_ice_shatter_glass.bus = "Master"
+	sfx_ice_shatter_glass.volume_db = 3.5
+	add_child(sfx_ice_shatter_glass)
+
+	sfx_ice_blast = AudioStreamPlayer.new()
+	sfx_ice_blast.stream = load("res://assets/audio/sfx/ice_hit.ogg")
+	sfx_ice_blast.bus = "Master"
+	sfx_ice_blast.volume_db = 2.5
+	add_child(sfx_ice_blast)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Phase 1: Orbital Swarm Spawning
@@ -285,11 +314,12 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 	# Visual mechanical recoil kick on impact
 	d_node.scale = Vector3(1.45, 1.45, 1.45)
 
-	# Play crisp rhythmic hydro-metallic hit tick
-	if hit_sfx_cooldown <= 0.0 and not hit_players.is_empty():
+	# Play dynamic, randomized CC0 metal impact tick
+	if hit_sfx_cooldown <= 0.0 and not hit_players.is_empty() and not hit_streams.is_empty():
 		var p = hit_players[hit_player_idx]
 		hit_player_idx = (hit_player_idx + 1) % hit_players.size()
-		p.pitch_scale = randf_range(0.92, 1.15)
+		p.stream = hit_streams.pick_random()
+		p.pitch_scale = randf_range(0.94, 1.18)
 		p.play()
 		hit_sfx_cooldown = 0.065
 
@@ -297,9 +327,17 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 	if cur_hp <= 0.0:
 		var pos = d_node.global_position
 		_spawn_drone_destruction_fx(pos, false)
-		if sfx_drone_shatter:
-			sfx_drone_shatter.pitch_scale = randf_range(0.95, 1.08)
-			sfx_drone_shatter.play()
+		
+		# Multi-layered mechanical core rupture
+		if sfx_shatter_metal:
+			sfx_shatter_metal.pitch_scale = randf_range(0.95, 1.05)
+			sfx_shatter_metal.play()
+		if sfx_shatter_glass:
+			sfx_shatter_glass.pitch_scale = randf_range(1.05, 1.20)
+			sfx_shatter_glass.play()
+		if sfx_shatter_core:
+			sfx_shatter_core.pitch_scale = 1.15
+			sfx_shatter_core.play()
 
 		active_drones.erase(closest_drone)
 		d_node.queue_free()
@@ -342,9 +380,16 @@ func check_ice_blast_intercept(blast_pos: Vector3, radius: float = 5.5) -> bool:
 		d_node.queue_free()
 		drone_shattered_by_ice.emit(pos)
 
-	if sfx_drone_ice_shatter:
-		sfx_drone_ice_shatter.pitch_scale = randf_range(0.96, 1.06)
-		sfx_drone_ice_shatter.play()
+	# Multi-layered cryogenic glass avalanche
+	if sfx_ice_shatter_glass:
+		sfx_ice_shatter_glass.pitch_scale = randf_range(0.98, 1.10)
+		sfx_ice_shatter_glass.play()
+	if sfx_ice_blast:
+		sfx_ice_blast.pitch_scale = 1.15
+		sfx_ice_blast.play()
+	if sfx_shatter_metal:
+		sfx_shatter_metal.pitch_scale = 1.25
+		sfx_shatter_metal.play()
 
 	return true
 

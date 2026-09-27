@@ -193,6 +193,7 @@ SummerNights-Godot/
 | 3D 태양 모델 - PS1 Style Low Poly Sun | albert_buscio (Sketchfab) | CC0 |
 | 3D 총기 모델 - 3D Blaster | Kenney | CC0 |
 | 3D 총기 모델 - 구미호 버스터 IX (포격 및 검 모드) | 절차적 파이썬 glTF 합성 (Procedural Python glTF Synthesis) | 오픈소스 (Open Source) |
+| 3D 모델 - 태양 궤도 아이 드론 ("헬리오스 드론") | 절차적 파이썬 glTF 합성 (Procedural Python glTF Synthesis) | 오픈소스 (Open Source) |
 | 식물 및 바위 - Ultimate Stylized Nature | Quaternius | CC0 |
 | 모래 텍스처 - Coast Sand 01 | Poly Haven | CC0 |
 | 양식화된 하늘 셰이더 | MinionsArt | CC0 |
@@ -215,6 +216,8 @@ SummerNights-Godot/
 | SFX - 실드 파괴음 (Shield Shatter) | IgnasD (OpenGameArt) | CC0 |
 | SFX - 실드 생성음 (Shield Materialize) | bart (OpenGameArt) | CC0 |
 | SFX - 실드 튕김음 (Shield Deflection) | OpenGameArt | CC0 |
+| SFX - 드론 금속성 타격음 4종 (Drone Metallic Impacts) | rubberduck (OpenGameArt) | CC0 |
+| SFX - 드론 기계 파열 및 유리 분쇄음 (Drone Shatter SFX) | rubberduck (OpenGameArt) | CC0 |
 | SFX - 신성의 각성 활성화음 (Celestial Awakening Activation) | TheLittleCrow (Freesound) | CC0 |
 | SFX - 신성의 각성 비활성화음 (Celestial Awakening Deactivation) | bevibeldesign (Freesound) | CC0 |
 | SFX - 신성의 참격 효과음 (Celestial Blade Slash) | Nomagician (Freesound) | CC0 |
