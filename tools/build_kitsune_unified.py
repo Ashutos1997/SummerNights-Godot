@@ -522,6 +522,26 @@ def build_unified_kitsune(output_path="assets/blaster_kitsune_unified.glb"):
     # Gold collar ring at barrel/blade exit interface
     v, n, idx = create_cylinder(0.0, 0.48, z0=0.575, z1=0.60, radius=0.112, sides=20)
     builder.add_mesh_primitive(mesh_chassis, m_gold, v, n, idx)
+    # Recessed dark emitter well with radiant cyan containment ring
+    v, n, idx = create_cylinder(0.0, 0.48, z0=0.585, z1=0.602, radius=0.098, sides=18)
+    builder.add_mesh_primitive(mesh_chassis, m_dark, v, n, idx)
+    v, n, idx = create_cylinder(0.0, 0.48, z0=0.590, z1=0.604, radius=0.082, sides=18)
+    builder.add_mesh_primitive(mesh_chassis, m_cyan, v, n, idx)
+    
+    # 4 Articulated Locking Aperture Clamps around the collar (anchoring deployed blade)
+    for clamp_i in range(4):
+        c_ang = clamp_i * (math.pi / 2.0)
+        cx = math.cos(c_ang) * 0.106
+        cy = 0.48 + math.sin(c_ang) * 0.106
+        # Clamp bracket
+        v, n, idx = create_chamfered_box(cx, cy, width=0.034, height=0.034, z0=0.575, z1=0.608, chamfer=0.006)
+        builder.add_mesh_primitive(mesh_chassis, m_dark, v, n, idx)
+        # Gold clamp bevel
+        v, n, idx = create_cylinder(cx, cy, z0=0.600, z1=0.612, radius=0.010, sides=8)
+        builder.add_mesh_primitive(mesh_chassis, m_gold, v, n, idx)
+        # Cyan energy rivet
+        v, n, idx = create_cylinder(cx, cy, z0=0.608, z1=0.615, radius=0.005, sides=6)
+        builder.add_mesh_primitive(mesh_chassis, m_cyan, v, n, idx)
     
     # Tactical Status LEDs on Forward Deck (Cyan / Gold readiness lights)
     for led_i, z_led in enumerate([0.42, 0.48, 0.54]):
@@ -903,66 +923,103 @@ def build_unified_kitsune(output_path="assets/blaster_kitsune_unified.glb"):
     # - Swept O-Kissaki Chisel Tip with Yokote Line
     # - Lacquered Crimson Spine Runner & Dual Bo-Hi Fullers
     # ══════════════════════════════════════════════════════════════
+    # 5. BLADE ASSEMBLY MESH (Pivot at X=0.0, Y=0.52, Z=0.60)
+    # Mastercrafted Japanese Katana:
+    # - Multi-Tiered Bronze Seppa & Cyber-Gold Habaki with Illuminated Fox-Flame Crests
+    # - Authentic Sori Curvature & Razor Shinogi-Zukuri Proportions
+    # - Distinct Japanese Yokote Transverse Ridge Line & Chisel O-Kissaki Point
+    # - Swept Boshi Tempering Turn wrapping around Fukura Cutting Edge
+    # - Mirror-Polished Folded Tamahagane Katana Steel Body
+    # - Radiant Celestial Cyan Plasma Cutting Edge & Dual Bo-Hi Fullers
+    # ══════════════════════════════════════════════════════════════
     mesh_blade = builder.create_mesh("Mesh_BladeAssembly")
     
-    # ── TRADITIONAL STEPPED GOLD HABAKI & BRONZE SEPPA WASHERS ──
-    # Seppa Bronze Spacer Washer at blade base (local Z = -0.008 to 0.002)
-    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.088, height=0.115, z0=-0.008, z1=0.002, chamfer=0.012)
+    # ── MULTI-TIERED BRONZE SEPPA & CYBER-GOLD HABAKI WITH FOX CREST ──
+    # Primary Seppa Bronze Spacer Washer at blade base (local Z = -0.016 to 0.002)
+    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.096, height=0.124, z0=-0.016, z1=0.002, chamfer=0.014)
     builder.add_mesh_primitive(mesh_blade, m_seppa, v, n, idx)
     
-    # Stepped Gold Habaki Collar (local Z = 0.002 to 0.046)
-    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.076, height=0.096, z0=0.002, z1=0.032, chamfer=0.012)
-    builder.add_mesh_primitive(mesh_blade, m_gold, v, n, idx)
-    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.066, height=0.084, z0=0.032, z1=0.046, chamfer=0.010)
-    builder.add_mesh_primitive(mesh_blade, m_gold, v, n, idx)
-    # Yasurime file stroke groove across Habaki
-    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.070, height=0.008, z0=0.016, z1=0.022, chamfer=0.002)
+    # Secondary Tactical Dark Alloy Spacer Washer
+    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.088, height=0.112, z0=-0.008, z1=0.002, chamfer=0.012)
     builder.add_mesh_primitive(mesh_blade, m_dark, v, n, idx)
+    
+    # Stepped Gold Habaki Collar (local Z = 0.002 to 0.052)
+    # Lower primary collar tier
+    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.080, height=0.100, z0=0.002, z1=0.032, chamfer=0.012)
+    builder.add_mesh_primitive(mesh_blade, m_gold, v, n, idx)
+    # Upper tapered collar step
+    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.070, height=0.088, z0=0.032, z1=0.052, chamfer=0.010)
+    builder.add_mesh_primitive(mesh_blade, m_gold, v, n, idx)
+    
+    # Yasurime file stroke groove across Habaki
+    v, n, idx = create_chamfered_box(0.0, 0.0, width=0.074, height=0.008, z0=0.016, z1=0.024, chamfer=0.002)
+    builder.add_mesh_primitive(mesh_blade, m_dark, v, n, idx)
+    
+    # Illuminated Cyan Kitsune Fox-Flame Micro-Vent Crest on Habaki Flanks
+    for side_x in [-0.039, 0.039]:
+        # Recessed dark frame
+        v, n, idx = create_chamfered_box(side_x, 0.008, width=0.006, height=0.028, z0=0.012, z1=0.040, chamfer=0.002)
+        builder.add_mesh_primitive(mesh_blade, m_dark, v, n, idx)
+        # Luminous cyan energy conduit
+        v, n, idx = create_cylinder(side_x * 1.01, 0.008, z0=0.018, z1=0.034, radius=0.007, sides=8)
+        builder.add_mesh_primitive(mesh_blade, m_cyan, v, n, idx)
+        # Gold retaining bezel
+        v, n, idx = create_cylinder(side_x * 1.02, 0.008, z0=0.024, z1=0.028, radius=0.009, sides=8)
+        builder.add_mesh_primitive(mesh_blade, m_gold, v, n, idx)
 
-    # ── AUTHENTIC KATANA BLADE BODY (Lofted along Sori Curve) ──
-    # Length: z_min=0.046 to z_max=1.42 (1.374m Katana reach)
-    # Proportions: Height base 0.078m -> tip 0.046m. Width base 0.020m -> tip 0.010m.
-    n_blade_slices = 16
+    # ── AUTHENTIC KATANA BLADE BODY WITH YOKOTE & CHISEL O-KISSAKI ──
+    # Length: z_min=0.052 to z_max=1.44 (1.388m Katana reach)
+    # Slices: 24 slices with explicit Yokote boundary at t=0.85 (z≈1.23m)
+    n_blade_slices = 24
+    t_yokote = 0.85
+    
     blade_slices_steel = []
     blade_slices_hamon = []
     blade_slices_cyan_edge = []
     blade_slices_crimson_spine = []
     blade_slices_fuller = []
     
-    z_min = 0.046
-    z_max = 1.42
+    z_min = 0.052
+    z_max = 1.44
     
     for s_idx in range(n_blade_slices):
         t = s_idx / (n_blade_slices - 1) # 0.0 at base to 1.0 at tip
         cur_z = z_min + t * (z_max - z_min)
         
         # Sori upward curvature
-        y_cur = 0.048 * (t ** 1.6)
+        y_cur = 0.052 * (t ** 1.65)
         
         # Proportional taper
-        w_taper = max(0.20, 1.0 - 0.48 * t)
+        w_taper = max(0.20, 1.0 - 0.45 * t)
         h_taper = max(0.25, 1.0 - 0.40 * t)
         
         # Dimensions: Sleek, lethal, authentic Katana cross-section
-        hw_shinogi = 0.010 * w_taper  # Half-width at ridge line (20mm down to 10mm)
-        hw_edge    = 0.001            # Razor-sharp edge
-        hw_spine   = 0.006 * w_taper  # Flat reinforced spine
+        hw_shinogi = 0.0105 * w_taper  # Ridge line half-width
+        hw_edge    = 0.0010            # Razor-sharp edge
+        hw_spine   = 0.0065 * w_taper  # Flat reinforced spine
         
         # Vertical blade positions relative to local Y=0
         blade_h = 0.076 * h_taper
         y_spine_top = y_cur + 0.50 * blade_h
         y_shinogi   = y_cur + 0.12 * blade_h
-        y_hamon     = y_cur - 0.20 * blade_h + math.sin(t * 26.0) * 0.003
+        y_hamon     = y_cur - 0.20 * blade_h + math.sin(t * 28.0) * 0.004
         y_edge      = y_cur - 0.50 * blade_h
         
-        # O-Kissaki chisel tip swept geometry (t >= 0.82)
-        if t >= 0.82:
-            tip_t = (t - 0.82) / 0.18
-            # Edge sweeps upward in an aggressive Katana kissaki curve
-            y_edge += tip_t * 0.95 * blade_h
-            y_hamon += tip_t * 0.65 * blade_h
-            hw_shinogi *= (1.0 - tip_t * 0.85)
-            hw_spine   *= (1.0 - tip_t * 0.82)
+        # ── JAPANESE YOKOTE & CHISEL O-KISSAKI GEOMETRY (t >= t_yokote) ──
+        if t >= t_yokote:
+            tip_u = (t - t_yokote) / (1.0 - t_yokote) # 0.0 at Yokote to 1.0 at apex tip
+            # 1. Fukura: Edge sweeps upward in an aggressive chisel Katana arc
+            fukura_lift = (tip_u ** 0.82) * (blade_h * 0.94)
+            y_edge += fukura_lift
+            # 2. Boshi: Tempering wave wraps around the tip following the Fukura
+            y_hamon = y_edge + (1.0 - tip_u) * (0.24 * blade_h)
+            # 3. Ko-Shinogi: Ridge line descends towards apex chisel point
+            y_shinogi = (y_cur + 0.12 * blade_h) * (1.0 - tip_u * 0.70) + y_edge * (tip_u * 0.65)
+            # 4. Mune: Spine tapers to apex
+            y_spine_top = (y_cur + 0.50 * blade_h) * (1.0 - tip_u * 0.08)
+            # 5. Facet narrowing at point
+            hw_shinogi *= (1.0 - tip_u * 0.88)
+            hw_spine   *= (1.0 - tip_u * 0.85)
             
         # 1. Main Tamahagane Mirror Steel Blade Body (Shinogi-Zukuri diamond cross-section)
         poly_steel = [
@@ -975,7 +1032,7 @@ def build_unified_kitsune(output_path="assets/blaster_kitsune_unified.glb"):
         ]
         blade_slices_steel.append(poly_steel)
         
-        # 2. Undulating Luminescent Hamon Tempering Wave Ribbon
+        # 2. Undulating Luminescent Hamon / Boshi Tempering Wave Ribbon
         poly_hamon = [
             [hw_shinogi * 0.5, y_hamon,         cur_z],
             [hw_shinogi * 0.25, (y_hamon + y_edge) * 0.5, cur_z],
@@ -1002,8 +1059,8 @@ def build_unified_kitsune(output_path="assets/blaster_kitsune_unified.glb"):
         ]
         blade_slices_crimson_spine.append(poly_spine)
         
-        # 5. Dual Inlaid Cyan Bo-Hi Fullers running along shinogi flats
-        if t <= 0.80:
+        # 5. Dual Inlaid Cyan Bo-Hi Fullers (Runs along shinogi flats, ends at Yokote in Hi-Saki)
+        if t <= 0.82:
             fuller_y = y_shinogi + 0.012 * h_taper
             poly_fuller = [
                 [hw_shinogi * 0.92,  fuller_y + 0.006, cur_z],
