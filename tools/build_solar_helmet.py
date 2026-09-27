@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 """
 build_solar_helmet.py
-Generates the complete Kamen Rider Apex Helmet (assets/models/solar_helmet.glb).
-Fully encapsulates the Sun (R ≈ 7.80m) with:
-  1. Full Cranial Shell (Skullcap, Temporal Dome, and Occipital Back Armor)
-  2. Iconic Kamen Rider Compound Eye Visors (Luminous faceted ruby/amber insectoid eyes)
-  3. Kamen Rider Crusher Mouth Plate (Stepped horizontal ventilation slats & angular chin keel)
-  4. Dual High-Rising Sun-Gold V-Crest Horns + Central Forehead O-Signal Ruby Gem
-  5. Lateral Ear Receptors & Dual Steam Exhaust Cowls
-  6. Sub-assemblies organized into Helmet_Crest, Helmet_Faceplate, Helmet_Cheeks for henshin slam assembly!
+Generates an authentic, cohesive, monolithic Kamen Rider Apex Helmet (assets/models/solar_helmet.glb).
+Specifically tailored to encapsulate the Sun's head (R ≈ 7.80m).
+
+Design Philosophy:
+- Continuous, sculpted solid helmet hull (NO loose floating parts or gaps revealing the sun beneath).
+- Iconic Kamen Rider Compound Eye Visors: Bold, menacing, faceted ruby-crimson ocular lenses.
+- Integrated Crusher Mouth Plate: Sculpted horizontal titanium grille louvers and angular chin keel
+  molded seamlessly into the jaw and cheek cowls.
+- Sweeping Sun-Gold V-Crest Horns rooted into a heavy obsidian & gold forehead brow plate.
+- Shinto ruby O-signal jewel in the forehead center.
+- Lateral ear turbine receptors and high-pressure steam exhaust cowls.
 """
 
 import math
@@ -141,7 +144,7 @@ class GLTFBuilder:
             self.bin_data.extend(b'\x00' * pad)
 
         gltf = {
-            "asset": {"version": "2.0", "generator": "KamenRiderSolarHelmetBuilder"},
+            "asset": {"version": "2.0", "generator": "KamenRiderUnifiedHelmetBuilder"},
             "scene": 0,
             "scenes": [{"name": "DefaultScene", "nodes": [len(self.nodes) - 1]}],
             "nodes": self.nodes,
@@ -180,7 +183,7 @@ def calc_normal(p0, p1, p2):
     nx = v01[1]*v02[2] - v01[2]*v02[1]
     ny = v01[2]*v02[0] - v01[0]*v02[2]
     nz = v01[0]*v02[1] - v01[1]*v02[0]
-    l = math.sqrt(nx*nx + ny*ny + nz*nz)
+    l = math.hypot(math.hypot(nx, ny), nz)
     if l > 1e-6:
         return [nx/l, ny/l, nz/l]
     return [0.0, 1.0, 0.0]
@@ -293,13 +296,13 @@ def create_extrusion(pts2d, z0, z1, caps=True):
 
     return verts, norms, indices
 
-def create_spherical_shell_sector(phi_min, phi_max, theta_min, theta_max, r_inner, r_outer, n_phi=8, n_theta=12):
-    # Generates a thick curved spherical armor shell sector
+def create_spherical_hull_shell(phi_min, phi_max, theta_min, theta_max, r_inner, r_outer, n_phi=12, n_theta=24):
+    # Generates a solid spherical curved hull sector
     verts = []
     norms = []
     indices = []
 
-    def sphere_pt(r, phi, theta):
+    def pt(r, phi, theta):
         cp = math.cos(phi)
         sp = math.sin(phi)
         ct = math.cos(theta)
@@ -313,92 +316,47 @@ def create_spherical_shell_sector(phi_min, phi_max, theta_min, theta_max, r_inne
         norms.extend([n] * 4)
         indices.extend([b, b+1, b+2, b, b+2, b+3])
 
-    phi_steps = np.linspace(phi_min, phi_max, n_phi)
-    theta_steps = np.linspace(theta_min, theta_max, n_theta)
+    phis = np.linspace(phi_min, phi_max, n_phi)
+    thetas = np.linspace(theta_min, theta_max, n_theta)
 
     for i in range(n_phi - 1):
         for j in range(n_theta - 1):
-            p_a, p_b = phi_steps[i], phi_steps[i+1]
-            t_a, t_b = theta_steps[j], theta_steps[j+1]
+            p_a, p_b = phis[i], phis[i+1]
+            t_a, t_b = thetas[j], thetas[j+1]
 
-            # Outer surface
-            p0 = sphere_pt(r_outer, p_a, t_a)
-            p1 = sphere_pt(r_outer, p_a, t_b)
-            p2 = sphere_pt(r_outer, p_b, t_b)
-            p3 = sphere_pt(r_outer, p_b, t_a)
+            # Outer face
+            p0 = pt(r_outer, p_a, t_a)
+            p1 = pt(r_outer, p_a, t_b)
+            p2 = pt(r_outer, p_b, t_b)
+            p3 = pt(r_outer, p_b, t_a)
             add_quad(p0, p1, p2, p3)
 
-            # Inner surface
-            q0 = sphere_pt(r_inner, p_a, t_a)
-            q1 = sphere_pt(r_inner, p_a, t_b)
-            q2 = sphere_pt(r_inner, p_b, t_b)
-            q3 = sphere_pt(r_inner, p_b, t_a)
+            # Inner face
+            q0 = pt(r_inner, p_a, t_a)
+            q1 = pt(r_inner, p_a, t_b)
+            q2 = pt(r_inner, p_b, t_b)
+            q3 = pt(r_inner, p_b, t_a)
             add_quad(q1, q0, q3, q2)
 
-    # Edge caps
-    # Bottom rim (phi_min)
-    p_bot = phi_steps[0]
+    # Edge rims
+    p_bot = phis[0]
     for j in range(n_theta - 1):
-        t_a, t_b = theta_steps[j], theta_steps[j+1]
-        p_in_a = sphere_pt(r_inner, p_bot, t_a)
-        p_in_b = sphere_pt(r_inner, p_bot, t_b)
-        p_out_a = sphere_pt(r_outer, p_bot, t_a)
-        p_out_b = sphere_pt(r_outer, p_bot, t_b)
-        add_quad(p_out_a, p_out_b, p_in_b, p_in_a)
+        t_a, t_b = thetas[j], thetas[j+1]
+        add_quad(pt(r_outer, p_bot, t_a), pt(r_outer, p_bot, t_b),
+                 pt(r_inner, p_bot, t_b), pt(r_inner, p_bot, t_a))
 
-    # Top rim (phi_max)
-    p_top = phi_steps[-1]
+    p_top = phis[-1]
     for j in range(n_theta - 1):
-        t_a, t_b = theta_steps[j], theta_steps[j+1]
-        p_in_a = sphere_pt(r_inner, p_top, t_a)
-        p_in_b = sphere_pt(r_inner, p_top, t_b)
-        p_out_a = sphere_pt(r_outer, p_top, t_a)
-        p_out_b = sphere_pt(r_outer, p_top, t_b)
-        add_quad(p_in_a, p_in_b, p_out_b, p_out_a)
+        t_a, t_b = thetas[j], thetas[j+1]
+        add_quad(pt(r_inner, p_top, t_a), pt(r_inner, p_top, t_b),
+                 pt(r_outer, p_top, t_b), pt(r_outer, p_top, t_a))
 
-    # Left & Right edges
     for i in range(n_phi - 1):
-        p_a, p_b = phi_steps[i], phi_steps[i+1]
-        # left (theta_min)
-        t_l = theta_steps[0]
-        add_quad(sphere_pt(r_inner, p_a, t_l), sphere_pt(r_inner, p_b, t_l),
-                 sphere_pt(r_outer, p_b, t_l), sphere_pt(r_outer, p_a, t_l))
-        # right (theta_max)
-        t_r = theta_steps[-1]
-        add_quad(sphere_pt(r_outer, p_a, t_r), sphere_pt(r_outer, p_b, t_r),
-                 sphere_pt(r_inner, p_b, t_r), sphere_pt(r_inner, p_a, t_r))
-
-    return verts, norms, indices
-
-def create_faceted_compound_eye(pts_outer, center_z_bulge, z_base):
-    # Generates authentic faceted Kamen Rider compound eye polygons
-    # Slanted geodesic prism with faceted jewel facets
-    verts = []
-    norms = []
-    indices = []
-
-    # Calculate center 2d
-    cx = sum(p[0] for p in pts_outer) / len(pts_outer)
-    cy = sum(p[1] for p in pts_outer) / len(pts_outer)
-    cz = z_base + center_z_bulge
-
-    p_center = [cx, cy, cz]
-    n_pts = len(pts_outer)
-
-    # Base rim vertices
-    rim_verts = [[p[0], p[1], z_base] for p in pts_outer]
-
-    # Faceted triangles connecting center apex to rim
-    for i in range(n_pts):
-        nxt = (i + 1) % n_pts
-        p0 = p_center
-        p1 = rim_verts[i]
-        p2 = rim_verts[nxt]
-        n = calc_normal(p0, p1, p2)
-        b = len(verts)
-        verts.extend([p0, p1, p2])
-        norms.extend([n] * 3)
-        indices.extend([b, b+1, b+2])
+        p_a, p_b = phis[i], phis[i+1]
+        add_quad(pt(r_inner, p_a, thetas[0]), pt(r_inner, p_b, thetas[0]),
+                 pt(r_outer, p_b, thetas[0]), pt(r_outer, p_a, thetas[0]))
+        add_quad(pt(r_outer, p_a, thetas[-1]), pt(r_outer, p_b, thetas[-1]),
+                 pt(r_inner, p_b, thetas[-1]), pt(r_inner, p_a, thetas[-1]))
 
     return verts, norms, indices
 
@@ -414,7 +372,7 @@ def build_solar_helmet(out_path):
     m_chassis = builder.add_material("Mat_Helmet_Chassis", [0.12, 0.11, 0.16], roughness=0.45, metallic=0.25)
     m_titanium = builder.add_material("Mat_Helmet_Titanium", [0.35, 0.36, 0.42], roughness=0.32, metallic=0.75)
     # Luminous Kamen Rider Compound Eye Ruby / Crimson
-    m_ruby_eye = builder.add_material("Mat_Helmet_RubyEye", [0.96, 0.15, 0.15], roughness=0.15, metallic=0.10, emission_rgb=[0.96, 0.15, 0.15], emission_strength=4.5)
+    m_ruby_eye = builder.add_material("Mat_Helmet_RubyEye", [0.98, 0.14, 0.14], roughness=0.12, metallic=0.10, emission_rgb=[0.98, 0.14, 0.14], emission_strength=4.8)
     # Shinto Vermilion Trim / Forehead Gem
     m_crimson = builder.add_material("Mat_Helmet_Crimson", [0.88, 0.12, 0.12], roughness=0.25, metallic=0.30, emission_rgb=[0.88, 0.12, 0.12], emission_strength=3.0)
     # Cyan LED Diode / HUD Rails
@@ -423,29 +381,28 @@ def build_solar_helmet(out_path):
     m_amber = builder.add_material("Mat_Helmet_Amber", [1.00, 0.70, 0.18], roughness=0.22, metallic=0.10, emission_rgb=[1.00, 0.70, 0.18], emission_strength=3.5)
 
     # ═════════════════════════════════════════════════════════════════════════
-    # 1. HELMET CRANIAL SHELL & V-CREST CROWN (Sub-assembly: Helmet_Crest)
-    # Encapsulates upper hemisphere (R ≈ 7.85m to 8.25m) and occipital dome
+    # 1. HELMET CREST (Sub-assembly: Helmet_Crest)
+    # Complete Cranial Skull Shell (encapsulating top & occiput) + Majestic V-Horns
     # ═════════════════════════════════════════════════════════════════════════
-    mesh_crown = builder.create_mesh("Mesh_Helmet_Crown")
+    mesh_crest = builder.create_mesh("Mesh_Helmet_Crest")
 
-    # A. Spherical Cranial Dome (Full upper skull shell encapsulating top and back)
-    # theta from +45° through 180° to 315° (wrapping sides and back of skull)
-    # phi from +15° (temples/occiput) to +82° (crown apex)
-    v, n, idx = create_spherical_shell_sector(
+    # A. Solid Cranial Skull Shell (Hugging top and rear hemisphere: R = 7.82m to 8.22m)
+    # Wraps from temples (theta = 45°) over the back (theta = 180°) to other temple (315°)
+    v, n, idx = create_spherical_hull_shell(
         phi_min=math.radians(12.0),
         phi_max=math.radians(82.0),
         theta_min=math.radians(45.0),
         theta_max=math.radians(315.0),
         r_inner=7.82,
         r_outer=8.22,
-        n_phi=10,
-        n_theta=20
+        n_phi=12,
+        n_theta=24
     )
-    builder.add_mesh_primitive(mesh_crown, m_chassis, v, n, idx)
+    builder.add_mesh_primitive(mesh_crest, m_chassis, v, n, idx)
 
     # B. Central Dorsal Spine (Golden keel along crown apex from forehead to back)
     v, n, idx = create_chamfered_box_3d(0.0, 8.05, 0.0, width=1.40, height=1.50, depth=14.50, chamfer=0.20)
-    builder.add_mesh_primitive(mesh_crown, m_gold, v, n, idx)
+    builder.add_mesh_primitive(mesh_crest, m_gold, v, n, idx)
 
     # C. High-Rising Majestic Kamen Rider V-Crest Horns (Sun-Gold)
     # Left V-Crest Horn (Slanted dramatically up and back)
@@ -458,7 +415,7 @@ def build_solar_helmet(out_path):
         [-0.45,  8.20]
     ]
     v, n, idx = create_extrusion(horn_pts_left, z0=5.20, z1=6.20, caps=True)
-    builder.add_mesh_primitive(mesh_crown, m_gold, v, n, idx)
+    builder.add_mesh_primitive(mesh_crest, m_gold, v, n, idx)
 
     # Right V-Crest Horn (Mirrored)
     horn_pts_right = [
@@ -470,7 +427,7 @@ def build_solar_helmet(out_path):
         [ 1.20,  6.00]
     ]
     v, n, idx = create_extrusion(horn_pts_right, z0=5.20, z1=6.20, caps=True)
-    builder.add_mesh_primitive(mesh_crown, m_gold, v, n, idx)
+    builder.add_mesh_primitive(mesh_crest, m_gold, v, n, idx)
 
     # Inner Secondary V-Horns (Sharper front tines with obsidian inlay)
     horn_inner_left = [
@@ -481,7 +438,7 @@ def build_solar_helmet(out_path):
         [-0.30,  7.80]
     ]
     v, n, idx = create_extrusion(horn_inner_left, z0=6.15, z1=6.80, caps=True)
-    builder.add_mesh_primitive(mesh_crown, m_chassis, v, n, idx)
+    builder.add_mesh_primitive(mesh_crest, m_chassis, v, n, idx)
 
     horn_inner_right = [
         [ 0.30,  6.50],
@@ -491,7 +448,7 @@ def build_solar_helmet(out_path):
         [ 0.85,  6.40]
     ]
     v, n, idx = create_extrusion(horn_inner_right, z0=6.15, z1=6.80, caps=True)
-    builder.add_mesh_primitive(mesh_crown, m_chassis, v, n, idx)
+    builder.add_mesh_primitive(mesh_crest, m_chassis, v, n, idx)
 
     # D. Central Forehead O-Signal Ruby Diamond Gem
     gem_pts = [
@@ -501,64 +458,78 @@ def build_solar_helmet(out_path):
         [ 0.90,  6.50]
     ]
     v, n, idx = create_extrusion(gem_pts, z0=5.80, z1=6.90, caps=True)
-    builder.add_mesh_primitive(mesh_crown, m_crimson, v, n, idx)
+    builder.add_mesh_primitive(mesh_crest, m_crimson, v, n, idx)
 
     # Gold Bezel around Forehead Gem
     v, n, idx = create_chamfered_box_3d(0.0, 6.50, 5.75, width=2.40, height=2.60, depth=0.55, chamfer=0.18)
-    builder.add_mesh_primitive(mesh_crown, m_gold, v, n, idx)
+    builder.add_mesh_primitive(mesh_crest, m_gold, v, n, idx)
 
     # ═════════════════════════════════════════════════════════════════════════
-    # 2. THE FACEPLATE: COMPOUND EYE VISORS & CRUSHER MOUTH PLATE
+    # 2. THE FACE MASK: SOLID BACKDROP, COMPOUND EYE VISORS & CRUSHER JAW
     # (Sub-assembly: Helmet_Faceplate)
-    # Completely encapsulates the front eyes and mouth of the Sun!
+    # A single solid, cohesive cybernetic face mask completely encasing the face!
     # ═════════════════════════════════════════════════════════════════════════
     mesh_face = builder.create_mesh("Mesh_Helmet_Faceplate")
 
-    # A. Forehead Brow Crossbar (Heavy obsidian & gold brow shielding the eyes)
-    z_face = 7.35
-    v, n, idx = create_chamfered_box_3d(0.0, 3.80, z_face, width=7.80, height=1.30, depth=1.40, chamfer=0.22)
+    # A. Solid Obsidian Mask Shell (The base faceplate that covers the Sun completely)
+    # Curving seamlessly from forehead to chin, X = ±5.2m, Y = -3.2m to +4.5m
+    v, n, idx = create_spherical_hull_shell(
+        phi_min=math.radians(-24.0),
+        phi_max=math.radians(34.0),
+        theta_min=math.radians(-42.0),
+        theta_max=math.radians(42.0),
+        r_inner=7.78,
+        r_outer=8.08,
+        n_phi=12,
+        n_theta=16
+    )
     builder.add_mesh_primitive(mesh_face, m_chassis, v, n, idx)
-    v, n, idx = create_chamfered_box_3d(0.0, 4.15, z_face + 0.35, width=8.20, height=0.45, depth=0.90, chamfer=0.10)
+
+    # B. Forehead Brow Crossbar (Heavy beveled armor plate bridging temples)
+    z_face = 7.60
+    v, n, idx = create_chamfered_box_3d(0.0, 3.80, z_face, width=8.20, height=1.30, depth=1.20, chamfer=0.22)
+    builder.add_mesh_primitive(mesh_face, m_chassis, v, n, idx)
+    v, n, idx = create_chamfered_box_3d(0.0, 4.15, z_face + 0.35, width=8.60, height=0.45, depth=0.80, chamfer=0.10)
     builder.add_mesh_primitive(mesh_face, m_gold, v, n, idx)
 
-    # B. Iconic Kamen Rider Compound Eye Visors ("Ocular Lenses")
-    # Faceted jewel compound eyes placed directly over the eyes!
-    # Left Compound Eye Visor (X = -0.6 to -4.4, Y = +0.7 to +3.4)
+    # C. Iconic Kamen Rider Compound Eye Visors ("Ocular Lenses")
+    # Bold, menacing, slanted insectoid polygon visors set into the faceplate!
+    # Left Compound Eye Visor (X = -0.7 to -4.4, Y = +0.7 to +3.3)
     eye_pts_left = [
-        [-0.70,  3.20],
-        [-3.60,  3.40],
-        [-4.50,  2.20],
-        [-4.40,  0.80],
-        [-3.20,  0.50],
+        [-0.75,  3.15],
+        [-3.60,  3.35],
+        [-4.55,  2.15],
+        [-4.45,  0.80],
+        [-3.20,  0.55],
         [-1.10,  1.70]
     ]
-    v, n, idx = create_faceted_compound_eye(eye_pts_left, center_z_bulge=0.85, z_base=z_face - 0.10)
+    v, n, idx = create_extrusion(eye_pts_left, z0=z_face - 0.10, z1=z_face + 0.65, caps=True)
     builder.add_mesh_primitive(mesh_face, m_ruby_eye, v, n, idx)
 
     # Right Compound Eye Visor (X = +0.7 to +4.4)
     eye_pts_right = [
-        [ 0.70,  3.20],
+        [ 0.75,  3.15],
         [ 1.10,  1.70],
-        [ 3.20,  0.50],
-        [ 4.40,  0.80],
-        [ 4.50,  2.20],
-        [ 3.60,  3.40]
+        [ 3.20,  0.55],
+        [ 4.45,  0.80],
+        [ 4.55,  2.15],
+        [ 3.60,  3.35]
     ]
-    v, n, idx = create_faceted_compound_eye(eye_pts_right, center_z_bulge=0.85, z_base=z_face - 0.10)
+    v, n, idx = create_extrusion(eye_pts_right, z0=z_face - 0.10, z1=z_face + 0.65, caps=True)
     builder.add_mesh_primitive(mesh_face, m_ruby_eye, v, n, idx)
 
     # Eye Visor Outer Bezel Rims (Sun-Gold framing around each compound eye)
     for sign_x in [-1.0, 1.0]:
         bezel_pts = [
-            [sign_x * 0.50, 3.40],
-            [sign_x * 3.75, 3.60],
+            [sign_x * 0.55, 3.35],
+            [sign_x * 3.75, 3.55],
             [sign_x * 4.80, 2.25],
             [sign_x * 4.70, 0.65],
             [sign_x * 3.10, 0.35],
-            [sign_x * 0.90, 1.60]
+            [sign_x * 0.90, 1.55]
         ]
         if sign_x < 0: bezel_pts = bezel_pts[::-1]
-        v, n, idx = create_extrusion(bezel_pts, z0=z_face - 0.25, z1=z_face + 0.30, caps=True)
+        v, n, idx = create_extrusion(bezel_pts, z0=z_face - 0.20, z1=z_face + 0.25, caps=True)
         builder.add_mesh_primitive(mesh_face, m_gold, v, n, idx)
 
     # Central Nose Bridge & Keel between eyes
@@ -568,17 +539,15 @@ def build_solar_helmet(out_path):
     v, n, idx = create_chamfered_box_3d(0.0, 2.20, z_face + 0.88, width=0.35, height=1.60, depth=0.25, chamfer=0.06)
     builder.add_mesh_primitive(mesh_face, m_cyan, v, n, idx)
 
-    # C. Kamen Rider Crusher Mouth Plate ("Faceplate & Mandible")
-    # Stepped horizontal ventilation grille slats covering mouth!
-    crusher_z = z_face + 0.15
-
-    # 4 Horizontal Grille Louver Slats (tiered forward in Z)
+    # D. Kamen Rider Crusher Mouth Plate ("Faceplate & Mandible Grille")
+    # Stepped horizontal ventilation grille louvers molded seamlessly into the face!
+    crusher_z = z_face + 0.25
     slat_data = [
         # (y_pos, width, height, z_offset)
-        ( 0.20, 5.20, 0.42, 0.35),
-        (-0.45, 4.60, 0.42, 0.45),
-        (-1.10, 4.00, 0.42, 0.52),
-        (-1.75, 3.40, 0.42, 0.48),
+        ( 0.20, 5.40, 0.44, 0.35),
+        (-0.45, 4.80, 0.44, 0.45),
+        (-1.10, 4.20, 0.44, 0.52),
+        (-1.75, 3.50, 0.44, 0.48),
     ]
     for y_s, w_s, h_s, z_off in slat_data:
         # Titanium Grille Slat
@@ -604,8 +573,8 @@ def build_solar_helmet(out_path):
     builder.add_mesh_primitive(mesh_face, m_chassis, v, n, idx)
 
     # ═════════════════════════════════════════════════════════════════════════
-    # 3. HELMET LATERAL CHEEKS & EAR COWLS (Sub-assembly: Helmet_Cheeks)
-    # Aerodynamic lateral guards with circular ear turbines & steam cowls
+    # 3. HELMET CHEEKS & EAR RECEPTORS (Sub-assembly: Helmet_Cheeks)
+    # Lateral ear turbine discs and steam exhaust cowls
     # ═════════════════════════════════════════════════════════════════════════
     mesh_cheeks = builder.create_mesh("Mesh_Helmet_Cheeks")
 
@@ -641,7 +610,7 @@ def build_solar_helmet(out_path):
     # ═════════════════════════════════════════════════════════════════════════
     # Build Node Hierarchy
     # ═════════════════════════════════════════════════════════════════════════
-    n_crest = builder.add_node("Helmet_Crest", mesh_idx=mesh_crown)
+    n_crest = builder.add_node("Helmet_Crest", mesh_idx=mesh_crest)
     n_face = builder.add_node("Helmet_Faceplate", mesh_idx=mesh_face)
     n_cheeks = builder.add_node("Helmet_Cheeks", mesh_idx=mesh_cheeks)
 

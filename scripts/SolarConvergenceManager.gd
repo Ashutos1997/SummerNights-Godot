@@ -631,6 +631,9 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 		d_node.queue_free()
 		drone_destroyed.emit(pos)
 
+		if active_drones.is_empty() and not is_convergence_in_progress():
+			trigger_henshin_sequence()
+
 		return {
 			"hit": true,
 			"destroyed": true,
@@ -669,6 +672,9 @@ func check_ice_blast_intercept(blast_pos: Vector3, radius: float = 6.5) -> bool:
 		active_drones.erase(drone)
 		d_node.queue_free()
 		drone_shattered_by_ice.emit(pos)
+
+	if active_drones.is_empty() and not is_convergence_in_progress():
+		trigger_henshin_sequence()
 
 	# Multi-layered cryogenic glass avalanche
 	if sfx_ice_shatter_glass:
@@ -1175,164 +1181,70 @@ func is_helmet_active() -> bool:
 	return is_helmet_equipped
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Milestone 3: The Convergence Choreography (Vortex Acceleration & Helmet Lock)
+# Milestone 3: The Sun's Henshin Escalation (Phase 2 Awakening)
+# Triggered when the player destroys all orbital eye drones!
 # ─────────────────────────────────────────────────────────────────────────────
 func trigger_convergence_event() -> void:
+	if is_convergence_in_progress():
+		return
+	# Debug key [P]: If drones still active, shatter them in rapid succession
+	if not active_drones.is_empty():
+		var drones_copy = active_drones.duplicate()
+		for d in drones_copy:
+			var node = d.get("node") as Node3D
+			if is_instance_valid(node):
+				_spawn_drone_destruction_fx(node.global_position, false)
+				node.queue_free()
+		active_drones.clear()
+	trigger_henshin_sequence()
+
+func trigger_henshin_sequence() -> void:
 	if is_convergence_active:
 		return
 	is_convergence_active = true
 	current_state = State.CONVERGENCE_CHARGING
 	convergence_triggered.emit()
 
-	# 1. Ensure Solar Driver is equipped
-	if not is_driver_equipped:
-		materialize_solar_driver(true)
+	# 1. Cinematic Slow-Mo Beat
+	Engine.time_scale = 0.28
 
-	# 2. Ensure helmet is loaded and ready
-	if not helmet_root:
-		setup_solar_helmet()
-
-	# 3. Ensure active drones exist (spawn 6 if none currently in orbit)
-	if active_drones.is_empty():
-		start_orbital_swarm(6, 25)
-
-	# 4. Time Dilation: Cinematic slow-mo drop
-	Engine.time_scale = 0.32
-
-	# 5. Audio & Cinematic Impact (clean - no intrusive HUD banner)
+	# 2. Audio & Energy Swell
 	if sfx_ice_blast:
-		sfx_ice_blast.pitch_scale = 0.55
+		sfx_ice_blast.pitch_scale = 0.48
 		sfx_ice_blast.play()
 	if sfx_shatter_metal:
-		sfx_shatter_metal.pitch_scale = 0.55
+		sfx_shatter_metal.pitch_scale = 0.60
 		sfx_shatter_metal.play()
 
 	var main = get_tree().current_scene if get_tree() else null
 	if main:
 		if main.has_method("shake"):
 			main.shake(0.35, 0.025)
-		# Sun reaction: furious charging face & heat scale expansion!
+		# Sun reaction: wince in shock, then furious charging face & heat scale expansion!
 		if main.has_method("on_solar_convergence_sun_powerup"):
 			main.on_solar_convergence_sun_powerup()
 
-	# 6. Overcharge pupil glow on all drones
-	for drone in active_drones:
-		var pupil_mat = drone.get("pupil_mat") as StandardMaterial3D
-		if pupil_mat:
-			pupil_mat.emission_energy_multiplier = 12.0
-
-	# 7. Drone Vortex Acceleration (0.0s – 1.0s)
-	# Align drones into an accelerated equatorial vortex ring around the Sun
-	for d in active_drones:
-		d["target_radius_x"] = 10.2
-		d["target_radius_y"] = 0.6
-		d["target_radius_z"] = 4.2
-		d["vortex_active"] = true
-
-	# Smoothly accelerate orbit angular velocity
-	var speed_tw = create_tween()
-	speed_tw.tween_method(func(mult: float):
-		for d in active_drones:
-			d["orbit_speed"] = 2.0 * mult
-	, 1.0, 4.2, 0.95).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-
-	# 8. Trigger Sequential Inward Merge after Vortex Reaches Max RPM
-	speed_tw.chain().tween_callback(func():
-		current_state = State.CONVERGENCE_IMPLODING
-		_start_sequential_drone_absorption()
+	# 3. Equip Planetary Belt & Driver at waist (0.35s delay)
+	var tw_driver = create_tween()
+	tw_driver.tween_interval(0.35)
+	tw_driver.tween_callback(func():
+		if not is_driver_equipped:
+			materialize_solar_driver(true)
 	)
 
-func _start_sequential_drone_absorption() -> void:
-	var drones_to_absorb = active_drones.duplicate()
-	var total = drones_to_absorb.size()
-	docked_drone_count = 0
-
-	for i in range(total):
-		var d_data = drones_to_absorb[i]
-		var delay = i * 0.22
-		_animate_drone_vortex_merge(d_data, i, total, delay)
-
-func _animate_drone_vortex_merge(drone_data: Dictionary, index: int, total: int, delay: float) -> void:
-	var drone_node = drone_data.get("node") as Node3D
-	if not is_instance_valid(drone_node):
-		return
-
-	var tw = create_tween()
-	tw.tween_interval(delay)
-
-	var start_pos = drone_node.global_position
-	var sun_pos = sun_node.global_position if (sun_node and is_instance_valid(sun_node)) else Vector3(0, 13.5, -42)
-	var rel_p = start_pos - sun_pos
-	var start_r = max(4.0, Vector2(rel_p.x, rel_p.z).length())
-	var start_angle = atan2(rel_p.z, rel_p.x)
-	var start_y = rel_p.y
-	var duration = 0.46
-
-	# Logarithmic inward spiral curve: spins 240 degrees while plunging into core
-	tw.chain().tween_method(func(t: float):
-		if not is_instance_valid(drone_node):
-			return
-		var ease_t = t * t
-		var cur_r = lerpf(start_r, 2.5, ease_t)
-		var cur_angle = start_angle + t * (PI * 1.35)
-		var cur_y = lerpf(start_y, 0.0, ease_t)
-		var local_p = Vector3(cos(cur_angle) * cur_r, cur_y, sin(cur_angle) * cur_r)
-		drone_node.global_position = sun_pos + local_p
-
-		# Aerodynamic comet stretching along motion vector
-		if t < 0.65:
-			var stretch = 1.0 + (t / 0.65) * 1.8
-			var squash = 1.0 - (t / 0.65) * 0.65
-			drone_node.scale = Vector3(squash, squash, stretch)
-		else:
-			var fade_t = (t - 0.65) / 0.35
-			var cur_scale = lerpf(0.35, 0.01, fade_t)
-			drone_node.scale = Vector3(cur_scale, cur_scale, cur_scale)
-
-		# Face tangent forward along spiral path
-		var forward_angle = cur_angle + 0.15
-		var next_p = sun_pos + Vector3(cos(forward_angle) * cur_r, cur_y, sin(forward_angle) * cur_r)
-		if drone_node.global_position.distance_squared_to(next_p) > 0.01:
-			drone_node.look_at(next_p, Vector3.UP)
-	, 0.0, 1.0, duration).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-
-	tw.chain().tween_callback(func():
-		# Sound of absorption with escalating musical pitch
-		if sfx_shatter_metal:
-			sfx_shatter_metal.pitch_scale = 0.92 + (index * 0.12)
-			sfx_shatter_metal.play()
-
-		# Dock spark / flash
-		var is_left = (index % 2 == 0)
-		if is_left and dock_particles_left:
-			dock_particles_left.restart()
-		elif not is_left and dock_particles_right:
-			dock_particles_right.restart()
-
-		var main = get_tree().current_scene if get_tree() else null
-		if main and main.has_method("shake"):
-			main.shake(0.08, 0.015)
-
-		if is_instance_valid(drone_node):
-			drone_node.visible = false
-			drone_node.queue_free()
-
-		docked_drone_count += 1
-		convergence_drone_docked.emit(index, sun_pos)
-
-		# When all drones are absorbed, trigger Kamen Rider Helmet Assembly!
-		if docked_drone_count >= total:
-			_assemble_kamen_rider_helmet()
+	# 4. Trigger Helmet Slam Lock (0.80s delay)
+	tw_driver.tween_interval(0.45)
+	tw_driver.tween_callback(func():
+		_assemble_kamen_rider_helmet()
 	)
 
 func _assemble_kamen_rider_helmet() -> void:
-	active_drones.clear()
 	is_helmet_equipped = true
 
 	if not helmet_root or not is_instance_valid(helmet_root):
 		setup_solar_helmet()
 	if not helmet_root:
-		_finish_convergence_event()
+		_finish_henshin_event()
 		return
 
 	helmet_root.visible = true
@@ -1366,10 +1278,10 @@ func _assemble_kamen_rider_helmet() -> void:
 
 	# On impact: Hydraulic Clamp Lock & Grand Shockwave
 	tw.chain().tween_callback(func():
-		_finish_convergence_event()
+		_finish_henshin_event()
 	)
 
-func _finish_convergence_event() -> void:
+func _finish_henshin_event() -> void:
 	# 1. Lock SFX: Heavy metallic clamp
 	if sfx_shatter_metal:
 		sfx_shatter_metal.pitch_scale = 0.72
@@ -1391,7 +1303,7 @@ func _finish_convergence_event() -> void:
 	if helmet_ruby_mat:
 		helmet_ruby_mat.emission_energy_multiplier = 16.0
 		var r_tw = create_tween()
-		r_tw.tween_property(helmet_ruby_mat, "emission_energy_multiplier", 4.5, 0.65).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		r_tw.tween_property(helmet_ruby_mat, "emission_energy_multiplier", 4.8, 0.65).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 	if helmet_gem_mat:
 		helmet_gem_mat.emission_energy_multiplier = 14.0
@@ -1431,6 +1343,6 @@ func _finish_convergence_event() -> void:
 	if main and main.get("hud") and is_instance_valid(main.hud) and main.hud.has_method("show_toast"):
 		var is_kr = GameState.language == "KR"
 		var title = "오메가 솔라 각성 완료!" if is_kr else "OMEGA SOLAR AWAKENED!"
-		var desc = "가면라이더 헬멧 & 드라이버 수렴 완성" if is_kr else "Kamen Rider Helmet & Driver Convergence Complete"
+		var desc = "가면라이더 솔라 완전 변신" if is_kr else "Kamen Rider Solar Henshin Complete"
 		main.hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1.0, 0.75, 0.15))
 
