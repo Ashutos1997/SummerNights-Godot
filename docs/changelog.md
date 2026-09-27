@@ -22,9 +22,8 @@ All notable changes to the Summer Nights project will be documented in this file
 * Hydro-Tube Emissive Pulsation: Real-time emissive breathing pulse across cylinder vials and coolant lines, shifting to amber below 25% water.
 * Liquid Slosh & Barrel Momentum: Fluid inertia tilt in vials and firing-accelerated cylinder rotation with viscous spin-down drag.
 * Drone CC0 Audio Overhaul: 7 authentic open-source recordings by rubberduck for multi-voice metal impacts, water shatters, and cryogenic ice shatters.
-* Solar Convergence Swarm (Phase 1): Boss encounter on Wave 20+ featuring 6–8 Solar Eye Drones orbiting the Sun, physically intercepting water streams (toggle: `[O]`).
-* Equatorial Solar Driver & Planetary Belt (Milestone 2): Custom low-poly 3D Driver & Belt model (`assets/models/solar_driver.glb`, $R \approx 7.15\text{m}$) mounted to the Sun's lower waist ($Y = -3.85\text{m}$, tilted 14° towards camera, keeping the face clear) with obsidian chassis, beveled Sun-Gold frames, lateral eye-drone docking bays ($X = \pm 1.95\text{m}$), and breathing amber iris core. Features authentic Tokusatsu wearing (dual ribbon sweep + magnetic buckle slam + shockwave flash + screen shake) and taking off (unlatch click + buckle spring pop + ribbon peel dissolution) animations (`[L]`).
-* The Sun's Henshin Escalation & Lateral Clamping Kamen Rider Helmet (Milestone 3): Apex transformation sequence triggered upon defeating all orbital eye drones (or via `[P]` debug trigger). Features cinematic slow-mo drop, furious Sun power-up surge, side-entry Driver buckle slam with sequential belt wrap, and the lateral slam-clamp assembly of the Full-Sphere Kamen Rider Apex Helmet (`assets/models/solar_helmet.glb`, $R = 8.12\text{m}$, clamping from left and right flanks to 100% engulf the Sun) with hydraulic clamp lock, cheek steam blasts, radial shockwaves, and clean HUD (`[P]`).
+* Solar Convergence — Equatorial Driver & Synchronized Swarm: Apex Boss Wave (Wave 20+ / toggle `[O]` or `[L]`). The Equatorial Solar Driver Buckle rushes in from the side and slams onto the Sun's lower waist ($Y = -3.85\text{m}$, tilted 14°, leaving the Sun's iconic 2D face unobstructed) as golden planetary belt ribbons sweep around the equator. Simultaneously, 6–8 Solar Eye Drones deploy outward from the belt into coronal orbit ($R = 11.8\text{m}–12.8\text{m}$), physically intercepting water streams.
+* Solar Driver Core Overload: Neutralizing all orbital drones overloads the Driver buckle with metallic rupture sounds, camera trauma shake, spark bursts, and unstable crimson/amber core flicker, leaving the Sun vulnerable to direct cooling.
 
 ### Improved
 * Solar Eye Drone Visual Polish: Radiant Sun-Gold & Pearl Ivory armor plating, warm bronze chassis, vermilion inlays, toon shading, and 2.3x scale for crisp beach silhouette.
@@ -296,9 +295,8 @@ All notable changes to the Summer Nights project will be documented in this file
 * 수압 튜브 동적 발광 맥동: 실린더 바이알 및 냉각 파이프의 실시간 호흡 발광 맥동 구현 (수량 25% 미만 시 호박색 경고 전환).
 * 유체 슬로싱 관성 및 총열 자동 회전: 바이알 내부 유체 관성 틸트 및 사격 시 가속 회전/감속 정지하는 실린더 물리 모멘텀 적용.
 * 드론 CC0 효과음 개편: OpenGameArt의 rubberduck 제작 정품 오디오를 활용한 다보이스 금속 피격음, 수압 파괴음, 극저온 얼음 분쇄음 연동.
-* 태양 수렴 드론 군체 (1단계): 20웨이브 이상 보스전에 태양 주위를 공전하며 물줄기를 물리 차단하는 6~8기의 태양 궤도 아이 드론 군체 추가 (토글: `[O]`).
-* 적도 솔라 드라이버 및 행성 벨트 (2단계): 얼굴을 가리지 않는 태양 하단 허리($Y = -3.85\text{m}$, 14° 기울기, $R \approx 7.15\text{m}$)에 장착되는 전용 저폴리곤 3D 모델(`assets/models/solar_driver.glb`) 추가 (흑요석 섀시, 썬-골드 프레임, $X = \pm 1.95\text{m}$ 측면 드론 도킹 베이, 호흡 발광 엠버 동공 코어). 특촬풍 장착(듀얼 리본 래핑 + 마그네틱 버클 슬램 + 충격파 발광 + 화면 흔들림) 및 해제(언래치 클릭 + 스프링 팝 + 리본 분해 수납) 애니메이션 연동 (`[L]`).
-* 태양 변신(Henshin) 에스컬레이션 & 측면 협착 가면라이더 헬멧 (3단계): 플레이어가 모든 궤도 아이 드론을 격파했을 때(또는 `[P]` 디버그 트리거) 발동되는 정점 보스 변신 연출 추가. 슬로우 모션 전환, 태양 분노 각성 및 열기 팽창, 측면에서 쇄도하는 드라이버 버클 슬램 및 순차적 행성 벨트 래핑, 좌우 측면에서 쇄도하여 태양 전체를 100% 감싸는 전구형 가면라이더 헬멧(`assets/models/solar_helmet.glb`, $R = 8.12\text{m}$)의 유압식 협착 체결과 고압 스팀 분출, 방사형 충격파 연동 (`[P]`).
+* 태양 수렴 — 적도 솔라 드라이버 및 동기화 드론 군체: 20웨이브 이상 보스전 (토글: `[O]` 또는 `[L]`). 태양의 2D 만화 표정을 전혀 가리지 않는 하단 허리($Y = -3.85\text{m}$, 14° 기울기)로 솔라 드라이버 버클이 측면에서 쇄도하여 체결되며 행성 벨트 리본이 적도를 감쌉니다. 동시에 6~8기의 태양 궤도 아이 드론이 벨트에서 사출 전개되어 태양 주위를 공전($R = 11.8\text{m}–12.8\text{m}$)하며 물줄기를 물리 차단합니다.
+* 솔라 드라이버 코어 과열 시스템: 모든 궤도 드론을 격파하면 금속 파열음, 화면 흔들림, 불티 분출과 함께 드라이버 코어가 불안정하게 점멸하며 과열되어 태양 본체가 직접 냉각 가능한 무방비 상태로 노출됩니다.
 
 ### 개선됨 (Improved)
 * 태양 궤도 아이 드론 외형 개선: 썬-골드 및 펄 아이보리 장갑, 브론즈 섀시, 버밀리온 인레이, 툰 셰이딩 및 2.3배 크기 확대로 해변 조준 실루엣 강화.

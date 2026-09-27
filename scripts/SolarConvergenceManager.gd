@@ -44,16 +44,6 @@ var is_convergence_active: bool = false
 var docked_drone_count: int = 0
 var driver_anim_time: float = 0.0
 
-# ── Kamen Rider Apex Helmet (Milestone 3 Expansion) ─────────────────────────
-var helmet_root: Node3D = null
-var helmet_left: Node3D = null
-var helmet_right: Node3D = null
-var helmet_faceplate: Node3D = null
-var helmet_steam_left: CPUParticles3D = null
-var helmet_steam_right: CPUParticles3D = null
-var helmet_ruby_mat: StandardMaterial3D = null
-var helmet_gem_mat: StandardMaterial3D = null
-var is_helmet_equipped: bool = false
 
 const DRONE_SCENE = preload("res://assets/models/solar_eye_drone.glb")
 
@@ -76,7 +66,6 @@ func setup(sun: Node3D, cam: Camera3D) -> void:
 	sun_node = sun
 	camera_node = cam
 	setup_solar_driver()
-	setup_solar_helmet()
 
 func _init_audio() -> void:
 	# 4 variations of CC0 metal impact recordings
@@ -133,10 +122,21 @@ func start_orbital_swarm(count: int = 6, wave: int = 1) -> void:
 	current_state = State.ORBITAL_SWARM
 	orbit_time = 0.0
 
+	# When drones appear, the belt also appears at the same time!
+	if not is_driver_equipped:
+		materialize_solar_driver(true)
+
 	for i in range(count):
 		var drone_data = _create_drone(i, count, wave)
 		active_drones.append(drone_data)
 		add_child(drone_data["node"])
+
+		# Launch drones from belt waist with staggered pop
+		var d_node = drone_data["node"] as Node3D
+		d_node.scale = Vector3.ZERO
+		var tw = create_tween()
+		tw.tween_interval(0.20 + i * 0.05)
+		tw.tween_property(d_node, "scale", Vector3(2.3, 2.3, 2.3), 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 func _create_drone(index: int, total: int, wave: int = 1) -> Dictionary:
 	var drone_root = Node3D.new()
@@ -387,15 +387,6 @@ func _process(delta: float) -> void:
 			var conduit_pulse = 0.5 + 0.5 * sin(driver_anim_time * 2.8)
 			driver_conduit_mat.emission_energy_multiplier = 2.6 + conduit_pulse * 0.9
 
-	# Animate Helmet Gem and Visor LEDs
-	if is_helmet_equipped:
-		if helmet_gem_mat and is_instance_valid(helmet_gem_mat):
-			var gem_pulse = 0.5 + 0.5 * sin(driver_anim_time * 4.0)
-			helmet_gem_mat.emission_energy_multiplier = 3.2 + gem_pulse * 1.6
-		if helmet_ruby_mat and is_instance_valid(helmet_ruby_mat):
-			var eye_pulse = 0.5 + 0.5 * sin(driver_anim_time * 3.2)
-			helmet_ruby_mat.emission_energy_multiplier = 4.2 + eye_pulse * 1.8
-
 	if current_state != State.ORBITAL_SWARM and current_state != State.CONVERGENCE_CHARGING:
 		return
 
@@ -631,8 +622,8 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 		d_node.queue_free()
 		drone_destroyed.emit(pos)
 
-		if active_drones.is_empty() and not is_convergence_in_progress():
-			trigger_henshin_sequence()
+		if active_drones.is_empty():
+			trigger_driver_overload()
 
 		return {
 			"hit": true,
@@ -673,8 +664,8 @@ func check_ice_blast_intercept(blast_pos: Vector3, radius: float = 6.5) -> bool:
 		d_node.queue_free()
 		drone_shattered_by_ice.emit(pos)
 
-	if active_drones.is_empty() and not is_convergence_in_progress():
-		trigger_henshin_sequence()
+	if active_drones.is_empty():
+		trigger_driver_overload()
 
 	# Multi-layered cryogenic glass avalanche
 	if sfx_ice_shatter_glass:
@@ -741,6 +732,8 @@ func clear_drones() -> void:
 		if is_instance_valid(node):
 			node.queue_free()
 	active_drones.clear()
+	if is_driver_equipped:
+		remove_solar_driver(true)
 	current_state = State.IDLE
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1013,339 +1006,48 @@ func is_convergence_in_progress() -> bool:
 	return is_convergence_active or current_state == State.CONVERGENCE_CHARGING or current_state == State.CONVERGENCE_IMPLODING
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Kamen Rider Apex Helmet (Model & Materials Setup)
+# Driver Overload Climax (Triggered when all orbital drones are destroyed)
 # ─────────────────────────────────────────────────────────────────────────────
-func setup_solar_helmet() -> void:
-	if helmet_root and is_instance_valid(helmet_root):
-		return
-	if not sun_node or not is_instance_valid(sun_node):
-		return
+func trigger_driver_overload() -> void:
+	current_state = State.IDLE
+	convergence_completed.emit()
 
-	helmet_root = Node3D.new()
-	helmet_root.name = "SolarHelmetRoot"
-	helmet_root.visible = false
-	# Sit at Sun's center, tilted 14 degrees up towards the beach camera
-	helmet_root.position = Vector3(0.0, 0.0, 0.0)
-	helmet_root.rotation.x = deg_to_rad(14.0)
-	sun_node.add_child(helmet_root)
-
-	var helmet_scene = load("res://assets/models/solar_helmet.glb")
-	if not helmet_scene:
-		push_error("[SolarConvergence] Failed to load res://assets/models/solar_helmet.glb")
-		return
-
-	var helmet_inst = helmet_scene.instantiate()
-	helmet_root.add_child(helmet_inst)
-
-	# Locate named sub-assemblies from GLB
-	helmet_left = helmet_inst.find_child("Helmet_Left", true, false) as Node3D
-	helmet_right = helmet_inst.find_child("Helmet_Right", true, false) as Node3D
-	helmet_faceplate = helmet_inst.find_child("Helmet_Faceplate", true, false) as Node3D
-
-	# Setup Toon materials and extract emissive mats
-	_setup_helmet_materials(helmet_inst)
-
-	# Steam Exhaust Particle Systems on Cheek Cowls
-	if helmet_left:
-		helmet_steam_left = _create_steam_vent_particles(Vector3(-7.20, 1.10, 2.20), Vector3(-1.0, 0.2, -0.6))
-		helmet_left.add_child(helmet_steam_left)
-	if helmet_right:
-		helmet_steam_right = _create_steam_vent_particles(Vector3(7.20, 1.10, 2.20), Vector3(1.0, 0.2, -0.6))
-		helmet_right.add_child(helmet_steam_right)
-
-func _create_steam_vent_particles(pos: Vector3, dir: Vector3) -> CPUParticles3D:
-	var cp = CPUParticles3D.new()
-	cp.emitting = false
-	cp.one_shot = true
-	cp.explosiveness = 0.90
-	cp.amount = 35
-	cp.lifetime = 0.85
-	cp.direction = dir.normalized()
-	cp.spread = 45.0
-	cp.initial_velocity_min = 12.0
-	cp.initial_velocity_max = 24.0
-	cp.gravity = Vector3(0, 4.0, 0)
-	cp.scale_amount_min = 0.8
-	cp.scale_amount_max = 2.4
-	cp.color = Color(1.0, 0.95, 0.90, 0.80)
-
-	var sp_mat = StandardMaterial3D.new()
-	sp_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	sp_mat.albedo_color = Color(1.0, 0.95, 0.90, 0.75)
-	var sp_mesh = SphereMesh.new()
-	sp_mesh.radius = 0.35
-	sp_mesh.height = 0.70
-	sp_mesh.material = sp_mat
-	cp.mesh = sp_mesh
-	cp.position = pos
-	return cp
-
-func _setup_helmet_materials(node: Node) -> void:
-	if node is MeshInstance3D and node.mesh:
-		for s_idx in range(node.mesh.get_surface_count()):
-			var orig_mat = node.mesh.surface_get_material(s_idx)
-			if orig_mat is StandardMaterial3D:
-				var dup_mat = orig_mat.duplicate() as StandardMaterial3D
-				dup_mat.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
-				dup_mat.specular_mode = BaseMaterial3D.SPECULAR_TOON
-				dup_mat.rim_enabled = true
-				dup_mat.rim = 0.65
-				dup_mat.rim_tint = 0.40
-				dup_mat.rim_color = Color(1.0, 0.88, 0.35)
-				node.set_surface_override_material(s_idx, dup_mat)
-
-				var m_name = dup_mat.resource_name if dup_mat.resource_name != "" else orig_mat.resource_name
-				if "RubyEye" in m_name:
-					helmet_ruby_mat = dup_mat
-					dup_mat.emission_enabled = true
-					dup_mat.emission = Color(0.96, 0.15, 0.15)
-					dup_mat.emission_energy_multiplier = 4.5
-				elif "Crimson" in m_name:
-					helmet_gem_mat = dup_mat
-					dup_mat.emission_enabled = true
-					dup_mat.emission = Color(0.95, 0.15, 0.15)
-					dup_mat.emission_energy_multiplier = 3.5
-				elif "Cyan" in m_name:
-					dup_mat.emission_enabled = true
-					dup_mat.emission = Color(0.20, 0.92, 1.0)
-					dup_mat.emission_energy_multiplier = 4.0
-				elif "Amber" in m_name:
-					dup_mat.emission_enabled = true
-					dup_mat.emission = Color(1.0, 0.70, 0.20)
-					dup_mat.emission_energy_multiplier = 3.0
-	for child in node.get_children():
-		_setup_helmet_materials(child)
-
-func materialize_solar_helmet(animated: bool = true) -> void:
-	if is_helmet_equipped:
-		return
-	is_helmet_equipped = true
-	if not helmet_root or not is_instance_valid(helmet_root):
-		setup_solar_helmet()
-	if not helmet_root:
-		return
-	helmet_root.visible = true
-
-	var main = get_tree().current_scene if get_tree() else null
-	if main and main.has_method("on_solar_convergence_completed"):
-		main.on_solar_convergence_completed()
-
-	if animated:
-		_assemble_kamen_rider_helmet()
-	else:
-		if helmet_left: helmet_left.position = Vector3.ZERO; helmet_left.rotation.y = 0.0; helmet_left.scale = Vector3.ONE
-		if helmet_right: helmet_right.position = Vector3.ZERO; helmet_right.rotation.y = 0.0; helmet_right.scale = Vector3.ONE
-		if helmet_faceplate: helmet_faceplate.position = Vector3.ZERO; helmet_faceplate.scale = Vector3.ONE
-
-func remove_solar_helmet(animated: bool = true) -> void:
-	if not is_helmet_equipped or not helmet_root:
-		return
-	is_helmet_equipped = false
-
-	var main = get_tree().current_scene if get_tree() else null
-	if main and main.has_method("on_solar_helmet_removed"):
-		main.on_solar_helmet_removed()
-
-	if animated:
-		if sfx_shatter_metal:
-			sfx_shatter_metal.pitch_scale = 1.35
-			sfx_shatter_metal.play()
-		var tw = create_tween().set_parallel(true)
-		if helmet_left:
-			tw.tween_property(helmet_left, "position:x", -18.0, 0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-			tw.tween_property(helmet_left, "scale", Vector3(0.01, 0.01, 0.01), 0.35)
-		if helmet_right:
-			tw.tween_property(helmet_right, "position:x", 18.0, 0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-			tw.tween_property(helmet_right, "scale", Vector3(0.01, 0.01, 0.01), 0.35)
-		if helmet_faceplate:
-			tw.tween_property(helmet_faceplate, "position:z", 16.0, 0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-			tw.tween_property(helmet_faceplate, "scale", Vector3(0.01, 0.01, 0.01), 0.35)
-		tw.chain().tween_callback(func():
-			if helmet_root and is_instance_valid(helmet_root):
-				helmet_root.visible = false
-		)
-	else:
-		if helmet_root and is_instance_valid(helmet_root):
-			helmet_root.visible = false
-
-func toggle_solar_helmet() -> void:
-	if is_helmet_equipped:
-		remove_solar_helmet(true)
-	else:
-		materialize_solar_helmet(true)
-
-func is_helmet_active() -> bool:
-	return is_helmet_equipped
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Milestone 3: The Sun's Henshin Escalation (Phase 2 Awakening)
-# Triggered when the player destroys all orbital eye drones!
-# ─────────────────────────────────────────────────────────────────────────────
-func trigger_convergence_event() -> void:
-	if is_convergence_in_progress():
-		return
-	# Debug key [P]: If drones still active, shatter them in rapid succession
-	if not active_drones.is_empty():
-		var drones_copy = active_drones.duplicate()
-		for d in drones_copy:
-			var node = d.get("node") as Node3D
-			if is_instance_valid(node):
-				_spawn_drone_destruction_fx(node.global_position, false)
-				node.queue_free()
-		active_drones.clear()
-	trigger_henshin_sequence()
-
-func trigger_henshin_sequence() -> void:
-	if is_convergence_active:
-		return
-	is_convergence_active = true
-	current_state = State.CONVERGENCE_CHARGING
-	convergence_triggered.emit()
-
-	# 1. Cinematic Slow-Mo Beat
-	Engine.time_scale = 0.28
-
-	# 2. Audio & Energy Swell
-	if sfx_ice_blast:
-		sfx_ice_blast.pitch_scale = 0.48
-		sfx_ice_blast.play()
+	# 1. SFX: Heavy metallic rupture and shield burst
 	if sfx_shatter_metal:
-		sfx_shatter_metal.pitch_scale = 0.60
+		sfx_shatter_metal.pitch_scale = 0.70
 		sfx_shatter_metal.play()
+	if sfx_shatter_core:
+		sfx_shatter_core.pitch_scale = 1.05
+		sfx_shatter_core.play()
 
+	# 2. Camera trauma shake & Sun shock wince
 	var main = get_tree().current_scene if get_tree() else null
 	if main:
 		if main.has_method("shake"):
-			main.shake(0.35, 0.025)
-		# Sun reaction: wince in shock, then furious charging face & heat scale expansion!
+			main.shake(0.40, 0.038)
 		if main.has_method("on_solar_convergence_sun_powerup"):
 			main.on_solar_convergence_sun_powerup()
 
-	# 3. Equip Planetary Belt & Driver at waist (0.35s delay)
-	# Buckle rushes in from the side, slams waist, then belt ribbons appear!
-	var tw_driver = create_tween()
-	tw_driver.tween_interval(0.35)
-	tw_driver.tween_callback(func():
-		if not is_driver_equipped:
-			materialize_solar_driver(true)
-	)
-
-	# 4. Trigger Helmet Assembly after belt has locked (0.76s delay)
-	# Helmet comes in from the lateral sides and encompasses the Sun!
-	tw_driver.tween_interval(0.76)
-	tw_driver.tween_callback(func():
-		_assemble_kamen_rider_helmet()
-	)
-
-func _assemble_kamen_rider_helmet() -> void:
-	is_helmet_equipped = true
-
-	if not helmet_root or not is_instance_valid(helmet_root):
-		setup_solar_helmet()
-	if not helmet_root:
-		_finish_henshin_event()
-		return
-
-	helmet_root.visible = true
-
-	# Lateral side entry: Left and right helmet halves clamp in from the flanks!
-	if helmet_left:
-		helmet_left.position = Vector3(-18.0, 0.0, 2.5)
-		helmet_left.rotation.y = deg_to_rad(-22.0)
-		helmet_left.scale = Vector3.ONE
-	if helmet_right:
-		helmet_right.position = Vector3(18.0, 0.0, 2.5)
-		helmet_right.rotation.y = deg_to_rad(22.0)
-		helmet_right.scale = Vector3.ONE
-	if helmet_faceplate:
-		helmet_faceplate.position = Vector3(0.0, 0.0, 12.0)
-		helmet_faceplate.scale = Vector3(0.3, 0.3, 0.3)
-
-	# Pre-impact charge swell audio
-	if sfx_ice_blast:
-		sfx_ice_blast.pitch_scale = 1.30
-		sfx_ice_blast.play()
-
-	var tw = create_tween().set_parallel(true)
-
-	# Parallel slam lock-on from lateral sides (0.50s, TRANS_BACK, EASE_OUT)
-	if helmet_left:
-		tw.tween_property(helmet_left, "position", Vector3.ZERO, 0.50).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		tw.tween_property(helmet_left, "rotation:y", 0.0, 0.50).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	if helmet_right:
-		tw.tween_property(helmet_right, "position", Vector3.ZERO, 0.50).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		tw.tween_property(helmet_right, "rotation:y", 0.0, 0.50).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	if helmet_faceplate:
-		tw.tween_property(helmet_faceplate, "position", Vector3.ZERO, 0.46).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		tw.tween_property(helmet_faceplate, "scale", Vector3.ONE, 0.46).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-
-	# On impact: Hydraulic Clamp Lock & Grand Shockwave
-	tw.chain().tween_callback(func():
-		_finish_henshin_event()
-	)
-
-func _finish_henshin_event() -> void:
-	# 1. Lock SFX: Heavy metallic clamp
-	if sfx_shatter_metal:
-		sfx_shatter_metal.pitch_scale = 0.72
-		sfx_shatter_metal.play()
-	if sfx_shatter_core:
-		sfx_shatter_core.pitch_scale = 1.10
-		sfx_shatter_core.play()
-	if sfx_ice_shatter_glass:
-		sfx_ice_shatter_glass.pitch_scale = 0.80
-		sfx_ice_shatter_glass.play()
-
-	# 2. Steam exhausts blast outward!
-	if helmet_steam_left:
-		helmet_steam_left.restart()
-	if helmet_steam_right:
-		helmet_steam_right.restart()
-
-	# 3. Blinding ignition on compound eyes, forehead gem, and Driver buckle
-	if helmet_ruby_mat:
-		helmet_ruby_mat.emission_energy_multiplier = 16.0
-		var r_tw = create_tween()
-		r_tw.tween_property(helmet_ruby_mat, "emission_energy_multiplier", 4.8, 0.65).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-
-	if helmet_gem_mat:
-		helmet_gem_mat.emission_energy_multiplier = 14.0
-		var g_tw = create_tween()
-		g_tw.tween_property(helmet_gem_mat, "emission_energy_multiplier", 3.5, 0.60).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-
+	# 3. Driver Buckle Overload: Sparks erupt, core flares unstable crimson, conduit flickers
 	if driver_shockwave_particles:
-		driver_shockwave_particles.amount = 80
+		driver_shockwave_particles.amount = 70
 		driver_shockwave_particles.restart()
 
 	if driver_core_mat:
+		driver_core_mat.emission = Color(1.0, 0.20, 0.10)
 		driver_core_mat.emission_energy_multiplier = 18.0
 		var c_tw = create_tween()
-		c_tw.tween_property(driver_core_mat, "emission_energy_multiplier", 4.5, 0.65).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		c_tw.tween_property(driver_core_mat, "emission_energy_multiplier", 3.2, 1.4).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 	if driver_conduit_mat:
-		driver_conduit_mat.emission_energy_multiplier = 9.0
-		var b_tw = create_tween()
-		b_tw.tween_property(driver_conduit_mat, "emission_energy_multiplier", 3.2, 0.65).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		var cn_tw = create_tween()
+		cn_tw.tween_property(driver_conduit_mat, "emission_energy_multiplier", 1.0, 0.8).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
-	# 4. Heavy camera trauma shake & Sun state restoration (hiding 2D face for 3D helmet!)
-	var main = get_tree().current_scene if get_tree() else null
-	if main:
-		if main.has_method("shake"):
-			main.shake(0.52, 0.055)
-		if main.has_method("on_solar_convergence_completed"):
-			main.on_solar_convergence_completed()
-
-	# 5. Restore time scale back to 1.0x
-	var t_tw = create_tween()
-	t_tw.tween_property(Engine, "time_scale", 1.0, 0.40).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-
-	current_state = State.OMEGA_SUN
-	is_convergence_active = false
-	convergence_completed.emit()
-
+	# 4. Bilingual HUD Toast
 	if main and main.get("hud") and is_instance_valid(main.hud) and main.hud.has_method("show_toast"):
-		var is_kr = GameState.language == "KR"
-		var title = "오메가 솔라 각성 완료!" if is_kr else "OMEGA SOLAR AWAKENED!"
-		var desc = "가면라이더 솔라 완전 변신" if is_kr else "Kamen Rider Solar Henshin Complete"
-		main.hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1.0, 0.75, 0.15))
+		var gs = get_node_or_null("/root/GameState")
+		var is_kr = (gs.language == "KR") if gs else false
+		var title = "드론 군체 무력화 완료!" if is_kr else "DRONE SWARM NEUTRALIZED!"
+		var desc = "솔라 드라이버 과열 — 태양 직접 냉각 가능!" if is_kr else "Solar Driver Overheated — Sun Vulnerable!"
+		main.hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1.0, 0.80, 0.20))
 
