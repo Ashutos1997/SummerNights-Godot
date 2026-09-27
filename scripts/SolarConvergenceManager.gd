@@ -110,7 +110,7 @@ func start_orbital_swarm(count: int = 6, wave: int = 1) -> void:
 func _create_drone(index: int, total: int, wave: int = 1) -> Dictionary:
 	var drone_root = Node3D.new()
 	drone_root.name = "SolarEyeDrone_%d" % index
-	drone_root.scale = Vector3(1.7, 1.7, 1.7) # Enlarged for clear readability & targeting
+	drone_root.scale = Vector3(2.3, 2.3, 2.3) # Scaled for crisp silhouette readability & arcade presence from beach
 
 	# Instantiate the custom low-poly Tokusatsu Solar Eye Drone model
 	var model_inst = DRONE_SCENE.instantiate() as Node3D
@@ -118,6 +118,7 @@ func _create_drone(index: int, total: int, wave: int = 1) -> Dictionary:
 
 	# Extract materials for dynamic color shifts and hit flashing
 	var casing_mats: Array[StandardMaterial3D] = []
+	var pearl_mats: Array[StandardMaterial3D] = []
 	var pupil_mat: StandardMaterial3D = null
 
 	var mesh_instances = model_inst.find_children("", "MeshInstance3D", true)
@@ -128,11 +129,23 @@ func _create_drone(index: int, total: int, wave: int = 1) -> Dictionary:
 				var orig_mat = mesh_node.get_active_material(s_idx)
 				if orig_mat:
 					var dup_mat = orig_mat.duplicate() as StandardMaterial3D
+					# Apply stylized Summer Nights toon shading and golden sunset rim lighting
+					dup_mat.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
+					dup_mat.specular_mode = BaseMaterial3D.SPECULAR_TOON
+					dup_mat.rim_enabled = true
+					dup_mat.rim = 0.85
+					dup_mat.rim_tint = 0.45
+					dup_mat.rim_color = Color(1.0, 0.88, 0.35)
+					dup_mat.backlight_enabled = true
+					dup_mat.backlight = Color(0.38, 0.28, 0.16)
 					mesh_node.set_surface_override_material(s_idx, dup_mat)
+
 					var m_name = dup_mat.resource_name if dup_mat.resource_name != "" else orig_mat.resource_name
-					if "Gold" in m_name or "Amber" in m_name:
+					if "Gold" in m_name:
 						casing_mats.append(dup_mat)
-					elif "Core" in m_name or "Solar" in m_name or dup_mat.emission_enabled:
+					elif "Pearl" in m_name:
+						pearl_mats.append(dup_mat)
+					elif "Solar" in m_name or "Pupil" in m_name or "Core" in m_name or dup_mat.emission_enabled:
 						if not pupil_mat:
 							pupil_mat = dup_mat
 
@@ -166,6 +179,7 @@ func _create_drone(index: int, total: int, wave: int = 1) -> Dictionary:
 	return {
 		"node": drone_root,
 		"casing_mats": casing_mats,
+		"pearl_mats": pearl_mats,
 		"pupil_mat": pupil_mat,
 		"orbit_speed": orbit_speed,
 		"phase_offset": phase_offset,
@@ -227,11 +241,12 @@ func _process(delta: float) -> void:
 		var hp_pct = clampf(cur_hp / max_hp, 0.0, 1.0)
 		
 		var casing_mats = drone["casing_mats"] as Array[StandardMaterial3D]
+		var pearl_mats = drone.get("pearl_mats", []) as Array[StandardMaterial3D]
 		var pupil_mat = drone["pupil_mat"] as StandardMaterial3D
 
-		# Hit impact recoil recovery back to 1.7
-		if node.scale.x < 1.7:
-			node.scale = node.scale.lerp(Vector3(1.7, 1.7, 1.7), 10.0 * delta)
+		# Hit impact recoil recovery back to 2.3
+		if node.scale.x < 2.3:
+			node.scale = node.scale.lerp(Vector3(2.3, 2.3, 2.3), 10.0 * delta)
 
 		if drone["hit_flash"] > 0.0:
 			drone["hit_flash"] -= delta * 6.0
@@ -239,37 +254,52 @@ func _process(delta: float) -> void:
 			# Electric cyan hit flash
 			for c_mat in casing_mats:
 				if is_instance_valid(c_mat):
-					c_mat.albedo_color = Color(0.98, 0.80, 0.18).lerp(Color(0.5, 0.95, 1.0), f)
+					c_mat.albedo_color = Color(1.0, 0.86, 0.22).lerp(Color(0.5, 0.95, 1.0), f)
+			for p_mat in pearl_mats:
+				if is_instance_valid(p_mat):
+					p_mat.albedo_color = Color(0.97, 0.96, 0.93).lerp(Color(0.5, 0.95, 1.0), f)
 			if pupil_mat and is_instance_valid(pupil_mat):
-				pupil_mat.emission = Color(1.0, 0.45, 0.10).lerp(Color(0.3, 1.0, 1.0), f)
-				pupil_mat.emission_energy_multiplier = 3.2 + (f * 5.0)
+				pupil_mat.emission = Color(1.0, 0.78, 0.18).lerp(Color(0.3, 1.0, 1.0), f)
+				pupil_mat.emission_energy_multiplier = 3.5 + (f * 5.0)
 		else:
-			# Visual damage states: Gold (Healthy) -> Orange (Damaged) -> Smoldering Crimson (Critical)
+			# Visual damage states: Radiant Gold & Pearl (Healthy) -> Molten Solar Orange (Damaged) -> Blazing Crimson (Critical)
 			var base_casing_col: Color
+			var base_pearl_col: Color
 			var base_pupil_col: Color
 			var pulse_speed = 3.2
+			var base_energy = 3.2
 			
 			if hp_pct > 0.60:
-				base_casing_col = Color(0.98, 0.78, 0.16)
-				base_pupil_col = Color(1.0, 0.42, 0.08)
+				base_casing_col = Color(1.0, 0.86, 0.22)
+				base_pearl_col = Color(0.97, 0.96, 0.93)
+				base_pupil_col = Color(1.0, 0.78, 0.18)
 				pulse_speed = 3.2
+				base_energy = 3.2
 			elif hp_pct > 0.30:
-				base_casing_col = Color(1.0, 0.50, 0.10)
-				base_pupil_col = Color(1.0, 0.25, 0.05)
+				base_casing_col = Color(1.0, 0.58, 0.14)
+				base_pearl_col = Color(1.0, 0.82, 0.65)
+				base_pupil_col = Color(1.0, 0.38, 0.08)
 				pulse_speed = 6.0
+				base_energy = 4.2
 			else:
-				base_casing_col = Color(0.95, 0.20, 0.12)
-				base_pupil_col = Color(1.0, 0.10, 0.05)
+				base_casing_col = Color(0.98, 0.22, 0.12)
+				base_pearl_col = Color(1.0, 0.45, 0.35)
+				base_pupil_col = Color(1.0, 0.18, 0.08)
 				pulse_speed = 10.0
+				base_energy = 5.5
 
 			for c_mat in casing_mats:
 				if is_instance_valid(c_mat):
 					c_mat.albedo_color = base_casing_col
 
+			for p_mat in pearl_mats:
+				if is_instance_valid(p_mat):
+					p_mat.albedo_color = base_pearl_col
+
 			if pupil_mat and is_instance_valid(pupil_mat):
 				pupil_mat.emission = base_pupil_col
 				var pulse = 0.5 + 0.5 * sin(orbit_time * pulse_speed + drone["phase_offset"])
-				pupil_mat.emission_energy_multiplier = 2.6 + (pulse * 1.8)
+				pupil_mat.emission_energy_multiplier = base_energy + (pulse * 2.0)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Water Stream Interception (Absorbs damage, shields Sun behind it)
@@ -295,8 +325,8 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 			var pt_on_ray = ray_origin + ray_normal * proj_t
 			var dist = drone_pos.distance_to(pt_on_ray)
 			
-			# Interception radius: 1.85m matching 1.7x scaled drone dimensions
-			if dist < 1.85 and dist < min_dist_to_ray:
+			# Interception radius: 2.4m matching 2.3x scaled drone dimensions
+			if dist < 2.4 and dist < min_dist_to_ray:
 				min_dist_to_ray = dist
 				closest_drone = drone
 				hit_world_pt = pt_on_ray
@@ -312,7 +342,7 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 
 	var d_node = closest_drone["node"] as Node3D
 	# Visual mechanical recoil kick on impact
-	d_node.scale = Vector3(1.45, 1.45, 1.45)
+	d_node.scale = Vector3(2.0, 2.0, 2.0)
 
 	# Play dynamic, randomized CC0 metal impact tick
 	if hit_sfx_cooldown <= 0.0 and not hit_players.is_empty() and not hit_streams.is_empty():
