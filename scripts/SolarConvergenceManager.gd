@@ -75,7 +75,7 @@ func start_orbital_swarm(count: int = 6) -> void:
 func _create_drone(index: int, total: int) -> Dictionary:
 	var drone_root = Node3D.new()
 	drone_root.name = "SolarEyeDrone_%d" % index
-	drone_root.scale = Vector3(0.55, 0.55, 0.55) # Compact, sleek arcade proportion
+	drone_root.scale = Vector3(1.2, 1.2, 1.2) # Perfectly proportioned against 15.6m Sun
 
 	# Instantiate the custom low-poly Tokusatsu Solar Eye Drone model
 	var model_inst = DRONE_SCENE.instantiate() as Node3D
@@ -102,15 +102,14 @@ func _create_drone(index: int, total: int) -> Dictionary:
 							pupil_mat = dup_mat
 
 	# Dynamic Coronal Orbit Geometry: Fast, sweeping circular rotation around the Sun
+	# Sun radius is 7.8m (15.6m diameter), so radii must be 9.2m - 10.8m to orbit around perimeter
 	var angle_fraction = float(index) / float(total)
-	# Fast, agile rotation speed: 2.2 to 2.8 rad/s alternating clockwise/counter-clockwise
-	var orbit_speed = (2.2 + (index * 0.12)) * (1.0 if index % 2 == 0 else -1.0)
+	var orbit_speed = (1.8 + (index * 0.12)) * (1.0 if index % 2 == 0 else -1.0)
 	var phase_offset = angle_fraction * TAU
 
-	# Orbital radii closely circling the Sun's coronal perimeter (Sun radius is ~3.5)
-	var rx = 5.2 + (index % 3) * 0.6
-	var ry = 4.2 + (index % 2) * 0.6
-	var rz = 1.2 + (index % 3) * 0.4
+	var rx = 9.2 + (index % 3) * 0.8
+	var ry = 8.2 + (index % 2) * 0.8
+	var rz = 2.5 + (index % 3) * 0.6 # Positioned in front of the Sun along Z
 
 	# Ensure sun_node is resolved before positioning
 	if not sun_node or not is_instance_valid(sun_node):
@@ -123,7 +122,7 @@ func _create_drone(index: int, total: int) -> Dictionary:
 	drone_root.global_position = sun_pos + Vector3(
 		cos(init_t) * rx,
 		sin(init_t) * ry,
-		sin(init_t * 1.8 + index) * rz
+		rz + sin(init_t * 2.0 + index) * 0.6
 	)
 
 	return {
@@ -169,12 +168,12 @@ func _process(delta: float) -> void:
 		if not is_instance_valid(node):
 			continue
 
-		# 1. Fast Sweeping Coronal Orbit around Sun's center
+		# 1. Fast Sweeping Coronal Orbit around Sun's perimeter
 		var t = (orbit_time * drone["orbit_speed"]) + drone["phase_offset"]
 		var local_p = Vector3(
 			cos(t) * drone["radius_x"],
 			sin(t) * drone["radius_y"],
-			sin(t * 1.8 + drone["index"]) * drone["radius_z"]
+			drone["radius_z"] + sin(t * 2.0 + drone["index"]) * 0.6
 		)
 
 		var world_pos = sun_pos + local_p
@@ -191,9 +190,9 @@ func _process(delta: float) -> void:
 		var casing_mats = drone["casing_mats"] as Array[StandardMaterial3D]
 		var pupil_mat = drone["pupil_mat"] as StandardMaterial3D
 
-		# Hit impact recoil recovery back to 0.55
-		if node.scale.x < 0.55:
-			node.scale = node.scale.lerp(Vector3(0.55, 0.55, 0.55), 10.0 * delta)
+		# Hit impact recoil recovery back to 1.2
+		if node.scale.x < 1.2:
+			node.scale = node.scale.lerp(Vector3(1.2, 1.2, 1.2), 10.0 * delta)
 
 		if drone["hit_flash"] > 0.0:
 			drone["hit_flash"] -= delta * 6.0
@@ -257,8 +256,8 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 			var pt_on_ray = ray_origin + ray_normal * proj_t
 			var dist = drone_pos.distance_to(pt_on_ray)
 			
-			# Interception radius: 0.85m matching 0.55x scaled drone dimensions
-			if dist < 0.85 and dist < min_dist_to_ray:
+			# Interception radius: 1.35m matching 1.2x scaled drone dimensions
+			if dist < 1.35 and dist < min_dist_to_ray:
 				min_dist_to_ray = dist
 				closest_drone = drone
 				hit_world_pt = pt_on_ray
@@ -274,7 +273,7 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 
 	var d_node = closest_drone["node"] as Node3D
 	# Visual mechanical recoil kick on impact
-	d_node.scale = Vector3(0.48, 0.48, 0.48)
+	d_node.scale = Vector3(1.0, 1.0, 1.0)
 
 	# Play metal deflection sound occasionally
 	if sfx_deflect and not sfx_deflect.playing and randf() < 0.3:
