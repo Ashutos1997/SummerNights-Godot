@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
 """
-build_solar_eye_drone.py - Generates an authentic, high-detail, low-poly
-Solar Eye Drone ("Helios Drone / Audience Glare") 3D model in GLB format.
+build_solar_eye_drone.py - Generates the Solar Sunburst Sentinel 3D model in GLB format.
 
-Upgraded Enhancements:
-- 8 Segmented Armor Plates with recessed expansion joints and glowing cyan conduits.
-- Tiered Falcon Wing Plumes (Triple Swept Feathers) with Shinto crimson inlays and cyan plasma vents.
-- Aggressive Lower Cybernetic Predator Mandibles ("Sun-Fangs") framing the lower eye.
-- 8-Point Omni-Directional Vernier Thruster System (4 Cardinal + 4 Diagonal Pods).
-- 4 Inward-Facing Laser Collimator Needle Pins at 45° diagonal corners.
-- Multi-tier Concentric Iris Reticle with Core Focal Lens and Protective Optical Glass.
-- Rear High-Output Propulsion Vectoring Bell with 8 Radial Radiator Cooling Fins.
+A celestial mini-sun disc with radiating faceted low-poly solar corona flares,
+an obsidian gimbal core, and a glowing solar pupil that visually matches the
+boss Sun's iconic silhouette, retro PS1 low-poly aesthetic, and Tokusatsu flair.
+
+Key Features:
+- Radiant 16-Ray Solar Sunburst Corona:
+  * Imperial Top Sun-Crown (Zenith Flare Spikes)
+  * Symmetrical Lateral Solar Corona Flare Blades with crimson inlays & cyan plasma vents
+  * Interleaved Diamond Corona Teeth completing the radiant sun-disc silhouette
+- Lower Cybernetic Predator Mandibles ("Sun-Fangs") framing the bottom visor
+- Central Multi-Tier Obsidian Gimbal Housing & 8-Blade Titanium Iris Shutter
+- Radiant Convex Solar Core Pupil Lens (Intense Emissive Amber-Crimson) with Concentric Reticle
+- 4 Inward Laser Collimator Needle Pins with glowing cyan focus tips
+- Rear High-Output Propulsion Vectoring Bell with 8 Radial Radiator Cooling Fins
 """
 
 import os
@@ -312,7 +317,7 @@ class GLBBuilder:
 
     def export(self, filepath):
         gltf = {
-            "asset": {"version": "2.0", "generator": "SummerNights Enhanced Solar Drone Synthesizer"},
+            "asset": {"version": "2.0", "generator": "SummerNights Solar Sunburst Sentinel Synthesizer"},
             "scene": 0,
             "scenes": [{"name": "DefaultScene", "nodes": [len(self.nodes) - 1]}],
             "nodes": self.nodes,
@@ -347,148 +352,129 @@ class GLBBuilder:
         print(f"Exported clean GLB: {filepath} ({total_len} bytes)")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Procedural Model Assembly
+# Procedural Model Assembly: Solar Sunburst Sentinel
 # ─────────────────────────────────────────────────────────────────────────────
 def build_solar_eye_drone_model(output_path):
     builder = GLBBuilder()
 
-    # Materials
+    # Stylized Palette tailored to the Sun's visual identity & Tokusatsu aesthetic
     m_gold    = builder.add_material("Mat_CyberGold", [0.98, 0.78, 0.16, 1.0], metallic=0.88, roughness=0.18)
-    m_dark    = builder.add_material("Mat_DarkCharcoal", [0.09, 0.10, 0.13, 1.0], metallic=0.80, roughness=0.25)
+    m_amber   = builder.add_material("Mat_SolarAmber", [1.0, 0.58, 0.08, 1.0], metallic=0.75, roughness=0.22)
+    m_dark    = builder.add_material("Mat_DarkCharcoal", [0.08, 0.09, 0.12, 1.0], metallic=0.85, roughness=0.25)
     m_crimson = builder.add_material("Mat_Crimson", [0.92, 0.08, 0.14, 1.0], metallic=0.30, roughness=0.20)
     m_steel   = builder.add_material("Mat_KatanaSteel", [0.86, 0.88, 0.92, 1.0], metallic=0.95, roughness=0.15)
-    m_solar   = builder.add_material("Mat_SolarCore", [1.0, 0.44, 0.08, 1.0], metallic=0.10, roughness=0.08, emissive_rgb=[1.2, 0.50, 0.10])
-    m_cyan    = builder.add_material("Mat_CyanEnergy", [0.22, 0.94, 1.0, 1.0], metallic=0.15, roughness=0.10, emissive_rgb=[0.9, 1.6, 2.0])
-    m_glass   = builder.add_material("Mat_LensGlass", [0.95, 0.82, 0.28, 0.35], metallic=0.10, roughness=0.05, alpha_mode="BLEND")
+    m_solar   = builder.add_material("Mat_SolarCore", [1.0, 0.40, 0.04, 1.0], metallic=0.10, roughness=0.08, emissive_rgb=[2.2, 0.80, 0.15])
+    m_cyan    = builder.add_material("Mat_CyanEnergy", [0.22, 0.94, 1.0, 1.0], metallic=0.15, roughness=0.10, emissive_rgb=[0.8, 1.6, 2.2])
+    m_glass   = builder.add_material("Mat_LensGlass", [1.0, 0.84, 0.28, 0.32], metallic=0.10, roughness=0.05, alpha_mode="BLEND")
 
-    mesh_body = builder.create_mesh("Mesh_SolarEyeDrone")
+    mesh_body = builder.create_mesh("Mesh_SolarSunburstSentinel")
 
     # 1. Inner Obsidian Chassis Ring
     v, n, idx = create_tapered_cylinder(0.0, 0.0, z0=-0.14, z1=0.14, r0=0.48, r1=0.52, sides=16, caps=False)
     builder.add_mesh_primitive(mesh_body, m_dark, v, n, idx)
 
-    # 2. Eight Segmented Beveled Cyber-Gold Armor Plates (with recessed expansion joints)
-    # Each plate spans (tau / 8) minus a gap angle, creating sharp panel separation
+    # 2. Eight Segmented Beveled Cyber-Gold Mirror Plates (with recessed expansion joints)
     gap_rad = 0.065
     for i in range(8):
         ang_mid = (i / 8.0) * math.tau
         a0 = ang_mid - (math.pi / 8.0) + gap_rad
         a1 = ang_mid + (math.pi / 8.0) - gap_rad
         
-        # Plate 2D polygon with beveled outer corners
         r_in = 0.49
-        r_out = 0.70
+        r_out = 0.68
         pts_plate = [
             [math.cos(a0) * r_in, math.sin(a0) * r_in],
             [math.cos(a0) * r_out, math.sin(a0) * r_out],
-            [math.cos(ang_mid) * (r_out + 0.03), math.sin(ang_mid) * (r_out + 0.03)],
+            [math.cos(ang_mid) * (r_out + 0.04), math.sin(ang_mid) * (r_out + 0.04)],
             [math.cos(a1) * r_out, math.sin(a1) * r_out],
             [math.cos(a1) * r_in, math.sin(a1) * r_in]
         ]
-        v, n, idx = create_extrusion(pts_plate, z0=-0.14, z1=0.14, caps=True)
+        v, n, idx = create_extrusion(pts_plate, z0=-0.13, z1=0.13, caps=True)
         builder.add_mesh_primitive(mesh_body, m_gold, v, n, idx)
 
         # Recessed thermal expansion joint with glowing cyan conduit pill
         joint_ang = ang_mid + (math.pi / 8.0)
-        jx = math.cos(joint_ang) * 0.61
-        jy = math.sin(joint_ang) * 0.61
-        v, n, idx = create_cylinder(jx, jy, z0=-0.145, z1=-0.11, radius=0.024, sides=8)
+        jx = math.cos(joint_ang) * 0.60
+        jy = math.sin(joint_ang) * 0.60
+        v, n, idx = create_cylinder(jx, jy, z0=-0.14, z1=-0.11, radius=0.024, sides=8)
         builder.add_mesh_primitive(mesh_body, m_cyan, v, n, idx)
 
     # Chamfered Front Bezel Lip on Armor Ring
-    v, n, idx = create_tapered_cylinder(0.0, 0.0, z0=-0.14, z1=-0.21, r0=0.69, r1=0.63, sides=16, caps=False)
+    v, n, idx = create_tapered_cylinder(0.0, 0.0, z0=-0.13, z1=-0.21, r0=0.67, r1=0.62, sides=16, caps=False)
     builder.add_mesh_primitive(mesh_body, m_gold, v, n, idx)
 
-    # 3. Eight-Point Omni-Directional Vernier System (4 Cardinal + 4 Diagonal)
-    # Cardinal Verniers (Heavy Duty)
-    cardinal_pos = [(0.0, 0.76, 0.0), (0.0, -0.76, 0.0), (-0.76, 0.0, 0.0), (0.76, 0.0, 0.0)]
-    for vx, vy, vz in cardinal_pos:
-        v, n, idx = create_chamfered_box(vx, vy, width=0.19, height=0.15, z0=-0.12, z1=0.12, chamfer=0.03)
-        builder.add_mesh_primitive(mesh_body, m_dark, v, n, idx)
-        v, n, idx = create_cylinder(vx, vy, z0=0.12, z1=0.18, radius=0.055, sides=12)
-        builder.add_mesh_primitive(mesh_body, m_steel, v, n, idx)
-        v, n, idx = create_chamfered_box(vx, vy, width=0.13, height=0.045, z0=-0.13, z1=-0.11, chamfer=0.01)
-        builder.add_mesh_primitive(mesh_body, m_cyan, v, n, idx)
+    # 3. Radiant 16-Ray Solar Sunburst Corona System
+    # Helper to generate a faceted 2D ray profile oriented along angle theta
+    def get_solar_ray_pts(theta, r_base, r_mid, r_tip, w_base, w_mid, w_tip=0.01):
+        ct = math.cos(theta)
+        st = math.sin(theta)
+        # Tangent vector perpendicular to ray
+        tx = -st
+        ty = ct
+        
+        p_bl = [ct * r_base - tx * (w_base * 0.5), st * r_base - ty * (w_base * 0.5)]
+        p_br = [ct * r_base + tx * (w_base * 0.5), st * r_base + ty * (w_base * 0.5)]
+        p_mr = [ct * r_mid  + tx * (w_mid * 0.5),  st * r_mid  + ty * (w_mid * 0.5)]
+        p_tip = [ct * r_tip, st * r_tip]
+        p_ml = [ct * r_mid  - tx * (w_mid * 0.5),  st * r_mid  - ty * (w_mid * 0.5)]
+        
+        return [p_bl, p_br, p_mr, p_tip, p_ml]
 
-    # Diagonal Auxiliary Micro-Verniers (Agility Roll Pods)
-    diag_dist = 0.71
-    diag_pos = [
-        (-diag_dist * 0.707, diag_dist * 0.707),
-        (diag_dist * 0.707, diag_dist * 0.707),
-        (-diag_dist * 0.707, -diag_dist * 0.707),
-        (diag_dist * 0.707, -diag_dist * 0.707)
+    # A) 8 Primary Major Solar Flare Rays
+    # Distributed symmetrically: Zenith (Top), Cardinal, and Diagonals
+    # (Top crown is slightly lengthened to give an imperial sun-crest silhouette)
+    major_angles = [
+        math.pi * 0.5,          # 90°  Zenith Crown
+        math.pi * 0.25,         # 45°  Up-Right
+        0.0,                    # 0°   Right
+        -math.pi * 0.25,        # -45° Down-Right
+        -math.pi * 0.5,         # -90° Nadir Keel
+        -math.pi * 0.75,        # -135° Down-Left
+        math.pi,                # 180° Left
+        math.pi * 0.75          # 135° Up-Left
     ]
-    for dx, dy in diag_pos:
-        v, n, idx = create_cylinder(dx, dy, z0=-0.10, z1=0.10, radius=0.05, sides=8)
-        builder.add_mesh_primitive(mesh_body, m_dark, v, n, idx)
-        v, n, idx = create_cylinder(dx, dy, z0=0.10, z1=0.15, radius=0.035, sides=8)
-        builder.add_mesh_primitive(mesh_body, m_cyan, v, n, idx)
 
-    # 4. Tiered Falcon Wing Plumes (Triple Swept Feathers per side)
-    for sign_x in [-1.0, 1.0]:
-        # --- Feather 1: Upper Primary Glare Blade (Longest, most aggressive) ---
-        f1_base_x = sign_x * 0.44
-        f1_tip_x  = sign_x * 0.98
-        f1_pts = [
-            [f1_base_x, 0.36],
-            [f1_base_x + sign_x * 0.14, 0.70],
-            [f1_tip_x, 0.96],
-            [f1_tip_x - sign_x * 0.16, 0.68],
-            [f1_base_x - sign_x * 0.04, 0.30]
-        ]
-        v, n, idx = create_extrusion(f1_pts, z0=-0.08, z1=0.08, caps=True)
+    for ang in major_angles:
+        is_zenith = abs(ang - math.pi * 0.5) < 1e-4
+        r_tip = 1.15 if is_zenith else (1.06 if abs(ang) < 0.1 or abs(ang - math.pi) < 0.1 else 0.98)
+        r_mid = 0.82
+        r_base = 0.64
+        
+        w_b = 0.20 if is_zenith else 0.17
+        w_m = 0.14 if is_zenith else 0.12
+        
+        # Outer Armored Ray (Cyber-Gold)
+        ray_pts = get_solar_ray_pts(ang, r_base, r_mid, r_tip, w_b, w_m, w_tip=0.005)
+        v, n, idx = create_extrusion(ray_pts, z0=-0.08, z1=0.08, caps=True)
         builder.add_mesh_primitive(mesh_body, m_gold, v, n, idx)
 
-        # Crimson Inlay Ridge on Primary Blade
-        f1_inlay = [
-            [f1_base_x + sign_x * 0.05, 0.42],
-            [f1_base_x + sign_x * 0.12, 0.67],
-            [f1_tip_x - sign_x * 0.07, 0.90],
-            [f1_tip_x - sign_x * 0.18, 0.70],
-            [f1_base_x + sign_x * 0.01, 0.36]
-        ]
-        v, n, idx = create_extrusion(f1_inlay, z0=-0.09, z1=-0.05, caps=True)
+        # Solar Crimson Center Flame Inlay
+        inlay_pts = get_solar_ray_pts(ang, r_base + 0.03, r_mid - 0.02, r_tip - 0.06, w_b * 0.55, w_m * 0.50, w_tip=0.003)
+        v, n, idx = create_extrusion(inlay_pts, z0=-0.09, z1=-0.05, caps=True)
         builder.add_mesh_primitive(mesh_body, m_crimson, v, n, idx)
 
-        # Cyan Plasma Vent Line on Trailing Edge
-        f1_vent = [
-            [f1_tip_x - sign_x * 0.09, 0.88],
-            [f1_tip_x - sign_x * 0.05, 0.92],
-            [f1_tip_x - sign_x * 0.14, 0.72],
-            [f1_tip_x - sign_x * 0.18, 0.71]
-        ]
-        v, n, idx = create_extrusion(f1_vent, z0=-0.085, z1=-0.065, caps=True)
+        # Cyan Thermal Vent Notch on Ray Spines
+        vent_cx = math.cos(ang) * (r_mid + 0.05)
+        vent_cy = math.sin(ang) * (r_mid + 0.05)
+        v, n, idx = create_cylinder(vent_cx, vent_cy, z0=-0.095, z1=-0.075, radius=0.022, sides=8)
         builder.add_mesh_primitive(mesh_body, m_cyan, v, n, idx)
 
-        # --- Feather 2: Mid Secondary Feather (Mid-tier wing) ---
-        f2_base_x = sign_x * 0.48
-        f2_tip_x  = sign_x * 0.88
-        f2_pts = [
-            [f2_base_x, 0.22],
-            [f2_base_x + sign_x * 0.16, 0.50],
-            [f2_tip_x, 0.66],
-            [f2_tip_x - sign_x * 0.14, 0.45],
-            [f2_base_x - sign_x * 0.02, 0.16]
-        ]
-        v, n, idx = create_extrusion(f2_pts, z0=-0.06, z1=0.06, caps=True)
-        builder.add_mesh_primitive(mesh_body, m_gold, v, n, idx)
+    # B) 8 Secondary Interleaved Diamond Corona Teeth (completing the 16-ray sunburst)
+    inter_angles = [a + (math.pi / 8.0) for a in major_angles]
+    for ang in inter_angles:
+        # Avoid clashing directly into the bottom fangs
+        if abs(ang - (-math.pi * 0.5)) < 0.35:
+            continue
+            
+        r_tip = 0.84
+        r_mid = 0.73
+        r_base = 0.65
+        diamond_pts = get_solar_ray_pts(ang, r_base, r_mid, r_tip, w_base=0.12, w_mid=0.10, w_tip=0.003)
+        v, n, idx = create_extrusion(diamond_pts, z0=-0.06, z1=0.06, caps=True)
+        builder.add_mesh_primitive(mesh_body, m_amber, v, n, idx)
 
-        # --- Feather 3: Lower Tertiary Feather ---
-        f3_base_x = sign_x * 0.52
-        f3_tip_x  = sign_x * 0.76
-        f3_pts = [
-            [f3_base_x, 0.08],
-            [f3_base_x + sign_x * 0.12, 0.32],
-            [f3_tip_x, 0.42],
-            [f3_tip_x - sign_x * 0.12, 0.24],
-            [f3_base_x, 0.04]
-        ]
-        v, n, idx = create_extrusion(f3_pts, z0=-0.05, z1=0.05, caps=True)
-        builder.add_mesh_primitive(mesh_body, m_gold, v, n, idx)
-
-    # 5. Aggressive Lower Cybernetic Predator Mandibles ("Sun-Fangs")
+    # 4. Lower Cybernetic Predator Mandibles ("Sun-Fangs")
     for sign_x in [-1.0, 1.0]:
-        # Pincer mandible curving downward and inward
         fang_pts = [
             [sign_x * 0.48, -0.25],
             [sign_x * 0.72, -0.52],
@@ -517,7 +503,7 @@ def build_solar_eye_drone_model(output_path):
         v, n, idx = create_cylinder(sign_x * 0.44, -0.28, z0=-0.10, z1=0.10, radius=0.065, sides=12)
         builder.add_mesh_primitive(mesh_body, m_dark, v, n, idx)
 
-    # 6. Internal Multi-Tier Gimbal Eyeball Housing (Dark Obsidian Gunmetal)
+    # 5. Internal Multi-Tier Gimbal Eyeball Housing (Dark Obsidian Gunmetal)
     v, n, idx = create_convex_lens_dome(0.0, 0.0, z_base=0.16, z_tip=-0.22, radius=0.46, rings=6, sides=16)
     builder.add_mesh_primitive(mesh_body, m_dark, v, n, idx)
     v, n, idx = create_convex_lens_dome(0.0, 0.0, z_base=0.16, z_tip=0.28, radius=0.46, rings=6, sides=16)
@@ -530,7 +516,7 @@ def build_solar_eye_drone_model(output_path):
         v, n, idx = create_cylinder(sign_x * 0.44, 0.0, z0=-0.07, z1=-0.06, radius=0.05, sides=8)
         builder.add_mesh_primitive(mesh_body, m_cyan, v, n, idx)
 
-    # 7. Stepped Concentric Ocular Aperture Rings (Front -Z)
+    # 6. Stepped Concentric Ocular Aperture Rings (Front -Z)
     v, n, idx = create_tapered_cylinder(0.0, 0.0, z0=-0.20, z1=-0.28, r0=0.38, r1=0.32, sides=16, caps=False)
     builder.add_mesh_primitive(mesh_body, m_gold, v, n, idx)
 
@@ -546,13 +532,12 @@ def build_solar_eye_drone_model(output_path):
         v, n, idx = create_extrusion(blade_pts, z0=-0.27, z1=-0.29, caps=True)
         builder.add_mesh_primitive(mesh_body, m_steel, v, n, idx)
 
-    # 8. Four Inward Laser Collimator Needle Pins (at 45° diagonal corners)
+    # 7. Four Inward Laser Collimator Needle Pins (at 45° diagonal corners)
     for c_idx in range(4):
         c_ang = (c_idx / 4.0) * math.tau + (math.pi / 4.0)
         c_cos = math.cos(c_ang)
         c_sin = math.sin(c_ang)
         
-        # Needle body extending from r=0.34 to r=0.22
         n_pts = [
             [c_cos * 0.34 - c_sin * 0.022, c_sin * 0.34 + c_cos * 0.022],
             [c_cos * 0.34 + c_sin * 0.022, c_sin * 0.34 - c_cos * 0.022],
@@ -568,7 +553,7 @@ def build_solar_eye_drone_model(output_path):
         v, n, idx = create_cylinder(tip_x, tip_y, z0=-0.325, z1=-0.305, radius=0.016, sides=8)
         builder.add_mesh_primitive(mesh_body, m_cyan, v, n, idx)
 
-    # 9. Concentric Multi-Ring Target Reticle & Solar Pupil Lens
+    # 8. Concentric Multi-Ring Target Reticle & Solar Pupil Lens
     # Inner gold target ring
     v, n, idx = create_tapered_cylinder(0.0, 0.0, z0=-0.28, z1=-0.33, r0=0.23, r1=0.21, sides=16, caps=False)
     builder.add_mesh_primitive(mesh_body, m_gold, v, n, idx)
@@ -585,7 +570,7 @@ def build_solar_eye_drone_model(output_path):
     v, n, idx = create_convex_lens_dome(0.0, 0.0, z_base=-0.24, z_tip=-0.40, radius=0.23, rings=6, sides=16)
     builder.add_mesh_primitive(mesh_body, m_glass, v, n, idx)
 
-    # 10. Rear High-Output Propulsion Vectoring Bell & Radiator Fins (+Z)
+    # 9. Rear High-Output Propulsion Vectoring Bell & Radiator Fins (+Z)
     # Outer exhaust bell
     v, n, idx = create_tapered_cylinder(0.0, 0.0, z0=0.18, z1=0.36, r0=0.32, r1=0.20, sides=16, caps=False)
     builder.add_mesh_primitive(mesh_body, m_dark, v, n, idx)
@@ -615,7 +600,7 @@ def build_solar_eye_drone_model(output_path):
         builder.add_mesh_primitive(mesh_body, m_steel, v, n, idx)
 
     # Build Scene Node
-    node_body = builder.add_node("SolarEyeDrone", mesh_idx=mesh_body)
+    node_body = builder.add_node("SolarSunburstSentinel", mesh_idx=mesh_body)
 
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     builder.export(output_path)

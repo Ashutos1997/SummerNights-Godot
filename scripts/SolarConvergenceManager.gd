@@ -130,9 +130,9 @@ func _create_drone(index: int, total: int, wave: int = 1) -> Dictionary:
 					var dup_mat = orig_mat.duplicate() as StandardMaterial3D
 					mesh_node.set_surface_override_material(s_idx, dup_mat)
 					var m_name = dup_mat.resource_name if dup_mat.resource_name != "" else orig_mat.resource_name
-					if "Gold" in m_name:
+					if "Gold" in m_name or "Amber" in m_name:
 						casing_mats.append(dup_mat)
-					elif "Solar" in m_name or "Core" in m_name or dup_mat.emission_enabled:
+					elif "Core" in m_name or "Solar" in m_name or dup_mat.emission_enabled:
 						if not pupil_mat:
 							pupil_mat = dup_mat
 
