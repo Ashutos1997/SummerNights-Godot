@@ -112,6 +112,20 @@ func _create_drone(index: int, total: int) -> Dictionary:
 	var ry = 4.2 + (index % 2) * 0.6
 	var rz = 1.2 + (index % 3) * 0.4
 
+	# Ensure sun_node is resolved before positioning
+	if not sun_node or not is_instance_valid(sun_node):
+		var main = get_tree().current_scene if get_tree() else null
+		if main and main.get("sun") and is_instance_valid(main.sun):
+			sun_node = main.sun
+
+	var sun_pos = sun_node.global_position if (sun_node and is_instance_valid(sun_node)) else Vector3(0, 10.5, -42)
+	var init_t = phase_offset
+	drone_root.global_position = sun_pos + Vector3(
+		cos(init_t) * rx,
+		sin(init_t) * ry,
+		sin(init_t * 1.8 + index) * rz
+	)
+
 	return {
 		"node": drone_root,
 		"casing_mats": casing_mats,
@@ -133,8 +147,18 @@ func _create_drone(index: int, total: int) -> Dictionary:
 func _process(delta: float) -> void:
 	if current_state != State.ORBITAL_SWARM:
 		return
+
 	if not sun_node or not is_instance_valid(sun_node):
-		return
+		var main = get_tree().current_scene if get_tree() else null
+		if main and main.get("sun") and is_instance_valid(main.sun):
+			sun_node = main.sun
+		elif get_parent() and get_parent().get("sun") and is_instance_valid(get_parent().sun):
+			sun_node = get_parent().sun
+		else:
+			return
+
+	if not camera_node or not is_instance_valid(camera_node):
+		camera_node = get_viewport().get_camera_3d()
 
 	orbit_time += delta
 	var sun_pos = sun_node.global_position

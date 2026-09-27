@@ -1364,7 +1364,6 @@ func _build_scene() -> void:
 	solar_convergence_mgr = SolarConvergenceManagerScript.new()
 	solar_convergence_mgr.name = "SolarConvergenceManager"
 	add_child(solar_convergence_mgr)
-	solar_convergence_mgr.setup(sun, camera)
 	solar_convergence_mgr.drone_destroyed.connect(_on_solar_drone_destroyed)
 	solar_convergence_mgr.drone_shattered_by_ice.connect(_on_solar_drone_ice_shattered)
 	
@@ -1500,6 +1499,9 @@ func _build_scene() -> void:
 	sun.add_child(sun_model_instance)
 	sun_model_instance.scale = Vector3(0.32, 0.32, 0.32) # Increased Sun size by ~25%
 	sun_mesh = _setup_sun_mesh_and_material(sun_model_instance)
+	
+	if solar_convergence_mgr:
+		solar_convergence_mgr.setup(sun, camera)
 	
 	# Ray material (transparency-enabled for dynamic heat fading)
 	sun_ray_mat = StandardMaterial3D.new()
