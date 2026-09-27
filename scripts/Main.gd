@@ -4613,6 +4613,22 @@ func trigger_solar_convergence() -> void:
 		return
 	solar_convergence_mgr.trigger_convergence_event()
 
+func on_solar_convergence_sun_powerup() -> void:
+	if is_instance_valid(sun_face) and face_textures.has("charging"):
+		sun_face.texture = face_textures["charging"]
+	sun_face_shake = 0.55
+	if is_instance_valid(sun):
+		var tw = create_tween()
+		tw.tween_property(sun, "scale", Vector3(1.18, 1.18, 1.18), 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+func on_solar_convergence_completed() -> void:
+	if is_instance_valid(sun_face) and face_textures.has("angry"):
+		sun_face.texture = face_textures["angry"]
+	sun_face_shake = 0.0
+	if is_instance_valid(sun):
+		var tw = create_tween()
+		tw.tween_property(sun, "scale", Vector3.ONE, 0.40).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
 func _on_solar_drone_destroyed(pos: Vector3) -> void:
 	GameState.add_score(250)
 	shake(0.2, 0.03)

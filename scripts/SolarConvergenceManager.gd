@@ -44,6 +44,19 @@ var is_convergence_active: bool = false
 var docked_drone_count: int = 0
 var driver_anim_time: float = 0.0
 
+# ── Kamen Rider Apex Helmet (Milestone 3 Expansion) ─────────────────────────
+var helmet_root: Node3D = null
+var helmet_crown: Node3D = null
+var helmet_brow: Node3D = null
+var helmet_left_cheek: Node3D = null
+var helmet_right_cheek: Node3D = null
+var helmet_visor: Node3D = null
+var helmet_steam_left: CPUParticles3D = null
+var helmet_steam_right: CPUParticles3D = null
+var helmet_gem_mat: StandardMaterial3D = null
+var helmet_visor_mat: StandardMaterial3D = null
+var is_helmet_equipped: bool = false
+
 const DRONE_SCENE = preload("res://assets/models/solar_eye_drone.glb")
 
 # Audio references (Open-Source CC0 Drone SFX by rubberduck / OpenGameArt)
@@ -65,6 +78,7 @@ func setup(sun: Node3D, cam: Camera3D) -> void:
 	sun_node = sun
 	camera_node = cam
 	setup_solar_driver()
+	setup_solar_helmet()
 
 func _init_audio() -> void:
 	# 4 variations of CC0 metal impact recordings
@@ -375,7 +389,16 @@ func _process(delta: float) -> void:
 			var conduit_pulse = 0.5 + 0.5 * sin(driver_anim_time * 2.8)
 			driver_conduit_mat.emission_energy_multiplier = 2.6 + conduit_pulse * 0.9
 
-	if current_state != State.ORBITAL_SWARM:
+	# Animate Helmet Gem and Visor LEDs
+	if is_helmet_equipped:
+		if helmet_gem_mat and is_instance_valid(helmet_gem_mat):
+			var gem_pulse = 0.5 + 0.5 * sin(driver_anim_time * 4.0)
+			helmet_gem_mat.emission_energy_multiplier = 3.2 + gem_pulse * 1.6
+		if helmet_visor_mat and is_instance_valid(helmet_visor_mat):
+			var visor_pulse = 0.5 + 0.5 * sin(driver_anim_time * 3.2)
+			helmet_visor_mat.emission_energy_multiplier = 3.5 + visor_pulse * 1.5
+
+	if current_state != State.ORBITAL_SWARM and current_state != State.CONVERGENCE_CHARGING:
 		return
 
 	if not sun_node or not is_instance_valid(sun_node):
@@ -399,6 +422,12 @@ func _process(delta: float) -> void:
 		var node = drone["node"] as Node3D
 		if not is_instance_valid(node):
 			continue
+
+		# If convergence vortex is active, smoothly pull into high-speed equatorial ring
+		if drone.get("vortex_active", false):
+			drone["radius_x"] = lerpf(drone["radius_x"], drone.get("target_radius_x", 10.2), delta * 4.5)
+			drone["radius_y"] = lerpf(drone["radius_y"], drone.get("target_radius_y", 0.6), delta * 4.5)
+			drone["radius_z"] = lerpf(drone["radius_z"], drone.get("target_radius_z", 4.2), delta * 4.5)
 
 		# 1. Smooth Sweeping Coronal Orbit around Sun's perimeter
 		var t = (orbit_time * drone["orbit_speed"]) + drone["phase_offset"]
@@ -982,7 +1011,169 @@ func is_convergence_in_progress() -> bool:
 	return is_convergence_active or current_state == State.CONVERGENCE_CHARGING or current_state == State.CONVERGENCE_IMPLODING
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Milestone 3: The Convergence Choreography (The Event)
+# Kamen Rider Apex Helmet (Model & Materials Setup)
+# ─────────────────────────────────────────────────────────────────────────────
+func setup_solar_helmet() -> void:
+	if helmet_root and is_instance_valid(helmet_root):
+		return
+	if not sun_node or not is_instance_valid(sun_node):
+		return
+
+	helmet_root = Node3D.new()
+	helmet_root.name = "SolarHelmetRoot"
+	helmet_root.visible = false
+	# Sit at Sun's center, tilted 14 degrees up towards the beach camera
+	helmet_root.position = Vector3(0.0, 0.0, 0.0)
+	helmet_root.rotation.x = deg_to_rad(14.0)
+	sun_node.add_child(helmet_root)
+
+	var helmet_scene = load("res://assets/models/solar_helmet.glb")
+	if not helmet_scene:
+		push_error("[SolarConvergence] Failed to load res://assets/models/solar_helmet.glb")
+		return
+
+	var helmet_inst = helmet_scene.instantiate()
+	helmet_root.add_child(helmet_inst)
+
+	# Locate named sub-assemblies from GLB
+	helmet_crown = helmet_inst.find_child("Helmet_Crown", true, false) as Node3D
+	helmet_brow = helmet_inst.find_child("Helmet_Brow", true, false) as Node3D
+	helmet_left_cheek = helmet_inst.find_child("Helmet_LeftCheek", true, false) as Node3D
+	helmet_right_cheek = helmet_inst.find_child("Helmet_RightCheek", true, false) as Node3D
+	helmet_visor = helmet_inst.find_child("Helmet_VisorFrame", true, false) as Node3D
+
+	# Setup Toon materials and extract emissive mats
+	_setup_helmet_materials(helmet_inst)
+
+	# Steam Exhaust Particle Systems on Cheek Cowls
+	if helmet_left_cheek:
+		helmet_steam_left = _create_steam_vent_particles(Vector3(-7.10, 1.20, 2.80), Vector3(-1.0, 0.2, -0.4))
+		helmet_left_cheek.add_child(helmet_steam_left)
+	if helmet_right_cheek:
+		helmet_steam_right = _create_steam_vent_particles(Vector3(7.10, 1.20, 2.80), Vector3(1.0, 0.2, -0.4))
+		helmet_right_cheek.add_child(helmet_steam_right)
+
+func _create_steam_vent_particles(pos: Vector3, dir: Vector3) -> CPUParticles3D:
+	var cp = CPUParticles3D.new()
+	cp.emitting = false
+	cp.one_shot = true
+	cp.explosiveness = 0.90
+	cp.amount = 35
+	cp.lifetime = 0.85
+	cp.direction = dir.normalized()
+	cp.spread = 45.0
+	cp.initial_velocity_min = 12.0
+	cp.initial_velocity_max = 24.0
+	cp.gravity = Vector3(0, 4.0, 0)
+	cp.scale_amount_min = 0.8
+	cp.scale_amount_max = 2.4
+	cp.color = Color(1.0, 0.95, 0.90, 0.80)
+
+	var sp_mat = StandardMaterial3D.new()
+	sp_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	sp_mat.albedo_color = Color(1.0, 0.95, 0.90, 0.75)
+	var sp_mesh = SphereMesh.new()
+	sp_mesh.radius = 0.35
+	sp_mesh.height = 0.70
+	sp_mesh.material = sp_mat
+	cp.mesh = sp_mesh
+	cp.position = pos
+	return cp
+
+func _setup_helmet_materials(node: Node) -> void:
+	if node is MeshInstance3D and node.mesh:
+		for s_idx in range(node.mesh.get_surface_count()):
+			var orig_mat = node.mesh.surface_get_material(s_idx)
+			if orig_mat is StandardMaterial3D:
+				var dup_mat = orig_mat.duplicate() as StandardMaterial3D
+				dup_mat.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
+				dup_mat.specular_mode = BaseMaterial3D.SPECULAR_TOON
+				dup_mat.rim_enabled = true
+				dup_mat.rim = 0.65
+				dup_mat.rim_tint = 0.40
+				dup_mat.rim_color = Color(1.0, 0.88, 0.35)
+				node.set_surface_override_material(s_idx, dup_mat)
+
+				var m_name = dup_mat.resource_name if dup_mat.resource_name != "" else orig_mat.resource_name
+				if "Crimson" in m_name:
+					helmet_gem_mat = dup_mat
+					dup_mat.emission_enabled = true
+					dup_mat.emission = Color(0.95, 0.15, 0.15)
+					dup_mat.emission_energy_multiplier = 3.5
+				elif "Cyan" in m_name:
+					helmet_visor_mat = dup_mat
+					dup_mat.emission_enabled = true
+					dup_mat.emission = Color(0.20, 0.92, 1.0)
+					dup_mat.emission_energy_multiplier = 4.0
+				elif "Amber" in m_name:
+					dup_mat.emission_enabled = true
+					dup_mat.emission = Color(1.0, 0.70, 0.20)
+					dup_mat.emission_energy_multiplier = 3.0
+	for child in node.get_children():
+		_setup_helmet_materials(child)
+
+func materialize_solar_helmet(animated: bool = true) -> void:
+	if is_helmet_equipped:
+		return
+	is_helmet_equipped = true
+	if not helmet_root or not is_instance_valid(helmet_root):
+		setup_solar_helmet()
+	if not helmet_root:
+		return
+	helmet_root.visible = true
+
+	if animated:
+		_assemble_kamen_rider_helmet()
+	else:
+		if helmet_crown: helmet_crown.position = Vector3.ZERO; helmet_crown.scale = Vector3.ONE
+		if helmet_brow: helmet_brow.position = Vector3.ZERO; helmet_brow.scale = Vector3.ONE
+		if helmet_left_cheek: helmet_left_cheek.position = Vector3.ZERO; helmet_left_cheek.rotation.y = 0.0
+		if helmet_right_cheek: helmet_right_cheek.position = Vector3.ZERO; helmet_right_cheek.rotation.y = 0.0
+		if helmet_visor: helmet_visor.position = Vector3.ZERO; helmet_visor.scale = Vector3.ONE
+
+func remove_solar_helmet(animated: bool = true) -> void:
+	if not is_helmet_equipped or not helmet_root:
+		return
+	is_helmet_equipped = false
+
+	if animated:
+		if sfx_shatter_metal:
+			sfx_shatter_metal.pitch_scale = 1.35
+			sfx_shatter_metal.play()
+		var tw = create_tween().set_parallel(true)
+		if helmet_crown:
+			tw.tween_property(helmet_crown, "position:y", 15.0, 0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+			tw.tween_property(helmet_crown, "scale", Vector3(0.01, 0.01, 0.01), 0.35)
+		if helmet_left_cheek:
+			tw.tween_property(helmet_left_cheek, "position:x", -15.0, 0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+		if helmet_right_cheek:
+			tw.tween_property(helmet_right_cheek, "position:x", 15.0, 0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+		if helmet_visor:
+			tw.tween_property(helmet_visor, "scale", Vector3(0.01, 0.01, 0.01), 0.30)
+		tw.chain().tween_callback(func():
+			if helmet_root and is_instance_valid(helmet_root):
+				helmet_root.visible = false
+				if helmet_crown: helmet_crown.position = Vector3.ZERO; helmet_crown.scale = Vector3.ONE
+				if helmet_brow: helmet_brow.position = Vector3.ZERO; helmet_brow.scale = Vector3.ONE
+				if helmet_left_cheek: helmet_left_cheek.position = Vector3.ZERO; helmet_left_cheek.rotation.y = 0.0
+				if helmet_right_cheek: helmet_right_cheek.position = Vector3.ZERO; helmet_right_cheek.rotation.y = 0.0
+				if helmet_visor: helmet_visor.position = Vector3.ZERO; helmet_visor.scale = Vector3.ONE
+		)
+	else:
+		if helmet_root and is_instance_valid(helmet_root):
+			helmet_root.visible = false
+
+func toggle_solar_helmet() -> void:
+	if is_helmet_equipped:
+		remove_solar_helmet(true)
+	else:
+		materialize_solar_helmet(true)
+
+func is_helmet_active() -> bool:
+	return is_helmet_equipped
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Milestone 3: The Convergence Choreography (Vortex Acceleration & Helmet Lock)
 # ─────────────────────────────────────────────────────────────────────────────
 func trigger_convergence_event() -> void:
 	if is_convergence_active:
@@ -995,16 +1186,20 @@ func trigger_convergence_event() -> void:
 	if not is_driver_equipped:
 		materialize_solar_driver(true)
 
-	# 2. Ensure active drones exist (spawn 6 if none currently in orbit)
+	# 2. Ensure helmet is loaded and ready
+	if not helmet_root:
+		setup_solar_helmet()
+
+	# 3. Ensure active drones exist (spawn 6 if none currently in orbit)
 	if active_drones.is_empty():
 		start_orbital_swarm(6, 25)
 
-	# 3. Time Dilation: Dramatic slow-mo drop
-	Engine.time_scale = 0.30
+	# 4. Time Dilation: Cinematic slow-mo drop
+	Engine.time_scale = 0.32
 
-	# 4. Audio & Cinematic Impact
+	# 5. Audio & Cinematic Impact
 	if sfx_ice_blast:
-		sfx_ice_blast.pitch_scale = 0.58
+		sfx_ice_blast.pitch_scale = 0.55
 		sfx_ice_blast.play()
 	if sfx_shatter_metal:
 		sfx_shatter_metal.pitch_scale = 0.55
@@ -1016,91 +1211,179 @@ func trigger_convergence_event() -> void:
 			main.shake(0.35, 0.025)
 		if main.get("hud") and is_instance_valid(main.hud) and main.hud.has_method("show_convergence_banner"):
 			main.hud.show_convergence_banner()
+		# Sun reaction: furious charging face & heat scale expansion!
+		if main.has_method("on_solar_convergence_sun_powerup"):
+			main.on_solar_convergence_sun_powerup()
 
-	# 5. Overcharge pupil glow on all drones (Turn toward driver buckle)
+	# 6. Overcharge pupil glow on all drones
 	for drone in active_drones:
 		var pupil_mat = drone.get("pupil_mat") as StandardMaterial3D
 		if pupil_mat:
-			pupil_mat.emission_energy_multiplier = 9.0
-		var d_node = drone.get("node") as Node3D
-		if d_node and is_instance_valid(d_node):
-			d_node.look_at(get_driver_buckle_position(), Vector3.UP)
+			pupil_mat.emission_energy_multiplier = 12.0
 
-	# 6. Staggered Inward Spiral Docking Choreography
-	var drones_to_dock = active_drones.duplicate()
-	var total_drones = drones_to_dock.size()
+	# 7. Drone Vortex Acceleration (0.0s – 1.0s)
+	# Align drones into an accelerated equatorial vortex ring around the Sun
+	for d in active_drones:
+		d["target_radius_x"] = 10.2
+		d["target_radius_y"] = 0.6
+		d["target_radius_z"] = 4.2
+		d["vortex_active"] = true
+
+	# Smoothly accelerate orbit angular velocity
+	var speed_tw = create_tween()
+	speed_tw.tween_method(func(mult: float):
+		for d in active_drones:
+			d["orbit_speed"] = 2.0 * mult
+	, 1.0, 4.2, 0.95).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+
+	# 8. Trigger Sequential Inward Merge after Vortex Reaches Max RPM
+	speed_tw.chain().tween_callback(func():
+		current_state = State.CONVERGENCE_IMPLODING
+		_start_sequential_drone_absorption()
+	)
+
+func _start_sequential_drone_absorption() -> void:
+	var drones_to_absorb = active_drones.duplicate()
+	var total = drones_to_absorb.size()
 	docked_drone_count = 0
 
-	for i in range(total_drones):
-		var d_data = drones_to_dock[i]
+	for i in range(total):
+		var d_data = drones_to_absorb[i]
 		var d_node = d_data.get("node") as Node3D
 		if not is_instance_valid(d_node):
 			continue
+		var delay = i * 0.16
+		_animate_drone_vortex_merge(d_node, i, total, delay)
 
-		var is_left = (i % 2 == 0)
-		var delay = 0.25 + (i * 0.22)
-		_animate_drone_dock(d_node, i, total_drones, is_left, delay)
-
-func _animate_drone_dock(drone_node: Node3D, index: int, total: int, is_left: bool, delay: float) -> void:
+func _animate_drone_vortex_merge(drone_node: Node3D, index: int, total: int, delay: float) -> void:
 	var tw = create_tween()
-	var start_pos = drone_node.global_position
-	var sun_p = sun_node.global_position if (sun_node and is_instance_valid(sun_node)) else Vector3(0, 13.5, -42)
-	var dir_out = ((start_pos - sun_p).normalized() + Vector3(0, 0, 1.2)).normalized()
-	var mid_pos = start_pos.lerp(get_docking_bay_position(is_left), 0.5) + dir_out * 3.5
-
-	# Smooth delayed Bezier spiral curve accelerating into receptor port
 	tw.tween_interval(delay)
-	tw.chain().tween_method(func(t: float):
-		if not is_instance_valid(drone_node):
-			return
-		var p2 = get_docking_bay_position(is_left)
-		var cur_p = (1.0 - t) * (1.0 - t) * start_pos + 2.0 * (1.0 - t) * t * mid_pos + t * t * p2
-		drone_node.global_position = cur_p
-		if cur_p.distance_squared_to(p2) > 0.01:
-			drone_node.look_at(p2, Vector3.UP)
-	, 0.0, 1.0, 0.54).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
 
-	# Parallel scale collapse into receptor port
-	tw.parallel().tween_property(drone_node, "scale", Vector3(0.05, 0.05, 0.05), 0.16).set_delay(delay + 0.38)
+	var sun_p = sun_node.global_position if (sun_node and is_instance_valid(sun_node)) else Vector3(0, 13.5, -42)
+	var buckle_p = get_driver_buckle_position()
+	var target_p = buckle_p.lerp(sun_p, 0.30)
 
-	# On dock impact
+	# Spiral curve directly into the center of the Sun / Driver buckle
+	tw.chain().tween_property(drone_node, "global_position", target_p, 0.32).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	tw.parallel().tween_property(drone_node, "scale", Vector3(0.01, 0.01, 0.01), 0.32).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+
 	tw.chain().tween_callback(func():
-		var bay_pos = get_docking_bay_position(is_left)
-
-		# Dock mechanical snap audio with escalating pitch
+		# Sound of absorption with escalating pitch
 		if sfx_shatter_metal:
-			sfx_shatter_metal.pitch_scale = 0.90 + (index * 0.12)
+			sfx_shatter_metal.pitch_scale = 1.0 + (index * 0.14)
 			sfx_shatter_metal.play()
 
-		# Docking bay spark particles
+		# Dock spark / flash
+		var is_left = (index % 2 == 0)
 		if is_left and dock_particles_left:
 			dock_particles_left.restart()
 		elif not is_left and dock_particles_right:
 			dock_particles_right.restart()
 
-		# Micro camera trauma
 		var main = get_tree().current_scene if get_tree() else null
 		if main and main.has_method("shake"):
-			main.shake(0.09, 0.015)
+			main.shake(0.08, 0.015)
 
-		# Hide & remove drone node
 		if is_instance_valid(drone_node):
 			drone_node.visible = false
 			drone_node.queue_free()
 
 		docked_drone_count += 1
-		convergence_drone_docked.emit(index, bay_pos)
+		convergence_drone_docked.emit(index, target_p)
 
-		# If final drone, trigger Grand Convergence Shockwave
+		# When all drones are absorbed, trigger Kamen Rider Helmet Assembly!
 		if docked_drone_count >= total:
-			_complete_convergence()
+			_assemble_kamen_rider_helmet()
 	)
 
-func _complete_convergence() -> void:
-	current_state = State.OMEGA_SUN
+func _assemble_kamen_rider_helmet() -> void:
 	active_drones.clear()
+	is_helmet_equipped = true
 
-	# 1. Shockwave burst & core surge
+	if not helmet_root or not is_instance_valid(helmet_root):
+		setup_solar_helmet()
+	if not helmet_root:
+		_finish_convergence_event()
+		return
+
+	helmet_root.visible = true
+
+	# Set initial detached offsets
+	if helmet_crown:
+		helmet_crown.position = Vector3(0.0, 15.0, 0.0) # Drops from high above
+		helmet_crown.scale = Vector3(1.25, 1.25, 1.25)
+	if helmet_left_cheek:
+		helmet_left_cheek.position = Vector3(-16.0, 0.0, 0.0) # Sweeps in from left
+		helmet_left_cheek.rotation.y = deg_to_rad(45.0)
+	if helmet_right_cheek:
+		helmet_right_cheek.position = Vector3(16.0, 0.0, 0.0) # Sweeps in from right
+		helmet_right_cheek.rotation.y = deg_to_rad(-45.0)
+	if helmet_brow:
+		helmet_brow.position = Vector3(0.0, 6.0, 4.0)
+		helmet_brow.scale = Vector3(0.3, 0.3, 0.3)
+	if helmet_visor:
+		helmet_visor.position = Vector3(0.0, 0.0, 9.0)
+		helmet_visor.scale = Vector3(0.15, 0.15, 0.15)
+
+	# Charge swell audio before helmet slam
+	if sfx_ice_blast:
+		sfx_ice_blast.pitch_scale = 1.35
+		sfx_ice_blast.play()
+
+	var tw = create_tween()
+	tw.set_parallel(true)
+
+	# Parallel slam lock-on (0.52s, TRANS_BACK, EASE_OUT)
+	if helmet_crown:
+		tw.tween_property(helmet_crown, "position", Vector3.ZERO, 0.52).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(helmet_crown, "scale", Vector3.ONE, 0.52).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	if helmet_left_cheek:
+		tw.tween_property(helmet_left_cheek, "position", Vector3.ZERO, 0.48).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(helmet_left_cheek, "rotation:y", 0.0, 0.48).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	if helmet_right_cheek:
+		tw.tween_property(helmet_right_cheek, "position", Vector3.ZERO, 0.48).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(helmet_right_cheek, "rotation:y", 0.0, 0.48).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	if helmet_brow:
+		tw.tween_property(helmet_brow, "position", Vector3.ZERO, 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(helmet_brow, "scale", Vector3.ONE, 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	if helmet_visor:
+		tw.tween_property(helmet_visor, "position", Vector3.ZERO, 0.50).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(helmet_visor, "scale", Vector3.ONE, 0.50).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+	# On impact: Hydraulic Clamp Lock & Grand Shockwave
+	tw.chain().tween_callback(func():
+		_finish_convergence_event()
+	)
+
+func _finish_convergence_event() -> void:
+	# 1. Lock SFX: Heavy metallic clamp
+	if sfx_shatter_metal:
+		sfx_shatter_metal.pitch_scale = 0.72
+		sfx_shatter_metal.play()
+	if sfx_shatter_core:
+		sfx_shatter_core.pitch_scale = 1.10
+		sfx_shatter_core.play()
+	if sfx_ice_shatter_glass:
+		sfx_ice_shatter_glass.pitch_scale = 0.80
+		sfx_ice_shatter_glass.play()
+
+	# 2. Steam exhausts blast outward!
+	if helmet_steam_left:
+		helmet_steam_left.restart()
+	if helmet_steam_right:
+		helmet_steam_right.restart()
+
+	# 3. Blinding ignition on forehead gem, visor, and belt
+	if helmet_gem_mat:
+		helmet_gem_mat.emission_energy_multiplier = 14.0
+		var g_tw = create_tween()
+		g_tw.tween_property(helmet_gem_mat, "emission_energy_multiplier", 3.5, 0.60).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+	if helmet_visor_mat:
+		helmet_visor_mat.emission_energy_multiplier = 16.0
+		var v_tw = create_tween()
+		v_tw.tween_property(helmet_visor_mat, "emission_energy_multiplier", 4.0, 0.60).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
 	if driver_shockwave_particles:
 		driver_shockwave_particles.amount = 80
 		driver_shockwave_particles.restart()
@@ -1115,29 +1398,25 @@ func _complete_convergence() -> void:
 		var b_tw = create_tween()
 		b_tw.tween_property(driver_conduit_mat, "emission_energy_multiplier", 3.2, 0.65).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
-	# 2. Grand Explosive Audio Layer
-	if sfx_shatter_core:
-		sfx_shatter_core.pitch_scale = 0.90
-		sfx_shatter_core.play()
-	if sfx_ice_shatter_glass:
-		sfx_ice_shatter_glass.pitch_scale = 0.75
-		sfx_ice_shatter_glass.play()
-
-	# 3. Full-screen heavy trauma shake
+	# 4. Heavy camera trauma shake & Sun state restoration
 	var main = get_tree().current_scene if get_tree() else null
-	if main and main.has_method("shake"):
-		main.shake(0.48, 0.05)
+	if main:
+		if main.has_method("shake"):
+			main.shake(0.52, 0.055)
+		if main.has_method("on_solar_convergence_completed"):
+			main.on_solar_convergence_completed()
 
-	# 4. Snap time scale back to normal (1.0)
+	# 5. Restore time scale back to 1.0x
 	var t_tw = create_tween()
 	t_tw.tween_property(Engine, "time_scale", 1.0, 0.40).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
+	current_state = State.OMEGA_SUN
 	is_convergence_active = false
 	convergence_completed.emit()
 
 	if main and main.get("hud") and is_instance_valid(main.hud) and main.hud.has_method("show_toast"):
 		var is_kr = GameState.language == "KR"
-		var title = "태양 수렴 완료!" if is_kr else "SOLAR CONVERGENCE COMPLETE!"
-		var desc = "오메가 솔라 각성 — 전 드론 도킹 완료" if is_kr else "Omega Solar Awakened — All Drones Docked"
+		var title = "오메가 솔라 각성 완료!" if is_kr else "OMEGA SOLAR AWAKENED!"
+		var desc = "가면라이더 헬멧 & 드라이버 수렴 완성" if is_kr else "Kamen Rider Helmet & Driver Convergence Complete"
 		main.hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1.0, 0.75, 0.15))
 
