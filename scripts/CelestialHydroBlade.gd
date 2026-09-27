@@ -69,76 +69,74 @@ func _get_blade_axes() -> Dictionary:
 	}
 
 # ══════════════════════════════════════════════════════════════════
-# 1. CELESTIAL ENERGY SLASH TRAIL — glowing arc rendered along the blade
+# 1. CELESTIAL FOXFIRE SLASH WAVE — aimed flame crescent with embers
 # ══════════════════════════════════════════════════════════════════
 func trigger_slash_arc(_camera: Camera3D, _slash_dir: float, _is_awakened: bool, _aim_target: Vector3 = Vector3.ZERO) -> void:
-	# Disabled: slash arc mesh removed to avoid unwanted bottom-center arc visual
 	pass
+
 func spawn_flying_hydro_crescent(_origin: Vector3, _dir: Vector3, _main_scene: Node) -> void:
-	# Disabled: pure melee parry weapon without projectile waves
 	pass
 
-func _add_quad_to(imm: ImmediateMesh, v0: Vector3, v1: Vector3, v2: Vector3, v3: Vector3, c0: Color, c1: Color) -> void:
-	# Triangle 1
-	imm.surface_set_color(c0)
-	imm.surface_add_vertex(v0)
-	imm.surface_set_color(c1)
-	imm.surface_add_vertex(v1)
-	imm.surface_set_color(c0)
-	imm.surface_add_vertex(v2)
-	
-	# Triangle 2
-	imm.surface_set_color(c1)
-	imm.surface_add_vertex(v1)
-	imm.surface_set_color(c1)
-	imm.surface_add_vertex(v3)
-	imm.surface_set_color(c0)
-	imm.surface_add_vertex(v2)
+func spawn_foxfire_slash(origin: Vector3, dir: Vector3, slash_dir: float, is_awakened: bool, main_scene: Node) -> void:
+	var wave = CelestialFoxfireWave.new(origin, dir, slash_dir, is_awakened, main_scene)
+	main_scene.add_child(wave)
 
 # ==============================================================================
-# Helper Class: FlyingHydroCrescent Projectile
+# Helper Class: CelestialFoxfireWave (Aimed Slash Wave with Spark Embers)
 # ==============================================================================
-class FlyingHydroCrescent extends Node3D:
+class CelestialFoxfireWave extends Node3D:
 	var flight_dir: Vector3
-	var flight_speed: float = 78.0
-	var lifetime: float = 0.65
+	var flight_speed: float = 85.0
+	var lifetime: float = 0.45
 	var elapsed: float = 0.0
+	var is_awakened: bool = false
+	var slash_tilt: float = 1.0
 	
 	var main_ref: Node
 	var material_ref: StandardMaterial3D
 	
 	var imm_mesh: ImmediateMesh
 	var mesh_inst: MeshInstance3D
+	var ember_particles: GPUParticles3D
 	
-	var cleaved_flares: Array = []
-	
-	func _init(p_origin: Vector3, p_dir: Vector3, p_main: Node, p_mat: StandardMaterial3D) -> void:
-		global_position = p_origin + p_dir * 1.5
+	func _init(p_origin: Vector3, p_dir: Vector3, p_slash_dir: float, p_awakened: bool, p_main: Node) -> void:
 		flight_dir = p_dir.normalized()
+		is_awakened = p_awakened
+		slash_tilt = p_slash_dir
 		main_ref = p_main
-		material_ref = p_mat
+		global_position = p_origin + flight_dir * 1.0
 		
 	func _ready() -> void:
 		var up_v: Vector3 = Vector3.UP
 		if abs(flight_dir.dot(up_v)) > 0.95:
 			up_v = Vector3.RIGHT
 		look_at(global_position + flight_dir, up_v)
+		rotate_object_local(Vector3.FORWARD, deg_to_rad(32.0 * slash_tilt))
 		
 		imm_mesh = ImmediateMesh.new()
 		mesh_inst = MeshInstance3D.new()
 		mesh_inst.mesh = imm_mesh
+		
+		material_ref = StandardMaterial3D.new()
+		material_ref.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		material_ref.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		material_ref.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+		material_ref.vertex_color_use_as_albedo = true
+		material_ref.cull_mode = BaseMaterial3D.CULL_DISABLED
 		mesh_inst.material_override = material_ref
 		add_child(mesh_inst)
 		
-		_build_crescent_geometry()
+		_build_foxfire_crescent_geometry()
+		_setup_ember_trail()
 		
-	func _build_crescent_geometry() -> void:
+	func _build_foxfire_crescent_geometry() -> void:
 		imm_mesh.clear_surfaces()
 		imm_mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES, material_ref)
 		
-		var segments: int = 24
-		var half_span: float = 3.2
-		var arc_depth: float = 1.35
+		var segments: int = 18
+		var half_span: float = 1.5 if not is_awakened else 2.1
+		var arc_depth: float = 0.55 if not is_awakened else 0.75
+		var thickness: float = 0.28 if not is_awakened else 0.38
 		
 		var prev_lead: Vector3 = Vector3.ZERO
 		var prev_trail: Vector3 = Vector3.ZERO
@@ -150,19 +148,23 @@ class FlyingHydroCrescent extends Node3D:
 			
 			var x: float = t * half_span
 			var z_lead: float = (1.0 - profile) * arc_depth
-			var z_trail: float = z_lead + (profile * 0.75 + 0.15)
-			var y: float = sin(t * PI) * 0.15
+			var z_trail: float = z_lead + (profile * thickness + 0.06)
+			var y: float = sin(t * PI) * 0.08
 			
 			var v_lead = Vector3(x, y, -z_lead)
-			var v_trail = Vector3(x * 0.92, y * 0.5, -z_trail)
+			var v_trail = Vector3(x * 0.94, y * 0.4, -z_trail)
 			
-			var c_apex = Color(1.0, 1.0, 1.0, 0.95)
-			var c_wing = Color(1.00, 0.75, 0.20, 0.85)
-			var c_solar = Color(1.00, 0.90, 0.45, 0.90)
+			var c_apex = Color(1.0, 1.0, 1.0, 0.98)
+			var c_core = Color(1.0, 0.82, 0.22, 0.90)
+			var c_wing = Color(1.0, 0.48, 0.12, 0.65)
 			
-			var col: Color = c_wing.lerp(c_apex, profile)
-			if profile > 0.75:
-				col = col.lerp(c_solar, (profile - 0.75) / 0.25 * 0.6)
+			if is_awakened:
+				c_core = Color(1.0, 0.92, 0.50, 0.96)
+				c_wing = Color(1.0, 0.70, 0.25, 0.85)
+			
+			var col: Color = c_wing.lerp(c_core, profile)
+			if profile > 0.65:
+				col = col.lerp(c_apex, (profile - 0.65) / 0.35 * 0.85)
 			col.a = profile * 0.92 + 0.08
 			
 			if i > 0:
@@ -174,6 +176,34 @@ class FlyingHydroCrescent extends Node3D:
 			prev_c = col
 			
 		imm_mesh.surface_end()
+		
+	func _setup_ember_trail() -> void:
+		ember_particles = GPUParticles3D.new()
+		var p_mat = ParticleProcessMaterial.new()
+		p_mat.direction = -Vector3.FORWARD
+		p_mat.spread = 25.0
+		p_mat.initial_velocity_min = 2.0
+		p_mat.initial_velocity_max = 5.0
+		p_mat.gravity = Vector3(0, 1.5, 0)
+		p_mat.scale_min = 0.25
+		p_mat.scale_max = 0.55
+		
+		var q_mesh = QuadMesh.new()
+		q_mesh.size = Vector2(0.10, 0.10)
+		var q_mat = StandardMaterial3D.new()
+		q_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		q_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		q_mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+		q_mat.albedo_color = Color(1.0, 0.85, 0.30, 0.85)
+		q_mat.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+		q_mesh.material = q_mat
+		
+		ember_particles.process_material = p_mat
+		ember_particles.draw_pass_1 = q_mesh
+		ember_particles.amount = 16
+		ember_particles.lifetime = 0.30
+		ember_particles.emitting = true
+		add_child(ember_particles)
 		
 	func _add_mesh_quad(v0: Vector3, v1: Vector3, v2: Vector3, v3: Vector3, c0: Color, c1: Color) -> void:
 		imm_mesh.surface_set_color(c0)
@@ -192,66 +222,53 @@ class FlyingHydroCrescent extends Node3D:
 		
 	func _process(delta: float) -> void:
 		elapsed += delta
-		var move_step: Vector3 = flight_dir * (flight_speed * delta)
-		global_position += move_step
-		
-		rotate_object_local(Vector3.FORWARD, delta * 3.5)
+		global_position += flight_dir * (flight_speed * delta)
 		
 		var remain: float = lifetime - elapsed
-		if remain < 0.2:
-			mesh_inst.transparency = 1.0 - (remain / 0.2)
+		if remain < 0.15:
+			mesh_inst.transparency = 1.0 - (remain / 0.15)
 			
 		if elapsed >= lifetime:
 			queue_free()
 			return
 			
+		# Impact check with Sun
 		if main_ref and is_instance_valid(main_ref):
-			var flares: Array = main_ref.get("active_flares") if main_ref.get("active_flares") else []
-			for flare in flares:
-				if flare in cleaved_flares:
-					continue
-				var f_node = flare.get("node") as Node3D
-				if is_instance_valid(f_node):
-					var dist: float = global_position.distance_to(f_node.global_position)
-					if dist < 4.2:
-						cleaved_flares.append(flare)
-						flare["hp"] = 0.0
-						GameState.flares_intercepted += 1
-						if main_ref.get("shield_deflect_sfx") and is_instance_valid(main_ref.get("shield_deflect_sfx")):
-							main_ref.shield_deflect_sfx.play()
-						if main_ref.has_method("_spawn_deflected_number"):
-							main_ref._spawn_deflected_number(f_node.global_position)
-						if main_ref.has_method("_spawn_flare_explosion"):
-							main_ref._spawn_flare_explosion(f_node.global_position)
-							
-			# Check Sun impact
 			var sun = main_ref.get("sun") as Node3D
 			if is_instance_valid(sun):
-				var dist_sun: float = global_position.distance_to(sun.global_position)
-				if dist_sun < 6.0:
-					_trigger_sun_impact(sun.global_position)
+				if global_position.distance_to(sun.global_position) < 5.0:
+					_trigger_impact()
 					queue_free()
-				
-	func _trigger_sun_impact(sun_pos: Vector3) -> void:
+					
+	func _trigger_impact() -> void:
 		if not main_ref or not is_instance_valid(main_ref):
 			return
-		var ring = MeshInstance3D.new()
-		var p_torus = TorusMesh.new()
-		p_torus.inner_radius = 5.0
-		p_torus.outer_radius = 6.2
-		p_torus.rings = 24
-		p_torus.ring_segments = 3
-		ring.mesh = p_torus
-		ring.material_override = material_ref
+		var burst = GPUParticles3D.new()
+		var b_mat = ParticleProcessMaterial.new()
+		b_mat.direction = Vector3.UP
+		b_mat.spread = 180.0
+		b_mat.initial_velocity_min = 4.0
+		b_mat.initial_velocity_max = 8.0
+		b_mat.gravity = Vector3(0, -2.0, 0)
+		b_mat.scale_min = 0.2
+		b_mat.scale_max = 0.5
 		
-		main_ref.add_child(ring)
-		ring.global_position = sun_pos
-		ring.look_at(ring.global_position + flight_dir, Vector3.UP)
+		var q_mesh = QuadMesh.new()
+		q_mesh.size = Vector2(0.08, 0.08)
+		var q_mat = StandardMaterial3D.new()
+		q_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		q_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		q_mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+		q_mat.albedo_color = Color(1.0, 0.88, 0.40, 0.9)
+		q_mat.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+		q_mesh.material = q_mat
 		
-		var tw = main_ref.create_tween().set_parallel(true)
-		tw.tween_property(ring, "scale", Vector3(2.4, 2.4, 2.4), 0.40).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-		tw.tween_property(ring, "transparency", 1.0, 0.40).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-		tw.chain().tween_callback(ring.queue_free)
-		
-		if main_ref.has_method("shake"):
-			main_ref.shake(0.25, 0.04)
+		burst.process_material = b_mat
+		burst.draw_pass_1 = q_mesh
+		burst.amount = 12
+		burst.lifetime = 0.25
+		burst.one_shot = true
+		burst.explosiveness = 0.9
+		burst.global_position = global_position
+		main_ref.add_child(burst)
+		main_ref.get_tree().create_timer(0.3).timeout.connect(burst.queue_free)

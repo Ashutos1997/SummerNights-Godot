@@ -4439,9 +4439,6 @@ func _perform_kitsune_blade_slash() -> void:
 		celestial_slash_sfx.play()
 	_vibrate(0.40 if is_celestial_awakened else 0.35, 0.40 if is_celestial_awakened else 0.35, 0.15)
 	
-	if celestial_hydro_blade:
-		celestial_hydro_blade.trigger_slash_arc(camera, blade_slash_dir, is_celestial_awakened)
-	
 	# Slash sweep animation on gun
 	blade_slash_dir *= -1
 	var end_rot_z = -45.0 * blade_slash_dir
@@ -4467,6 +4464,10 @@ func _perform_kitsune_blade_slash() -> void:
 	# Crosshair aim ray
 	var ray_origin = camera.project_ray_origin(virtual_mouse_pos)
 	var ray_normal = camera.project_ray_normal(virtual_mouse_pos)
+	
+	# Spawn Celestial Foxfire Slash Wave traveling toward crosshair
+	if celestial_hydro_blade:
+		celestial_hydro_blade.spawn_foxfire_slash(ray_origin, ray_normal, blade_slash_dir, is_celestial_awakened, self)
 	
 	# Melee flare cleaving / parry
 	var severed_count = 0

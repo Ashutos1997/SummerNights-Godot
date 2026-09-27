@@ -17,6 +17,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Kitsune Blade Melee Slash & Flare Parry: Implemented high-impact sweeping melee arc ($60^\circ$ FOV, 8.5m range) with CC0 sound effects (`celestial_slash.wav` by Nomagician), direct cooling burst damage to the Sun ($8.5\text{ base} \times \text{crit} \times \text{cooling}$), solar flare cleaving with 15% water parry refund, and radiant cyan crescent shockwave projectiles during Celestial Awakening.
 * Celestial Hydro-Blade & Water Cutting Effects: Implemented procedural water cutting visuals (`CelestialHydroBlade.gd`) for Kitsune Buster IX Blade Mode during Celestial Awakening. Features a tight translucent hydro-tube sheath wrapping the Katana cross-section (24 ring segments, 10-vert resolution with animated breathing pulse), 6 helical spiral water streams orbiting the blade axis with sori-conforming trajectory, a bright cutting-edge glow ribbon, high-impact 120° sweeping water crescent melee ribbons on slashes, and colossal 6.4m flying celestial hydro-crescent projectiles that cleave solar flares along their trajectory and trigger expanding hydro-burst rings on the Sun.
 * 13th Achievement ("The Highlight" / "클라이맥스"): Added achievement and permanent tracking for triggering Celestial Awakening with the Kitsune Buster IX.
+* Celestial Foxfire Slash Wave Emission: Added a razor-sharp golden-white flame crescent projectile with trailing spark embers that travels directly along the crosshair ray at 85 m/s on blade swings, providing clear emission visual feedback analogous to gun water spray.
 
 ### Improved
 * Kitsune Buster IX Celestial Model Polish: Enhanced the unified 3D model with authentic Katana curvature (sori), kissaki chisel tip, glowing cyan fuller groove, sculpted multi-layered fox-flame tsuba crossguards with cyber-gold crests, skeletonized receiver windows for direct first-person visibility of the spinning 9-vial Kyubi drum, and aerodynamic mecha fox-ear cowl fins.
@@ -275,6 +276,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 구미호 검 근접 베기 및 플레어 패링: 60° 시야각, 8.5m 사거리의 고위력 근접 베기 공격 구현. 전용 사운드(`celestial_slash.wav`, Nomagician 제작 CC0), 태양 직접 냉각 피해($8.5\text{ 기본} \times \text{치명타} \times \text{냉각}$), 플레어 절단 요격 및 15% 물탱크 패링 환급, 신성의 각성 중 발사되는 사이언 초승달 충격파 투사체 적용.
 * 신성의 수류검 및 물베기 이펙트 (Celestial Hydro-Blade): 구미호 버스터 IX 검 모드에 전용 절차적 물베기 시각 효과(`CelestialHydroBlade.gd`) 구현. 신성의 각성 중 카타나 칼날 단면을 밀착 감싸는 반투명 수류 튜브 검집(24 링 단면, 10정점 해상도, 호흡 맥동 애니메이션), 칼날 축 주위를 궤도 선회하는 6줄기 나선형 수류 스트림(소리 곡률 추종), 밝은 발광 커팅 엣지 리본, 베기 시야를 가로지르는 120° 절차적 초승달 물베기 리본, 비행 궤적 상의 태양 플레어를 즉시 절단 요격하고 태양 충돌 시 수압 팽창 링을 폭발시키는 6.4m 초대형 비행 신성 초승달 투사체 적용.
 * 13번째 신규 업적 ("클라이맥스" / "The Highlight"): 구미호 버스터 IX로 신성의 각성을 최초 발동할 때 해금되는 13번째 업적 및 영구 통계 기록 추가.
+* 신성의 여우불 참격파(Foxfire Slash Wave) 방출 연출: 구미호 검 휘두르기 시 조준선 광선을 따라 85m/s 속도로 직진하는 황금백색 초승달 화염 및 불티(엠버) 궤적 투사체 추가. 시야 간섭 없이 총기 물줄기처럼 직관적인 조준 타격 궤적 피드백 제공.
 
 ### 개선됨 (Improved)
 * 구미호 버스터 IX 모델 디테일 강화 (Celestial Polish): 단일 3D 모델에 정통 카타나 휨각(소리/Sori) 및 칫솔형 킷사키 칼끝, 발광형 사이언 혈조(Fuller), 골드 깃장식과 결합된 다층형 여우불 츠바 코등이, 1인칭 조준 시 9개 구미호 바이알 회전 드럼이 시원하게 보이는 스켈레톤 리시버 윈도우, 조준경 양옆 메카 여우 귀 카울 핀 추가.
