@@ -324,11 +324,11 @@ const WEAPONS = {
 		"cooling_power": 28.0,
 		"crit_multiplier": 2.2,
 		"recharge_rate": 14.0,
-		"unlock_level": 1
+		"unlock_wave": 30
 	}
 }
 var has_shown_splash: bool = false
-var current_weapon_id: String = "kitsune"
+var current_weapon_id: String = "standard"
 var kitsune_mode: String = "cannon"  # "cannon" or "blade"
 var level: int = 1
 var sfx_volume: float = 1.0

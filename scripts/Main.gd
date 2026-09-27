@@ -3230,23 +3230,6 @@ func _input(event: InputEvent) -> void:
 		var is_mode_joy = (event is InputEventJoypadButton and event.pressed and (event.button_index == JOY_BUTTON_Y or event.button_index == JOY_BUTTON_X))
 		if is_mode_key or is_mode_mouse or is_mode_joy:
 			toggle_kitsune_mode()
-
-	# Debug key: Press K to toggle Celestial Awakening (Fox Nine)
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_K:
-		toggle_celestial_awakening()
-
-	# Debug key: Press O to toggle Solar Convergence Orbital Drones (Helios Swarm)
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_O:
-		toggle_solar_drones()
-
-	# Debug key: Press L to toggle Solar Convergence Solar Driver & Planetary Belt
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_L:
-		toggle_solar_driver()
-
-	# Debug key: Press P to trigger Solar Convergence Event (Drone Inward Docking Choreography)
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_P:
-		trigger_solar_convergence()
-
 	if event.is_action_pressed("ui_catastrom") and not event.is_echo():
 		if GameState.current_weapon_id == "kitsune":
 			if GameState.celestial_charge >= 1.0 and not is_celestial_awakened:
