@@ -4579,40 +4579,27 @@ func _trigger_phase2() -> void:
 func toggle_solar_drones() -> void:
 	if not solar_convergence_mgr:
 		return
-	if solar_convergence_mgr.get_active_drone_count() > 0:
+	if solar_convergence_mgr.get_active_drone_count() > 0 or solar_convergence_mgr.is_driver_active():
 		solar_convergence_mgr.clear_drones()
 		if hud and hud.has_method("show_toast"):
 			var is_kr = GameState.language == "KR"
-			var title = "태양 드론 해제" if is_kr else "SOLAR DRONES"
-			var desc = "궤도 방어 드론 제거" if is_kr else "ORBITAL SWARM CLEARED"
+			var title = "솔라 드라이버 해제" if is_kr else "SOLAR DRIVER RETRACTED"
+			var desc = "적도 벨트 및 드론 군체 회수" if is_kr else "Planetary Belt & Drone Swarm Retracted"
 			hud.show_toast(title, desc, "", Color(1.0, 0.5, 0.2))
 	else:
 		var test_wave = GameState.current_wave if GameState.is_survival_mode else 30
 		solar_convergence_mgr.start_orbital_swarm(6, test_wave)
 		if hud and hud.has_method("show_toast"):
 			var is_kr = GameState.language == "KR"
-			var title = "태양 수렴 경보" if is_kr else "SOLAR CONVERGENCE"
-			var desc = "태양 궤도 아이 드론 6기 전개" if is_kr else "ORBITAL SWARM DEPLOYED (6 DRONES)"
+			var title = "솔라 드라이버 장착!" if is_kr else "SOLAR DRIVER EQUIPPED!"
+			var desc = "적도 행성 벨트 및 드론 군체 전개" if is_kr else "Planetary Belt & Drone Swarm Deployed"
 			hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1.0, 0.8, 0.2))
 
 func toggle_solar_driver() -> void:
-	if not solar_convergence_mgr:
-		return
-	solar_convergence_mgr.toggle_solar_driver()
-	var is_eq = solar_convergence_mgr.is_driver_active()
-	if hud and hud.has_method("show_toast"):
-		var is_kr = GameState.language == "KR"
-		var title = "솔라 드라이버 장착!" if is_eq else "솔라 드라이버 해제"
-		var desc = "적도 행성 벨트 및 드라이버 버클 전개" if is_eq else "솔라 드라이버 수납 완료"
-		if not is_kr:
-			title = "SOLAR DRIVER INSTALLED!" if is_eq else "SOLAR DRIVER REMOVED"
-			desc = "Equatorial Planetary Belt & Driver Buckle Deployed" if is_eq else "Solar Driver Retracted"
-		hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1.0, 0.78, 0.18))
+	toggle_solar_drones()
 
 func trigger_solar_convergence() -> void:
-	if not solar_convergence_mgr:
-		return
-	solar_convergence_mgr.trigger_convergence_event()
+	toggle_solar_drones()
 
 func on_solar_convergence_sun_powerup() -> void:
 	if is_instance_valid(sun_face) and face_textures.has("charging"):
