@@ -2035,6 +2035,14 @@ theme_override_font_sizes/font_size = 12
 text = "3D Weapon Model (Kitsune Buster IX - Cannon & Blade)  ·  Procedural Python glTF  ·  Open Source"
 horizontal_alignment = 1
 
+[node name="Itm3D4" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "3D Model - Solar Eye Drone (\"Helios Drone\")  ·  Procedural Python glTF Synthesis  ·  Open Source"
+horizontal_alignment = 1
+
 [node name="Spacer3D" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
 layout_mode = 2
 mouse_filter = 2
@@ -2165,6 +2173,22 @@ mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.85)
 theme_override_font_sizes/font_size = 12
 text = "SFX - Tactical Mode Switch  ·  Kenney  ·  CC0"
+horizontal_alignment = 1
+
+[node name="ItmAudio20" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "SFX - Drone Metallic Impacts (4 variations)  ·  rubberduck (OpenGameArt)  ·  CC0"
+horizontal_alignment = 1
+
+[node name="ItmAudio21" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "SFX - Drone Mechanical Shatter & Glass Fragmentation  ·  rubberduck (OpenGameArt)  ·  CC0"
 horizontal_alignment = 1
 
 [node name="ItmAudio3" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
@@ -2548,6 +2572,14 @@ mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.85)
 theme_override_font_sizes/font_size = 12
 text = "VFX - Celestial Foxfire Slash Wave  ·  ImmediateMesh Flame Crescent & Trailing Spark Embers"
+horizontal_alignment = 1
+
+[node name="ItmSolarDroneVFX" type="Label" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.85)
+theme_override_font_sizes/font_size = 12
+text = "VFX - Solar Eye Drone Swarm & 3-Tier Overheat  ·  Procedural Orbital Dynamics & Shaders"
 horizontal_alignment = 1
 
 [node name="SpacerDisclaimer" type="Control" parent="HUD/CreditsScreen/CenterContainer/VBoxContainer/ScrollArea/CreditsList"]

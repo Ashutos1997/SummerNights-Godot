@@ -39,7 +39,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Flare Interception Golden Ember Pop: Added a high-energy radiant golden ember particle burst with bloom when extinguishing solar flares with water.
 * Coronal Halo & Heat Waves: Added an unshaded additive coronal halo with organic concentric heat ripples that dynamically pulse, expand, and extinguish with the Sun's temperature (100°C to 0°C).
 * Lifetime Stats Icon Plates: Added 32x32 retro flat plates with gold monochrome category icons to each row in the Lifetime Stats screen.
-* Credits Synchronization: Synchronized in-game HUD Credits screen and bilingual READMEs with full attributions for Kitsune Buster IX 3D models, Tactical Mode Switch SFX, Celestial Starburst meter icon, and procedural Celestial Awakening VFX systems (9-Tail Hydro-Ribbons, 9-Stream Converging Cannon & Creation Aura, Celestial Hydro-Blade, Ethereal Domain Post-Process Shader, Celestial Radial Energy Vignette Shader, and Foxfire Slash Wave).
+* Credits Synchronization: Synchronized in-game HUD Credits screen and bilingual READMEs with full attributions for Solar Eye Drone & Kitsune Buster IX 3D models, open-source CC0 drone impact and shatter audio by rubberduck, tactical mode switch SFX, celestial starburst meter icon, and procedural drone swarm and celestial awakening VFX systems.
 * Achievement & Buff Retro Icon Plates: Enclosed achievement and buff card icons in 64x64 retro flat plates (4px radii; gold border with monochrome gold icon for unlocked, steel border with mystery dark silhouette for locked) across Title Screen and HUD.
 * Game Over Frameless Stats Flow: Replaced bare end-of-run labels with a clean, dynamic frameless stats recap (32x32 retro plates with gold monochrome icons, localized typography, and inline milestone badges for Wave Reached, Survival Time, and Final Score) avoiding nested container clutter.
 * Settings Categorized Section Badges: Grouped settings rows into 3 distinct logical sections ("AUDIO", "GAMEPLAY & CONTROLS", "DISPLAY & SYSTEM") using tactile retro plate badges (4px radii, gold border), trailing golden hairline rules, balanced section clearance (36px between categories, 26px title/footer gap), and dynamic bilingual typography.
@@ -311,7 +311,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 태양 플레어 요격 골든 엠버 팝: 물줄기로 태양 플레어를 소화할 때 사방으로 터지는 황금빛 불티(엠버) 파티클 피드백 추가.
 * 코로나 헤일로 및 열파(Heat Waves): 태양 온도(100°C~0°C)에 따라 유기적으로 펄스하며 확산/소화되는 가산 혼합 대기 코로나 아우라 및 동심원 열파 효과 구현.
 * 기록 메뉴 아이콘 플레이트: 기록(Lifetime Stats) 화면의 각 항목에 골드 모노크롬 카테고리 아이콘과 32x32 레트로 플레이트 적용.
-* 크레딧 동기화: 인게임 HUD 크레딧 화면 및 국/영문 README에 구미호 버스터 IX 3D 모델, 전술 모드 전환 효과음, 신성의 성광 미터 아이콘, 절차적 신성의 각성 VFX 시스템(9미 수류 리본, 9갈래 집중 수류포 & 창조 오라, 신성의 수류검, 에테리얼 도메인 후처리 셰이더, 신성의 방사형 에너지 비네트 셰이더, 여우불 참격 검기) 항목을 완전 동기화.
+* 크레딧 동기화: 인게임 HUD 크레딧 화면 및 국/영문 README에 태양 궤도 아이 드론 및 구미호 버스터 IX 3D 모델, rubberduck 제작 오픈소스 CC0 드론 피격 및 파쇄 효과음, 전술 모드 전환 효과음, 신성의 성광 미터 아이콘, 절차적 드론 군체 및 신성의 각성 VFX 시스템 항목을 완전 동기화.
 * 업적 및 영구 강화 레트로 아이콘 플레이트: 타이틀 화면과 인게임 HUD의 업적 및 버프 카드 아이콘에 64x64 레트로 플랫 플레이트(4px 모서리 곡률, 해금 시 골드 테두리/모노크롬 골드 아이콘, 미해금 시 스틸 테두리/신비로운 실루엣) 적용.
 * 게임 오버 프레임리스 기록 플로우: 기존 단순 텍스트 라벨을 중첩 박스 없이 깔끔한 동적 프레임리스 기록 요약(32x32 레트로 플레이트, 골드 모노크롬 아이콘, 국/영문 폰트 규격화, 도달 웨이브/생존 시간/최종 점수 및 신기록 인라인 배지)으로 개편.
 * 설정 메뉴 카테고리 섹션 배지: 설정 항목들을 3개의 논리적 섹션("오디오", "조작 및 편의", "화면 및 시스템")으로 구조화하고, 4px 모서리 곡률의 골드 테두리 레트로 플레이트 배지, 골드 헤어라인 구분선, 균형 잡힌 섹션 여백(카테고리 간 36px, 상/하단 26px), 실시간 국/영문 폰트 동기화를 적용.

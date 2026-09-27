@@ -1564,6 +1564,8 @@ func _apply_language(lang: String) -> void:
 			if itm_3d2: itm_3d2.text = "3D 태양 모델 (PS1 Style Low Poly Sun)  ·  albert_buscio (Sketchfab)  ·  CC0" if is_kr else "PS1 Style Low Poly Sun  ·  albert_buscio (Sketchfab)  ·  CC0"
 			var itm_3d3 = credits_list.get_node_or_null("Itm3D3")
 			if itm_3d3: itm_3d3.text = "3D 무기 모델 (구미호 버스터 IX - 포격 & 검 모드)  ·  절차적 파이썬 glTF  ·  오픈소스" if is_kr else "3D Weapon Model (Kitsune Buster IX - Cannon & Blade)  ·  Procedural Python glTF  ·  Open Source"
+			var itm_3d4 = credits_list.get_node_or_null("Itm3D4")
+			if itm_3d4: itm_3d4.text = "3D 모델 - 태양 궤도 아이 드론 (\"헬리오스 드론\")  ·  절차적 파이썬 glTF 합성  ·  오픈소스" if is_kr else "3D Model - Solar Eye Drone (\"Helios Drone\")  ·  Procedural Python glTF Synthesis  ·  Open Source"
 
 			var itm_tex1 = credits_list.get_node_or_null("ItmTextures1")
 			if itm_tex1: itm_tex1.text = "모래 텍스처 (Coast Sand 01)  ·  Poly Haven  ·  CC0" if is_kr else "Coast Sand 01  ·  Poly Haven  ·  CC0"
@@ -1606,6 +1608,10 @@ func _apply_language(lang: String) -> void:
 			if itm_audio18: itm_audio18.text = "SFX - 신성의 참격 효과음  ·  Nomagician (Freesound)  ·  CC0" if is_kr else "SFX - Celestial Blade Slash  ·  Nomagician (Freesound)  ·  CC0"
 			var itm_audio19 = credits_list.get_node_or_null("ItmAudio19")
 			if itm_audio19: itm_audio19.text = "SFX - 전술 모드 전환 효과음  ·  Kenney  ·  CC0" if is_kr else "SFX - Tactical Mode Switch  ·  Kenney  ·  CC0"
+			var itm_audio20 = credits_list.get_node_or_null("ItmAudio20")
+			if itm_audio20: itm_audio20.text = "SFX - 드론 금속성 타격음 4종  ·  rubberduck (OpenGameArt)  ·  CC0" if is_kr else "SFX - Drone Metallic Impacts (4 variations)  ·  rubberduck (OpenGameArt)  ·  CC0"
+			var itm_audio21 = credits_list.get_node_or_null("ItmAudio21")
+			if itm_audio21: itm_audio21.text = "SFX - 드론 기계 파열 및 유리 분쇄음  ·  rubberduck (OpenGameArt)  ·  CC0" if is_kr else "SFX - Drone Mechanical Shatter & Glass Fragmentation  ·  rubberduck (OpenGameArt)  ·  CC0"
 
 			var itm_engine_logo = credits_list.get_node_or_null("ItmEngineLogo")
 			if itm_engine_logo: itm_engine_logo.text = "고도 엔진 로고 및 브랜딩  ·  Andrea Calabró (Godot Foundation)  ·  CC BY 4.0" if is_kr else "Godot Engine Logo & Branding  ·  Andrea Calabró (Godot Foundation)  ·  CC BY 4.0"
@@ -1680,6 +1686,8 @@ func _apply_language(lang: String) -> void:
 			if itm_celestial_vignette: itm_celestial_vignette.text = "VFX - 신성의 방사형 에너지 비네트 셰이더  ·  절차적 에너지 펄스 및 스타더스트 입자" if is_kr else "VFX - Celestial Radial Energy Vignette Shader  ·  Procedural Energy Pulsing & Stardust Motes"
 			var itm_foxfire_wave = credits_list.get_node_or_null("ItmFoxfireWave")
 			if itm_foxfire_wave: itm_foxfire_wave.text = "VFX - 신성의 여우불 참격 검기  ·  ImmediateMesh 초승달 화염 및 스파크 궤적" if is_kr else "VFX - Celestial Foxfire Slash Wave  ·  ImmediateMesh Flame Crescent & Trailing Spark Embers"
+			var itm_solar_drone_vfx = credits_list.get_node_or_null("ItmSolarDroneVFX")
+			if itm_solar_drone_vfx: itm_solar_drone_vfx.text = "VFX - 태양 궤도 아이 드론 군체 및 3단계 과열 전이  ·  절차적 타원 궤도 역학 및 셰이더" if is_kr else "VFX - Solar Eye Drone Swarm & 3-Tier Overheat  ·  Procedural Orbital Dynamics & Shaders"
 
 			var itm_disclaimer = credits_list.get_node_or_null("ItmDisclaimer")
 			if itm_disclaimer:
