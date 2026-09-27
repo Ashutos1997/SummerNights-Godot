@@ -1827,6 +1827,12 @@ func _apply_language(lang: String) -> void:
 			leg_catastrom.text = prefix_cat + " - 파워 업" if is_kr else prefix_cat + " - POWER UP"
 			if font: leg_catastrom.add_theme_font_override("font", font)
 
+		var prefix_mode = "X" if row_name == "KeyboardRow" else "Y"
+		var leg_mode = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/" + row_name + "/LegendColumn/LegModeChange/Label")
+		if leg_mode:
+			leg_mode.text = prefix_mode + " - 모드 변경" if is_kr else prefix_mode + " - MODE CHANGE"
+			if font: leg_mode.add_theme_font_override("font", font)
+
 		var prefix_mouse = "MOUSE - 조준/발사" if is_kr else "MOUSE - AIM/SHOOT"
 		if row_name == "XboxRow": prefix_mouse = "LS/RS - 조준 / RT - 발사" if is_kr else "LS/RS - AIM / RT - FIRE"
 		var leg_mouse = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/" + row_name + "/LegendColumn/LegMouse/Label")
@@ -3263,6 +3269,12 @@ func show_shield_shatter_hint() -> void:
 	show_toast(title, desc, "res://assets/ui/hud_elements/meter_ice.svg", Color(0.4, 0.9, 1.0, 1.0))
 	flash_ice_hint()
 
+func show_drones_shield_hint() -> void:
+	var is_kr = GameState.language == "KR"
+	var title = "드론 방어막 활성!" if is_kr else "DRONE SHIELD ACTIVE!"
+	var desc = "먼저 궤도 드론을 파괴하세요!" if is_kr else "SHOOT THE DRONES FIRST!"
+	show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_yellow.png", Color(1.0, 0.85, 0.20, 1.0))
+
 func flash_ice_hint() -> void:
 	if not ice_row or not ice_row.visible:
 		return
@@ -4251,7 +4263,7 @@ func _setup_controls_ui() -> void:
 	var groups = [
 		{"name_en": "SYSTEM", "name_kr": "시스템", "nodes": ["LegPause"]},
 		{"name_en": "COMBAT", "name_kr": "전투", "nodes": ["LegMouse", "LegWeapons"]},
-		{"name_en": "ABILITIES", "name_kr": "능력", "nodes": ["LegIceBlast", "LegCatastrom"]}
+		{"name_en": "ABILITIES", "name_kr": "능력", "nodes": ["LegIceBlast", "LegCatastrom", "LegModeChange"]}
 	]
 	
 	for row_name in ["KeyboardRow", "XboxRow"]:

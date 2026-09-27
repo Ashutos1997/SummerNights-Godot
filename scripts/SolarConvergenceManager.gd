@@ -181,15 +181,15 @@ func _create_drone(index: int, total: int, wave: int = 1) -> Dictionary:
 							pupil_mat = dup_mat
 
 	# Dynamic Coronal Orbit Geometry: Smooth, stately circular rotation around the Sun's perimeter
-	# Orbit radius (11.8m - 12.8m) providing generous clearance from Sun's body (~8m radius) and beach horizon
+	# Orbit radius (14.6m - 16.0m) revolving cleanly outside the Sun's 10m Golden Shield sphere
 	var angle_fraction = float(index) / float(total)
 	var orbit_speed = (0.85 + (index * 0.06)) * (1.0 if index % 2 == 0 else -1.0)
 	var phase_offset = angle_fraction * TAU
 
-	var base_r = 11.8 + (index % 3) * 0.5
+	var base_r = 14.6 + (index % 3) * 0.7
 	var rx = base_r
-	var ry = base_r * 0.92 # Subtle celestial inclination framing the Sun cleanly above beach horizon
-	var rz = 3.6 + (index % 3) * 0.6 # Positioned cleanly in front of the Sun along Z
+	var ry = base_r * 0.90 # Subtle celestial inclination framing the Sun cleanly above beach horizon
+	var rz = 4.4 + (index % 3) * 0.6 # Positioned cleanly in front of the shield along Z
 
 	# Ensure sun_node is resolved before positioning
 	if not sun_node or not is_instance_valid(sun_node):
@@ -414,9 +414,9 @@ func _process(delta: float) -> void:
 
 		# If convergence vortex is active, smoothly pull into high-speed equatorial ring
 		if drone.get("vortex_active", false):
-			drone["radius_x"] = lerpf(drone["radius_x"], drone.get("target_radius_x", 10.2), delta * 4.5)
-			drone["radius_y"] = lerpf(drone["radius_y"], drone.get("target_radius_y", 0.6), delta * 4.5)
-			drone["radius_z"] = lerpf(drone["radius_z"], drone.get("target_radius_z", 4.2), delta * 4.5)
+			drone["radius_x"] = lerpf(drone["radius_x"], drone.get("target_radius_x", 14.0), delta * 4.5)
+			drone["radius_y"] = lerpf(drone["radius_y"], drone.get("target_radius_y", 1.0), delta * 4.5)
+			drone["radius_z"] = lerpf(drone["radius_z"], drone.get("target_radius_z", 5.0), delta * 4.5)
 
 		# 1. Smooth Sweeping Coronal Orbit around Sun's perimeter
 		var t = (orbit_time * drone["orbit_speed"]) + drone["phase_offset"]

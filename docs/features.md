@@ -20,7 +20,7 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
   * *Precision Stream:* Low capacity, high critical multiplier.
   * *Heavy Cannon:* High capacity, massive cooling, rapid drain.
   * *Scatter Nozzle:* Wide spray for multi-target flare intercepts.
-  * *Kitsune Buster IX:* Endless Wave 30 pinnacle unlock (160 cap, 28 cooling, 14/s recharge, 2.2x crit). Toggles with `[X]` / MMB:
+  * *Kitsune Buster IX:* Endless Wave 30 pinnacle unlock (160 cap, 28 cooling, 14/s recharge, 2.2x crit). Toggles with `[X]` / Controller `[Y]` / MMB:
     * *Cannon Mode:* Precision stream with revolving 9-vial Kyubi cylinder, liquid slosh inertia, and dynamic vial pulsation.
     * *Blade Mode:* Katana melee strike (60° arc, 8.5m range, 8.5 cooling). Cleaves solar flares for +15% water parry refund and damages/shatters Solar Eye Drones (~2 hits, 1-hit core crit/Awakened). Emits a golden Foxfire slash wave.
 * **Ice Burst (Secondary `[R]`):** Freezes heat gain and sun movement. Unlocked Wave 2 / Level 3. Tracked via a 200x24 notched meter.
@@ -45,7 +45,7 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 ## 5. Dynamic Weather & Encounters
 * **Rainstorms:** Downpour grants infinite water and passive sun cooling.
 * **Solar Eclipses:** Sky darkens; sun fires rapid Shadow Flares.
-* **Solar Convergence — Equatorial Driver & Orbital Swarm:** Apex Boss Encounter (Wave 20+ / toggle `[O]` or `[L]`). When the swarm initiates, the **Equatorial Solar Driver Buckle** rushes in laterally from the side flank and slams onto the Sun's waist ($Y = -3.85\text{m}$, tilted 14°, leaving the Sun's expressive 2D cartoon face completely visible and unobstructed) with a magnetic `CLACK!`, flaring its breathing amber core as golden planetary belt ribbons sweep around the equator. **Simultaneously**, 6–8 Solar Eye Drones deploy outward from the belt into coronal orbit ($R = 11.8\text{m}–12.8\text{m}$), shielding the Sun from direct water cooling. Drones feature multi-tier crack damage (≤65% hairline fissures, ≤35% glowing fractures with coolant steam) and grant +15% water refund upon destruction (+20% on Ice Shatter). Neutralizing all drones triggers a Driver core overload (spark bursts, crimson/amber flicker, screen shake), leaving the Sun vulnerable to direct cooling.
+* **Solar Convergence — Equatorial Driver & Orbital Swarm:** Apex Boss Encounter (Wave 20+ / toggle `[O]` or `[L]`). When the swarm initiates, the **Equatorial Solar Driver Buckle** rushes in laterally from the side flank and slams onto the Sun's waist ($Y = -3.85\text{m}$, tilted 14°, leaving the Sun's expressive 2D cartoon face completely visible and unobstructed) with a magnetic `CLACK!`, flaring its breathing amber core as golden planetary belt ribbons sweep around the equator. **Simultaneously**, 6–8 Solar Eye Drones deploy outward from the belt into coronal orbit ($R = 14.6\text{m}–16.0\text{m}$), and a radiant 10m **Golden Drone Shield** envelops the Sun. Shooting the Sun deflects attacks with golden ripples and prompts a tactical warning ("SHOOT THE DRONES FIRST!"). Drones feature multi-tier crack damage (≤65% hairline fissures, ≤35% glowing fractures with coolant steam) and grant +15% water refund upon destruction (+20% on Ice Shatter). Neutralizing all drones overloads the Driver and shatters the golden shield, leaving the Sun vulnerable to direct cooling.
 
 ## 6. Environment & Visuals
 * **Dynamic Ocean:** Procedural Gerstner waves, Voronoi caustics, and subsurface scattering.

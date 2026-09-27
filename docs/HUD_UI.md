@@ -26,7 +26,7 @@ Architectural map and layout reference for `HUD.tscn`.
 * **Crosshair:** Dynamic reticle scaling on hits. Inner ring tracks water capacity. Flashes red when empty, green on crits.
   * *Weapon Shapes:* Unique geometry per weapon. Blade Mode uses katana crescent brackets ($R = 24\text{px}$) with tsuba accents.
   * *Celestial Timer Ring:* 360° depleting cyan ring ($R = 38\text{px}$) with diamond accent and micro-timer countdown. Pulses orange at $\le 3.0\text{s}$.
-* **Damage Numbers:** Floating 3D text for hits, golden crits, and cyan `DEFLECTED` feedback. Electric cyan during Celestial Awakening.
+* **Damage Numbers:** Floating 3D text for hits, golden crits, and cyan/gold `DEFLECTED` feedback. Electric cyan during Celestial Awakening.
 * **ComboLabel & Callouts:** Displays combo multiplier (up to 3.0x) and arcade text (e.g., "CHILL!").
 * **FlareRings:** 2D diegetic charging rings telegraphing incoming flares.
 
@@ -51,7 +51,7 @@ Architectural map and layout reference for `HUD.tscn`.
 * **AchievementsScreen:** 3-column retro list tracking 13 achievements with live counters and gold badges.
 * **DraftingScreen (Perks):** Post-boss modal. Staggered card deal entrance with rarity badges.
 * **FiltersScreen:** Mutually exclusive post-processing options (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
-* **ControllerScreen:** Keyboard/Xbox layout toggle with unified "Power Up" labels for `[F]` and `[RB]`.
+* **ControllerScreen:** Keyboard/Xbox layout toggle with unified "Power Up" labels for `[F]` and `[RB]`, and Mode Change (`[X]` Keyboard / `[Y]` Xbox, magenta highlight).
 * **SettingsScreen:** 3 categorized sections (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`) using retro badges and off-white row labels.
 * **WeaponWheel (`TAB`):** Slows time to 0.2x. 6-slice procedural wedge with 3D previews, stat bars, and crit multipliers.
 * **TitleScreen:** Main menu with custom Godot boot splash, high score, and Best Endless Wave display.

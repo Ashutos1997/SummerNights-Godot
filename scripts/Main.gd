@@ -51,6 +51,8 @@ var shield_deflect_particles: GPUParticles3D
 var shield_hit_tween: Tween
 var shield_ripple_time: float = 999.0
 var shield_spray_duration: float = 0.0
+var is_drone_shield_active: bool = false
+var drone_shield_spray_duration: float = 0.0
 var master_lp_idx: int = -1
 var heat_vignette_color: Color = Color(0, 0, 0, 0):
 	set(value):
@@ -1367,6 +1369,7 @@ func _build_scene() -> void:
 	add_child(solar_convergence_mgr)
 	solar_convergence_mgr.drone_destroyed.connect(_on_solar_drone_destroyed)
 	solar_convergence_mgr.drone_shattered_by_ice.connect(_on_solar_drone_ice_shattered)
+	solar_convergence_mgr.convergence_completed.connect(shatter_drone_shield)
 	
 	# ── Weather Rain Particles ───────────────────────────────────────────────
 	weather_rain_particles = GPUParticles3D.new()
@@ -2296,32 +2299,63 @@ func _process(delta: float) -> void:
 		if sun_shield_mesh and sun_shield_mesh.material_override:
 			sun_shield_mesh.material_override.set_shader_parameter("hit_time", shield_ripple_time)
 	
-	var is_boss_wave = (GameState.current_wave % 5 == 0)
-	if GameState.is_survival_mode and GameState.current_wave >= 15 and is_boss_wave:
-		if not is_sun_shielded:
-			sun_shield_cooldown -= delta
-			if sun_shield_cooldown <= 0.0:
-				is_sun_shielded = true
-				if sun_shield_mesh:
-					sun_shield_mesh.scale = Vector3.ZERO
-					sun_shield_mesh.visible = true
-					# Spawn animation: scale up + fade in
-					var mat = sun_shield_mesh.material_override as ShaderMaterial
-					if mat:
-						mat.set_shader_parameter("shield_opacity", 0.0)
-					var tw = create_tween().set_parallel()
-					tw.tween_property(sun_shield_mesh, "scale", Vector3.ONE, 0.6).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_ELASTIC)
-					if mat:
-						tw.tween_method(func(v): mat.set_shader_parameter("shield_opacity", v), 0.0, 1.0, 0.4).set_ease(Tween.EASE_IN)
-				if is_instance_valid(shield_spawn_sfx):
-					shield_spawn_sfx.pitch_scale = randf_range(0.98, 1.02)
-					shield_spawn_sfx.play()
+	var has_active_drones = (solar_convergence_mgr and solar_convergence_mgr.get_active_drone_count() > 0)
+	if has_active_drones:
+		# Golden Drone Shield is active while any orbital drones live!
+		if not is_sun_shielded or not is_drone_shield_active:
+			is_sun_shielded = true
+			is_drone_shield_active = true
+			if sun_shield_mesh:
+				var mat = sun_shield_mesh.material_override as ShaderMaterial
+				if mat:
+					mat.set_shader_parameter("shield_color", Color(1.0, 0.82, 0.18, 0.95))
+					mat.set_shader_parameter("ripple_color_tint", Vector3(1.0, 0.92, 0.45))
+					mat.set_shader_parameter("shield_opacity", 0.0)
+				sun_shield_mesh.scale = Vector3.ZERO
+				sun_shield_mesh.visible = true
+				var tw = create_tween().set_parallel()
+				tw.tween_property(sun_shield_mesh, "scale", Vector3.ONE, 0.6).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_ELASTIC)
+				if mat:
+					tw.tween_method(func(v): mat.set_shader_parameter("shield_opacity", v), 0.0, 1.0, 0.4).set_ease(Tween.EASE_IN)
+			if is_instance_valid(shield_spawn_sfx):
+				shield_spawn_sfx.pitch_scale = 1.15
+				shield_spawn_sfx.play()
 	else:
-		if is_sun_shielded:
+		if is_drone_shield_active:
+			is_drone_shield_active = false
 			is_sun_shielded = false
 			if sun_shield_mesh:
 				sun_shield_mesh.visible = false
 				sun_shield_mesh.scale = Vector3.ONE
+
+		# Standard Boss Wave Cyan Shield (only when not in drone fight)
+		var is_boss_wave = (GameState.current_wave % 5 == 0)
+		if GameState.is_survival_mode and GameState.current_wave >= 15 and is_boss_wave:
+			if not is_sun_shielded:
+				sun_shield_cooldown -= delta
+				if sun_shield_cooldown <= 0.0:
+					is_sun_shielded = true
+					if sun_shield_mesh:
+						var mat = sun_shield_mesh.material_override as ShaderMaterial
+						if mat:
+							mat.set_shader_parameter("shield_color", Color(0.2, 0.8, 1.0, 0.9))
+							mat.set_shader_parameter("ripple_color_tint", Vector3(0.6, 0.95, 1.0))
+							mat.set_shader_parameter("shield_opacity", 0.0)
+						sun_shield_mesh.scale = Vector3.ZERO
+						sun_shield_mesh.visible = true
+						var tw = create_tween().set_parallel()
+						tw.tween_property(sun_shield_mesh, "scale", Vector3.ONE, 0.6).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_ELASTIC)
+						if mat:
+							tw.tween_method(func(v): mat.set_shader_parameter("shield_opacity", v), 0.0, 1.0, 0.4).set_ease(Tween.EASE_IN)
+					if is_instance_valid(shield_spawn_sfx):
+						shield_spawn_sfx.pitch_scale = randf_range(0.98, 1.02)
+						shield_spawn_sfx.play()
+		else:
+			if is_sun_shielded:
+				is_sun_shielded = false
+				if sun_shield_mesh:
+					sun_shield_mesh.visible = false
+					sun_shield_mesh.scale = Vector3.ONE
 	
 	if game_over:
 		if is_instance_valid(shoot_loop_sfx):
@@ -3069,6 +3103,11 @@ func _process(delta: float) -> void:
 				if solar_convergence_mgr and solar_convergence_mgr.get_active_drone_count() > 0:
 					# Coronal Drone Shield is active: Drones protect the Sun!
 					_on_shield_deflect(target_pos)
+					drone_shield_spray_duration += delta
+					if drone_shield_spray_duration >= 0.5:
+						drone_shield_spray_duration = -2.5
+						if hud and hud.has_method("show_drones_shield_hint"):
+							hud.show_drones_shield_hint()
 					combo_timer += delta
 					if combo_timer >= 1.5:
 						if not combo_active:
@@ -3189,7 +3228,7 @@ func _input(event: InputEvent) -> void:
 	if GameState.current_weapon_id == "kitsune":
 		var is_mode_key = (event is InputEventKey and event.pressed and not event.echo and (event.keycode == KEY_X or event.keycode == KEY_C))
 		var is_mode_mouse = (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_MIDDLE)
-		var is_mode_joy = (event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_X)
+		var is_mode_joy = (event is InputEventJoypadButton and event.pressed and (event.button_index == JOY_BUTTON_Y or event.button_index == JOY_BUTTON_X))
 		if is_mode_key or is_mode_mouse or is_mode_joy:
 			toggle_kitsune_mode()
 
@@ -3654,13 +3693,21 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			if is_sun_shielded:
 				dmg = 0.0 # Shield completely nullifies water damage
 				_on_shield_deflect(target_pos)
-				shield_spray_duration += delta
-				if shield_spray_duration >= 0.6:
-					shield_spray_duration = -2.0
-					if hud and hud.has_method("show_shield_shatter_hint"):
-						hud.show_shield_shatter_hint()
+				if is_drone_shield_active:
+					drone_shield_spray_duration += delta
+					if drone_shield_spray_duration >= 0.5:
+						drone_shield_spray_duration = -2.5
+						if hud and hud.has_method("show_drones_shield_hint"):
+							hud.show_drones_shield_hint()
+				else:
+					shield_spray_duration += delta
+					if shield_spray_duration >= 0.6:
+						shield_spray_duration = -2.0
+						if hud and hud.has_method("show_shield_shatter_hint"):
+							hud.show_shield_shatter_hint()
 			else:
 				shield_spray_duration = max(0.0, shield_spray_duration - delta * 2.0)
+				drone_shield_spray_duration = max(0.0, drone_shield_spray_duration - delta * 2.0)
 				if active_mirages.size() == 0:
 					temperature = max(0.0, temperature - dmg)
 					
@@ -3686,13 +3733,21 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			if is_sun_shielded:
 				dmg = 0.0 # Shield completely nullifies water damage
 				_on_shield_deflect(target_pos)
-				shield_spray_duration += delta
-				if shield_spray_duration >= 0.6:
-					shield_spray_duration = -2.0
-					if hud and hud.has_method("show_shield_shatter_hint"):
-						hud.show_shield_shatter_hint()
+				if is_drone_shield_active:
+					drone_shield_spray_duration += delta
+					if drone_shield_spray_duration >= 0.5:
+						drone_shield_spray_duration = -2.5
+						if hud and hud.has_method("show_drones_shield_hint"):
+							hud.show_drones_shield_hint()
+				else:
+					shield_spray_duration += delta
+					if shield_spray_duration >= 0.6:
+						shield_spray_duration = -2.0
+						if hud and hud.has_method("show_shield_shatter_hint"):
+							hud.show_shield_shatter_hint()
 			else:
 				shield_spray_duration = max(0.0, shield_spray_duration - delta * 2.0)
+				drone_shield_spray_duration = max(0.0, drone_shield_spray_duration - delta * 2.0)
 				if active_mirages.size() == 0:
 					temperature = max(0.0, temperature - dmg)
 					
@@ -4602,6 +4657,7 @@ func trigger_solar_convergence() -> void:
 	toggle_solar_drones()
 
 func on_solar_convergence_sun_powerup() -> void:
+	shatter_drone_shield()
 	if is_instance_valid(sun_face) and face_textures.has("charging"):
 		sun_face.texture = face_textures["charging"]
 	sun_face_shake = 0.55
@@ -4845,6 +4901,9 @@ func _perform_kitsune_blade_slash() -> void:
 			if aim_dist < 4.8: # Matches gun hit detection radius for the Sun
 				if is_sun_shielded:
 					_on_shield_deflect(crosshair_target)
+					if is_drone_shield_active:
+						if hud and hud.has_method("show_drones_shield_hint"):
+							hud.show_drones_shield_hint()
 				else:
 					var is_crit = false
 					if sunspot_node and is_instance_valid(sunspot_node):
@@ -4944,9 +5003,14 @@ func _spawn_deflected_number(pos: Vector3) -> void:
 	lbl.text = "DEFLECTED"
 	lbl.font = preload("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
 	lbl.font_size = 420
-	lbl.modulate = Color(0.3, 0.9, 1.0, 0.95)
-	lbl.outline_size = 28
-	lbl.outline_modulate = Color(0.0, 0.2, 0.4, 0.9)
+	if is_drone_shield_active:
+		lbl.modulate = Color(1.0, 0.88, 0.25, 0.95)
+		lbl.outline_size = 28
+		lbl.outline_modulate = Color(0.25, 0.15, 0.0, 0.9)
+	else:
+		lbl.modulate = Color(0.3, 0.9, 1.0, 0.95)
+		lbl.outline_size = 28
+		lbl.outline_modulate = Color(0.0, 0.2, 0.4, 0.9)
 	
 	var offset = Vector3(randf_range(-2.0, 2.0), randf_range(0.5, 2.5), randf_range(-1.0, 1.0))
 	add_child(lbl)
@@ -5041,6 +5105,7 @@ func _on_shield_deflect(hit_world_pos: Vector3) -> void:
 		var pmat = shield_deflect_particles.process_material as ParticleProcessMaterial
 		if pmat:
 			pmat.direction = deflect_dir
+			pmat.color = Color(1.0, 0.88, 0.25, 0.95) if is_drone_shield_active else Color(0.2, 0.8, 1.0, 0.9)
 		shield_deflect_particles.restart()
 
 	# 3. Deflection Sound (with rapid-fire throttle)
@@ -5205,8 +5270,70 @@ func _spawn_ice_nova() -> void:
 	add_child(nova)
 	get_tree().create_timer(1.0).timeout.connect(nova.queue_free)
 
+func shatter_drone_shield() -> void:
+	if not is_drone_shield_active and not is_sun_shielded:
+		return
+	is_drone_shield_active = false
+	is_sun_shielded = false
+	if is_instance_valid(shield_break_sfx):
+		shield_break_sfx.pitch_scale = 0.85
+		shield_break_sfx.play()
+	
+	if sun_shield_mesh:
+		var mat = sun_shield_mesh.material_override as ShaderMaterial
+		var tw = create_tween().set_parallel()
+		tw.tween_property(sun_shield_mesh, "scale", Vector3.ONE * 1.8, 0.35).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+		if mat:
+			tw.tween_method(func(v): mat.set_shader_parameter("shield_opacity", v), 1.0, 0.0, 0.3).set_ease(Tween.EASE_IN)
+		tw.chain().tween_callback(func():
+			sun_shield_mesh.visible = false
+			sun_shield_mesh.scale = Vector3.ONE
+			if mat:
+				mat.set_shader_parameter("shield_opacity", 1.0)
+				mat.set_shader_parameter("shield_color", Color(0.2, 0.8, 1.0, 0.9))
+				mat.set_shader_parameter("ripple_color_tint", Vector3(0.6, 0.95, 1.0))
+		)
+		
+		# Golden Shatter Particle Burst
+		var burst = GPUParticles3D.new()
+		var pmat = ParticleProcessMaterial.new()
+		pmat.direction = Vector3(0, 0, 1)
+		pmat.spread = 180.0
+		pmat.initial_velocity_min = 12.0
+		pmat.initial_velocity_max = 24.0
+		pmat.gravity = Vector3(0, -3.0, 0)
+		pmat.scale_min = 0.4
+		pmat.scale_max = 1.0
+		pmat.color = Color(1.0, 0.85, 0.20, 0.95)
+		var pmesh = BoxMesh.new()
+		pmesh.size = Vector3(0.35, 0.35, 0.08)
+		var pmat3d = StandardMaterial3D.new()
+		pmat3d.albedo_color = Color(1.0, 0.88, 0.25, 0.85)
+		pmat3d.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		pmat3d.emission_enabled = true
+		pmat3d.emission = Color(1.0, 0.80, 0.15)
+		pmat3d.emission_energy_multiplier = 4.0
+		pmat3d.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		pmesh.material = pmat3d
+		burst.process_material = pmat
+		burst.draw_pass_1 = pmesh
+		burst.emitting = true
+		burst.one_shot = true
+		burst.explosiveness = 1.0
+		burst.amount = 45
+		burst.lifetime = 0.8
+		burst.global_position = sun.global_position
+		add_child(burst)
+		get_tree().create_timer(1.2).timeout.connect(burst.queue_free)
+
 func freeze_sun() -> void:
 	if is_sun_shielded:
+		if is_drone_shield_active:
+			# Golden Drone Shield is powered by active orbital drones! Direct Ice Blast is deflected.
+			_on_shield_deflect(sun.global_position)
+			if hud and hud.has_method("show_drones_shield_hint"):
+				hud.show_drones_shield_hint()
+			return
 		is_sun_shielded = false
 		sun_shield_cooldown = randf_range(20.0, 30.0)
 		if shield_break_sfx:

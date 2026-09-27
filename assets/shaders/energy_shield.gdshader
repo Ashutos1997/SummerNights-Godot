@@ -12,6 +12,7 @@ uniform float shield_opacity = 1.0; // For spawn/shatter animation control
 uniform vec3 hit_point = vec3(0.0, 0.0, 10.0);
 uniform float hit_intensity = 0.0; // Decays from 1.0 -> 0.0
 uniform float hit_time = 0.0;      // Seconds since hit for expanding ring
+uniform vec3 ripple_color_tint : source_color = vec3(0.6, 0.95, 1.0);
 
 varying vec3 local_vertex;
 
@@ -35,7 +36,7 @@ void fragment() {
     float ring_radius = hit_time * 28.0;
     float ring = smoothstep(2.0, 0.0, abs(hit_dist - ring_radius));
     float impact_glow = smoothstep(5.0, 0.0, hit_dist) * hit_intensity;
-    vec3 ripple_color = vec3(0.6, 0.95, 1.0) * (ring * 1.8 + impact_glow * 1.5) * hit_intensity;
+    vec3 ripple_color = ripple_color_tint * (ring * 1.8 + impact_glow * 1.5) * hit_intensity;
     
     ALBEDO = shield_color.rgb + vec3(pulse * 0.3) + vec3((1.0 - hex_line) * 0.15) + ripple_color;
     ALPHA = clamp((fresnel * shield_color.a + base_alpha + pulse * 0.2 + (ring * 0.5 + impact_glow * 0.5) * hit_intensity) * shield_opacity, 0.0, 1.0);

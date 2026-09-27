@@ -22,16 +22,18 @@ All notable changes to the Summer Nights project will be documented in this file
 * Hydro-Tube Emissive Pulsation: Real-time emissive breathing pulse across cylinder vials and coolant lines, shifting to amber below 25% water.
 * Liquid Slosh & Barrel Momentum: Fluid inertia tilt in vials and firing-accelerated cylinder rotation with viscous spin-down drag.
 * Drone CC0 Audio Overhaul: 7 authentic open-source recordings by rubberduck for multi-voice metal impacts, water shatters, and cryogenic ice shatters.
-* Solar Convergence — Equatorial Driver & Synchronized Swarm: Apex Boss Wave (Wave 20+ / toggle `[O]` or `[L]`). The Equatorial Solar Driver Buckle rushes in from the side and slams onto the Sun's lower waist ($Y = -3.85\text{m}$, tilted 14°, leaving the Sun's iconic 2D face unobstructed) as golden planetary belt ribbons sweep around the equator. Simultaneously, 6–8 Solar Eye Drones deploy outward from the belt into coronal orbit ($R = 11.8\text{m}–12.8\text{m}$), physically intercepting water streams.
+* Solar Convergence — Equatorial Driver & Synchronized Swarm: Apex Boss Wave (Wave 20+ / toggle `[O]` or `[L]`). The Equatorial Solar Driver Buckle rushes in from the side and slams onto the Sun's lower waist ($Y = -3.85\text{m}$, tilted 14°, leaving the Sun's iconic 2D face unobstructed) as golden planetary belt ribbons sweep around the equator. Simultaneously, 6–8 Solar Eye Drones deploy outward from the belt into an expanded coronal orbit ($R = 14.6\text{m}–16.0\text{m}$) outside a 10m radiant Golden Drone Shield.
+* Golden Drone Shield & Tactical Toast: Active orbital drones project a 10m Golden Shield over the Sun with golden deflection ripples and sparks; shooting the shielded Sun prompts a tactical notification ("SHOOT THE DRONES FIRST!"). Neutralizing all drones shatters the shield and triggers Driver overload.
 * Solar Driver Core Overload: Neutralizing all orbital drones overloads the Driver buckle with metallic rupture sounds, camera trauma shake, spark bursts, and unstable crimson/amber core flicker, leaving the Sun vulnerable to direct cooling.
 
 ### Improved
 * Solar Eye Drone Visual Polish: Radiant Sun-Gold & Pearl Ivory armor plating, warm bronze chassis, vermilion inlays, toon shading, and 2.3x scale for crisp beach silhouette.
 * Procedural Drone Crack Damage: Stage 1 hairline fissures (≤65% HP) and Stage 2 solar amber fractures with leaking coolant steam wisps (≤35% HP, strobe ≤18%) without red tinting.
-* Sun & Drone Geometry: Raised Sun to Y=13.5 (+3m) and adjusted drone orbits ($R = 11.8\text{m}–12.8\text{m}$) to prevent sand dune clipping.
+* Sun & Drone Geometry: Raised Sun to Y=13.5 (+3m) and expanded drone orbits ($R = 14.6\text{m}–16.0\text{m}$) to clear both the sand dunes and the 10m Golden Shield.
 * Kitsune Blade & Collar Detail: Upgraded receiver collar with aperture clamps, bronze Seppa, cyber-gold Habaki, Yokote ridge line, and chisel O-Kissaki tip.
 * Kitsune Cannon Muzzle Detail: Aerodynamic fox-fang cowl, compensator brake, stepped vortex nozzle, quad magnetic calipers, and front post sight.
 * Controls "Power Up" Legend: Unified `[F]` and `[RB]` input labels from "Catastrom" to "Power Up" across keyboard and gamepad.
+* Controls "Mode Change" Legend: Added `[X]` (Keyboard) and `[Y]` (Xbox) mode change entries with magenta highlight swatches and matching typography.
 * Kitsune Buster 3D Model Polish: Authentic Katana sori curvature, fuller groove, fox-flame tsuba, and skeletonized cylinder window.
 * Weapon Wheel Spacing: Replaced angular padding with uniform 12px linear gaps between all slices.
 * Weapon Wheel Info Panel: Centered archetype tags, mini-meter stat bars, crit multiplier badge, and hairline dividers.
@@ -295,16 +297,18 @@ All notable changes to the Summer Nights project will be documented in this file
 * 수압 튜브 동적 발광 맥동: 실린더 바이알 및 냉각 파이프의 실시간 호흡 발광 맥동 구현 (수량 25% 미만 시 호박색 경고 전환).
 * 유체 슬로싱 관성 및 총열 자동 회전: 바이알 내부 유체 관성 틸트 및 사격 시 가속 회전/감속 정지하는 실린더 물리 모멘텀 적용.
 * 드론 CC0 효과음 개편: OpenGameArt의 rubberduck 제작 정품 오디오를 활용한 다보이스 금속 피격음, 수압 파괴음, 극저온 얼음 분쇄음 연동.
-* 태양 수렴 — 적도 솔라 드라이버 및 동기화 드론 군체: 20웨이브 이상 보스전 (토글: `[O]` 또는 `[L]`). 태양의 2D 만화 표정을 전혀 가리지 않는 하단 허리($Y = -3.85\text{m}$, 14° 기울기)로 솔라 드라이버 버클이 측면에서 쇄도하여 체결되며 행성 벨트 리본이 적도를 감쌉니다. 동시에 6~8기의 태양 궤도 아이 드론이 벨트에서 사출 전개되어 태양 주위를 공전($R = 11.8\text{m}–12.8\text{m}$)하며 물줄기를 물리 차단합니다.
+* 태양 수렴 — 적도 솔라 드라이버 및 동기화 드론 군체: 20웨이브 이상 보스전 (토글: `[O]` 또는 `[L]`). 태양의 2D 만화 표정을 전혀 가리지 않는 하단 허리($Y = -3.85\text{m}$, 14° 기울기)로 솔라 드라이버 버클이 측면에서 쇄도하여 체결되며 행성 벨트 리본이 적도를 감쌉니다. 동시에 6~8기의 태양 궤도 아이 드론이 벨트에서 사출 전개되어 10m 황금 드론 방어막 외곽 공전 궤도($R = 14.6\text{m}–16.0\text{m}$)를 형성합니다.
+* 황금 드론 방어막 및 전술 알림: 드론 군체 활성 중 태양을 감싸는 10m 황금 에너지 방어막이 투사되며, 태양 사격 시 황금 리플과 함께 전술 안내 팝업("먼저 궤도 드론을 파괴하세요!")이 표시됩니다. 드론 전멸 시 방어막이 파쇄되며 드라이버 과열이 유발됩니다.
 * 솔라 드라이버 코어 과열 시스템: 모든 궤도 드론을 격파하면 금속 파열음, 화면 흔들림, 불티 분출과 함께 드라이버 코어가 불안정하게 점멸하며 과열되어 태양 본체가 직접 냉각 가능한 무방비 상태로 노출됩니다.
 
 ### 개선됨 (Improved)
 * 태양 궤도 아이 드론 외형 개선: 썬-골드 및 펄 아이보리 장갑, 브론즈 섀시, 버밀리온 인레이, 툰 셰이딩 및 2.3배 크기 확대로 해변 조준 실루엣 강화.
 * 드론 절차적 균열 손상: 1단계 미세 렌즈 균열(HP ≤65%) 및 2단계 솔라 엠버 파쇄선과 냉각수 증기(HP ≤35%, 스트로브 ≤18%)를 과도한 붉은 틴팅 없이 품격 있게 구현.
-* 지형 간섭 해소: 태양 기준 높이를 Y=13.5(+3m)로 상향하고 드론 공전 궤도($R = 11.8\text{m}–12.8\text{m}$)를 조정하여 모래사장 클리핑 방지.
+* 지형 간섭 해소: 태양 기준 높이를 Y=13.5(+3m)로 상향하고 드론 공전 궤도($R = 14.6\text{m}–16.0\text{m}$)를 확장하여 모래사장 클리핑 및 10m 황금 실드 간섭 방지.
 * 구미호 검 모드 체결 칼라 개선: 조리개 잠금 클램프, 청동 셋파, 사이버 골드 하바키, 요코테 융기선, 칫솔형 오-킷사키 칼끝 형상 적용.
 * 구미호 포격 총구 개선: 구미호 송곳니 카울, 컴펜세이터 브레이크, 단차식 볼텍스 노즐, 4조각 자기 집속 캘리퍼, 전면 가늠쇠 레일 적용.
 * 조작 안내 "파워 업" 표기 통일: 조작 안내 화면의 `[F]` 및 `[RB]` 명칭을 "카타스트롬"에서 "파워 업"으로 통합 표기.
+* 조작 안내 "모드 전환" 범례 추가: 키보드(`[X]`) 및 Xbox(`[Y]`) 조작 안내에 마젠타 색상 스와치와 일관된 타이포그래피를 적용한 모드 변경 항목 추가.
 * 구미호 버스터 3D 모델 디테일 강화: 정통 카타나 곡률(소리), 혈조, 여우불 츠바, 스켈레톤 실린더 윈도우 디테일 추가.
 * 무기 선택 휠 균일 간격: 슬라이스 간격을 일정한 12px 선형 갭으로 통일하여 평행한 레이아웃 유지.
 * 무기 정보 패널 개선: 아키타입 태그, 파워/용량 미니 게이지, 치명타 배율 배지, 헤어라인 구분선이 결합된 아케이드 카드 레이아웃 적용.

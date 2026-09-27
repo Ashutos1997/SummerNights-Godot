@@ -170,6 +170,18 @@ corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_leg_x"]
+bg_color = Color(0.9, 0.3, 0.8, 0.25)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.9, 0.3, 0.8, 0.9)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tutorial"]
 bg_color = Color(0.05, 0.02, 0.1, 0.85)
 border_width_left = 2
@@ -1382,6 +1394,22 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "F - POWER UP"
 
+[node name="LegModeChange" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/LegendColumn"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+
+[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/LegendColumn/LegModeChange"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_leg_x")
+
+[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/LegendColumn/LegModeChange"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "X - MODE CHANGE"
+
 [node name="LegMouse" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/LegendColumn"]
 layout_mode = 2
 theme_override_constants/separation = 8
@@ -1491,6 +1519,22 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_leg_f")
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "RB - POWER UP"
+
+[node name="LegModeChange" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/LegendColumn"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+
+[node name="Swatch" type="Panel" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/LegendColumn/LegModeChange"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_leg_x")
+
+[node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/LegendColumn/LegModeChange"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Y - MODE CHANGE"
 
 [node name="LegMouse" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/LegendColumn"]
 layout_mode = 2
