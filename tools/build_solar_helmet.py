@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 """
 build_solar_helmet.py
-Generates the Kamen Rider Apex Helmet (assets/models/solar_helmet.glb) for the Sun.
-Designed to encapsulate the Sun's upper hemisphere and cheeks (R ≈ 7.80m).
-
-Components:
-  1. Helmet_Crown: High-rising dual V-Crest horns + skullcap armor + vermilion crest gem
-  2. Helmet_Brow: Heavy beveled brow arch with cyan diodes and visor mounting
-  3. Helmet_LeftCheek: Aerodynamic cheek plate + exhaust steam cowl + lower jaw lock
-  4. Helmet_RightCheek: Mirrored right cheek plate + exhaust steam cowl + lower jaw lock
-  5. Helmet_VisorFrame: Angular compound visor rim framing the furious eyes
+Generates the complete Kamen Rider Apex Helmet (assets/models/solar_helmet.glb).
+Fully encapsulates the Sun (R ≈ 7.80m) with:
+  1. Full Cranial Shell (Skullcap, Temporal Dome, and Occipital Back Armor)
+  2. Iconic Kamen Rider Compound Eye Visors (Luminous faceted ruby/amber insectoid eyes)
+  3. Kamen Rider Crusher Mouth Plate (Stepped horizontal ventilation slats & angular chin keel)
+  4. Dual High-Rising Sun-Gold V-Crest Horns + Central Forehead O-Signal Ruby Gem
+  5. Lateral Ear Receptors & Dual Steam Exhaust Cowls
+  6. Sub-assemblies organized into Helmet_Crest, Helmet_Faceplate, Helmet_Cheeks for henshin slam assembly!
 """
 
 import math
 import struct
 import json
 import os
+import numpy as np
 
 class GLTFBuilder:
     def __init__(self):
@@ -46,7 +46,6 @@ class GLTFBuilder:
 
     def add_buffer_data(self, data: bytes, target=None):
         offset = len(self.bin_data)
-        # 4-byte align
         pad = (4 - (offset % 4)) % 4
         if pad > 0:
             self.bin_data.extend(b'\x00' * pad)
@@ -142,7 +141,7 @@ class GLTFBuilder:
             self.bin_data.extend(b'\x00' * pad)
 
         gltf = {
-            "asset": {"version": "2.0", "generator": "SolarHelmetBuilder"},
+            "asset": {"version": "2.0", "generator": "KamenRiderSolarHelmetBuilder"},
             "scene": 0,
             "scenes": [{"name": "DefaultScene", "nodes": [len(self.nodes) - 1]}],
             "nodes": self.nodes,
@@ -164,11 +163,9 @@ class GLTFBuilder:
             f.write(b"glTF")
             f.write(struct.pack("<I", 2))
             f.write(struct.pack("<I", total_size))
-            # JSON Chunk
             f.write(struct.pack("<I", len(json_bytes)))
             f.write(b"JSON")
             f.write(json_bytes)
-            # BIN Chunk
             f.write(struct.pack("<I", len(self.bin_data)))
             f.write(b"BIN\x00")
             f.write(self.bin_data)
@@ -177,140 +174,77 @@ class GLTFBuilder:
 # Geometry Helpers
 # ═════════════════════════════════════════════════════════════════════════════
 
-def create_box_3d(min_pt, max_pt):
-    x0, y0, z0 = min_pt
-    x1, y1, z1 = max_pt
-    verts = [
-        # Front
-        [x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1],
-        # Back
-        [x1, y0, z0], [x0, y0, z0], [x0, y1, z0], [x1, y1, z0],
-        # Top
-        [x0, y1, z1], [x1, y1, z1], [x1, y1, z0], [x0, y1, z0],
-        # Bottom
-        [x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1],
-        # Right
-        [x1, y0, z1], [x1, y0, z0], [x1, y1, z0], [x1, y1, z1],
-        # Left
-        [x0, y0, z0], [x0, y0, z1], [x0, y1, z1], [x0, y1, z0],
-    ]
-    norms = [
-        [ 0,  0,  1], [ 0,  0,  1], [ 0,  0,  1], [ 0,  0,  1],
-        [ 0,  0, -1], [ 0,  0, -1], [ 0,  0, -1], [ 0,  0, -1],
-        [ 0,  1,  0], [ 0,  1,  0], [ 0,  1,  0], [ 0,  1,  0],
-        [ 0, -1,  0], [ 0, -1,  0], [ 0, -1,  0], [ 0, -1,  0],
-        [ 1,  0,  0], [ 1,  0,  0], [ 1,  0,  0], [ 1,  0,  0],
-        [-1,  0,  0], [-1,  0,  0], [-1,  0,  0], [-1,  0,  0],
-    ]
-    indices = []
-    for face in range(6):
-        b = face * 4
-        indices.extend([b, b+1, b+2, b, b+2, b+3])
-    return verts, norms, indices
+def calc_normal(p0, p1, p2):
+    v01 = [p1[0]-p0[0], p1[1]-p0[1], p1[2]-p0[2]]
+    v02 = [p2[0]-p0[0], p2[1]-p0[1], p2[2]-p0[2]]
+    nx = v01[1]*v02[2] - v01[2]*v02[1]
+    ny = v01[2]*v02[0] - v01[0]*v02[2]
+    nz = v01[0]*v02[1] - v01[1]*v02[0]
+    l = math.sqrt(nx*nx + ny*ny + nz*nz)
+    if l > 1e-6:
+        return [nx/l, ny/l, nz/l]
+    return [0.0, 1.0, 0.0]
 
 def create_chamfered_box_3d(cx, cy, cz, width, height, depth, chamfer=0.15):
-    # Generates a box with beveled 45° chamfered edges
     hw = width * 0.5
     hh = height * 0.5
     hd = depth * 0.5
     c = min(chamfer, hw*0.4, hh*0.4, hd*0.4)
 
-    # 8 corners truncated to 24 face-aligned vertices
     verts = []
     norms = []
     indices = []
 
     def add_quad(p0, p1, p2, p3):
-        # calculate normal
-        v01 = [p1[0]-p0[0], p1[1]-p0[1], p1[2]-p0[2]]
-        v02 = [p2[0]-p0[0], p2[1]-p0[1], p2[2]-p0[2]]
-        nx = v01[1]*v02[2] - v01[2]*v02[1]
-        ny = v01[2]*v02[0] - v01[0]*v02[2]
-        nz = v01[0]*v02[1] - v01[1]*v02[0]
-        l = math.sqrt(nx*nx + ny*ny + nz*nz)
-        if l > 1e-6:
-            nx, ny, nz = nx/l, ny/l, nz/l
-        else:
-            nx, ny, nz = 0, 1, 0
-
+        n = calc_normal(p0, p1, p2)
         b = len(verts)
         verts.extend([p0, p1, p2, p3])
-        norms.extend([[nx, ny, nz]] * 4)
+        norms.extend([n] * 4)
         indices.extend([b, b+1, b+2, b, b+2, b+3])
 
-    # Front face
+    # 6 primary faces
     add_quad([cx - hw + c, cy - hh + c, cz + hd],
              [cx + hw - c, cy - hh + c, cz + hd],
              [cx + hw - c, cy + hh - c, cz + hd],
              [cx - hw + c, cy + hh - c, cz + hd])
-    # Back face
     add_quad([cx + hw - c, cy - hh + c, cz - hd],
              [cx - hw + c, cy - hh + c, cz - hd],
              [cx - hw + c, cy + hh - c, cz - hd],
              [cx + hw - c, cy + hh - c, cz - hd])
-    # Top face
     add_quad([cx - hw + c, cy + hh, cz + hd - c],
              [cx + hw - c, cy + hh, cz + hd - c],
              [cx + hw - c, cy + hh, cz - hd + c],
              [cx - hw + c, cy + hh, cz - hd + c])
-    # Bottom face
     add_quad([cx - hw + c, cy - hh, cz - hd + c],
              [cx + hw - c, cy - hh, cz - hd + c],
              [cx + hw - c, cy - hh, cz + hd - c],
              [cx - hw + c, cy - hh, cz + hd - c])
-    # Right face
     add_quad([cx + hw, cy - hh + c, cz + hd - c],
              [cx + hw, cy - hh + c, cz - hd + c],
              [cx + hw, cy + hh - c, cz - hd + c],
              [cx + hw, cy + hh - c, cz + hd - c])
-    # Left face
     add_quad([cx - hw, cy - hh + c, cz - hd + c],
              [cx - hw, cy - hh + c, cz + hd - c],
              [cx - hw, cy + hh - c, cz + hd - c],
              [cx - hw, cy + hh - c, cz - hd + c])
 
-    # Chamfer bevels (12 edge strips)
-    # Top-Front
-    add_quad([cx - hw + c, cy + hh - c, cz + hd],
-             [cx + hw - c, cy + hh - c, cz + hd],
-             [cx + hw - c, cy + hh, cz + hd - c],
-             [cx - hw + c, cy + hh, cz + hd - c])
-    # Bottom-Front
-    add_quad([cx - hw + c, cy - hh, cz + hd - c],
-             [cx + hw - c, cy - hh, cz + hd - c],
-             [cx + hw - c, cy - hh + c, cz + hd],
-             [cx - hw + c, cy - hh + c, cz + hd])
-    # Top-Back
-    add_quad([cx + hw - c, cy + hh - c, cz - hd],
-             [cx - hw + c, cy + hh - c, cz - hd],
-             [cx - hw + c, cy + hh, cz - hd + c],
-             [cx + hw - c, cy + hh, cz - hd + c])
-    # Bottom-Back
-    add_quad([cx + hw - c, cy - hh, cz - hd + c],
-             [cx - hw + c, cy - hh, cz - hd + c],
-             [cx - hw + c, cy - hh + c, cz - hd],
-             [cx + hw - c, cy - hh + c, cz - hd])
-
-    # Right-Front
-    add_quad([cx + hw - c, cy - hh + c, cz + hd],
-             [cx + hw, cy - hh + c, cz + hd - c],
-             [cx + hw, cy + hh - c, cz + hd - c],
-             [cx + hw - c, cy + hh - c, cz + hd])
-    # Left-Front
-    add_quad([cx - hw, cy - hh + c, cz + hd - c],
-             [cx - hw + c, cy - hh + c, cz + hd],
-             [cx - hw + c, cy + hh - c, cz + hd],
-             [cx - hw, cy + hh - c, cz + hd - c])
-    # Right-Back
-    add_quad([cx + hw, cy - hh + c, cz - hd + c],
-             [cx + hw - c, cy - hh + c, cz - hd],
-             [cx + hw - c, cy + hh - c, cz - hd],
-             [cx + hw, cy + hh - c, cz - hd + c])
-    # Left-Back
-    add_quad([cx - hw - c + c, cy - hh + c, cz - hd],
-             [cx - hw, cy - hh + c, cz - hd + c],
-             [cx - hw, cy + hh - c, cz - hd + c],
-             [cx - hw - c + c, cy + hh - c, cz - hd])
+    # Chamfer edges
+    add_quad([cx - hw + c, cy + hh - c, cz + hd], [cx + hw - c, cy + hh - c, cz + hd],
+             [cx + hw - c, cy + hh, cz + hd - c], [cx - hw + c, cy + hh, cz + hd - c])
+    add_quad([cx - hw + c, cy - hh, cz + hd - c], [cx + hw - c, cy - hh, cz + hd - c],
+             [cx + hw - c, cy - hh + c, cz + hd], [cx - hw + c, cy - hh + c, cz + hd])
+    add_quad([cx + hw - c, cy + hh - c, cz - hd], [cx - hw + c, cy + hh - c, cz - hd],
+             [cx - hw + c, cy + hh, cz - hd + c], [cx + hw - c, cy + hh, cz - hd + c])
+    add_quad([cx + hw - c, cy - hh, cz - hd + c], [cx - hw + c, cy - hh, cz - hd + c],
+             [cx - hw + c, cy - hh + c, cz - hd], [cx + hw - c, cy - hh + c, cz - hd])
+    add_quad([cx + hw - c, cy - hh + c, cz + hd], [cx + hw, cy - hh + c, cz + hd - c],
+             [cx + hw, cy + hh - c, cz + hd - c], [cx + hw - c, cy + hh - c, cz + hd])
+    add_quad([cx - hw, cy - hh + c, cz + hd - c], [cx - hw + c, cy - hh + c, cz + hd],
+             [cx - hw + c, cy + hh - c, cz + hd], [cx - hw, cy + hh - c, cz + hd - c])
+    add_quad([cx + hw, cy - hh + c, cz - hd + c], [cx + hw - c, cy - hh + c, cz - hd],
+             [cx + hw - c, cy + hh - c, cz - hd], [cx + hw, cy + hh - c, cz - hd + c])
+    add_quad([cx - hw - c + c, cy - hh + c, cz - hd], [cx - hw, cy - hh + c, cz - hd + c],
+             [cx - hw, cy + hh - c, cz - hd + c], [cx - hw - c + c, cy + hh - c, cz - hd])
 
     return verts, norms, indices
 
@@ -320,7 +254,6 @@ def create_extrusion(pts2d, z0, z1, caps=True):
     norms = []
     indices = []
 
-    # Side walls
     for i in range(n_pts):
         next_i = (i + 1) % n_pts
         p0 = pts2d[i]
@@ -329,11 +262,9 @@ def create_extrusion(pts2d, z0, z1, caps=True):
         dy = p1[1] - p0[1]
         nx = dy
         ny = -dx
-        l = math.sqrt(nx*nx + ny*ny)
-        if l > 1e-6:
-            nx, ny = nx/l, ny/l
-        else:
-            nx, ny = 0, 1
+        l = math.hypot(nx, ny)
+        if l > 1e-6: nx, ny = nx/l, ny/l
+        else: nx, ny = 0, 1
 
         b = len(verts)
         verts.extend([
@@ -346,16 +277,13 @@ def create_extrusion(pts2d, z0, z1, caps=True):
         indices.extend([b, b+1, b+2, b, b+2, b+3])
 
     if caps:
-        # Front cap (z1)
         b_front = len(verts)
         for p in pts2d:
             verts.append([p[0], p[1], z1])
             norms.append([0.0, 0.0, 1.0])
-        # Simple fan triangulation
         for i in range(1, n_pts - 1):
             indices.extend([b_front, b_front + i, b_front + i + 1])
 
-        # Back cap (z0)
         b_back = len(verts)
         for p in pts2d:
             verts.append([p[0], p[1], z0])
@@ -365,54 +293,112 @@ def create_extrusion(pts2d, z0, z1, caps=True):
 
     return verts, norms, indices
 
-def create_cylinder_z(cx, cy, z0, z1, radius, sides=16, caps=True):
+def create_spherical_shell_sector(phi_min, phi_max, theta_min, theta_max, r_inner, r_outer, n_phi=8, n_theta=12):
+    # Generates a thick curved spherical armor shell sector
     verts = []
     norms = []
     indices = []
-    dz = z1 - z0
 
-    for i in range(sides):
-        a0 = (i / float(sides)) * math.tau
-        a1 = ((i + 1) / float(sides)) * math.tau
-        c0, s0 = math.cos(a0), math.sin(a0)
-        c1, s1 = math.cos(a1), math.sin(a1)
+    def sphere_pt(r, phi, theta):
+        cp = math.cos(phi)
+        sp = math.sin(phi)
+        ct = math.cos(theta)
+        st = math.sin(theta)
+        return [r * cp * st, r * sp, r * cp * ct]
 
+    def add_quad(p0, p1, p2, p3):
+        n = calc_normal(p0, p1, p2)
         b = len(verts)
-        verts.extend([
-            [cx + c0 * radius, cy + s0 * radius, z0],
-            [cx + c1 * radius, cy + s1 * radius, z0],
-            [cx + c1 * radius, cy + s1 * radius, z1],
-            [cx + c0 * radius, cy + s0 * radius, z1],
-        ])
-        norms.extend([
-            [c0, s0, 0], [c1, s1, 0], [c1, s1, 0], [c0, s0, 0]
-        ])
+        verts.extend([p0, p1, p2, p3])
+        norms.extend([n] * 4)
         indices.extend([b, b+1, b+2, b, b+2, b+3])
 
-    if caps:
-        # front cap z1
-        b_front = len(verts)
-        verts.append([cx, cy, z1])
-        norms.append([0, 0, 1])
-        for i in range(sides):
-            a = (i / float(sides)) * math.tau
-            verts.append([cx + math.cos(a)*radius, cy + math.sin(a)*radius, z1])
-            norms.append([0, 0, 1])
-        for i in range(sides):
-            nxt = (i + 1) % sides
-            indices.extend([b_front, b_front + 1 + i, b_front + 1 + nxt])
+    phi_steps = np.linspace(phi_min, phi_max, n_phi)
+    theta_steps = np.linspace(theta_min, theta_max, n_theta)
 
-        # back cap z0
-        b_back = len(verts)
-        verts.append([cx, cy, z0])
-        norms.append([0, 0, -1])
-        for i in range(sides):
-            a = (i / float(sides)) * math.tau
-            verts.append([cx + math.cos(a)*radius, cy + math.sin(a)*radius, z0])
-            norms.append([0, 0, -1])
-        for i in range(sides):
-            nxt = (i + 1) % sides
-            indices.extend([b_back, b_back + 1 + nxt, b_back + 1 + i])
+    for i in range(n_phi - 1):
+        for j in range(n_theta - 1):
+            p_a, p_b = phi_steps[i], phi_steps[i+1]
+            t_a, t_b = theta_steps[j], theta_steps[j+1]
+
+            # Outer surface
+            p0 = sphere_pt(r_outer, p_a, t_a)
+            p1 = sphere_pt(r_outer, p_a, t_b)
+            p2 = sphere_pt(r_outer, p_b, t_b)
+            p3 = sphere_pt(r_outer, p_b, t_a)
+            add_quad(p0, p1, p2, p3)
+
+            # Inner surface
+            q0 = sphere_pt(r_inner, p_a, t_a)
+            q1 = sphere_pt(r_inner, p_a, t_b)
+            q2 = sphere_pt(r_inner, p_b, t_b)
+            q3 = sphere_pt(r_inner, p_b, t_a)
+            add_quad(q1, q0, q3, q2)
+
+    # Edge caps
+    # Bottom rim (phi_min)
+    p_bot = phi_steps[0]
+    for j in range(n_theta - 1):
+        t_a, t_b = theta_steps[j], theta_steps[j+1]
+        p_in_a = sphere_pt(r_inner, p_bot, t_a)
+        p_in_b = sphere_pt(r_inner, p_bot, t_b)
+        p_out_a = sphere_pt(r_outer, p_bot, t_a)
+        p_out_b = sphere_pt(r_outer, p_bot, t_b)
+        add_quad(p_out_a, p_out_b, p_in_b, p_in_a)
+
+    # Top rim (phi_max)
+    p_top = phi_steps[-1]
+    for j in range(n_theta - 1):
+        t_a, t_b = theta_steps[j], theta_steps[j+1]
+        p_in_a = sphere_pt(r_inner, p_top, t_a)
+        p_in_b = sphere_pt(r_inner, p_top, t_b)
+        p_out_a = sphere_pt(r_outer, p_top, t_a)
+        p_out_b = sphere_pt(r_outer, p_top, t_b)
+        add_quad(p_in_a, p_in_b, p_out_b, p_out_a)
+
+    # Left & Right edges
+    for i in range(n_phi - 1):
+        p_a, p_b = phi_steps[i], phi_steps[i+1]
+        # left (theta_min)
+        t_l = theta_steps[0]
+        add_quad(sphere_pt(r_inner, p_a, t_l), sphere_pt(r_inner, p_b, t_l),
+                 sphere_pt(r_outer, p_b, t_l), sphere_pt(r_outer, p_a, t_l))
+        # right (theta_max)
+        t_r = theta_steps[-1]
+        add_quad(sphere_pt(r_outer, p_a, t_r), sphere_pt(r_outer, p_b, t_r),
+                 sphere_pt(r_inner, p_b, t_r), sphere_pt(r_inner, p_a, t_r))
+
+    return verts, norms, indices
+
+def create_faceted_compound_eye(pts_outer, center_z_bulge, z_base):
+    # Generates authentic faceted Kamen Rider compound eye polygons
+    # Slanted geodesic prism with faceted jewel facets
+    verts = []
+    norms = []
+    indices = []
+
+    # Calculate center 2d
+    cx = sum(p[0] for p in pts_outer) / len(pts_outer)
+    cy = sum(p[1] for p in pts_outer) / len(pts_outer)
+    cz = z_base + center_z_bulge
+
+    p_center = [cx, cy, cz]
+    n_pts = len(pts_outer)
+
+    # Base rim vertices
+    rim_verts = [[p[0], p[1], z_base] for p in pts_outer]
+
+    # Faceted triangles connecting center apex to rim
+    for i in range(n_pts):
+        nxt = (i + 1) % n_pts
+        p0 = p_center
+        p1 = rim_verts[i]
+        p2 = rim_verts[nxt]
+        n = calc_normal(p0, p1, p2)
+        b = len(verts)
+        verts.extend([p0, p1, p2])
+        norms.extend([n] * 3)
+        indices.extend([b, b+1, b+2])
 
     return verts, norms, indices
 
@@ -425,235 +411,245 @@ def build_solar_helmet(out_path):
 
     # Materials Palette (Strict Design System & Toon Shader Harmony)
     m_gold = builder.add_material("Mat_Helmet_Gold", [0.96, 0.74, 0.20], roughness=0.28, metallic=0.85)
-    m_chassis = builder.add_material("Mat_Helmet_Chassis", [0.12, 0.11, 0.16], roughness=0.45, metallic=0.20)
+    m_chassis = builder.add_material("Mat_Helmet_Chassis", [0.12, 0.11, 0.16], roughness=0.45, metallic=0.25)
     m_titanium = builder.add_material("Mat_Helmet_Titanium", [0.35, 0.36, 0.42], roughness=0.32, metallic=0.75)
-    m_crimson = builder.add_material("Mat_Helmet_Crimson", [0.88, 0.12, 0.12], roughness=0.25, metallic=0.30, emission_rgb=[0.88, 0.12, 0.12], emission_strength=2.5)
+    # Luminous Kamen Rider Compound Eye Ruby / Crimson
+    m_ruby_eye = builder.add_material("Mat_Helmet_RubyEye", [0.96, 0.15, 0.15], roughness=0.15, metallic=0.10, emission_rgb=[0.96, 0.15, 0.15], emission_strength=4.5)
+    # Shinto Vermilion Trim / Forehead Gem
+    m_crimson = builder.add_material("Mat_Helmet_Crimson", [0.88, 0.12, 0.12], roughness=0.25, metallic=0.30, emission_rgb=[0.88, 0.12, 0.12], emission_strength=3.0)
+    # Cyan LED Diode / HUD Rails
     m_cyan = builder.add_material("Mat_Helmet_Cyan", [0.20, 0.92, 1.00], roughness=0.20, metallic=0.10, emission_rgb=[0.20, 0.92, 1.00], emission_strength=4.0)
+    # Amber Internal Heat Core
     m_amber = builder.add_material("Mat_Helmet_Amber", [1.00, 0.70, 0.18], roughness=0.22, metallic=0.10, emission_rgb=[1.00, 0.70, 0.18], emission_strength=3.5)
 
     # ═════════════════════════════════════════════════════════════════════════
-    # 1. HELMET CROWN (Top Apex V-Crest, Skullcap & Vermilion Diamond Gem)
-    # Mounted at the top crown of the Sun sphere (Y ≈ +5.8m to +11.8m)
+    # 1. HELMET CRANIAL SHELL & V-CREST CROWN (Sub-assembly: Helmet_Crest)
+    # Encapsulates upper hemisphere (R ≈ 7.85m to 8.25m) and occipital dome
     # ═════════════════════════════════════════════════════════════════════════
     mesh_crown = builder.create_mesh("Mesh_Helmet_Crown")
 
-    # A. Skullcap Hugging Arc (Upper Hemisphere Dome Band)
-    # R ≈ 7.85m to 8.25m, Y ≈ +5.6m to +7.2m
-    z_cap = 4.2
-    v, n, idx = create_chamfered_box_3d(0.0, 6.40, z_cap, width=7.20, height=1.60, depth=2.40, chamfer=0.25)
+    # A. Spherical Cranial Dome (Full upper skull shell encapsulating top and back)
+    # theta from +45° through 180° to 315° (wrapping sides and back of skull)
+    # phi from +15° (temples/occiput) to +82° (crown apex)
+    v, n, idx = create_spherical_shell_sector(
+        phi_min=math.radians(12.0),
+        phi_max=math.radians(82.0),
+        theta_min=math.radians(45.0),
+        theta_max=math.radians(315.0),
+        r_inner=7.82,
+        r_outer=8.22,
+        n_phi=10,
+        n_theta=20
+    )
     builder.add_mesh_primitive(mesh_crown, m_chassis, v, n, idx)
 
-    # B. Central Spine Armor (Obsidian dorsal ridge along center)
-    v, n, idx = create_chamfered_box_3d(0.0, 7.80, z_cap + 0.40, width=1.40, height=3.60, depth=1.60, chamfer=0.20)
-    builder.add_mesh_primitive(mesh_crown, m_chassis, v, n, idx)
+    # B. Central Dorsal Spine (Golden keel along crown apex from forehead to back)
+    v, n, idx = create_chamfered_box_3d(0.0, 8.05, 0.0, width=1.40, height=1.50, depth=14.50, chamfer=0.20)
+    builder.add_mesh_primitive(mesh_crown, m_gold, v, n, idx)
 
-    # C. Majestic Kamen Rider Dual V-Crest Horns (Sun-Gold Angular Horns)
-    # Left V-Crest Horn (Slanted up and out: X = 0 to -4.8m, Y = 6.2m to 11.6m)
+    # C. High-Rising Majestic Kamen Rider V-Crest Horns (Sun-Gold)
+    # Left V-Crest Horn (Slanted dramatically up and back)
     horn_pts_left = [
-        [-0.40,  6.20],
-        [-1.10,  6.00],
-        [-4.80, 11.20],
-        [-3.60, 11.60],
-        [-1.80,  9.20],
-        [-0.40,  8.00]
+        [-0.45,  6.20],
+        [-1.20,  6.00],
+        [-5.20, 12.20],
+        [-3.80, 12.60],
+        [-1.90,  9.50],
+        [-0.45,  8.20]
     ]
-    v, n, idx = create_extrusion(horn_pts_left, z0=z_cap + 0.35, z1=z_cap + 1.25, caps=True)
+    v, n, idx = create_extrusion(horn_pts_left, z0=5.20, z1=6.20, caps=True)
     builder.add_mesh_primitive(mesh_crown, m_gold, v, n, idx)
 
-    # Right V-Crest Horn (Mirrored: X = 0 to +4.8m)
+    # Right V-Crest Horn (Mirrored)
     horn_pts_right = [
-        [ 0.40,  6.20],
-        [ 0.40,  8.00],
-        [ 1.80,  9.20],
-        [ 3.60, 11.60],
-        [ 4.80, 11.20],
-        [ 1.10,  6.00]
+        [ 0.45,  6.20],
+        [ 0.45,  8.20],
+        [ 1.90,  9.50],
+        [ 3.80, 12.60],
+        [ 5.20, 12.20],
+        [ 1.20,  6.00]
     ]
-    v, n, idx = create_extrusion(horn_pts_right, z0=z_cap + 0.35, z1=z_cap + 1.25, caps=True)
+    v, n, idx = create_extrusion(horn_pts_right, z0=5.20, z1=6.20, caps=True)
     builder.add_mesh_primitive(mesh_crown, m_gold, v, n, idx)
 
-    # Inner Secondary V-Horns (Sharper front tines)
+    # Inner Secondary V-Horns (Sharper front tines with obsidian inlay)
     horn_inner_left = [
         [-0.30,  6.50],
-        [-0.80,  6.40],
-        [-2.40,  9.80],
-        [-1.60, 10.10],
-        [-0.30,  7.60]
+        [-0.85,  6.40],
+        [-2.80, 10.40],
+        [-1.90, 10.70],
+        [-0.30,  7.80]
     ]
-    v, n, idx = create_extrusion(horn_inner_left, z0=z_cap + 1.20, z1=z_cap + 1.65, caps=True)
-    builder.add_mesh_primitive(mesh_crown, m_gold, v, n, idx)
+    v, n, idx = create_extrusion(horn_inner_left, z0=6.15, z1=6.80, caps=True)
+    builder.add_mesh_primitive(mesh_crown, m_chassis, v, n, idx)
 
     horn_inner_right = [
         [ 0.30,  6.50],
-        [ 0.30,  7.60],
-        [ 1.60, 10.10],
-        [ 2.40,  9.80],
-        [ 0.80,  6.40]
+        [ 0.30,  7.80],
+        [ 1.90, 10.70],
+        [ 2.80, 10.40],
+        [ 0.85,  6.40]
     ]
-    v, n, idx = create_extrusion(horn_inner_right, z0=z_cap + 1.20, z1=z_cap + 1.65, caps=True)
-    builder.add_mesh_primitive(mesh_crown, m_gold, v, n, idx)
+    v, n, idx = create_extrusion(horn_inner_right, z0=6.15, z1=6.80, caps=True)
+    builder.add_mesh_primitive(mesh_crown, m_chassis, v, n, idx)
 
-    # D. Central Shinto Vermilion Jewel (Forehead Apex Gem Diamond)
+    # D. Central Forehead O-Signal Ruby Diamond Gem
     gem_pts = [
-        [ 0.00,  7.40],
-        [-0.75,  6.50],
-        [ 0.00,  5.60],
-        [ 0.75,  6.50]
+        [ 0.00,  7.60],
+        [-0.90,  6.50],
+        [ 0.00,  5.40],
+        [ 0.90,  6.50]
     ]
-    v, n, idx = create_extrusion(gem_pts, z0=z_cap + 0.85, z1=z_cap + 1.55, caps=True)
+    v, n, idx = create_extrusion(gem_pts, z0=5.80, z1=6.90, caps=True)
     builder.add_mesh_primitive(mesh_crown, m_crimson, v, n, idx)
 
-    # Gold Bezel framing the Forehead Gem
-    v, n, idx = create_chamfered_box_3d(0.0, 6.50, z_cap + 0.70, width=2.00, height=2.20, depth=0.45, chamfer=0.15)
+    # Gold Bezel around Forehead Gem
+    v, n, idx = create_chamfered_box_3d(0.0, 6.50, 5.75, width=2.40, height=2.60, depth=0.55, chamfer=0.18)
     builder.add_mesh_primitive(mesh_crown, m_gold, v, n, idx)
 
     # ═════════════════════════════════════════════════════════════════════════
-    # 2. HELMET BROW (Forehead Brow Arch & Visor Mount)
-    # Sitting right above the Sun's angry eyes (Y ≈ +2.6m to +4.5m, Z ≈ 6.8m)
+    # 2. THE FACEPLATE: COMPOUND EYE VISORS & CRUSHER MOUTH PLATE
+    # (Sub-assembly: Helmet_Faceplate)
+    # Completely encapsulates the front eyes and mouth of the Sun!
     # ═════════════════════════════════════════════════════════════════════════
-    mesh_brow = builder.create_mesh("Mesh_Helmet_Brow")
+    mesh_face = builder.create_mesh("Mesh_Helmet_Faceplate")
 
-    z_brow = 6.85
-    # Heavy beveled brow arch (Crossbar shielding eyes)
-    v, n, idx = create_chamfered_box_3d(0.0, 3.60, z_brow, width=7.40, height=1.10, depth=1.20, chamfer=0.20)
-    builder.add_mesh_primitive(mesh_brow, m_chassis, v, n, idx)
+    # A. Forehead Brow Crossbar (Heavy obsidian & gold brow shielding the eyes)
+    z_face = 7.35
+    v, n, idx = create_chamfered_box_3d(0.0, 3.80, z_face, width=7.80, height=1.30, depth=1.40, chamfer=0.22)
+    builder.add_mesh_primitive(mesh_face, m_chassis, v, n, idx)
+    v, n, idx = create_chamfered_box_3d(0.0, 4.15, z_face + 0.35, width=8.20, height=0.45, depth=0.90, chamfer=0.10)
+    builder.add_mesh_primitive(mesh_face, m_gold, v, n, idx)
 
-    # Sun-Gold Brow Trim Plate
-    v, n, idx = create_chamfered_box_3d(0.0, 3.85, z_brow + 0.35, width=7.80, height=0.42, depth=0.80, chamfer=0.08)
-    builder.add_mesh_primitive(mesh_brow, m_gold, v, n, idx)
+    # B. Iconic Kamen Rider Compound Eye Visors ("Ocular Lenses")
+    # Faceted jewel compound eyes placed directly over the eyes!
+    # Left Compound Eye Visor (X = -0.6 to -4.4, Y = +0.7 to +3.4)
+    eye_pts_left = [
+        [-0.70,  3.20],
+        [-3.60,  3.40],
+        [-4.50,  2.20],
+        [-4.40,  0.80],
+        [-3.20,  0.50],
+        [-1.10,  1.70]
+    ]
+    v, n, idx = create_faceted_compound_eye(eye_pts_left, center_z_bulge=0.85, z_base=z_face - 0.10)
+    builder.add_mesh_primitive(mesh_face, m_ruby_eye, v, n, idx)
 
-    # Central Crosshair Collimator Notch
-    v, n, idx = create_chamfered_box_3d(0.0, 3.25, z_brow + 0.50, width=0.80, height=0.60, depth=0.60, chamfer=0.08)
-    builder.add_mesh_primitive(mesh_brow, m_titanium, v, n, idx)
-    # Glowing Cyan Aim Diode
-    v, n, idx = create_cylinder_z(0.0, 3.25, z0=z_brow + 0.65, z1=z_brow + 0.85, radius=0.18, sides=12)
-    builder.add_mesh_primitive(mesh_brow, m_cyan, v, n, idx)
+    # Right Compound Eye Visor (X = +0.7 to +4.4)
+    eye_pts_right = [
+        [ 0.70,  3.20],
+        [ 1.10,  1.70],
+        [ 3.20,  0.50],
+        [ 4.40,  0.80],
+        [ 4.50,  2.20],
+        [ 3.60,  3.40]
+    ]
+    v, n, idx = create_faceted_compound_eye(eye_pts_right, center_z_bulge=0.85, z_base=z_face - 0.10)
+    builder.add_mesh_primitive(mesh_face, m_ruby_eye, v, n, idx)
 
-    # Lateral Cyan Telemetry Diodes (3 per side)
+    # Eye Visor Outer Bezel Rims (Sun-Gold framing around each compound eye)
     for sign_x in [-1.0, 1.0]:
-        for d_i in range(3):
-            dx = sign_x * (1.60 + d_i * 0.95)
-            v, n, idx = create_box_3d([dx - 0.12, 3.65, z_brow + 0.55], [dx + 0.12, 3.80, z_brow + 0.65])
-            builder.add_mesh_primitive(mesh_brow, m_cyan, v, n, idx)
+        bezel_pts = [
+            [sign_x * 0.50, 3.40],
+            [sign_x * 3.75, 3.60],
+            [sign_x * 4.80, 2.25],
+            [sign_x * 4.70, 0.65],
+            [sign_x * 3.10, 0.35],
+            [sign_x * 0.90, 1.60]
+        ]
+        if sign_x < 0: bezel_pts = bezel_pts[::-1]
+        v, n, idx = create_extrusion(bezel_pts, z0=z_face - 0.25, z1=z_face + 0.30, caps=True)
+        builder.add_mesh_primitive(mesh_face, m_gold, v, n, idx)
+
+    # Central Nose Bridge & Keel between eyes
+    v, n, idx = create_chamfered_box_3d(0.0, 2.20, z_face + 0.45, width=1.10, height=2.40, depth=0.80, chamfer=0.15)
+    builder.add_mesh_primitive(mesh_face, m_chassis, v, n, idx)
+    # Glowing Cyan Collimator Pin on Nose Bridge
+    v, n, idx = create_chamfered_box_3d(0.0, 2.20, z_face + 0.88, width=0.35, height=1.60, depth=0.25, chamfer=0.06)
+    builder.add_mesh_primitive(mesh_face, m_cyan, v, n, idx)
+
+    # C. Kamen Rider Crusher Mouth Plate ("Faceplate & Mandible")
+    # Stepped horizontal ventilation grille slats covering mouth!
+    crusher_z = z_face + 0.15
+
+    # 4 Horizontal Grille Louver Slats (tiered forward in Z)
+    slat_data = [
+        # (y_pos, width, height, z_offset)
+        ( 0.20, 5.20, 0.42, 0.35),
+        (-0.45, 4.60, 0.42, 0.45),
+        (-1.10, 4.00, 0.42, 0.52),
+        (-1.75, 3.40, 0.42, 0.48),
+    ]
+    for y_s, w_s, h_s, z_off in slat_data:
+        # Titanium Grille Slat
+        v, n, idx = create_chamfered_box_3d(0.0, y_s, crusher_z + z_off, width=w_s, height=h_s, depth=0.65, chamfer=0.08)
+        builder.add_mesh_primitive(mesh_face, m_titanium, v, n, idx)
+        # Dark Obsidian Intake Slot beneath slat
+        v, n, idx = create_chamfered_box_3d(0.0, y_s - 0.18, crusher_z + z_off - 0.15, width=w_s - 0.40, height=0.16, depth=0.45, chamfer=0.04)
+        builder.add_mesh_primitive(mesh_face, m_chassis, v, n, idx)
+
+    # Angular Chin Keel (Triangular chin guard pointing down toward Driver belt)
+    chin_pts = [
+        [ 0.00, -3.20],
+        [-1.60, -2.10],
+        [-1.80, -1.60],
+        [ 1.80, -1.60],
+        [ 1.60, -2.10]
+    ]
+    v, n, idx = create_extrusion(chin_pts, z0=crusher_z - 0.10, z1=crusher_z + 0.70, caps=True)
+    builder.add_mesh_primitive(mesh_face, m_gold, v, n, idx)
+
+    # Central Chin Spine Accent (Obsidian Shinto Vane)
+    v, n, idx = create_chamfered_box_3d(0.0, -2.30, crusher_z + 0.72, width=0.55, height=1.60, depth=0.35, chamfer=0.08)
+    builder.add_mesh_primitive(mesh_face, m_chassis, v, n, idx)
 
     # ═════════════════════════════════════════════════════════════════════════
-    # 3. HELMET LEFT CHEEK (Cheek Armor, Steam Exhaust Cowl, Jaw Clamps)
-    # Wraps around the left lateral flank (X ≈ -6.6m to -7.8m, Y ≈ -0.8m to +3.6m)
+    # 3. HELMET LATERAL CHEEKS & EAR COWLS (Sub-assembly: Helmet_Cheeks)
+    # Aerodynamic lateral guards with circular ear turbines & steam cowls
     # ═════════════════════════════════════════════════════════════════════════
-    mesh_left_cheek = builder.create_mesh("Mesh_Helmet_LeftCheek")
+    mesh_cheeks = builder.create_mesh("Mesh_Helmet_Cheeks")
 
-    # Main Obsidian Cheek Plate (curved aerodynamic guard)
-    v, n, idx = create_chamfered_box_3d(-6.60, 1.20, 4.80, width=1.50, height=4.20, depth=3.80, chamfer=0.28)
-    builder.add_mesh_primitive(mesh_left_cheek, m_chassis, v, n, idx)
-
-    # Sun-Gold Outer Cheek Ribs (Angular armor chevron)
-    v, n, idx = create_chamfered_box_3d(-7.20, 1.20, 5.10, width=0.55, height=4.40, depth=3.20, chamfer=0.16)
-    builder.add_mesh_primitive(mesh_left_cheek, m_gold, v, n, idx)
-
-    # Dual High-Pressure Steam Exhaust Cowls (Cylinders pointing backward-outward)
-    for c_y in [0.20, 2.20]:
-        v, n, idx = create_cylinder_z(-7.10, c_y, z0=3.20, z1=5.20, radius=0.62, sides=16)
-        builder.add_mesh_primitive(mesh_left_cheek, m_titanium, v, n, idx)
-        # Inner Exhaust Vent Core (Glowing Amber heat aperture)
-        v, n, idx = create_cylinder_z(-7.10, c_y, z0=3.00, z1=3.40, radius=0.48, sides=12)
-        builder.add_mesh_primitive(mesh_left_cheek, m_amber, v, n, idx)
-
-    # Lower Jaw Clamping Tines (Pointing downward toward Driver belt)
-    v, n, idx = create_chamfered_box_3d(-5.80, -1.20, 5.60, width=0.90, height=2.20, depth=1.20, chamfer=0.18)
-    builder.add_mesh_primitive(mesh_left_cheek, m_gold, v, n, idx)
-    v, n, idx = create_chamfered_box_3d(-5.20, -1.80, 5.80, width=0.65, height=1.40, depth=0.85, chamfer=0.12)
-    builder.add_mesh_primitive(mesh_left_cheek, m_titanium, v, n, idx)
-
-    # ═════════════════════════════════════════════════════════════════════════
-    # 4. HELMET RIGHT CHEEK (Mirrored Right Flank)
-    # ═════════════════════════════════════════════════════════════════════════
-    mesh_right_cheek = builder.create_mesh("Mesh_Helmet_RightCheek")
-
-    # Main Obsidian Cheek Plate
-    v, n, idx = create_chamfered_box_3d(6.60, 1.20, 4.80, width=1.50, height=4.20, depth=3.80, chamfer=0.28)
-    builder.add_mesh_primitive(mesh_right_cheek, m_chassis, v, n, idx)
-
-    # Sun-Gold Outer Cheek Ribs
-    v, n, idx = create_chamfered_box_3d(7.20, 1.20, 5.10, width=0.55, height=4.40, depth=3.20, chamfer=0.16)
-    builder.add_mesh_primitive(mesh_right_cheek, m_gold, v, n, idx)
-
-    # Dual Steam Exhaust Cowls
-    for c_y in [0.20, 2.20]:
-        v, n, idx = create_cylinder_z(7.10, c_y, z0=3.20, z1=5.20, radius=0.62, sides=16)
-        builder.add_mesh_primitive(mesh_right_cheek, m_titanium, v, n, idx)
-        v, n, idx = create_cylinder_z(7.10, c_y, z0=3.00, z1=3.40, radius=0.48, sides=12)
-        builder.add_mesh_primitive(mesh_right_cheek, m_amber, v, n, idx)
-
-    # Lower Jaw Clamping Tines
-    v, n, idx = create_chamfered_box_3d(5.80, -1.20, 5.60, width=0.90, height=2.20, depth=1.20, chamfer=0.18)
-    builder.add_mesh_primitive(mesh_right_cheek, m_gold, v, n, idx)
-    v, n, idx = create_chamfered_box_3d(5.20, -1.80, 5.80, width=0.65, height=1.40, depth=0.85, chamfer=0.12)
-    builder.add_mesh_primitive(mesh_right_cheek, m_titanium, v, n, idx)
-
-    # ═════════════════════════════════════════════════════════════════════════
-    # 5. HELMET VISOR FRAME (Compound Eye Framing Ribs)
-    # Frames the angry eyes without occluding the face (X ≈ ±3.5m, Y ≈ 0.5m to 2.4m)
-    # ═════════════════════════════════════════════════════════════════════════
-    mesh_visor = builder.create_mesh("Mesh_Helmet_VisorFrame")
-
-    z_vis = 7.15
     for sign_x in [-1.0, 1.0]:
-        # Slanted Eye Caliper Outer Bezel
-        caliper_pts = [
-            [sign_x * 1.40, 2.50],
-            [sign_x * 4.40, 2.30],
-            [sign_x * 4.60, 0.60],
-            [sign_x * 3.80, 0.40],
-            [sign_x * 1.60, 1.60]
-        ]
-        if sign_x < 0:
-            caliper_pts = caliper_pts[::-1]
+        cx = sign_x * 7.10
+        # Aerodynamic curved cheek plate
+        v, n, idx = create_chamfered_box_3d(cx, 0.80, 4.80, width=1.60, height=5.20, depth=4.50, chamfer=0.32)
+        builder.add_mesh_primitive(mesh_cheeks, m_chassis, v, n, idx)
 
-        v, n, idx = create_extrusion(caliper_pts, z0=z_vis - 0.15, z1=z_vis + 0.35, caps=True)
-        builder.add_mesh_primitive(mesh_visor, m_gold, v, n, idx)
+        # Sun-Gold Cheek Frame Chevron
+        v, n, idx = create_chamfered_box_3d(sign_x * 7.60, 0.80, 5.10, width=0.60, height=5.40, depth=3.80, chamfer=0.18)
+        builder.add_mesh_primitive(mesh_cheeks, m_gold, v, n, idx)
 
-        # Glowing Cyan Inner LED Rail inside Visor Rim
-        rail_pts = [
-            [sign_x * 1.70, 2.35],
-            [sign_x * 4.15, 2.15],
-            [sign_x * 4.30, 0.85],
-            [sign_x * 3.75, 0.70],
-            [sign_x * 1.85, 1.70]
-        ]
-        if sign_x < 0:
-            rail_pts = rail_pts[::-1]
+        # Circular Ear Receptor Disc (Classic Tokusatsu audio turbine)
+        v, n, idx = create_chamfered_box_3d(sign_x * 7.75, 1.20, 2.60, width=0.45, height=2.40, depth=2.40, chamfer=0.45)
+        builder.add_mesh_primitive(mesh_cheeks, m_titanium, v, n, idx)
+        # Inner Glowing Amber Turbine Core
+        v, n, idx = create_chamfered_box_3d(sign_x * 7.82, 1.20, 2.60, width=0.35, height=1.50, depth=1.50, chamfer=0.30)
+        builder.add_mesh_primitive(mesh_cheeks, m_amber, v, n, idx)
 
-        v, n, idx = create_extrusion(rail_pts, z0=z_vis + 0.28, z1=z_vis + 0.45, caps=True)
-        builder.add_mesh_primitive(mesh_visor, m_cyan, v, n, idx)
+        # Dual Steam Exhaust Cowls (Top and bottom cylinders)
+        for c_y in [-0.20, 2.40]:
+            v, n, idx = create_chamfered_box_3d(sign_x * 7.20, c_y, 2.20, width=1.20, height=0.90, depth=1.60, chamfer=0.18)
+            builder.add_mesh_primitive(mesh_cheeks, m_titanium, v, n, idx)
+            # Glowing heat aperture
+            v, n, idx = create_chamfered_box_3d(sign_x * 7.20, c_y, 1.35, width=0.80, height=0.60, depth=0.40, chamfer=0.10)
+            builder.add_mesh_primitive(mesh_cheeks, m_amber, v, n, idx)
 
-        # Shinto Vermilion Teardrop / Fang Accent beneath eyes
-        fang_pts = [
-            [sign_x * 3.60,  0.50],
-            [sign_x * 4.30,  0.60],
-            [sign_x * 3.80, -0.60]
-        ]
-        if sign_x < 0:
-            fang_pts = fang_pts[::-1]
-        v, n, idx = create_extrusion(fang_pts, z0=z_vis - 0.10, z1=z_vis + 0.25, caps=True)
-        builder.add_mesh_primitive(mesh_visor, m_crimson, v, n, idx)
+        # Lower Jaw Clamping Mandibles (Connecting cheek down toward Driver belt)
+        v, n, idx = create_chamfered_box_3d(sign_x * 5.80, -2.40, 5.40, width=1.10, height=2.60, depth=1.50, chamfer=0.22)
+        builder.add_mesh_primitive(mesh_cheeks, m_gold, v, n, idx)
 
     # ═════════════════════════════════════════════════════════════════════════
     # Build Node Hierarchy
     # ═════════════════════════════════════════════════════════════════════════
-    # Separate animating nodes so Godot Tweens can assemble them dynamically!
-    n_crown = builder.add_node("Helmet_Crown", mesh_idx=mesh_crown)
-    n_brow = builder.add_node("Helmet_Brow", mesh_idx=mesh_brow)
-    n_left_cheek = builder.add_node("Helmet_LeftCheek", mesh_idx=mesh_left_cheek)
-    n_right_cheek = builder.add_node("Helmet_RightCheek", mesh_idx=mesh_right_cheek)
-    n_visor = builder.add_node("Helmet_VisorFrame", mesh_idx=mesh_visor)
+    n_crest = builder.add_node("Helmet_Crest", mesh_idx=mesh_crown)
+    n_face = builder.add_node("Helmet_Faceplate", mesh_idx=mesh_face)
+    n_cheeks = builder.add_node("Helmet_Cheeks", mesh_idx=mesh_cheeks)
 
-    # Master Root Node
-    builder.add_node("SolarHelmetRoot", children=[n_crown, n_brow, n_left_cheek, n_right_cheek, n_visor])
+    builder.add_node("SolarHelmetRoot", children=[n_crest, n_face, n_cheeks])
 
-    # Export GLB file
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     builder.build_glb(out_path)
-    print(f"[OK] Successfully exported: {out_path} ({os.path.getsize(out_path)} bytes)")
+    print(f"[OK] Successfully built Kamen Rider Apex Helmet: {out_path} ({os.path.getsize(out_path)} bytes)")
 
 if __name__ == "__main__":
     out_file = os.path.abspath("assets/models/solar_helmet.glb")

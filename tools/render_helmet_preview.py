@@ -40,15 +40,15 @@ def render_helmet_preview(glb_path, output_png):
     views = [
         {
             'title': 'Kamen Rider Solar Helmet — Front View (Player View)',
-            'elev': 12, 'azim': -90, 'pos': 131
+            'elev': 8, 'azim': 90, 'pos': 131
         },
         {
             'title': 'Kamen Rider Solar Helmet — 3/4 Perspective Angle',
-            'elev': 22, 'azim': -55, 'pos': 132
+            'elev': 18, 'azim': 55, 'pos': 132
         },
         {
             'title': 'Kamen Rider Solar Helmet — Top-Down Crown Profile',
-            'elev': 65, 'azim': -90, 'pos': 133
+            'elev': 80, 'azim': 90, 'pos': 133
         }
     ]
     
@@ -66,7 +66,11 @@ def render_helmet_preview(glb_path, output_png):
                 verts = get_data(pos_idx)
                 indices = get_data(idx_idx).flatten()
                 
-                tri_verts = verts[indices].reshape(-1, 3, 3)
+                # In Godot, Y is Up, Z is Forward/Back.
+                # In Matplotlib 3D, Z is Up, Y is Depth.
+                # Map Godot [X, Y, Z] -> Matplotlib [X, Z, Y]
+                mapped_verts = np.stack([verts[:, 0], verts[:, 2], verts[:, 1]], axis=-1)
+                tri_verts = mapped_verts[indices].reshape(-1, 3, 3)
                 color = mat_colors[mat_idx] if mat_idx < len(mat_colors) else [0.7, 0.7, 0.7, 1.0]
                 
                 edge_col = [c * 0.5 for c in color[:3]] + [0.4]
@@ -74,8 +78,8 @@ def render_helmet_preview(glb_path, output_png):
                 ax.add_collection3d(poly)
                 
         ax.set_xlim([-10, 10])
-        ax.set_ylim([-5, 15])
-        ax.set_zlim([0, 12])
+        ax.set_ylim([-5, 12])
+        ax.set_zlim([-5, 15])
         ax.set_axis_off()
         ax.grid(False)
 

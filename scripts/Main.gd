@@ -3475,6 +3475,10 @@ func _draw_dread(img: Image, cx: int, cy: int):
 
 func _update_sun_face(ratio: float) -> void:
 	if not is_instance_valid(sun_face): return
+	if solar_convergence_mgr and solar_convergence_mgr.has_method("is_helmet_active") and solar_convergence_mgr.is_helmet_active():
+		sun_face.visible = false
+		return
+	sun_face.visible = true
 	var expression: String
 	var target_color: Color = Color(2.0, 2.0, 2.0, 0.7) # Bright glowing white face (semi-transparent)
 	
@@ -4622,12 +4626,16 @@ func on_solar_convergence_sun_powerup() -> void:
 		tw.tween_property(sun, "scale", Vector3(1.18, 1.18, 1.18), 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 func on_solar_convergence_completed() -> void:
-	if is_instance_valid(sun_face) and face_textures.has("angry"):
-		sun_face.texture = face_textures["angry"]
+	if is_instance_valid(sun_face):
+		sun_face.visible = false
 	sun_face_shake = 0.0
 	if is_instance_valid(sun):
 		var tw = create_tween()
 		tw.tween_property(sun, "scale", Vector3.ONE, 0.40).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+func on_solar_helmet_removed() -> void:
+	if is_instance_valid(sun_face):
+		sun_face.visible = true
 
 func _on_solar_drone_destroyed(pos: Vector3) -> void:
 	GameState.add_score(250)
