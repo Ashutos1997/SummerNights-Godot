@@ -127,6 +127,8 @@ void fragment() {
 		var model = load(w_cfg.model).instantiate()
 		model.scale = w_cfg.scale * 0.7 # Scaled up for better visibility
 		model.position = Vector3(0, -0.3, -0.1) # Center vertically like in Main.gd
+		if w_id == "kitsune":
+			_apply_kitsune_cannon_visuals(model)
 		_adjust_gun_materials(model)
 		vp.add_child(model)
 		models.append(model)
@@ -431,6 +433,28 @@ func _input(event: InputEvent) -> void:
 			if not is_locked:
 				close()
 				get_viewport().set_input_as_handled()
+
+func _apply_kitsune_cannon_visuals(p_model: Node) -> void:
+	var barrel = p_model.find_child("BarrelAssembly", true, false)
+	var tsuba_l = p_model.find_child("TsubaLeft", true, false)
+	var tsuba_r = p_model.find_child("TsubaRight", true, false)
+	var blade = p_model.find_child("BladeAssembly", true, false)
+	if barrel:
+		barrel.position = Vector3(0.0, 0.48, 0.55)
+		barrel.scale = Vector3.ONE
+		barrel.visible = true
+	if tsuba_l:
+		tsuba_l.rotation_degrees = Vector3(0.0, 0.0, -35.0)
+		tsuba_l.scale = Vector3(0.7, 0.7, 0.7)
+		tsuba_l.visible = true
+	if tsuba_r:
+		tsuba_r.rotation_degrees = Vector3(0.0, 0.0, 35.0)
+		tsuba_r.scale = Vector3(0.7, 0.7, 0.7)
+		tsuba_r.visible = true
+	if blade:
+		blade.position = Vector3(0.0, 0.52, 0.40)
+		blade.scale = Vector3(1.0, 1.0, 0.001)
+		blade.visible = false
 
 func _adjust_gun_materials(node: Node) -> void:
 	if node is MeshInstance3D:

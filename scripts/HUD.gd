@@ -160,7 +160,6 @@ var celestial_weapon_plate_tween: Tween = null
 # Celestial Awakening Energy Aura State
 var celestial_vignette: ColorRect = null
 var celestial_vignette_tween: Tween = null
-var celestial_toast_container: Control
 var is_celestial_active: bool = false
 
 var reduce_motion: bool = false
@@ -501,17 +500,9 @@ func _ready() -> void:
 	buff_toast_container.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE, 0)
 	buff_toast_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	$HUD.add_child(buff_toast_container)
-	
-	celestial_toast_container = Control.new()
-	celestial_toast_container.name = "CelestialToastContainer"
-	celestial_toast_container.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE, 0)
-	celestial_toast_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	$HUD.add_child(celestial_toast_container)
-	
 	if pause_screen:
 		$HUD.move_child(achievement_toast_container, pause_screen.get_index())
 		$HUD.move_child(buff_toast_container, pause_screen.get_index())
-		$HUD.move_child(celestial_toast_container, pause_screen.get_index())
 	GameState.achievement_unlocked.connect(show_achievement_toast)
 	GameState.buff_unlocked.connect(show_buff_toast)
 	
@@ -2630,87 +2621,6 @@ func show_buff_toast(id: String) -> void:
 	var buff = GameState.BUFFS[id]
 	_show_toast("버프 활성화!", "BUFF UNLOCKED!", buff["title_kr"], buff["title_en"], buff["icon"], 110.0, buff_toast_container)
 
-func _show_celestial_toast() -> void:
-	if not celestial_toast_container: return
-	
-	var is_kr = GameState.language == "KR"
-	var celestial_cyan = Color(0.17, 0.90, 1.0, 1.0)
-	
-	var panel = Panel.new()
-	panel.custom_minimum_size = Vector2(440, 80)
-	panel.size = Vector2(440, 80)
-	panel.position = Vector2(-220, -100)
-	
-	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.10, 0.18, 0.95)
-	style.border_width_left = 2
-	style.border_width_right = 2
-	style.border_width_top = 2
-	style.border_width_bottom = 2
-	style.border_color = Color(0.17, 0.90, 1.0, 0.9)
-	style.corner_radius_top_left = 12
-	style.corner_radius_top_right = 12
-	style.corner_radius_bottom_left = 12
-	style.corner_radius_bottom_right = 12
-	style.shadow_size = 10
-	style.shadow_color = Color(0.17, 0.90, 1.0, 0.3)
-	style.shadow_offset = Vector2(0, 4)
-	panel.add_theme_stylebox_override("panel", style)
-	
-	var icon_rect = TextureRect.new()
-	icon_rect.texture = load("res://assets/ui/achievements/ball-glow.png")
-	icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon_rect.custom_minimum_size = Vector2(56, 56)
-	icon_rect.position = Vector2(16, 12)
-	icon_rect.pivot_offset = icon_rect.custom_minimum_size / 2.0
-	icon_rect.scale = Vector2.ZERO
-	panel.add_child(icon_rect)
-	
-	var text_vbox = VBoxContainer.new()
-	text_vbox.position = Vector2(84, 0)
-	text_vbox.size = Vector2(340, 80)
-	text_vbox.custom_minimum_size = Vector2(340, 80)
-	text_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	text_vbox.add_theme_constant_override("separation", 2)
-	text_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(text_vbox)
-	
-	var header_lbl = Label.new()
-	header_lbl.text = "신성의 힘 발현!" if is_kr else "POWER UNLEASHED!"
-	_style_lbl(header_lbl, 14 if is_kr else 12, Color(1.0, 1.0, 1.0, 0.9), 2, Color.BLACK, galmuri_font if is_kr else kenney_font)
-	text_vbox.add_child(header_lbl)
-	
-	var title_lbl = Label.new()
-	title_lbl.text = "신성의 각성" if is_kr else "CELESTIAL AWAKENING"
-	_style_lbl(title_lbl, 20 if is_kr else 18, celestial_cyan, 3, Color.BLACK, galmuri_font if is_kr else kenney_font)
-	text_vbox.add_child(title_lbl)
-	
-	panel.process_mode = Node.PROCESS_MODE_PAUSABLE
-	celestial_toast_container.add_child(panel)
-	
-	# SFX
-	var sfx = AudioStreamPlayer.new()
-	sfx.stream = load("res://assets/sounds/ui/ui_tick.wav")
-	sfx.volume_db = linear_to_db(GameState.sfx_volume)
-	panel.add_child(sfx)
-	sfx.play()
-	
-	# Animate Panel
-	var tw = create_tween().bind_node(panel)
-	tw.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-	tw.tween_property(panel, "position:y", 20.0, 0.6)
-	tw.tween_interval(4.0)
-	tw.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_BACK)
-	tw.tween_property(panel, "position:y", -120.0, 0.5)
-	tw.tween_callback(panel.queue_free)
-	
-	# Animate Icon Pop
-	var icon_tw = create_tween().bind_node(panel)
-	icon_tw.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-	icon_tw.tween_interval(0.3)
-	icon_tw.tween_property(icon_rect, "scale", Vector2.ONE, 0.5)
-
 func hide_win_screen() -> void:
 	if win_screen:
 		win_screen.visible = false
@@ -4311,10 +4221,7 @@ func start_celestial_awakening(duration: float = 15.0) -> void:
 	f_tw.tween_property(flash, "modulate:a", 0.0, 0.3)
 	f_tw.tween_callback(flash.queue_free)
 	
-	# 2. Pill-style toast notification (matches achievement/buff pill design)
-	_show_celestial_toast()
-	
-	# 3. Fade in energy vignette overlay
+	# 2. Fade in energy vignette overlay
 	_set_vignette_param("energy_color", Color(0.17, 0.90, 1.0, 1.0))
 	_set_vignette_param("pulse_speed", 3.0)
 	_set_vignette_param("pulse_depth", 0.08)
