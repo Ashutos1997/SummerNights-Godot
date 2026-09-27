@@ -1380,7 +1380,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_leg_f")
 [node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/LegendColumn/LegCatastrom"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "F - CATASTROM"
+text = "F - POWER UP"
 
 [node name="LegMouse" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow/LegendColumn"]
 layout_mode = 2
@@ -1490,7 +1490,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_leg_f")
 [node name="Label" type="Label" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/LegendColumn/LegCatastrom"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "F - CATASTROM"
+text = "RB - POWER UP"
 
 [node name="LegMouse" type="HBoxContainer" parent="HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow/LegendColumn"]
 layout_mode = 2

@@ -42,7 +42,7 @@ func _draw():
 		draw_polyline(PackedVector2Array([key_pos_r, Vector2(key_pos_r.x, label_left.y), label_left - Vector2(gap, 0)]), r_color, line_width)
 		draw_circle(label_left - Vector2(gap, 0), 3, r_color)
 
-	# F -> CATASTROM
+	# F -> POWER UP
 	if f_lbl:
 		var lbl_rect = f_lbl.get_rect()
 		var label_left = Vector2(lbl_rect.position.x, lbl_rect.position.y + lbl_rect.size.y / 2.0)

@@ -21,6 +21,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Celestial Foxfire Slash Wave Emission: Added a razor-sharp golden-white flame crescent projectile with trailing spark embers that travels directly along the crosshair ray at 85 m/s on blade swings, providing clear emission visual feedback analogous to gun water spray.
 
 ### Improved
+* Controls Screen Unified "Power Up" Legend: Updated `[F]` (Keyboard) and `[RB]` (Xbox) labels in the Controls screen from "Catastrom" to "Power Up" ("파워 업" in Korean), unifying the ultimate ability label across both standard weapons (Catastrom) and Kitsune Buster IX (Celestial Awakening).
 * Kitsune Buster IX Celestial Model Polish: Enhanced the unified 3D model with authentic Katana curvature (sori), kissaki chisel tip, glowing cyan fuller groove, sculpted multi-layered fox-flame tsuba crossguards with cyber-gold crests, skeletonized receiver windows for direct first-person visibility of the spinning 9-vial Kyubi drum, and aerodynamic mecha fox-ear cowl fins.
 * Weapon Wheel Uniform Spacing: Replaced fixed angular wedge padding with a constant 12px linear gap, keeping slice borders parallel from inner to outer radius.
 * Weapon Wheel Info Panel: Overhauled bottom card layout with centered archetype tags, mini-meter stat bars, critical multiplier badge, golden hairline divider, and standardized typography.
@@ -284,6 +285,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 신성의 여우불 참격파(Foxfire Slash Wave) 방출 연출: 구미호 검 휘두르기 시 조준선 광선을 따라 85m/s 속도로 직진하는 황금백색 초승달 화염 및 불티(엠버) 궤적 투사체 추가. 시야 간섭 없이 총기 물줄기처럼 직관적인 조준 타격 궤적 피드백 제공.
 
 ### 개선됨 (Improved)
+* 조작 안내 화면 "파워 업" 범용 명칭 적용: 조작 안내(Controls) 화면에서 `[F]` (키보드) 및 `[RB]` (Xbox) 항목의 명칭을 기존 "카타스트롬"에서 "파워 업"("POWER UP")으로 변경하여, 일반 무기의 카타스트롬과 구미호 버스터의 신성의 각성을 아우르는 직관적이고 통일된 궁극기 표기를 적용.
 * 구미호 버스터 IX 모델 디테일 강화 (Celestial Polish): 단일 3D 모델에 정통 카타나 휨각(소리/Sori) 및 칫솔형 킷사키 칼끝, 발광형 사이언 혈조(Fuller), 골드 깃장식과 결합된 다층형 여우불 츠바 코등이, 1인칭 조준 시 9개 구미호 바이알 회전 드럼이 시원하게 보이는 스켈레톤 리시버 윈도우, 조준경 양옆 메카 여우 귀 카울 핀 추가.
 * 무기 선택 휠 균일 간격: 고정 각도 패딩 대신 일정한 12px 선형 간격을 적용하여 슬라이스 사이 틈새를 평행하게 유지.
 * 무기 정보 패널 개선: 직관적인 아케이드 카드 레이아웃 적용 (아키타입 태그, 파워/용량 미니 게이지, 치명타 배율 배지, 골드 헤어라인 구분선, 폰트 규격화).

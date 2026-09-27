@@ -1797,14 +1797,10 @@ func _apply_language(lang: String) -> void:
 			leg_ice.text = prefix_ice + " - 얼음 폭발" if is_kr else prefix_ice + " - ICE BLAST"
 			if font: leg_ice.add_theme_font_override("font", font)
 
-		var prefix_cat = "F" if row_name == "KeyboardRow" else "F"
-		if row_name == "XboxRow": prefix_cat = "RB"
+		var prefix_cat = "F" if row_name == "KeyboardRow" else "RB"
 		var leg_catastrom = controller_screen.get_node_or_null("CenterContainer/VBoxContainer/" + row_name + "/LegendColumn/LegCatastrom/Label")
 		if leg_catastrom:
-			if GameState.current_weapon_id == "kitsune":
-				leg_catastrom.text = prefix_cat + " - 신성의 각성" if is_kr else prefix_cat + " - CELESTIAL AWAKENING"
-			else:
-				leg_catastrom.text = prefix_cat + " - 카타스트롬" if is_kr else prefix_cat + " - CATASTROM"
+			leg_catastrom.text = prefix_cat + " - 파워 업" if is_kr else prefix_cat + " - POWER UP"
 			if font: leg_catastrom.add_theme_font_override("font", font)
 
 		var prefix_mouse = "MOUSE - 조준/발사" if is_kr else "MOUSE - AIM/SHOOT"
