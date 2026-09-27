@@ -9,6 +9,8 @@ extends Node3D
 signal drone_destroyed(pos: Vector3)
 signal drone_shattered_by_ice(pos: Vector3)
 signal convergence_triggered()
+signal convergence_drone_docked(drone_index: int, pos: Vector3)
+signal convergence_completed()
 signal solar_driver_equipped(pos: Vector3)
 
 enum State {
@@ -35,7 +37,11 @@ var belt_strap_right: Node3D = null
 var driver_core_mat: StandardMaterial3D = null
 var driver_conduit_mat: StandardMaterial3D = null
 var driver_shockwave_particles: CPUParticles3D = null
+var dock_particles_left: CPUParticles3D = null
+var dock_particles_right: CPUParticles3D = null
 var is_driver_equipped: bool = false
+var is_convergence_active: bool = false
+var docked_drone_count: int = 0
 var driver_anim_time: float = 0.0
 
 const DRONE_SCENE = preload("res://assets/models/solar_eye_drone.glb")
@@ -763,6 +769,35 @@ func setup_solar_driver() -> void:
 		driver_shockwave_particles.position = Vector3(0.0, 0.0, 8.20)
 		driver_buckle.add_child(driver_shockwave_particles)
 
+		# Lateral Docking Bay Spark Particle Emitters
+		dock_particles_left = _create_dock_particles(Vector3(-1.95, 0.0, 7.55))
+		dock_particles_right = _create_dock_particles(Vector3(1.95, 0.0, 7.55))
+		driver_buckle.add_child(dock_particles_left)
+		driver_buckle.add_child(dock_particles_right)
+
+func _create_dock_particles(pos: Vector3) -> CPUParticles3D:
+	var cp = CPUParticles3D.new()
+	cp.emitting = false
+	cp.one_shot = true
+	cp.explosiveness = 0.95
+	cp.amount = 30
+	cp.lifetime = 0.50
+	cp.direction = Vector3.BACK
+	cp.spread = 65.0
+	cp.initial_velocity_min = 6.0
+	cp.initial_velocity_max = 14.0
+	cp.gravity = Vector3.ZERO
+	cp.color = Color(0.35, 0.95, 1.0, 0.95)
+	var sp_mat = StandardMaterial3D.new()
+	sp_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	sp_mat.albedo_color = Color(0.35, 0.95, 1.0, 0.95)
+	var sp_mesh = BoxMesh.new()
+	sp_mesh.size = Vector3(0.18, 0.18, 0.18)
+	sp_mesh.material = sp_mat
+	cp.mesh = sp_mesh
+	cp.position = pos
+	return cp
+
 func _setup_driver_materials(node: Node) -> void:
 	if node is MeshInstance3D and node.mesh:
 		for s_idx in range(node.mesh.get_surface_count()):
@@ -934,4 +969,175 @@ func get_driver_buckle_position() -> Vector3:
 	if driver_buckle and is_instance_valid(driver_buckle):
 		return driver_buckle.global_position
 	return sun_node.global_position if (sun_node and is_instance_valid(sun_node)) else Vector3.ZERO
+
+func get_docking_bay_position(is_left: bool) -> Vector3:
+	var bay_offset = Vector3(-1.95 if is_left else 1.95, 0.0, 7.55)
+	if driver_buckle and is_instance_valid(driver_buckle):
+		return driver_buckle.to_global(bay_offset)
+	if driver_root and is_instance_valid(driver_root):
+		return driver_root.to_global(bay_offset)
+	return sun_node.global_position if (sun_node and is_instance_valid(sun_node)) else Vector3.ZERO
+
+func is_convergence_in_progress() -> bool:
+	return is_convergence_active or current_state == State.CONVERGENCE_CHARGING or current_state == State.CONVERGENCE_IMPLODING
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Milestone 3: The Convergence Choreography (The Event)
+# ─────────────────────────────────────────────────────────────────────────────
+func trigger_convergence_event() -> void:
+	if is_convergence_active:
+		return
+	is_convergence_active = true
+	current_state = State.CONVERGENCE_CHARGING
+	convergence_triggered.emit()
+
+	# 1. Ensure Solar Driver is equipped
+	if not is_driver_equipped:
+		materialize_solar_driver(true)
+
+	# 2. Ensure active drones exist (spawn 6 if none currently in orbit)
+	if active_drones.is_empty():
+		start_orbital_swarm(6, 25)
+
+	# 3. Time Dilation: Dramatic slow-mo drop
+	Engine.time_scale = 0.30
+
+	# 4. Audio & Cinematic Impact
+	if sfx_ice_blast:
+		sfx_ice_blast.pitch_scale = 0.58
+		sfx_ice_blast.play()
+	if sfx_shatter_metal:
+		sfx_shatter_metal.pitch_scale = 0.55
+		sfx_shatter_metal.play()
+
+	var main = get_tree().current_scene if get_tree() else null
+	if main:
+		if main.has_method("shake"):
+			main.shake(0.35, 0.025)
+		if main.get("hud") and is_instance_valid(main.hud) and main.hud.has_method("show_convergence_banner"):
+			main.hud.show_convergence_banner()
+
+	# 5. Overcharge pupil glow on all drones (Turn toward driver buckle)
+	for drone in active_drones:
+		var pupil_mat = drone.get("pupil_mat") as StandardMaterial3D
+		if pupil_mat:
+			pupil_mat.emission_energy_multiplier = 9.0
+		var d_node = drone.get("node") as Node3D
+		if d_node and is_instance_valid(d_node):
+			d_node.look_at(get_driver_buckle_position(), Vector3.UP)
+
+	# 6. Staggered Inward Spiral Docking Choreography
+	var drones_to_dock = active_drones.duplicate()
+	var total_drones = drones_to_dock.size()
+	docked_drone_count = 0
+
+	for i in range(total_drones):
+		var d_data = drones_to_dock[i]
+		var d_node = d_data.get("node") as Node3D
+		if not is_instance_valid(d_node):
+			continue
+
+		var is_left = (i % 2 == 0)
+		var delay = 0.25 + (i * 0.22)
+		_animate_drone_dock(d_node, i, total_drones, is_left, delay)
+
+func _animate_drone_dock(drone_node: Node3D, index: int, total: int, is_left: bool, delay: float) -> void:
+	var tw = create_tween()
+	var start_pos = drone_node.global_position
+	var sun_p = sun_node.global_position if (sun_node and is_instance_valid(sun_node)) else Vector3(0, 13.5, -42)
+	var dir_out = ((start_pos - sun_p).normalized() + Vector3(0, 0, 1.2)).normalized()
+	var mid_pos = start_pos.lerp(get_docking_bay_position(is_left), 0.5) + dir_out * 3.5
+
+	# Smooth delayed Bezier spiral curve accelerating into receptor port
+	tw.tween_interval(delay)
+	tw.chain().tween_method(func(t: float):
+		if not is_instance_valid(drone_node):
+			return
+		var p2 = get_docking_bay_position(is_left)
+		var cur_p = (1.0 - t) * (1.0 - t) * start_pos + 2.0 * (1.0 - t) * t * mid_pos + t * t * p2
+		drone_node.global_position = cur_p
+		if cur_p.distance_squared_to(p2) > 0.01:
+			drone_node.look_at(p2, Vector3.UP)
+	, 0.0, 1.0, 0.54).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+
+	# Parallel scale collapse into receptor port
+	tw.parallel().tween_property(drone_node, "scale", Vector3(0.05, 0.05, 0.05), 0.16).set_delay(delay + 0.38)
+
+	# On dock impact
+	tw.chain().tween_callback(func():
+		var bay_pos = get_docking_bay_position(is_left)
+
+		# Dock mechanical snap audio with escalating pitch
+		if sfx_shatter_metal:
+			sfx_shatter_metal.pitch_scale = 0.90 + (index * 0.12)
+			sfx_shatter_metal.play()
+
+		# Docking bay spark particles
+		if is_left and dock_particles_left:
+			dock_particles_left.restart()
+		elif not is_left and dock_particles_right:
+			dock_particles_right.restart()
+
+		# Micro camera trauma
+		var main = get_tree().current_scene if get_tree() else null
+		if main and main.has_method("shake"):
+			main.shake(0.09, 0.015)
+
+		# Hide & remove drone node
+		if is_instance_valid(drone_node):
+			drone_node.visible = false
+			drone_node.queue_free()
+
+		docked_drone_count += 1
+		convergence_drone_docked.emit(index, bay_pos)
+
+		# If final drone, trigger Grand Convergence Shockwave
+		if docked_drone_count >= total:
+			_complete_convergence()
+	)
+
+func _complete_convergence() -> void:
+	current_state = State.OMEGA_SUN
+	active_drones.clear()
+
+	# 1. Shockwave burst & core surge
+	if driver_shockwave_particles:
+		driver_shockwave_particles.amount = 80
+		driver_shockwave_particles.restart()
+
+	if driver_core_mat:
+		driver_core_mat.emission_energy_multiplier = 18.0
+		var c_tw = create_tween()
+		c_tw.tween_property(driver_core_mat, "emission_energy_multiplier", 4.5, 0.65).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+	if driver_conduit_mat:
+		driver_conduit_mat.emission_energy_multiplier = 9.0
+		var b_tw = create_tween()
+		b_tw.tween_property(driver_conduit_mat, "emission_energy_multiplier", 3.2, 0.65).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+	# 2. Grand Explosive Audio Layer
+	if sfx_shatter_core:
+		sfx_shatter_core.pitch_scale = 0.90
+		sfx_shatter_core.play()
+	if sfx_ice_shatter_glass:
+		sfx_ice_shatter_glass.pitch_scale = 0.75
+		sfx_ice_shatter_glass.play()
+
+	# 3. Full-screen heavy trauma shake
+	var main = get_tree().current_scene if get_tree() else null
+	if main and main.has_method("shake"):
+		main.shake(0.48, 0.05)
+
+	# 4. Snap time scale back to normal (1.0)
+	var t_tw = create_tween()
+	t_tw.tween_property(Engine, "time_scale", 1.0, 0.40).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+	is_convergence_active = false
+	convergence_completed.emit()
+
+	if main and main.get("hud") and is_instance_valid(main.hud) and main.hud.has_method("show_toast"):
+		var is_kr = GameState.language == "KR"
+		var title = "태양 수렴 완료!" if is_kr else "SOLAR CONVERGENCE COMPLETE!"
+		var desc = "오메가 솔라 각성 — 전 드론 도킹 완료" if is_kr else "Omega Solar Awakened — All Drones Docked"
+		main.hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1.0, 0.75, 0.15))
 

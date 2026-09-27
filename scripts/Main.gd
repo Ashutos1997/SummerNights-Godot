@@ -3205,6 +3205,10 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_L:
 		toggle_solar_driver()
 
+	# Debug key: Press P to trigger Solar Convergence Event (Drone Inward Docking Choreography)
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_P:
+		trigger_solar_convergence()
+
 	if event.is_action_pressed("ui_catastrom") and not event.is_echo():
 		if GameState.current_weapon_id == "kitsune":
 			if GameState.celestial_charge >= 1.0 and not is_celestial_awakened:
@@ -4603,6 +4607,11 @@ func toggle_solar_driver() -> void:
 			title = "SOLAR DRIVER INSTALLED!" if is_eq else "SOLAR DRIVER REMOVED"
 			desc = "Equatorial Planetary Belt & Driver Buckle Deployed" if is_eq else "Solar Driver Retracted"
 		hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1.0, 0.78, 0.18))
+
+func trigger_solar_convergence() -> void:
+	if not solar_convergence_mgr:
+		return
+	solar_convergence_mgr.trigger_convergence_event()
 
 func _on_solar_drone_destroyed(pos: Vector3) -> void:
 	GameState.add_score(250)
