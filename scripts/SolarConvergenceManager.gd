@@ -150,14 +150,14 @@ func _create_drone(index: int, total: int, wave: int = 1) -> Dictionary:
 							pupil_mat = dup_mat
 
 	# Dynamic Coronal Orbit Geometry: Smooth, stately circular rotation around the Sun's perimeter
-	# Enlarged circular orbit radius (12.4m - 13.8m) providing generous clearance from the Sun's body (~8m radius)
+	# Orbit radius (11.8m - 12.8m) providing generous clearance from Sun's body (~8m radius) and beach horizon
 	var angle_fraction = float(index) / float(total)
 	var orbit_speed = (0.85 + (index * 0.06)) * (1.0 if index % 2 == 0 else -1.0)
 	var phase_offset = angle_fraction * TAU
 
-	var base_r = 12.4 + (index % 3) * 0.7
+	var base_r = 11.8 + (index % 3) * 0.5
 	var rx = base_r
-	var ry = base_r * 0.95 # Near-circular orbit with subtle natural celestial tilt
+	var ry = base_r * 0.92 # Subtle celestial inclination framing the Sun cleanly above beach horizon
 	var rz = 3.6 + (index % 3) * 0.6 # Positioned cleanly in front of the Sun along Z
 
 	# Ensure sun_node is resolved before positioning
@@ -166,7 +166,7 @@ func _create_drone(index: int, total: int, wave: int = 1) -> Dictionary:
 		if main and main.get("sun") and is_instance_valid(main.sun):
 			sun_node = main.sun
 
-	var sun_pos = sun_node.global_position if (sun_node and is_instance_valid(sun_node)) else Vector3(0, 10.5, -42)
+	var sun_pos = sun_node.global_position if (sun_node and is_instance_valid(sun_node)) else Vector3(0, 13.5, -42)
 	var init_t = phase_offset
 	drone_root.global_position = sun_pos + Vector3(
 		cos(init_t) * rx,

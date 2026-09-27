@@ -662,7 +662,7 @@ var water_mat:   Material
 var ground_mat:  StandardMaterial3D
 
 var sun_time:    float = 0.0
-var sun_base_pos := Vector3(0, 10.5, -42) # Raised height so sun sits majestically in upper sky
+var sun_base_pos := Vector3(0, 13.5, -42) # Elevated height so sun sits majestically in upper sky and drone orbit clears beach
 var gun_base_pos := Vector3(0, -1.0, 2.8) # Raised to match crosshair better
 var sun_bob_speed := 1.5
 var sun_bob_amp := 0.8
