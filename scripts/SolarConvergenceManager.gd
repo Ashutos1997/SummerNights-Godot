@@ -62,17 +62,17 @@ func _init_audio() -> void:
 # ─────────────────────────────────────────────────────────────────────────────
 # Phase 1: Orbital Swarm Spawning
 # ─────────────────────────────────────────────────────────────────────────────
-func start_orbital_swarm(count: int = 6) -> void:
+func start_orbital_swarm(count: int = 6, wave: int = 1) -> void:
 	clear_drones()
 	current_state = State.ORBITAL_SWARM
 	orbit_time = 0.0
 
 	for i in range(count):
-		var drone_data = _create_drone(i, count)
+		var drone_data = _create_drone(i, count, wave)
 		active_drones.append(drone_data)
 		add_child(drone_data["node"])
 
-func _create_drone(index: int, total: int) -> Dictionary:
+func _create_drone(index: int, total: int, wave: int = 1) -> Dictionary:
 	var drone_root = Node3D.new()
 	drone_root.name = "SolarEyeDrone_%d" % index
 	drone_root.scale = Vector3(1.7, 1.7, 1.7) # Enlarged for clear readability & targeting
@@ -125,6 +125,9 @@ func _create_drone(index: int, total: int) -> Dictionary:
 		rz + sin(init_t * 2.0 + index) * 0.6
 	)
 
+	# Dynamic wave-scaled HP (Wave 1: 38.5 HP | Wave 20: 105 HP | Wave 30: 140 HP)
+	var calculated_hp = 35.0 + (wave * 3.5)
+
 	return {
 		"node": drone_root,
 		"casing_mats": casing_mats,
@@ -134,8 +137,8 @@ func _create_drone(index: int, total: int) -> Dictionary:
 		"radius_x": rx,
 		"radius_y": ry,
 		"radius_z": rz,
-		"hp": 30.0,
-		"max_hp": 30.0,
+		"hp": calculated_hp,
+		"max_hp": calculated_hp,
 		"hit_flash": 0.0,
 		"index": index
 	}
@@ -235,7 +238,7 @@ func _process(delta: float) -> void:
 # ─────────────────────────────────────────────────────────────────────────────
 # Water Stream Interception (Absorbs damage, shields Sun behind it)
 # ─────────────────────────────────────────────────────────────────────────────
-func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weapon_power: float, delta: float) -> Dictionary:
+func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weapon_damage: float) -> Dictionary:
 	if current_state != State.ORBITAL_SWARM or active_drones.is_empty():
 		return { "hit": false }
 
@@ -267,7 +270,7 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 
 	# Apply water cooling damage to the intercepted drone
 	var cur_hp = closest_drone["hp"] as float
-	cur_hp -= weapon_power * delta
+	cur_hp -= weapon_damage
 	closest_drone["hp"] = cur_hp
 	closest_drone["hit_flash"] = 1.0
 
@@ -305,38 +308,36 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 	}
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Ice Blast Interception (Instantly shatters drone into frost chunks)
+# Ice Blast Interception (AOE Cryo-Frost: shatters all drones within 5.5m blast radius)
 # ─────────────────────────────────────────────────────────────────────────────
-func check_ice_blast_intercept(blast_pos: Vector3, radius: float = 2.6) -> bool:
+func check_ice_blast_intercept(blast_pos: Vector3, radius: float = 5.5) -> bool:
 	if current_state != State.ORBITAL_SWARM or active_drones.is_empty():
 		return false
 
-	var shattered_drone: Dictionary = {}
+	var to_shatter: Array[Dictionary] = []
 	for drone in active_drones:
 		var node = drone["node"] as Node3D
 		if is_instance_valid(node):
 			if node.global_position.distance_to(blast_pos) <= radius:
-				shattered_drone = drone
-				break
+				to_shatter.append(drone)
 
-	if shattered_drone.is_empty():
+	if to_shatter.is_empty():
 		return false
 
-	var d_node = shattered_drone["node"] as Node3D
-	var pos = d_node.global_position
+	for drone in to_shatter:
+		var d_node = drone["node"] as Node3D
+		var pos = d_node.global_position
+		_spawn_drone_destruction_fx(pos, true)
+		active_drones.erase(drone)
+		d_node.queue_free()
+		drone_shattered_by_ice.emit(pos)
 
-	# Ice Shatter VFX & SFX
-	_spawn_drone_destruction_fx(pos, true)
 	if sfx_ice_hit:
 		sfx_ice_hit.pitch_scale = randf_range(1.2, 1.4)
 		sfx_ice_hit.play()
 	if sfx_break:
 		sfx_break.pitch_scale = 1.4
 		sfx_break.play()
-
-	active_drones.erase(shattered_drone)
-	d_node.queue_free()
-	drone_shattered_by_ice.emit(pos)
 
 	return true
 

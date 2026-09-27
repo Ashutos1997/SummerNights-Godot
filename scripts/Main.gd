@@ -2987,7 +2987,11 @@ func _process(delta: float) -> void:
 			# Check Solar Convergence Drone Interception (Physical Shielding)
 			var hit_solar_drone: bool = false
 			if solar_convergence_mgr:
-				var drone_hit = solar_convergence_mgr.check_water_stream_intercept(ray_origin, ray_normal, current_weapon_power, delta)
+				var wave_dmg_mult = 1.0
+				if GameState.is_survival_mode and GameState.current_wave >= 5:
+					wave_dmg_mult = 1.0 + (GameState.current_wave - 4) * 0.15
+				var stream_dmg = current_weapon_power * wave_dmg_mult * delta
+				var drone_hit = solar_convergence_mgr.check_water_stream_intercept(ray_origin, ray_normal, stream_dmg)
 				if drone_hit.get("hit", false):
 					hit_solar_drone = true
 					var h_pos = drone_hit["position"]
@@ -4074,7 +4078,7 @@ func _check_sun_defeat() -> void:
 			sun_shield_cooldown = 2.5 # Initial delay before shield deploys on boss wave
 			if GameState.current_wave >= 20 and solar_convergence_mgr:
 				var d_count = 6 if GameState.current_wave < 30 else 8
-				solar_convergence_mgr.start_orbital_swarm(d_count)
+				solar_convergence_mgr.start_orbital_swarm(d_count, GameState.current_wave)
 		else:
 			is_two_phase = false
 			phase2_triggered = false
@@ -4564,7 +4568,8 @@ func toggle_solar_drones() -> void:
 			var desc = "궤도 방어 드론 제거" if is_kr else "ORBITAL SWARM CLEARED"
 			hud.show_toast(title, desc, "", Color(1.0, 0.5, 0.2))
 	else:
-		solar_convergence_mgr.start_orbital_swarm(6)
+		var test_wave = GameState.current_wave if GameState.is_survival_mode else 30
+		solar_convergence_mgr.start_orbital_swarm(6, test_wave)
 		if hud and hud.has_method("show_toast"):
 			var is_kr = GameState.language == "KR"
 			var title = "태양 수렴 경보" if is_kr else "SOLAR CONVERGENCE"
@@ -4574,14 +4579,24 @@ func toggle_solar_drones() -> void:
 func _on_solar_drone_destroyed(pos: Vector3) -> void:
 	GameState.add_score(250)
 	shake(0.2, 0.03)
+	# Coolant Vent Refund: +15% max water tank refill
+	var refund = MAX_WATER * 0.15
+	water_tank = min(MAX_WATER, water_tank + refund)
+	water_changed.emit(water_tank, MAX_WATER)
+	_spawn_damage_number(25.0, false, pos)
 
 func _on_solar_drone_ice_shattered(pos: Vector3) -> void:
 	GameState.add_score(500)
 	shake(0.35, 0.06)
+	# Coolant Vent Refund: +20% max water tank refill on Ice Shatter
+	var refund = MAX_WATER * 0.20
+	water_tank = min(MAX_WATER, water_tank + refund)
+	water_changed.emit(water_tank, MAX_WATER)
+	_spawn_damage_number(50.0, true, pos)
 	if hud and hud.has_method("show_toast"):
 		var is_kr = GameState.language == "KR"
 		var title = "냉기 분쇄!" if is_kr else "ICE SHATTER!"
-		var desc = "+500점 · 궤도 드론 결빙 파괴" if is_kr else "+500 PTS · ORBITAL DRONE SHATTERED"
+		var desc = "+500점 · 궤도 드론 결빙 파괴 (+20% 물)" if is_kr else "+500 PTS · DRONE SHATTERED (+20% WATER)"
 		hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(0.35, 0.95, 1.0))
 
 func start_celestial_awakening(duration: float = 15.0) -> void:
