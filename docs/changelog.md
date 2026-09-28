@@ -11,7 +11,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Kitsune Blade Melee & Parry: 60° melee slash that cleaves solar flares for +15% water parry refund and damages/shatters Solar Eye Drones.
 * Celestial Awakening Super State: 15s super state triggered at 100% Power Up charge with 9 procedural hydro-tails, infinite water, 2.0x cooling, Creation Aura, and Ethereal Domain screen filter.
 * Power Up Dynamic HUD Gauge: Shared charge pool with dedicated purple Catastrom plate for standard weapons and cyan Celestial Awakening plate for Kitsune Buster IX.
-* Solar Convergence Encounter: Wave 20+ apex boss encounter featuring the Equatorial Solar Driver buckle, 6–8 orbiting Solar Eye Drones, multi-tier procedural crack damage, and a 10m Golden Drone Shield.
+* Solar Convergence Encounter: Wave 30+ apex boss encounter featuring the Equatorial Solar Driver buckle, 6–8 orbiting Solar Eye Drones, multi-tier procedural crack damage, and a 10m Golden Drone Shield.
 * 4 New Achievements: Added "Endurance" (Wave 25), "Marathon Runner" (Wave 50), "Arsenal Expert" (5 weapons used), and "The Highlight" (Trigger Celestial Awakening).
 * Best Endless Wave Tracking: High-score tracking for highest Endless Wave reached on Title Screen and game over recap.
 * Custom Audio: CC0 sound effects for Celestial Awakening activation/deactivation and rubberduck CC0 drone impact/shatter SFX.
@@ -252,7 +252,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 구미호 검 근접 베기 및 패링: 태양 플레어를 절단하여 +15% 물탱크를 환급받고 궤도 드론을 타격/파괴하는 60° 근접 베기 구현.
 * 신성의 각성 (궁극기): 파워 업 100% 완충 시 발동되는 15초 슈퍼 상태. 9개 수류 리본 꼬리, 무한 수조, 2.0배 냉각력, 창조의 오라 및 에테리얼 도메인 필터 적용.
 * 파워 업 공유 풀 및 동적 게이지: 카타스트롬과 신성의 각성을 단일 파워 업 충전 풀로 연동; 무기 전환 시 충전량이 보존되며 HUD 게이지가 퍼플(1~5번 총기)과 사이언(구미호 버스터)으로 실시간 전환.
-* 태양 수렴 보스 인카운터: 적도 솔라 드라이버 버클, 6~8기의 궤도 솔라 아이 드론, 단계별 절차적 균열 손상 및 10m 황금 드론 방어막이 등장하는 20웨이브 이상 정점 보스전 추가.
+* 태양 수렴 보스 인카운터: 적도 솔라 드라이버 버클, 6~8기의 궤도 솔라 아이 드론, 단계별 절차적 균열 손상 및 10m 황금 드론 방어막이 등장하는 30웨이브 이상 정점 보스전 추가.
 * 신규 업적 4종: "인내심"(25웨이브), "마라톤 주자"(50웨이브), "무기 전문가"(5개 무기 사용), "클라이맥스"(신성의 각성 최초 발동) 추가 및 실시간 진행도 추적 지원.
 * 엔들리스 최고 웨이브 추적: 생존 시간과 함께 최고 웨이브(`best_wave`)를 영구 저장하여 타이틀 화면 표시 및 게임 오버 신기록 배지 연동.
 * 신규 CC0 효과음: 신성의 각성 발동/종료 사운드 및 궤도 드론 피격/파괴 효과음 적용.

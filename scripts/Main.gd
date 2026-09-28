@@ -4141,8 +4141,8 @@ func _check_sun_defeat() -> void:
 			phase2_triggered = false
 			phase2_heat = min(150.0, 80.0 + (GameState.current_wave * 5.0))
 			sun_shield_cooldown = 2.5 # Initial delay before shield deploys on boss wave
-			if GameState.current_wave >= 20 and solar_convergence_mgr:
-				var d_count = 6 if GameState.current_wave < 30 else 8
+			if GameState.current_wave >= 30 and solar_convergence_mgr:
+				var d_count = 6 if GameState.current_wave < 40 else 8
 				solar_convergence_mgr.start_orbital_swarm(d_count, GameState.current_wave)
 		else:
 			is_two_phase = false
