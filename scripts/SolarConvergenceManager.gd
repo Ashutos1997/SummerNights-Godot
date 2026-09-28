@@ -194,8 +194,7 @@ func _create_drone(index: int, total: int, wave: int = 1, is_phase2: bool = fals
 	# Dynamic Coronal Orbit Geometry: Smooth, stately circular rotation around the Sun's perimeter
 	# Orbit radius (14.6m - 16.0m) revolving cleanly outside the Sun's 10m Golden Shield sphere
 	var angle_fraction = float(index) / float(total)
-	var speed_mult = 1.25 if is_phase2 else 1.0
-	var orbit_speed = (0.85 + (index * 0.06)) * (1.0 if index % 2 == 0 else -1.0) * speed_mult
+	var orbit_speed = (0.85 + (index * 0.06)) * (1.0 if index % 2 == 0 else -1.0)
 	var phase_offset = angle_fraction * TAU
 
 	var base_r = 14.6 + (index % 3) * 0.7
