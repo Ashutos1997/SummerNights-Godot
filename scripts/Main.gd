@@ -324,7 +324,14 @@ func _animate_kitsune_mode_transition(to_mode: String) -> void:
 	is_swapping_weapon = true
 	
 	if kitsune_mode_switch_sfx:
-		kitsune_mode_switch_sfx.pitch_scale = 1.35 if to_mode == "blade" else 0.95
+		if to_mode == "blade" and sfx_blade_draw:
+			kitsune_mode_switch_sfx.stream = sfx_blade_draw
+			kitsune_mode_switch_sfx.pitch_scale = randf_range(0.98, 1.03)
+			kitsune_mode_switch_sfx.volume_db = 1.0
+		elif sfx_cannon_lock:
+			kitsune_mode_switch_sfx.stream = sfx_cannon_lock
+			kitsune_mode_switch_sfx.pitch_scale = randf_range(1.05, 1.15)
+			kitsune_mode_switch_sfx.volume_db = 2.0
 		kitsune_mode_switch_sfx.play()
 		
 	var tw = create_tween().set_parallel(true)
@@ -581,6 +588,8 @@ var celestial_henshin_sfx: AudioStreamPlayer
 var celestial_deactivate_sfx: AudioStreamPlayer
 var celestial_slash_sfx: AudioStreamPlayer
 var kitsune_mode_switch_sfx: AudioStreamPlayer
+var sfx_blade_draw: AudioStream
+var sfx_cannon_lock: AudioStream
 var blade_slash_cooldown: float = 0.0
 var blade_slash_dir: int = 1
 var is_celestial_awakened: bool = false
@@ -745,9 +754,11 @@ func _ready() -> void:
 	celestial_slash_sfx.bus = "SFX_WEAPON"
 	add_child(celestial_slash_sfx)
 	
+	sfx_blade_draw = load("res://assets/audio/sfx/kitsune_blade_draw.wav")
+	sfx_cannon_lock = load("res://assets/audio/sfx/kitsune_cannon_lock.ogg")
 	kitsune_mode_switch_sfx = AudioStreamPlayer.new()
-	kitsune_mode_switch_sfx.stream = preload("res://assets/ui/kenney_ui_pack/Sounds/switch-b.ogg")
-	kitsune_mode_switch_sfx.volume_db = -1.0
+	kitsune_mode_switch_sfx.stream = sfx_blade_draw
+	kitsune_mode_switch_sfx.volume_db = 1.0
 	kitsune_mode_switch_sfx.bus = "SFX_WEAPON"
 	add_child(kitsune_mode_switch_sfx)
 	

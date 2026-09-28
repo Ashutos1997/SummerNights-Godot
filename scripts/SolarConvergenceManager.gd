@@ -58,6 +58,9 @@ var sfx_shatter_glass: AudioStreamPlayer
 var sfx_shatter_core: AudioStreamPlayer
 var sfx_ice_shatter_glass: AudioStreamPlayer
 var sfx_ice_blast: AudioStreamPlayer
+var sfx_driver_lock: AudioStreamPlayer
+var sfx_driver_overdrive: AudioStreamPlayer
+var sfx_drone_shield_hum: AudioStreamPlayer
 
 func _ready() -> void:
 	_init_audio()
@@ -114,6 +117,27 @@ func _init_audio() -> void:
 	sfx_ice_blast.volume_db = 2.5
 	add_child(sfx_ice_blast)
 
+	# Driver Belt Clamping & Lock SFX
+	sfx_driver_lock = AudioStreamPlayer.new()
+	sfx_driver_lock.stream = load("res://assets/audio/sfx/driver_lock.ogg")
+	sfx_driver_lock.bus = "Master"
+	sfx_driver_lock.volume_db = 3.0
+	add_child(sfx_driver_lock)
+
+	# Phase 2 Overdrive Surge SFX
+	sfx_driver_overdrive = AudioStreamPlayer.new()
+	sfx_driver_overdrive.stream = load("res://assets/audio/sfx/driver_overdrive.ogg")
+	sfx_driver_overdrive.bus = "Master"
+	sfx_driver_overdrive.volume_db = 4.0
+	add_child(sfx_driver_overdrive)
+
+	# Golden Drone Shield Ambient Hum (Looping)
+	sfx_drone_shield_hum = AudioStreamPlayer.new()
+	sfx_drone_shield_hum.stream = load("res://assets/audio/sfx/drone_shield_hum.ogg")
+	sfx_drone_shield_hum.bus = "Master"
+	sfx_drone_shield_hum.volume_db = -5.0
+	add_child(sfx_drone_shield_hum)
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Phase 1: Orbital Swarm Spawning
 # ─────────────────────────────────────────────────────────────────────────────
@@ -127,11 +151,16 @@ func start_orbital_swarm(count: int = 6, wave: int = 1, is_phase2: bool = false)
 		materialize_solar_driver(true)
 	elif is_phase2:
 		# Overdrive re-ignition
+		if sfx_driver_overdrive:
+			sfx_driver_overdrive.play()
 		if driver_core_mat:
 			driver_core_mat.emission = Color(1.0, 0.35, 0.10)
 			driver_core_mat.emission_energy_multiplier = 14.0
 			var c_tw = create_tween()
 			c_tw.tween_property(driver_core_mat, "emission_energy_multiplier", 4.5, 1.0).set_trans(Tween.TRANS_QUAD)
+
+	if sfx_drone_shield_hum and not sfx_drone_shield_hum.playing:
+		sfx_drone_shield_hum.play()
 
 	for i in range(count):
 		var drone_data = _create_drone(i, count, wave, is_phase2)
@@ -740,6 +769,8 @@ func get_active_drone_count() -> int:
 	return active_drones.size()
 
 func clear_drones() -> void:
+	if sfx_drone_shield_hum and sfx_drone_shield_hum.playing:
+		sfx_drone_shield_hum.stop()
 	for d in active_drones:
 		var node = d.get("node") as Node3D
 		if is_instance_valid(node):
@@ -906,9 +937,8 @@ func materialize_solar_driver(animated: bool = true) -> void:
 
 		# Phase 2: On Buckle Impact -> SFX, shockwave, core flash, THEN belt appears!
 		tw.chain().tween_callback(func():
-			if sfx_shatter_metal:
-				sfx_shatter_metal.pitch_scale = 0.85
-				sfx_shatter_metal.play()
+			if sfx_driver_lock:
+				sfx_driver_lock.play()
 			if sfx_shatter_core:
 				sfx_shatter_core.pitch_scale = 1.30
 				sfx_shatter_core.play()
@@ -1022,6 +1052,8 @@ func is_convergence_in_progress() -> bool:
 # Driver Overload Climax (Triggered when all orbital drones are destroyed)
 # ─────────────────────────────────────────────────────────────────────────────
 func trigger_driver_overload() -> void:
+	if sfx_drone_shield_hum and sfx_drone_shield_hum.playing:
+		sfx_drone_shield_hum.stop()
 	current_state = State.IDLE
 	convergence_completed.emit()
 

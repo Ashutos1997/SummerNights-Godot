@@ -218,6 +218,10 @@ SummerNights-Godot/
 | SFX - 실드 튕김음 (Shield Deflection) | OpenGameArt | CC0 |
 | SFX - 드론 금속성 타격음 4종 (Drone Metallic Impacts) | rubberduck (OpenGameArt) | CC0 |
 | SFX - 드론 기계 파열 및 유리 분쇄음 (Drone Shatter SFX) | rubberduck (OpenGameArt) | CC0 |
+| SFX - 구미호 검 발도 및 참격음 (Kitsune Blade Draw) | artisticdude (OpenGameArt) | CC0 |
+| SFX - 드라이버 버클 체결 및 캐논 잠금음 (Driver & Cannon Lock) | OpenGameArt | CC0 |
+| SFX - 오버드라이브 경보 및 황금 방어막 앰비언스 (Overdrive & Forcefield) | Kenney | CC0 |
+| SFX - 퍽 카드 드래프트, 호버 및 선택 효과음 (Perk Card SFX) | Kenney | CC0 |
 | SFX - 신성의 각성 활성화음 (Celestial Awakening Activation) | TheLittleCrow (Freesound) | CC0 |
 | SFX - 신성의 각성 비활성화음 (Celestial Awakening Deactivation) | bevibeldesign (Freesound) | CC0 |
 | SFX - 신성의 참격 효과음 (Celestial Blade Slash) | Nomagician (Freesound) | CC0 |

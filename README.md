@@ -218,6 +218,10 @@ SummerNights-Godot/
 | SFX - Shield Deflection | OpenGameArt | CC0 |
 | SFX - Drone Metallic Impacts (4 variations) | rubberduck (OpenGameArt) | CC0 |
 | SFX - Drone Mechanical Shatter & Glass Fragmentation | rubberduck (OpenGameArt) | CC0 |
+| SFX - Kitsune Blade Draw & Melee Clashes | artisticdude (OpenGameArt) | CC0 |
+| SFX - Tokusatsu Driver Lock & Cannon Lock | OpenGameArt | CC0 |
+| SFX - Overdrive Alarm & Golden Forcefield Hum | Kenney | CC0 |
+| SFX - Rogue-lite Perk Draft, Hover & Select | Kenney | CC0 |
 | SFX - Celestial Awakening Activation | TheLittleCrow (Freesound) | CC0 |
 | SFX - Celestial Awakening Deactivation | bevibeldesign (Freesound) | CC0 |
 | SFX - Celestial Blade Slash | Nomagician (Freesound) | CC0 |

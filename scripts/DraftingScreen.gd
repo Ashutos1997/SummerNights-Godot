@@ -7,9 +7,30 @@ signal perk_selected(perk_id: String)
 var blur_mat: ShaderMaterial
 var card_container: VBoxContainer
 var title_lbl: Label
+var sfx_deal: AudioStreamPlayer
+var sfx_hover: AudioStreamPlayer
+var sfx_select: AudioStreamPlayer
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	
+	sfx_deal = AudioStreamPlayer.new()
+	sfx_deal.stream = load("res://assets/audio/sfx/perk_deal.wav")
+	sfx_deal.bus = "Master"
+	sfx_deal.volume_db = -1.0
+	add_child(sfx_deal)
+
+	sfx_hover = AudioStreamPlayer.new()
+	sfx_hover.stream = load("res://assets/audio/sfx/perk_hover.wav")
+	sfx_hover.bus = "Master"
+	sfx_hover.volume_db = 0.0
+	add_child(sfx_hover)
+
+	sfx_select = AudioStreamPlayer.new()
+	sfx_select.stream = load("res://assets/audio/sfx/perk_select.mp3")
+	sfx_select.bus = "Master"
+	sfx_select.volume_db = 2.0
+	add_child(sfx_select)
 	
 	# Fullscreen background (Matches Pause Menu)
 	color = Color(0.02, 0.01, 0.05, 0.96)
@@ -129,6 +150,7 @@ func show_draft() -> void:
 		var r = children[i]
 		deal_tw.tween_interval(0.06 if i == 0 else 0.08)
 		deal_tw.tween_callback(func():
+			if sfx_deal: sfx_deal.play()
 			UIJuice.play_tick()
 		)
 		var p_tw = deal_tw.parallel()
@@ -264,6 +286,10 @@ func _create_perk_row(perk_id: String) -> Control:
 	
 	btn.mouse_entered.connect(func():
 		btn.grab_focus()
+		if sfx_hover: sfx_hover.play()
+	)
+	btn.focus_entered.connect(func():
+		if sfx_hover: sfx_hover.play()
 	)
 	
 	btn.pressed.connect(func():
@@ -273,6 +299,8 @@ func _create_perk_row(perk_id: String) -> Control:
 	return btn
 
 func _on_perk_selected(perk_id: String) -> void:
+	if sfx_select:
+		sfx_select.play()
 	GameState.active_wave_perks.append(perk_id)
 	GameState._evaluate_milestones() # Recalculate stats
 	

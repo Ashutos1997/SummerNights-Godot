@@ -1612,6 +1612,14 @@ func _apply_language(lang: String) -> void:
 			if itm_audio20: itm_audio20.text = "SFX - 드론 금속성 타격음 4종  ·  rubberduck (OpenGameArt)  ·  CC0" if is_kr else "SFX - Drone Metallic Impacts (4 variations)  ·  rubberduck (OpenGameArt)  ·  CC0"
 			var itm_audio21 = credits_list.get_node_or_null("ItmAudio21")
 			if itm_audio21: itm_audio21.text = "SFX - 드론 기계 파열 및 유리 분쇄음  ·  rubberduck (OpenGameArt)  ·  CC0" if is_kr else "SFX - Drone Mechanical Shatter & Glass Fragmentation  ·  rubberduck (OpenGameArt)  ·  CC0"
+			var itm_audio22 = credits_list.get_node_or_null("ItmAudio22")
+			if itm_audio22: itm_audio22.text = "SFX - 구미호 검 발도 및 참격음  ·  artisticdude (OpenGameArt)  ·  CC0" if is_kr else "SFX - Kitsune Blade Draw & Melee Clashes  ·  artisticdude (OpenGameArt)  ·  CC0"
+			var itm_audio23 = credits_list.get_node_or_null("ItmAudio23")
+			if itm_audio23: itm_audio23.text = "SFX - 드라이버 버클 체결 및 캐논 잠금음  ·  OpenGameArt  ·  CC0" if is_kr else "SFX - Tokusatsu Driver Lock & Cannon Lock  ·  OpenGameArt  ·  CC0"
+			var itm_audio24 = credits_list.get_node_or_null("ItmAudio24")
+			if itm_audio24: itm_audio24.text = "SFX - 오버드라이브 경보 및 황금 방어막 앰비언스  ·  Kenney  ·  CC0" if is_kr else "SFX - Overdrive Alarm & Golden Forcefield Hum  ·  Kenney  ·  CC0"
+			var itm_audio25 = credits_list.get_node_or_null("ItmAudio25")
+			if itm_audio25: itm_audio25.text = "SFX - 퍽 카드 드래프트, 호버 및 선택 효과음  ·  Kenney  ·  CC0" if is_kr else "SFX - Rogue-lite Perk Draft, Hover & Select  ·  Kenney  ·  CC0"
 
 			var itm_engine_logo = credits_list.get_node_or_null("ItmEngineLogo")
 			if itm_engine_logo: itm_engine_logo.text = "고도 엔진 로고 및 브랜딩  ·  Andrea Calabró (Godot Foundation)  ·  CC BY 4.0" if is_kr else "Godot Engine Logo & Branding  ·  Andrea Calabró (Godot Foundation)  ·  CC BY 4.0"

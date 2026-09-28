@@ -16,6 +16,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Best Endless Wave Tracking: High-score tracking for highest Endless Wave reached on Title Screen and game over recap.
 * Custom Audio: CC0 sound effects for Celestial Awakening activation/deactivation and rubberduck CC0 drone impact/shatter SFX.
 * Controls Legends: Added mode change legends (`[X]` Keyboard / `[Y]` Xbox) with magenta highlight, and unified controller "Power Up" labels.
+* CC0 Audio Integration: Added open-source sound effects for Kitsune Blade unsheathe, Cannon lock, Tokusatsu Driver clamp, Phase 2 Overdrive surge alarm, Golden Drone Shield ambient hum, and Rogue-lite Perk drafting suite (card deal, hover, and perk selection chimes). Synced credits across READMEs and in-game Credits screen.
 * Solar Convergence Phase 2 Swarm: When Phase 2 triggers on Wave 30+, the Equatorial Driver enters Overdrive, deploying an enraged drone swarm with reactivated Golden Shield.
 * Kitsune Blade Flare Cleaving Bugfix: Cleaved fireballs/flares now immediately detonate into water explosions, queue free, and award water parry refunds instead of passing through the player.
 * Endless Perks Rebalance & New Perks: Reduced overpowered flat cooling perks (Thermal Insulator down to +6% cooling with -10% water drain; Heavy Water down to +15% cooling with -15% ult charge) and capped cooling power multiplier at 2.0x. Added 3 new tactical perks: "Wind Breaker" (-60% solar wind crosshair drift), "Sub-Zero Reserve" (+1 ice blast charge capacity & wave refill), and "Blade Cadence" (+20% Kitsune Blade slash arc & +25% parry refund).
@@ -259,6 +260,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 엔들리스 최고 웨이브 추적: 생존 시간과 함께 최고 웨이브(`best_wave`)를 영구 저장하여 타이틀 화면 표시 및 게임 오버 신기록 배지 연동.
 * 신규 CC0 효과음: 신성의 각성 발동/종료 사운드 및 궤도 드론 피격/파괴 효과음 적용.
 * 조작 안내 및 범례 개선: 조작 안내 화면에 마젠타 하이라이트의 모드 전환(`[X]` 키보드 / `[Y]` Xbox) 범례를 추가하고 "파워 업" 명칭 통합.
+* CC0 오픈소스 오디오 적용 및 크레딧 동기화: 구미호 검 발도음, 캐논 잠금음, 적도 드라이버 버클 체결음, 2페이즈 오버드라이브 경보음, 황금 방어막 앰비언스 험, 로그라이크 퍽 드래프트 사운드 3종(카드 딜링, 호버, 선택) 추가 및 README, HUD 크레딧 화면에 1:1 동기화.
 * 태양 수렴 2페이즈 드론 군체 재출현: 30웨이브 이상 보스전에서 2페이즈 진입 시 적도 드라이버가 폭주 상태로 전환되며, 정예 드론 군체와 황금 방어막이 재배치되어 결전 난이도 강화.
 * 구미호 검 플레어 절단 버그 수정: 근접 베기 및 여우불 참격 투사체에 적중한 태양 플레어가 통과하지 않고 즉시 수류 폭발과 함께 소멸하며 패링 물 환급이 정상 적용되도록 수정.
 * 엔들리스 특성 밸런스 조정 및 신규 특성 3종: 과도했던 냉각력 특성 수치 조정(열 절연체: 냉각력 +6% 및 물 소모 -10%, 중수: 냉각력 +15% 및 궁극기 -15%) 및 냉각력 배율 상한을 2.0배로 제한. 전술적 선택지를 넓히는 신규 특성 3종("바람막이": 태양풍 조준 흔들림 -60%, "극저온 예비탄": 얼음 폭발 최대치 +1회 및 매 웨이브 1회 보충, "검의 운율": 구미호 검 베기 범위 +20% 및 패링 물 환급 +25%) 추가.

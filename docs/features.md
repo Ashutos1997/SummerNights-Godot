@@ -67,5 +67,5 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 ## 8. Audio
 * **Audio Ducking:** 12dB master volume drop on massive impacts (Flares, Dunks).
 * **UI Audio:** Consistent -18dB 1800Hz sine sweep ticks on all interactions.
-* **Custom SFX:** Dedicated CC0 recordings for drone metal hits/shatters, shield spawn/deflect/break, celestial activate/deactivate, and blade slashes.
+* **Custom SFX:** Dedicated CC0 recordings for drone metal hits/shatters, shield spawn/deflect/break, celestial activate/deactivate, blade slashes/draws, cannon locks, boss overdrive klaxons, and perk drafting suite.
 * **Catastrom VO:** Dual-track setup (royalty-free fallback for itch.io exports, original audio for GitHub builds).
