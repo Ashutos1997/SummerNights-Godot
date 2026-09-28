@@ -4929,13 +4929,80 @@ func _perform_kitsune_blade_slash() -> void:
 				if hud and hud.has_method("update_combo_text"):
 					hud.update_combo_text(current_mult)
 	
-	# Direct Strike on Sun — raycasts where the crosshair is aimed (matching guns)
+	# Direct Strike on Sun or Heat Mirage — raycasts where the crosshair is aimed (matching guns)
 	if not hit_solar_drone and abs(ray_normal.z) > 1e-4:
 		var dist_to_sun_z = (sun.global_position.z - ray_origin.z) / ray_normal.z
 		if dist_to_sun_z > 0.0:
 			var crosshair_target = ray_origin + ray_normal * dist_to_sun_z
-			var aim_dist = crosshair_target.distance_to(sun.global_position)
-			if aim_dist < 4.8: # Matches gun hit detection radius for the Sun
+			
+			# Check Heat Mirage hits
+			var hit_mirage: bool = false
+			var closest_mirage_dist = 999.0
+			var closest_mirage_node: Node3D = null
+			for m in active_mirages:
+				var node = m.get("node") as Node3D
+				if is_instance_valid(node):
+					var xy_dist = Vector2(crosshair_target.x, crosshair_target.y).distance_to(Vector2(node.global_position.x, node.global_position.y))
+					if xy_dist < 5.0 and xy_dist < closest_mirage_dist:
+						closest_mirage_dist = xy_dist
+						closest_mirage_node = node
+						hit_mirage = true
+			
+			var aim_dist = Vector2(crosshair_target.x, crosshair_target.y).distance_to(Vector2(sun.global_position.x, sun.global_position.y))
+			
+			if hit_mirage and closest_mirage_dist < aim_dist and closest_mirage_dist < 5.0:
+				# Hit a mirage with Kitsune Blade slash!
+				var wave_dmg_mult = 1.0
+				if GameState.is_survival_mode and GameState.current_wave >= 5:
+					wave_dmg_mult = 1.0 + (GameState.current_wave - 4) * 0.15
+				var base_blade_mirage_dmg = 14.0
+				var total_dmg = base_blade_mirage_dmg * wave_dmg_mult * GameState.cooling_power_mult
+				if is_celestial_awakened:
+					total_dmg *= 2.0
+				
+				if mirage_hp > 0.0:
+					mirage_hp -= total_dmg
+					if hud and hud.has_method("update_mirage_hp"):
+						hud.update_mirage_hp(mirage_hp, max_mirage_hp)
+					if mirage_hp <= 0.0:
+						_end_mirage()
+						active_mirages.clear()
+						if hud and hud.has_method("update_mirage_hp"):
+							hud.update_mirage_hp(0, 100)
+				
+				# Hit effects & audio feedback
+				_spawn_damage_number(total_dmg, false, crosshair_target)
+				_spawn_splash(crosshair_target)
+				if steam_particles:
+					steam_particles.global_position = crosshair_target
+					steam_particles.restart()
+				if sizzle_sfx and not sizzle_sfx.playing:
+					sizzle_sfx.play()
+				
+				# Reactive flinch on hit mirage
+				if closest_mirage_node and is_instance_valid(closest_mirage_node):
+					var orig_x = closest_mirage_node.position.x
+					var m_tw = create_tween()
+					m_tw.tween_property(closest_mirage_node, "position:x", orig_x + randf_range(-0.35, 0.35), 0.05)
+					m_tw.tween_property(closest_mirage_node, "position:x", orig_x, 0.08)
+				
+				# Celestial charge & combo progression
+				if not is_celestial_awakened:
+					GameState.celestial_charge = min(1.0, GameState.celestial_charge + 0.06)
+				
+				combo_timer += 0.35
+				if combo_timer >= 1.5:
+					if not combo_active:
+						combo_active = true
+						if hud and hud.has_method("show_combo"): hud.show_combo(true)
+					var current_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
+					if current_mult >= 3.0:
+						GameState.unlock_achievement("untouchable")
+					if hud and hud.has_method("update_combo_text"):
+						hud.update_combo_text(current_mult)
+				
+				GameState.add_score(int(total_dmg * 10.0))
+			elif aim_dist < 4.8: # Matches gun hit detection radius for the Sun
 				if is_sun_shielded:
 					_on_shield_deflect(crosshair_target)
 					if is_drone_shield_active:
