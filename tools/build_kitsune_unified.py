@@ -515,26 +515,37 @@ def build_unified_kitsune(output_path="assets/blaster_kitsune_unified.glb"):
         builder.add_mesh_primitive(mesh_chassis, m_gold, v, n, idx)
 
     # Forward Deck & Collar Base (Z = 0.36 to 0.60)
-    v, n, idx = create_chamfered_box(0.0, 0.62, width=0.27, height=0.11, z0=0.36, z1=0.58, chamfer=0.035)
+    # Upper Deck running forward toward sight bridge (Z = 0.36 to 0.52)
+    v, n, idx = create_chamfered_box(0.0, 0.62, width=0.25, height=0.08, z0=0.36, z1=0.52, chamfer=0.025)
     builder.add_mesh_primitive(mesh_chassis, m_white, v, n, idx)
-    v, n, idx = create_chamfered_box(0.0, 0.48, width=0.27, height=0.25, z0=0.36, z1=0.60, chamfer=0.040)
+    
+    # Tapered beveled hood transitioning upper deck cleanly down into muzzle face (Z = 0.52 to 0.56)
+    deck_hood_start = [[-0.125, 0.58], [0.125, 0.58], [0.125, 0.66], [-0.125, 0.66]]
+    deck_hood_end = [[-0.140, 0.58], [0.140, 0.58], [0.140, 0.62], [-0.140, 0.62]]
+    v, n, idx = create_tapered_extrusion(deck_hood_start, deck_hood_end, z0=0.52, z1=0.56, caps=True)
     builder.add_mesh_primitive(mesh_chassis, m_white, v, n, idx)
-    # Gold collar ring at barrel/blade exit interface
-    v, n, idx = create_cylinder(0.0, 0.48, z0=0.575, z1=0.60, radius=0.112, sides=20)
+
+    # Perfectly symmetrical Muzzle Receiver Face (Z = 0.36 to 0.60, centered at Y = 0.48)
+    # Height = 0.28 (Y = 0.34 to 0.62), Width = 0.28 (X = -0.14 to +0.14)
+    v, n, idx = create_chamfered_box(0.0, 0.48, width=0.28, height=0.28, z0=0.36, z1=0.60, chamfer=0.038)
+    builder.add_mesh_primitive(mesh_chassis, m_white, v, n, idx)
+    
+    # Gold collar ring at barrel/blade exit interface (Dead-center at Y = 0.48)
+    v, n, idx = create_cylinder(0.0, 0.48, z0=0.575, z1=0.60, radius=0.114, sides=24)
     builder.add_mesh_primitive(mesh_chassis, m_gold, v, n, idx)
     # Recessed dark emitter well with radiant cyan containment ring
-    v, n, idx = create_cylinder(0.0, 0.48, z0=0.585, z1=0.602, radius=0.098, sides=18)
+    v, n, idx = create_cylinder(0.0, 0.48, z0=0.585, z1=0.602, radius=0.100, sides=20)
     builder.add_mesh_primitive(mesh_chassis, m_dark, v, n, idx)
-    v, n, idx = create_cylinder(0.0, 0.48, z0=0.590, z1=0.604, radius=0.082, sides=18)
+    v, n, idx = create_cylinder(0.0, 0.48, z0=0.590, z1=0.604, radius=0.084, sides=20)
     builder.add_mesh_primitive(mesh_chassis, m_cyan, v, n, idx)
     
     # 4 Articulated Locking Aperture Clamps around the collar (anchoring deployed blade)
     for clamp_i in range(4):
         c_ang = clamp_i * (math.pi / 2.0)
-        cx = math.cos(c_ang) * 0.106
-        cy = 0.48 + math.sin(c_ang) * 0.106
+        cx = math.cos(c_ang) * 0.108
+        cy = 0.48 + math.sin(c_ang) * 0.108
         # Clamp bracket
-        v, n, idx = create_chamfered_box(cx, cy, width=0.034, height=0.034, z0=0.575, z1=0.608, chamfer=0.006)
+        v, n, idx = create_chamfered_box(cx, cy, width=0.032, height=0.032, z0=0.575, z1=0.608, chamfer=0.006)
         builder.add_mesh_primitive(mesh_chassis, m_dark, v, n, idx)
         # Gold clamp bevel
         v, n, idx = create_cylinder(cx, cy, z0=0.600, z1=0.612, radius=0.010, sides=8)
@@ -544,10 +555,10 @@ def build_unified_kitsune(output_path="assets/blaster_kitsune_unified.glb"):
         builder.add_mesh_primitive(mesh_chassis, m_cyan, v, n, idx)
     
     # Tactical Status LEDs on Forward Deck (Cyan / Gold readiness lights)
-    for led_i, z_led in enumerate([0.42, 0.48, 0.54]):
-        v, n, idx = create_cylinder(-0.115, 0.678, z0=z_led - 0.012, z1=z_led + 0.012, radius=0.008, sides=10)
+    for led_i, z_led in enumerate([0.40, 0.45, 0.50]):
+        v, n, idx = create_cylinder(-0.105, 0.665, z0=z_led - 0.010, z1=z_led + 0.010, radius=0.007, sides=10)
         builder.add_mesh_primitive(mesh_chassis, m_cyan if led_i < 2 else m_gold, v, n, idx)
-        v, n, idx = create_cylinder(0.115, 0.678, z0=z_led - 0.012, z1=z_led + 0.012, radius=0.008, sides=10)
+        v, n, idx = create_cylinder(0.105, 0.665, z0=z_led - 0.010, z1=z_led + 0.010, radius=0.007, sides=10)
         builder.add_mesh_primitive(mesh_chassis, m_cyan if led_i < 2 else m_gold, v, n, idx)
 
     # ── KITSUNE FOX-EAR COWL FINS (Upper Receiver Flanks) ──
@@ -1096,9 +1107,9 @@ def build_unified_kitsune(output_path="assets/blaster_kitsune_unified.glb"):
     builder.add_node("Chassis", mesh_idx=mesh_chassis)
     builder.add_node("Cylinder", mesh_idx=mesh_cylinder, translation=[0.0, 0.48, 0.18])
     builder.add_node("BarrelAssembly", mesh_idx=mesh_barrel, translation=[0.0, 0.48, 0.55])
-    builder.add_node("TsubaLeft", mesh_idx=mesh_tsuba_l, translation=[-0.12, 0.52, 0.59])
-    builder.add_node("TsubaRight", mesh_idx=mesh_tsuba_r, translation=[0.12, 0.52, 0.59])
-    builder.add_node("BladeAssembly", mesh_idx=mesh_blade, translation=[0.0, 0.52, 0.60])
+    builder.add_node("TsubaLeft", mesh_idx=mesh_tsuba_l, translation=[-0.125, 0.48, 0.59])
+    builder.add_node("TsubaRight", mesh_idx=mesh_tsuba_r, translation=[0.125, 0.48, 0.59])
+    builder.add_node("BladeAssembly", mesh_idx=mesh_blade, translation=[0.0, 0.48, 0.60])
     
     builder.build_glb(output_path)
 

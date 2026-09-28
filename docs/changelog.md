@@ -32,6 +32,7 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### Fixed
 * Kitsune Blade Heat Mirage Damage: Fixed Kitsune Blade melee slash failing to detect and damage Heat Mirages; slash now detects decoy suns, chunks mirage HP, and triggers reactive flinch and steam particles.
+* Kitsune Buster Model Centering: Centered the circular muzzle aperture, Katana blade, crossguard Tsuba wings, and cannon barrel along the unified Y=0.48 bore axis within a symmetrical receiver face.
 * Level Transition Input Guards: Locked weapon inputs during fade transitions to prevent premature wave clears.
 * Weapon Wheel Overlay: Ensured background dim overlay hides immediately when transitioning to menus.
 * Dawn Breaks Achievement Requirement: Corrected unlock requirement and progress tracking from Level 5 to Level 6 to match the full 6-level Normal Mode campaign.
@@ -280,6 +281,7 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### 수정됨 (Fixed)
 * 구미호 검 신기루 타격 버그 수정: 구미호 검 근접 베기가 열기 신기루를 타격하지 못하던 현상 수정; 신기루를 조준하여 베었을 때 신기루 체력 게이지가 정상 감소하고 피격 반응 및 이펙트가 발생하도록 개선.
+* 구미호 버스터 3D 모델 중심축 정렬: 대칭형 리시버 전면부와 통합 Y=0.48 중심축을 기준으로 원형 총구 개구부, 카타나 칼날, 코등이(츠바) 날개 및 캐넌 총열의 정렬을 완벽하게 일치하도록 수정.
 * 레벨 전환 입력 잠금: 화면 페이드 전환 중 무기 입력을 잠금 처리하여 조기 클리어 방지.
 * 무기 선택 휠 오버레이: 메뉴 전환 및 휠 종료 시 배경 블러/딤 오버레이가 즉시 숨겨지도록 수정.
 * 새벽이 밝다 업적 레벨 요건 수정: 일반 모드 6개 전체 레벨 캠페인에 맞춰 업적 해금 요건 및 진행도 표시를 레벨 5에서 레벨 6으로 수정.

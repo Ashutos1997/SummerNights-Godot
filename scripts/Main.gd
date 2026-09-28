@@ -286,7 +286,7 @@ func _apply_kitsune_mode_visuals(mode: String, _instant: bool = true) -> void:
 			tsuba_r.scale = Vector3(0.7, 0.7, 0.7)
 			tsuba_r.visible = true
 		if blade:
-			blade.position = Vector3(0.0, 0.52, 0.40)
+			blade.position = Vector3(0.0, 0.48, 0.40)
 			blade.scale = Vector3(1.0, 1.0, 0.001)
 			blade.visible = false
 		gun_model.position = Vector3(0.0, -0.30, -0.10)
@@ -305,7 +305,7 @@ func _apply_kitsune_mode_visuals(mode: String, _instant: bool = true) -> void:
 			tsuba_r.scale = Vector3.ONE
 			tsuba_r.visible = true
 		if blade:
-			blade.position = Vector3(0.0, 0.52, 0.60)
+			blade.position = Vector3(0.0, 0.48, 0.60)
 			blade.scale = Vector3.ONE
 			blade.visible = true
 		gun_model.position = Vector3(0.06, -0.26, -0.05)
@@ -361,7 +361,7 @@ func _animate_kitsune_mode_transition(to_mode: String) -> void:
 		if blade:
 			blade.visible = true
 			blade.scale = Vector3(1.0, 1.0, 0.01)
-			blade.position = Vector3(0.0, 0.52, 0.40)
+			blade.position = Vector3(0.0, 0.48, 0.40)
 			var b_tw = create_tween().set_parallel(true)
 			b_tw.tween_interval(0.08)
 			b_tw.chain().tween_property(blade, "position:z", 0.60, 0.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
