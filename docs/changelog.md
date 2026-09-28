@@ -16,6 +16,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Best Endless Wave Tracking: High-score tracking for highest Endless Wave reached on Title Screen and game over recap.
 * Custom Audio: CC0 sound effects for Celestial Awakening activation/deactivation and rubberduck CC0 drone impact/shatter SFX.
 * Controls Legends: Added mode change legends (`[X]` Keyboard / `[Y]` Xbox) with magenta highlight, and unified controller "Power Up" labels.
+* First-Time Wave 30 Power Up Grant: Reaching Wave 30 for the first time grants an immediate 100% Celestial Awakening charge to test the power up upon unlocking Kitsune Buster IX.
 
 ### Known Issues (Critical)
 * Fullscreen End-of-Run Dimming: Win ("Cool Down") and Lose ("The Sun Won") screens render at low brightness in fullscreen mode (under active investigation).
@@ -252,6 +253,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 엔들리스 최고 웨이브 추적: 생존 시간과 함께 최고 웨이브(`best_wave`)를 영구 저장하여 타이틀 화면 표시 및 게임 오버 신기록 배지 연동.
 * 신규 CC0 효과음: 신성의 각성 발동/종료 사운드 및 궤도 드론 피격/파괴 효과음 적용.
 * 조작 안내 및 범례 개선: 조작 안내 화면에 마젠타 하이라이트의 모드 전환(`[X]` 키보드 / `[Y]` Xbox) 범례를 추가하고 "파워 업" 명칭 통합.
+* 30웨이브 최초 도달 파워 업 즉시 완충: 30웨이브 최초 도달 및 구미호 버스터 IX 해금 시 파워 업 게이지를 100% 즉시 완충하여 신성의 각성을 바로 체험할 수 있도록 지원.
 
 ### 알려진 문제 (Known Issues - Critical)
 * 전체화면 라운드 종료 화면 밝기 저하: 일반 및 무한 모드 모두에서 승리("Cool Down") 및 패배("The Sun Won") 화면이 어둡게 렌더링되는 현상 (원인 추적 중).

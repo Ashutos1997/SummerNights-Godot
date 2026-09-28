@@ -355,6 +355,7 @@ var flares_intercepted: int = 0
 var total_ice_blasts: int = 0
 var total_water_sprayed: float = 0.0
 var total_deaths: int = 0
+var kitsune_first_unlock_awarded: bool = false
 
 const SETTINGS_FILE_PATH = "user://settings.cfg"
 
@@ -505,6 +506,7 @@ func save_settings() -> void:
 	config.set_value("Stats", "total_water_sprayed", total_water_sprayed)
 	config.set_value("Stats", "total_deaths", total_deaths)
 	config.set_value("Stats", "has_completed_tutorial", has_completed_tutorial)
+	config.set_value("Stats", "kitsune_first_unlock_awarded", kitsune_first_unlock_awarded)
 	config.save(SETTINGS_FILE_PATH)
 
 func load_settings() -> void:
@@ -542,6 +544,7 @@ func load_settings() -> void:
 		total_water_sprayed = config.get_value("Stats", "total_water_sprayed", 0.0)
 		total_deaths = config.get_value("Stats", "total_deaths", 0)
 		has_completed_tutorial = config.get_value("Stats", "has_completed_tutorial", false)
+		kitsune_first_unlock_awarded = config.get_value("Stats", "kitsune_first_unlock_awarded", false)
 		var loaded_achievements = config.get_value("Stats", "unlocked_achievements", [])
 		unlocked_achievements.assign(loaded_achievements)
 		

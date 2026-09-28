@@ -20,7 +20,7 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
   * *Precision Stream:* Low capacity, high critical multiplier.
   * *Heavy Cannon:* High capacity, massive cooling, rapid drain.
   * *Scatter Nozzle:* Wide spray for multi-target flare intercepts.
-  * *Kitsune Buster IX:* Endless Wave 30 unlock (160 cap, 28 cool, 2.2x crit). Mode toggle (`[X]` / `[Y]` / MMB):
+  * *Kitsune Buster IX:* Endless Wave 30 unlock (160 cap, 28 cool, 2.2x crit). Grants 100% Awakening meter on first unlock. Mode toggle (`[X]` / `[Y]` / MMB):
     * *Cannon Mode:* Precision stream with revolving 9-vial cylinder.
     * *Blade Mode:* Katana melee strike (60° arc, 8.5m range). Cleaves flares for +15% water and damages drones.
 * **Ice Burst (Secondary `[R]`):** Freezes heat gain and sun movement. Unlocked Wave 2 / Level 3.
