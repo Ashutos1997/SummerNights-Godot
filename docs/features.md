@@ -32,6 +32,7 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 * **HUD Tracker:** Top-left active buff icons with stack badges.
 * **Stat Caps:** Cooling Power capped at 2.0x, Water Drain bounded 40%–150%, Crit at 3.0x, Heat Resist at 60%, Sun Sway floored at 40%, Tank bounded 50%–250%, Ult floored at 40%.
 * **Available Perks:** High Capacity, Precision Optics, Thermal Insulator, Catastrom Flow, Heat Shield, Gravity Anchor, Glass Cannon, Heavy Water, Reckless Haste, Wind Breaker, Sub-Zero Reserve, Blade Cadence.
+* **Perk Rarities:** Common (weight 70–100), Uncommon (weight 60), and Rare (Cyan/Blue badge & border, weight 20: Gravity Anchor, Thermal Insulator, Heavy Water).
 
 ## 4. Sun Mechanics & Threats
 * **Dynamic Movement:** Sun sways horizontally, scaling up to complex Figure-8 patterns on high waves.

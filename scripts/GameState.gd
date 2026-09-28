@@ -393,8 +393,9 @@ const WAVE_PERKS: Dictionary = {
 		"icon": "res://assets/ui/achievements/water-splash.png",
 		"title_en": "Thermal Insulator",
 		"title_kr": "열 절연체",
-		"desc_en": "+6% Cooling Power, -10% Water Drain.",
-		"desc_kr": "냉각력 +6%, 물 소모량 -10%."
+		"desc_en": "+6% Cooling Power, -10% Water Drain (Rare).",
+		"desc_kr": "냉각력 +6%, 물 소모량 -10% (희귀).",
+		"weight": 20
 	},
 	"catastrom_boost": {
 		"icon": "res://assets/ui/achievements/eclipse.png",
@@ -415,8 +416,8 @@ const WAVE_PERKS: Dictionary = {
 		"icon": "res://assets/ui/achievements/sunset.png",
 		"title_en": "Gravity Anchor",
 		"title_kr": "중력 닻",
-		"desc_en": "-15% Sun Sway Speed (Rare).",
-		"desc_kr": "태양의 흔들림 속도가 15% 감소합니다 (희귀).",
+		"desc_en": "-10% Sun Sway Speed (Rare).",
+		"desc_kr": "태양의 흔들림 속도가 10% 감소합니다 (희귀).",
 		"weight": 20
 	},
 	"glass_cannon": {
@@ -431,9 +432,9 @@ const WAVE_PERKS: Dictionary = {
 		"icon": "res://assets/ui/achievements/water-splash.png",
 		"title_en": "Heavy Water",
 		"title_kr": "중수",
-		"desc_en": "+15% Cooling Power, -15% Ult Charge.",
-		"desc_kr": "냉각력 +15%, 궁극기 충전 -15%.",
-		"weight": 60
+		"desc_en": "+15% Cooling Power, -15% Ult Charge (Rare).",
+		"desc_kr": "냉각력 +15%, 궁극기 충전 -15% (희귀).",
+		"weight": 20
 	},
 	"reckless_haste": {
 		"icon": "res://assets/ui/achievements/eclipse.png",
@@ -648,7 +649,7 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 			"heat_shield": heat_resistance += 0.05
 			"crit_boost": crit_damage_mult += 0.15
 			"catastrom_boost": catastrom_charge_mult += 0.15
-			"slow_sway": sun_sway_mult -= 0.15
+			"slow_sway": sun_sway_mult -= 0.10
 			"glass_cannon":
 				crit_damage_mult += 0.40
 				max_water_mult -= 0.15

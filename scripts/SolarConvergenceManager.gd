@@ -61,6 +61,7 @@ var sfx_ice_blast: AudioStreamPlayer
 var sfx_driver_lock: AudioStreamPlayer
 var sfx_driver_overdrive: AudioStreamPlayer
 var sfx_drone_shield_hum: AudioStreamPlayer
+var drone_hum_tween: Tween = null
 
 func _ready() -> void:
 	_init_audio()
@@ -131,12 +132,39 @@ func _init_audio() -> void:
 	sfx_driver_overdrive.volume_db = 4.0
 	add_child(sfx_driver_overdrive)
 
-	# Golden Drone Shield Ambient Hum (Looping)
+	# Golden Drone Shield Ambient Hum (Looping with dynamic entrance & volume ducking)
 	sfx_drone_shield_hum = AudioStreamPlayer.new()
 	sfx_drone_shield_hum.stream = load("res://assets/audio/sfx/drone_shield_hum.ogg")
 	sfx_drone_shield_hum.bus = "Master"
-	sfx_drone_shield_hum.volume_db = -5.0
+	sfx_drone_shield_hum.volume_db = -6.0
 	add_child(sfx_drone_shield_hum)
+
+func _start_drone_hum() -> void:
+	if not sfx_drone_shield_hum:
+		return
+	if drone_hum_tween and drone_hum_tween.is_valid():
+		drone_hum_tween.kill()
+
+	sfx_drone_shield_hum.volume_db = -6.0
+	if not sfx_drone_shield_hum.playing:
+		sfx_drone_shield_hum.play()
+
+	# Start audible for entrance feedback, then gracefully duck down to a subtle background level so it never fatigues the ears
+	drone_hum_tween = create_tween()
+	drone_hum_tween.tween_interval(2.5)
+	drone_hum_tween.tween_property(sfx_drone_shield_hum, "volume_db", -22.0, 3.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+func _stop_drone_hum() -> void:
+	if drone_hum_tween and drone_hum_tween.is_valid():
+		drone_hum_tween.kill()
+	if sfx_drone_shield_hum and sfx_drone_shield_hum.playing:
+		drone_hum_tween = create_tween()
+		drone_hum_tween.tween_property(sfx_drone_shield_hum, "volume_db", -45.0, 0.35)
+		drone_hum_tween.tween_callback(func():
+			if sfx_drone_shield_hum:
+				sfx_drone_shield_hum.stop()
+				sfx_drone_shield_hum.volume_db = -6.0
+		)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Phase 1: Orbital Swarm Spawning
@@ -159,8 +187,7 @@ func start_orbital_swarm(count: int = 6, wave: int = 1, is_phase2: bool = false)
 			var c_tw = create_tween()
 			c_tw.tween_property(driver_core_mat, "emission_energy_multiplier", 4.5, 1.0).set_trans(Tween.TRANS_QUAD)
 
-	if sfx_drone_shield_hum and not sfx_drone_shield_hum.playing:
-		sfx_drone_shield_hum.play()
+	_start_drone_hum()
 
 	for i in range(count):
 		var drone_data = _create_drone(i, count, wave, is_phase2)
@@ -769,8 +796,7 @@ func get_active_drone_count() -> int:
 	return active_drones.size()
 
 func clear_drones() -> void:
-	if sfx_drone_shield_hum and sfx_drone_shield_hum.playing:
-		sfx_drone_shield_hum.stop()
+	_stop_drone_hum()
 	for d in active_drones:
 		var node = d.get("node") as Node3D
 		if is_instance_valid(node):
@@ -1052,8 +1078,7 @@ func is_convergence_in_progress() -> bool:
 # Driver Overload Climax (Triggered when all orbital drones are destroyed)
 # ─────────────────────────────────────────────────────────────────────────────
 func trigger_driver_overload() -> void:
-	if sfx_drone_shield_hum and sfx_drone_shield_hum.playing:
-		sfx_drone_shield_hum.stop()
+	_stop_drone_hum()
 	current_state = State.IDLE
 	convergence_completed.emit()
 
