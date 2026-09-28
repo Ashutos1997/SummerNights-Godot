@@ -245,16 +245,16 @@ const LEVEL_CONFIG = {
 	6: {
 		"timer": 120.0,
 		"sun_sway_amplitude": 7.5,
-		"sun_sway_speed": 1.8,
+		"sun_sway_speed": 1.6,
 		"sun_figure8": true,
-		"heat_regen_base": 8.5,
+		"heat_regen_base": 7.8,
 		"water_drain": 12.0,
 		"two_phase": true,
-		"phase2_heat": 100.0,
-		"ice_charges": 6,
+		"phase2_heat": 70.0,
+		"ice_charges": 7,
 		"solar_wind": true,
 		"has_mirage": true,
-		"weather_weights": {"none": 50, "rain": 0, "eclipse": 50},
+		"weather_weights": {"none": 40, "rain": 20, "eclipse": 40},
 	},
 }
 
