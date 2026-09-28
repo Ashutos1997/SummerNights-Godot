@@ -24,6 +24,7 @@ All notable changes to the Summer Nights project will be documented in this file
 ### Fixed
 * Level Transition Input Guards: Locked weapon inputs during fade transitions to prevent premature wave clears.
 * Weapon Wheel Overlay: Ensured background dim overlay hides immediately when transitioning to menus.
+* Dawn Breaks Achievement Requirement: Corrected unlock requirement and progress tracking from Level 5 to Level 6 to match the full 6-level Normal Mode campaign.
 
 
 ## [v1.5.5] - 2026-09-22
@@ -261,6 +262,7 @@ All notable changes to the Summer Nights project will be documented in this file
 ### 수정됨 (Fixed)
 * 레벨 전환 입력 잠금: 화면 페이드 전환 중 무기 입력을 잠금 처리하여 조기 클리어 방지.
 * 무기 선택 휠 오버레이: 메뉴 전환 및 휠 종료 시 배경 블러/딤 오버레이가 즉시 숨겨지도록 수정.
+* 새벽이 밝다 업적 레벨 요건 수정: 일반 모드 6개 전체 레벨 캠페인에 맞춰 업적 해금 요건 및 진행도 표시를 레벨 5에서 레벨 6으로 수정.
 
 
 ## [v1.5.5] - 2026-09-22

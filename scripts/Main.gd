@@ -4222,7 +4222,7 @@ func _win() -> void:
 		steam_particles.amount = 40
 		steam_particles.restart()
 	
-	if GameState.level >= 5 and not GameState.is_survival_mode:
+	if GameState.level >= 6 and not GameState.is_survival_mode:
 		GameState.unlock_achievement("dawn_breaks")
 		
 	if GameState.level >= 6:

@@ -9,8 +9,8 @@ const ACHIEVEMENTS: Dictionary = {
 		"icon": "res://assets/ui/achievements/sunset.png",
 		"title_en": "Dawn Breaks",
 		"title_kr": "새벽이 밝다",
-		"desc_en": "Beat Level 5 in Normal Mode.",
-		"desc_kr": "일반 모드에서 레벨 5를 클리어하세요."
+		"desc_en": "Beat Level 6 in Normal Mode.",
+		"desc_kr": "일반 모드에서 레벨 6을 클리어하세요."
 	},
 	"arcade_legend": {
 		"icon": "res://assets/ui/achievements/trophy.png",
@@ -673,8 +673,8 @@ func get_achievement_progress_data(id: String) -> Dictionary:
 	
 	match id:
 		"dawn_breaks":
-			max_val = 5
-			cur = 5 if unlocked else clampi(level, 1, 5)
+			max_val = 6
+			cur = 6 if unlocked else clampi(level, 1, 6)
 			progress_str = "LVL %d / %d" % [cur, max_val]
 		"arcade_legend":
 			max_val = 10000
