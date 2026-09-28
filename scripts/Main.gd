@@ -1882,9 +1882,9 @@ func _build_environment() -> void:
 	ground_mesh.height = 2.0
 	
 	# Stylized PBR Sand Textures (Poly Haven Coast Sand 01)
-	var sand_diff = load("res://assets/textures/sand/coast_sand_01_diff_1k.jpg")
-	var sand_nor = load("res://assets/textures/sand/coast_sand_01_nor_gl_1k.exr")
-	var sand_rough = load("res://assets/textures/sand/coast_sand_01_rough_1k.exr")
+	var sand_diff = load("res://assets/Textures/sand/coast_sand_01_diff_1k.jpg")
+	var sand_nor = load("res://assets/Textures/sand/coast_sand_01_nor_gl_1k.exr")
+	var sand_rough = load("res://assets/Textures/sand/coast_sand_01_rough_1k.exr")
 	
 	ground_mat = StandardMaterial3D.new()
 	ground_mat.albedo_color = Color(0.95, 0.88, 0.75) # Warm sunset tint on the sand
