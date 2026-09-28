@@ -22,3 +22,5 @@ __pycache__/
 # Ignored assets
 assets/ui/logo/
 
+# Local 3D Model Web Viewer
+viewer/
