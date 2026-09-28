@@ -2,12 +2,13 @@
 
 importer="mp3"
 type="AudioStreamMP3"
-path="res://.godot/imported/perk_select.mp3-f6f06736e6c07d04243e37e1db4cece1.mp3str"
+uid="uid://bklwmr04hurev"
+path="res://.godot/imported/perk_select.mp3-0150be9b54f2e873987d8bb0ff626a4c.mp3str"
 
 [deps]
 
 source_file="res://assets/audio/sfx/perk_select.mp3"
-dest_files=["res://.godot/imported/perk_select.mp3-f6f06736e6c07d04243e37e1db4cece1.mp3str"]
+dest_files=["res://.godot/imported/perk_select.mp3-0150be9b54f2e873987d8bb0ff626a4c.mp3str"]
 
 [params]
 

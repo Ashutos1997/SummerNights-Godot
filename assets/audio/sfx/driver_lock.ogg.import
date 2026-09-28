@@ -2,12 +2,13 @@
 
 importer="oggvorbisstr"
 type="AudioStreamOggVorbis"
-path="res://.godot/imported/driver_lock.ogg-540add37098392fb30d2616a388397ae.oggvorbisstr"
+uid="uid://lfu6jrnjq754"
+path="res://.godot/imported/driver_lock.ogg-9b186cbaffe60e4112840ce3b369ffa2.oggvorbisstr"
 
 [deps]
 
 source_file="res://assets/audio/sfx/driver_lock.ogg"
-dest_files=["res://.godot/imported/driver_lock.ogg-540add37098392fb30d2616a388397ae.oggvorbisstr"]
+dest_files=["res://.godot/imported/driver_lock.ogg-9b186cbaffe60e4112840ce3b369ffa2.oggvorbisstr"]
 
 [params]
 

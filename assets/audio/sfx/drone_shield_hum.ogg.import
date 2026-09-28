@@ -2,12 +2,13 @@
 
 importer="oggvorbisstr"
 type="AudioStreamOggVorbis"
-path="res://.godot/imported/drone_shield_hum.ogg-a123e0feefd5a02349dd0a53bfb73171.oggvorbisstr"
+uid="uid://duhaola0qnc1c"
+path="res://.godot/imported/drone_shield_hum.ogg-8bf4c1f1341d0446629b164ceaf6fd45.oggvorbisstr"
 
 [deps]
 
 source_file="res://assets/audio/sfx/drone_shield_hum.ogg"
-dest_files=["res://.godot/imported/drone_shield_hum.ogg-a123e0feefd5a02349dd0a53bfb73171.oggvorbisstr"]
+dest_files=["res://.godot/imported/drone_shield_hum.ogg-8bf4c1f1341d0446629b164ceaf6fd45.oggvorbisstr"]
 
 [params]
 

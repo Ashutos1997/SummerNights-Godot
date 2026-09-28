@@ -2,12 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-path="res://.godot/imported/perk_deal.wav-f290eb339698b51f066128b941516d8d.sample"
+uid="uid://dtry1gxpi1dme"
+path="res://.godot/imported/perk_deal.wav-7059eef11edaa282028d56f65e42ae9d.sample"
 
 [deps]
 
 source_file="res://assets/audio/sfx/perk_deal.wav"
-dest_files=["res://.godot/imported/perk_deal.wav-f290eb339698b51f066128b941516d8d.sample"]
+dest_files=["res://.godot/imported/perk_deal.wav-7059eef11edaa282028d56f65e42ae9d.sample"]
 
 [params]
 

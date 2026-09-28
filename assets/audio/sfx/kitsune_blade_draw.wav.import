@@ -2,12 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-path="res://.godot/imported/kitsune_blade_draw.wav-335f5b97a6684a08fa8027ff926fd2e2.sample"
+uid="uid://b8fefkakt627t"
+path="res://.godot/imported/kitsune_blade_draw.wav-96411ed5a10febda65fde3f8c14e8a73.sample"
 
 [deps]
 
 source_file="res://assets/audio/sfx/kitsune_blade_draw.wav"
-dest_files=["res://.godot/imported/kitsune_blade_draw.wav-335f5b97a6684a08fa8027ff926fd2e2.sample"]
+dest_files=["res://.godot/imported/kitsune_blade_draw.wav-96411ed5a10febda65fde3f8c14e8a73.sample"]
 
 [params]
 

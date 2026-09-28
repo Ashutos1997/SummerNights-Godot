@@ -2,12 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-path="res://.godot/imported/perk_hover.wav-38337fa2b12ec85050c2c1e4008c0287.sample"
+uid="uid://ch046kb66xbnp"
+path="res://.godot/imported/perk_hover.wav-261cde078c7cbfcf77c6bc213a936e7e.sample"
 
 [deps]
 
 source_file="res://assets/audio/sfx/perk_hover.wav"
-dest_files=["res://.godot/imported/perk_hover.wav-38337fa2b12ec85050c2c1e4008c0287.sample"]
+dest_files=["res://.godot/imported/perk_hover.wav-261cde078c7cbfcf77c6bc213a936e7e.sample"]
 
 [params]
 
