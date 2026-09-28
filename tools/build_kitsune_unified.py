@@ -834,24 +834,45 @@ def build_unified_kitsune(output_path="assets/blaster_kitsune_unified.glb"):
     v, n, idx = create_cylinder(0.0, 0.113, z0=0.485, z1=0.505, radius=0.0035, sides=8)
     builder.add_mesh_primitive(mesh_barrel, m_cyan, v, n, idx)
     
-    # 7. Under-Barrel High-Pressure Hydro-Manifold & Stabilizer Keel (local Z=-0.12 to 0.44)
-    # Dual parallel high-pressure coolant conduits
-    for px in [-0.036, 0.036]:
-        v, n, idx = create_cylinder(px, -0.112, z0=0.06, z1=0.38, radius=0.011, sides=12)
-        builder.add_mesh_primitive(mesh_barrel, m_cyan, v, n, idx)
-        # Gold manifold compression brackets
-        for b_z in [0.10, 0.22, 0.34]:
-            v, n, idx = create_cylinder(px, -0.112, z0=b_z - 0.010, z1=b_z + 0.010, radius=0.015, sides=12)
-            builder.add_mesh_primitive(mesh_barrel, m_gold, v, n, idx)
-            
-    # Tapered dark tactical keel with angled heat vents
-    keel_s = [[0.0, -0.145], [0.038, -0.108], [0.0, -0.092], [-0.038, -0.108]]
-    keel_e = [[0.0, -0.115], [0.018, -0.096], [0.0, -0.088], [-0.018, -0.096]]
-    v, n, idx = create_tapered_extrusion(keel_s, keel_e, z0=-0.08, z1=0.42, caps=True)
+    # 7. Under-Barrel High-Pressure Hydro-Manifold & Stabilizer Housing (local Z = 0.04 to 0.46)
+    # A. Sculpted under-barrel tray (Pearl white base mounting flush against barrel shroud bottom)
+    v, n, idx = create_chamfered_box(0.0, -0.106, width=0.124, height=0.024, z0=0.04, z1=0.36, chamfer=0.005)
+    builder.add_mesh_primitive(mesh_barrel, m_white, v, n, idx)
+    
+    # B. Central tactical keel runner with dark alloy trim and crimson inlay
+    v, n, idx = create_chamfered_box(0.0, -0.116, width=0.026, height=0.016, z0=0.05, z1=0.37, chamfer=0.003)
     builder.add_mesh_primitive(mesh_barrel, m_dark, v, n, idx)
-    # Crimson keel accent blade runner
-    v, n, idx = create_chamfered_box(0.0, -0.132, width=0.012, height=0.016, z0=0.04, z1=0.38, chamfer=0.003)
+    v, n, idx = create_chamfered_box(0.0, -0.120, width=0.012, height=0.008, z0=0.06, z1=0.36, chamfer=0.002)
     builder.add_mesh_primitive(mesh_barrel, m_red, v, n, idx)
+
+    # C. Dual parallel high-pressure cyan coolant conduits (nestled securely in underbelly flutes)
+    for px in [-0.038, 0.038]:
+        v, n, idx = create_cylinder(px, -0.110, z0=0.05, z1=0.38, radius=0.010, sides=14)
+        builder.add_mesh_primitive(mesh_barrel, m_cyan, v, n, idx)
+        
+    # D. Cyber-Gold manifold retention brackets (bands securely clamping conduits)
+    for b_z in [0.10, 0.22, 0.34]:
+        # Gold bracket band
+        v, n, idx = create_chamfered_box(0.0, -0.110, width=0.130, height=0.028, z0=b_z - 0.010, z1=b_z + 0.010, chamfer=0.003)
+        builder.add_mesh_primitive(mesh_barrel, m_gold, v, n, idx)
+        # Tactical fastener rivets
+        for side_x in [-0.058, 0.058]:
+            v, n, idx = create_cylinder(side_x, -0.110, z0=b_z - 0.006, z1=b_z + 0.006, radius=0.004, sides=6)
+            builder.add_mesh_primitive(mesh_barrel, m_dark, v, n, idx)
+
+    # E. Aerodynamic Front Chin Cowl (Smoothly tapers from underbelly up into the compensator base, Z = 0.36 to 0.46)
+    chin_start = [
+        [-0.058, -0.116], [0.058, -0.116], [0.062, -0.095], [-0.062, -0.095]
+    ]
+    chin_end = [
+        [-0.030, -0.086], [0.030, -0.086], [0.040, -0.078], [-0.040, -0.078]
+    ]
+    v, n, idx = create_tapered_extrusion(chin_start, chin_end, z0=0.36, z1=0.46, caps=True)
+    builder.add_mesh_primitive(mesh_barrel, m_dark, v, n, idx)
+    
+    # Forward cyan hydrodynamic intake emitter at chin apex
+    v, n, idx = create_chamfered_box(0.0, -0.084, width=0.024, height=0.008, z0=0.44, z1=0.465, chamfer=0.002)
+    builder.add_mesh_primitive(mesh_barrel, m_cyan, v, n, idx)
 
     # ══════════════════════════════════════════════════════════════
     # 4. SCULPTED FOX-FLAME TSUBA WINGS (Pivots at X=±0.12, Y=0.52, Z=0.59)
