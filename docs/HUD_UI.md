@@ -52,7 +52,7 @@ Architectural map and layout reference for `HUD.tscn`.
 * **DraftingScreen (Perks):** Post-boss modal. Staggered card deal entrance with rarity badges.
 * **FiltersScreen:** Mutually exclusive post-processing options (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
 * **ControllerScreen:** Keyboard/Xbox layout toggle with unified "Power Up" labels for `[F]` and `[RB]`, and Mode Change (`[X]` Keyboard / `[Y]` Xbox, magenta highlight).
-* **SettingsScreen:** 3 categorized sections (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM` with Fullscreen, Gold Weapon Skin toggle, and Language) using retro badges and off-white row labels.
+* **SettingsScreen:** 3 categorized sections (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM` with Fullscreen, conditional Gold Weapon Skin toggle unlocked at 50k points, and Language) using retro badges and off-white row labels.
 * **WeaponWheel (`TAB`):** Slows time to 0.2x. 6-slice procedural wedge with 3D previews, stat bars, and crit multipliers.
 * **TitleScreen:** Main menu with custom Godot boot splash, high score, and Best Endless Wave display.
 * **End State Screens:** Frameless stats flow for Wave Reached, Survival Time, and Score.

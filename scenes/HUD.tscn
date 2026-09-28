@@ -1007,6 +1007,7 @@ toggle_mode = true
 text = "OFF"
 
 [node name="RowGoldSkin" type="HBoxContainer" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
+visible = false
 layout_mode = 2
 mouse_filter = 2
 

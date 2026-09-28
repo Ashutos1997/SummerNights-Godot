@@ -102,6 +102,7 @@ var last_callout_tier: int = 0
 @onready var motion_check      = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowMotion/Check
 @onready var vibration_check   = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowVibration/Check
 @onready var fullscreen_check  = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowFullscreen/Check
+@onready var row_gold_skin     = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowGoldSkin
 @onready var gold_skin_check   = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowGoldSkin/Check
 @onready var settings_back_btn = $HUD/SettingsScreen/CenterContainer/VBoxContainer/BackBtn
 var settings_cat_audio_lbl: Label = null
@@ -940,6 +941,7 @@ func _ready() -> void:
 	if vibration_check: _update_toggle_btn(vibration_check, GameState.vibration_enabled)
 	_update_toggle_btn(fullscreen_check, GameState.fullscreen)
 	if gold_skin_check: _update_toggle_btn(gold_skin_check, GameState.gold_skin_enabled)
+	_update_gold_skin_visibility()
 	if color_depth_check: _update_toggle_btn(color_depth_check, GameState.filter_color_depth)
 	if dithering_check: _update_toggle_btn(dithering_check, GameState.filter_dithering)
 	if ps1_check: _update_toggle_btn(ps1_check, GameState.filter_ps1)
@@ -2102,6 +2104,10 @@ func _on_gold_skin_toggled(toggled: bool) -> void:
 	if weapon_wheel and weapon_wheel.has_method("refresh_weapon_skins"):
 		weapon_wheel.refresh_weapon_skins()
 
+func _update_gold_skin_visibility() -> void:
+	if row_gold_skin:
+		row_gold_skin.visible = (GameState.high_score >= 50000)
+
 func _make_ui_tick_player() -> AudioStreamPlayer:
 	# Synthesise a short 10ms 1kHz sine tick — no audio file needed
 	var gen = AudioStreamGenerator.new()
@@ -2551,6 +2557,7 @@ func _open_settings() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	if filters_screen: filters_screen.visible = false
 	if credits_screen: credits_screen.visible = false
+	_update_gold_skin_visibility()
 	settings_screen.visible = true
 	settings_screen.modulate.a = 0.0
 	var tw = create_tween()
