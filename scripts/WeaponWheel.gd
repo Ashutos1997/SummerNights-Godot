@@ -468,12 +468,10 @@ func _adjust_gun_materials(node: Node) -> void:
 		if count == 0 and node.mesh:
 			count = node.mesh.get_surface_count()
 		for i in range(count):
-			var mat = node.get_surface_override_material(i)
-			if not mat and node.mesh:
-				mat = node.mesh.surface_get_material(i)
+			var mat = node.mesh.surface_get_material(i) if node.mesh else node.get_surface_override_material(i)
 			if mat is StandardMaterial3D:
 				var new_mat = mat.duplicate() as StandardMaterial3D
-				if GameState.high_score >= 50000:
+				if GameState.high_score >= 50000 and GameState.gold_skin_enabled:
 					new_mat.albedo_color = Color(1.0, 0.85, 0.1) # Solid Gold!
 					new_mat.metallic = 0.8
 					new_mat.roughness = 0.2
@@ -482,6 +480,11 @@ func _adjust_gun_materials(node: Node) -> void:
 				node.set_surface_override_material(i, new_mat)
 	for child in node.get_children():
 		_adjust_gun_materials(child)
+
+func refresh_weapon_skins() -> void:
+	for m in models:
+		if is_instance_valid(m):
+			_adjust_gun_materials(m)
 
 func open() -> void:
 	if active: return

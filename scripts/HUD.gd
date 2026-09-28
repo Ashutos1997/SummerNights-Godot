@@ -7,6 +7,7 @@ signal filter_dithering_changed(enabled: bool)
 signal filter_ps1_changed(enabled: bool)
 signal filter_heatwave_changed(enabled: bool)
 signal weapon_changed(weapon_id: String)
+signal gold_skin_toggled(enabled: bool)
 
 
 @onready var weapon_wheel = $HUD/WeaponWheel
@@ -101,6 +102,7 @@ var last_callout_tier: int = 0
 @onready var motion_check      = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowMotion/Check
 @onready var vibration_check   = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowVibration/Check
 @onready var fullscreen_check  = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowFullscreen/Check
+@onready var gold_skin_check   = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowGoldSkin/Check
 @onready var settings_back_btn = $HUD/SettingsScreen/CenterContainer/VBoxContainer/BackBtn
 var settings_cat_audio_lbl: Label = null
 var settings_cat_gameplay_lbl: Label = null
@@ -717,7 +719,7 @@ func _ready() -> void:
 				p_lbl.modulate.a = 1.0
  
 	# Row Labels styling (13.4:1 contrast PASS)
-	for row_name in ["RowSFX", "RowSens", "RowMotion", "RowVibration", "RowFullscreen"]:
+	for row_name in ["RowSFX", "RowSens", "RowMotion", "RowVibration", "RowFullscreen", "RowGoldSkin"]:
 		var r_node = $HUD/SettingsScreen/CenterContainer/VBoxContainer.get_node_or_null(row_name)
 		if r_node:
 			var r_lbl = r_node.get_node_or_null("Label")
@@ -875,7 +877,7 @@ func _ready() -> void:
 	style_btn_on.set_border_width_all(1)
 	style_btn_on.set_corner_radius_all(4)
 
-	for btn in [motion_check, vibration_check, fullscreen_check, color_depth_check, dithering_check, ps1_check, heatwave_check]:
+	for btn in [motion_check, vibration_check, fullscreen_check, gold_skin_check, color_depth_check, dithering_check, ps1_check, heatwave_check]:
 		if btn:
 			if font: btn.add_theme_font_override("font", font)
 			btn.add_theme_font_size_override("font_size", 18)
@@ -895,6 +897,7 @@ func _ready() -> void:
 	motion_check.button_pressed = GameState.reduce_motion
 	if vibration_check: vibration_check.button_pressed = GameState.vibration_enabled
 	fullscreen_check.button_pressed = GameState.fullscreen
+	if gold_skin_check: gold_skin_check.button_pressed = GameState.gold_skin_enabled
 	if color_depth_check: color_depth_check.button_pressed = GameState.filter_color_depth
 	if dithering_check: dithering_check.button_pressed = GameState.filter_dithering
 	if ps1_check: ps1_check.button_pressed = GameState.filter_ps1
@@ -906,6 +909,7 @@ func _ready() -> void:
 	motion_check.toggled.connect(_on_motion_toggled)
 	if vibration_check: vibration_check.toggled.connect(_on_vibration_toggled)
 	fullscreen_check.toggled.connect(_on_fullscreen_toggled)
+	if gold_skin_check: gold_skin_check.toggled.connect(_on_gold_skin_toggled)
 	if color_depth_check: color_depth_check.toggled.connect(_on_color_depth_toggled)
 	if dithering_check: dithering_check.toggled.connect(_on_dithering_toggled)
 	if ps1_check: ps1_check.toggled.connect(_on_ps1_toggled)
@@ -935,6 +939,7 @@ func _ready() -> void:
 	_update_toggle_btn(motion_check, GameState.reduce_motion)
 	if vibration_check: _update_toggle_btn(vibration_check, GameState.vibration_enabled)
 	_update_toggle_btn(fullscreen_check, GameState.fullscreen)
+	if gold_skin_check: _update_toggle_btn(gold_skin_check, GameState.gold_skin_enabled)
 	if color_depth_check: _update_toggle_btn(color_depth_check, GameState.filter_color_depth)
 	if dithering_check: _update_toggle_btn(dithering_check, GameState.filter_dithering)
 	if ps1_check: _update_toggle_btn(ps1_check, GameState.filter_ps1)
@@ -1419,9 +1424,9 @@ func _apply_language(lang: String) -> void:
 		if icon_panel:
 			icon_panel.add_theme_stylebox_override("panel", icon_style)
 
-	var row_texts_en := ["Master Volume", "Sensitivity", "Reduce Motion", "Vibration", "Fullscreen", "Language"]
-	var row_texts_kr := ["전체 볼륨", "마우스 감도", "화면 흔들림 감소", "진동", "전체 화면", "언어"]
-	var row_names    := ["RowSFX", "RowSens", "RowMotion", "RowVibration", "RowFullscreen", "RowLanguage"]
+	var row_texts_en := ["Master Volume", "Sensitivity", "Reduce Motion", "Vibration", "Fullscreen", "Gold Gun Skin", "Language"]
+	var row_texts_kr := ["전체 볼륨", "마우스 감도", "화면 흔들림 감소", "진동", "전체 화면", "황금 무기 스킨", "언어"]
+	var row_names    := ["RowSFX", "RowSens", "RowMotion", "RowVibration", "RowFullscreen", "RowGoldSkin", "RowLanguage"]
 	if settings_vbox:
 		for i in range(row_names.size()):
 			var r = settings_vbox.get_node_or_null(row_names[i])
@@ -2087,6 +2092,15 @@ func _on_fullscreen_toggled(toggled: bool) -> void:
 		var screen = DisplayServer.window_get_current_screen()
 		var screen_size = DisplayServer.screen_get_size(screen)
 		DisplayServer.window_set_position(screen_size / 2 - Vector2i(1280, 720) / 2)
+
+func _on_gold_skin_toggled(toggled: bool) -> void:
+	GameState.gold_skin_enabled = toggled
+	GameState.save_settings()
+	if gold_skin_check:
+		_update_toggle_btn(gold_skin_check, toggled)
+	gold_skin_toggled.emit(toggled)
+	if weapon_wheel and weapon_wheel.has_method("refresh_weapon_skins"):
+		weapon_wheel.refresh_weapon_skins()
 
 func _make_ui_tick_player() -> AudioStreamPlayer:
 	# Synthesise a short 10ms 1kHz sine tick — no audio file needed

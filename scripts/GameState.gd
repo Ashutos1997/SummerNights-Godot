@@ -336,6 +336,7 @@ var mouse_sensitivity: float = 1.0
 var reduce_motion: bool = false
 var vibration_enabled: bool = true
 var fullscreen: bool = true
+var gold_skin_enabled: bool = true
 var filter_color_depth: bool = false
 var filter_dithering: bool = false
 var filter_ps1: bool = false
@@ -522,6 +523,7 @@ func save_settings() -> void:
 	config.set_value("Accessibility", "reduce_motion", reduce_motion)
 	config.set_value("Accessibility", "vibration_enabled", vibration_enabled)
 	config.set_value("Video", "fullscreen", fullscreen)
+	config.set_value("Video", "gold_skin", gold_skin_enabled)
 	config.set_value("Filters", "color_depth", filter_color_depth)
 	config.set_value("Filters", "dithering", filter_dithering)
 	config.set_value("Filters", "ps1_shading", filter_ps1)
@@ -548,6 +550,7 @@ func load_settings() -> void:
 		reduce_motion = config.get_value("Accessibility", "reduce_motion", false)
 		vibration_enabled = config.get_value("Accessibility", "vibration_enabled", true)
 		fullscreen = config.get_value("Video", "fullscreen", true)
+		gold_skin_enabled = config.get_value("Video", "gold_skin", true)
 		filter_color_depth = config.get_value("Filters", "color_depth", false)
 		filter_dithering = config.get_value("Filters", "dithering", false)
 		filter_ps1 = config.get_value("Filters", "ps1_shading", false)

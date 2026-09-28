@@ -28,6 +28,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Level 6 Final Boss Balancing: Rebalanced Normal Mode Level 6 by reducing Phase 2 heat from 100 to 70, lowering heat regen from 8.5 to 7.8, reducing figure-8 sway speed from 1.8 to 1.6, adding a 20% rain chance for water recovery, and increasing starting ice charges from 6 to 7.
 * Rogue-lite Perk Balancing: Reduced Gravity Anchor sway reduction from -15% to -10% per stack. Reclassified cooling power perks ("Thermal Insulator" and "Heavy Water") as Rare (weight 20, blue frame/badge) to prevent easy cooling stack exploits.
 * Drone Shield Audio Polish: Added automatic volume ducking to the Solar Convergence drone shield ambient hum; plays an audible entrance cue before smoothly easing down to an unobtrusive background bed (-22 dB).
+* Gold Weapon Skin Settings Toggle: Added an in-game toggle under the "DISPLAY & SYSTEM" settings category allowing players to turn the 50,000-point Solid Gold weapon skin on or off to preserve original weapon detail.
 
 ### Fixed
 * Kitsune Blade Heat Mirage Damage: Fixed Kitsune Blade melee slash failing to detect and damage Heat Mirages; slash now detects decoy suns, chunks mirage HP, and triggers reactive flinch and steam particles.
@@ -275,6 +276,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 6레벨 최종 보스 밸런스 조정: 일반 모드 6레벨의 난이도를 완화하기 위해 2페이즈 체력을 100에서 70으로 경감, 열 회복 속도를 8.5에서 7.8로 완화, 8자 이동 속도를 1.8에서 1.6으로 감속, 수분 보충을 위한 20% 강우 확률 추가 및 시작 얼음 충전을 6회에서 7회로 증량.
 * 로그라이크 특성 밸런스 조정: '중력 닻'의 태양 흔들림 속도 감소율을 -15%에서 -10%로 완화. 냉각력 특성('열 절연체', '중수')을 희귀 등급(가중치 20, 파란색 테두리/배지)으로 재분류하여 냉각력 무한 중첩 방지.
 * 드론 방어막 사운드 완화: 태양 수렴 드론 방어막 배경 앰비언스 사운드에 자동 볼륨 감쇠(Ducking) 적용; 첫 출현 시 명확하게 재생된 뒤 귀에 피로감을 주지 않는 잔잔한 배경 음량(-22 dB)으로 부드럽게 감쇠.
+* 황금 무기 스킨 설정 토글 추가: 50,000점 달성 시 해금되는 솔리드 골드 무기 스킨을 총기의 원래 디테일을 감상할 수 있도록 '화면 및 시스템' 설정 카테고리에서 켜고 끌 수 있는 토글 옵션 추가.
 
 ### 수정됨 (Fixed)
 * 구미호 검 신기루 타격 버그 수정: 구미호 검 근접 베기가 열기 신기루를 타격하지 못하던 현상 수정; 신기루를 조준하여 베었을 때 신기루 체력 게이지가 정상 감소하고 피격 반응 및 이펙트가 발생하도록 개선.

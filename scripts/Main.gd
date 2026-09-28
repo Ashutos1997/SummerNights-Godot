@@ -1069,6 +1069,9 @@ func _ready() -> void:
 	hud.filter_heatwave_changed.connect(func(_enabled):
 		_update_post_process_settings()
 	)
+	hud.gold_skin_toggled.connect(func(_enabled):
+		_load_weapon_model()
+	)
 	mouse_sensitivity = GameState.mouse_sensitivity
 	reduce_motion = GameState.reduce_motion
 	heat_changed.emit(temperature, MAX_TEMP)
@@ -3609,7 +3612,7 @@ func _adjust_gun_materials(node: Node) -> void:
 				mat = node.mesh.surface_get_material(i)
 			if mat is StandardMaterial3D:
 				var new_mat = mat.duplicate() as StandardMaterial3D
-				if GameState.high_score >= 50000:
+				if GameState.high_score >= 50000 and GameState.gold_skin_enabled:
 					new_mat.albedo_color = Color(1.0, 0.85, 0.1) # Solid Gold!
 					new_mat.metallic = 0.8
 					new_mat.roughness = 0.2
