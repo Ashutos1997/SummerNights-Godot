@@ -810,28 +810,45 @@ def build_unified_kitsune(output_path="assets/blaster_kitsune_unified.glb"):
         v, n, idx = create_cylinder(tx, ty, z0=0.605, z1=0.635, radius=0.006, sides=8)
         builder.add_mesh_primitive(mesh_barrel, m_gold, v, n, idx)
 
-    # 6. Streamlined Low-Profile Optic Rail & Front Post Sight (local Z=0.04 to 0.53)
-    # Dark tactical top rail base
-    v, n, idx = create_chamfered_box(0.0, 0.106, width=0.052, height=0.016, z0=0.04, z1=0.46, chamfer=0.004)
-    builder.add_mesh_primitive(mesh_barrel, m_dark, v, n, idx)
+    # 6. Top Dorsal High-Pressure Hydro-Manifold & Stabilizer Housing (local Z = 0.04 to 0.46)
+    # Symmetrically mirrors the underbelly manifold for balanced sci-fi aesthetics and eliminates floating sight geometry
+    # A. Sculpted dorsal tray (Pearl white base mounting flush against barrel shroud top)
+    v, n, idx = create_chamfered_box(0.0, 0.106, width=0.124, height=0.024, z0=0.04, z1=0.36, chamfer=0.005)
+    builder.add_mesh_primitive(mesh_barrel, m_white, v, n, idx)
     
-    # Crimson dorsal spine runner with cooling serrations
-    v, n, idx = create_chamfered_box(0.0, 0.115, width=0.028, height=0.008, z0=0.06, z1=0.44, chamfer=0.002)
+    # B. Central tactical dorsal runner with dark alloy trim and crimson inlay
+    v, n, idx = create_chamfered_box(0.0, 0.116, width=0.026, height=0.016, z0=0.05, z1=0.37, chamfer=0.003)
+    builder.add_mesh_primitive(mesh_barrel, m_dark, v, n, idx)
+    v, n, idx = create_chamfered_box(0.0, 0.120, width=0.012, height=0.008, z0=0.06, z1=0.36, chamfer=0.002)
     builder.add_mesh_primitive(mesh_barrel, m_red, v, n, idx)
-    
-    # Inlaid glowing cyan sightline trace runner
-    v, n, idx = create_chamfered_box(0.0, 0.119, width=0.010, height=0.004, z0=0.10, z1=0.46, chamfer=0.001)
-    builder.add_mesh_primitive(mesh_barrel, m_cyan, v, n, idx)
-    
-    # Aerodynamic Front Post Sight Hood & Tritium Bead (local Z=0.47 to 0.52)
-    # Winged sight protector hood
-    v, n, idx = create_chamfered_box(0.0, 0.102, width=0.040, height=0.022, z0=0.47, z1=0.515, chamfer=0.006)
+
+    # C. Dual parallel high-pressure cyan coolant conduits (nestled securely in dorsal flutes)
+    for px in [-0.038, 0.038]:
+        v, n, idx = create_cylinder(px, 0.110, z0=0.05, z1=0.38, radius=0.010, sides=14)
+        builder.add_mesh_primitive(mesh_barrel, m_cyan, v, n, idx)
+        
+    # D. Cyber-Gold manifold retention brackets (bands securely clamping conduits)
+    for b_z in [0.10, 0.22, 0.34]:
+        # Gold bracket band
+        v, n, idx = create_chamfered_box(0.0, 0.110, width=0.130, height=0.028, z0=b_z - 0.010, z1=b_z + 0.010, chamfer=0.003)
+        builder.add_mesh_primitive(mesh_barrel, m_gold, v, n, idx)
+        # Tactical fastener rivets
+        for side_x in [-0.058, 0.058]:
+            v, n, idx = create_cylinder(side_x, 0.110, z0=b_z - 0.006, z1=b_z + 0.006, radius=0.004, sides=6)
+            builder.add_mesh_primitive(mesh_barrel, m_dark, v, n, idx)
+
+    # E. Aerodynamic Front Dorsal Cowl (Smoothly tapers from dorsal tray down into compensator base, Z = 0.36 to 0.46)
+    dorsal_start = [
+        [-0.062, 0.095], [0.062, 0.095], [0.058, 0.116], [-0.058, 0.116]
+    ]
+    dorsal_end = [
+        [-0.040, 0.078], [0.040, 0.078], [0.030, 0.086], [-0.030, 0.086]
+    ]
+    v, n, idx = create_tapered_extrusion(dorsal_start, dorsal_end, z0=0.36, z1=0.46, caps=True)
     builder.add_mesh_primitive(mesh_barrel, m_dark, v, n, idx)
-    # Cyber-Gold front sight post
-    v, n, idx = create_cylinder(0.0, 0.108, z0=0.48, z1=0.51, radius=0.005, sides=8)
-    builder.add_mesh_primitive(mesh_barrel, m_gold, v, n, idx)
-    # Radiant cyan tritium aiming pip
-    v, n, idx = create_cylinder(0.0, 0.113, z0=0.485, z1=0.505, radius=0.0035, sides=8)
+    
+    # Forward cyan hydrodynamic intake emitter at dorsal apex
+    v, n, idx = create_chamfered_box(0.0, 0.084, width=0.024, height=0.008, z0=0.44, z1=0.465, chamfer=0.002)
     builder.add_mesh_primitive(mesh_barrel, m_cyan, v, n, idx)
     
     # 7. Under-Barrel High-Pressure Hydro-Manifold & Stabilizer Housing (local Z = 0.04 to 0.46)

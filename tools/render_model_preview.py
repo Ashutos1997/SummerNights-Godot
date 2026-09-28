@@ -84,7 +84,7 @@ def render_unified_preview(glb_path, output_png, mode="cannon"):
             if name == "BarrelAssembly":
                 scale = np.array([0.0, 0.0, 0.0], dtype=np.float32) # Retracted/Hidden
             elif name == "BladeAssembly":
-                pos = np.array([0.0, 0.52, 0.60], dtype=np.float32)
+                pos = np.array([0.0, 0.48, 0.55], dtype=np.float32)
                 scale = np.array([1.0, 1.0, 1.0], dtype=np.float32)
             elif name in ["TsubaLeft", "TsubaRight"]:
                 rot_deg_z = 0.0
