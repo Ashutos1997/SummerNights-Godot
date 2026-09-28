@@ -232,6 +232,19 @@ class CelestialFoxfireWave extends Node3D:
 			queue_free()
 			return
 			
+		# Cleave flares / fireballs in flight
+		if main_ref and is_instance_valid(main_ref) and "active_flares" in main_ref:
+			var flares = main_ref.active_flares
+			var severed_flare = null
+			for f in flares:
+				var f_node = f.get("node") as Node3D
+				if is_instance_valid(f_node):
+					if global_position.distance_to(f_node.global_position) < 3.2:
+						severed_flare = f
+						break
+			if severed_flare != null and main_ref.has_method("sever_flare_by_blade"):
+				main_ref.sever_flare_by_blade(severed_flare)
+		
 		# Impact check with Sun
 		if main_ref and is_instance_valid(main_ref):
 			var sun = main_ref.get("sun") as Node3D

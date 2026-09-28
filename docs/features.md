@@ -30,8 +30,8 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 ## 3. Rogue-lite Perks (Endless Mode)
 * **Drafting:** Choose 1 of 3 randomized perk cards after boss waves. Staggered card deal entrance with rarity badges.
 * **HUD Tracker:** Top-left active buff icons with stack badges.
-* **Stat Caps:** Cooling Power capped at 3.5x, Crit at 3.0x, Heat Resist at 60%, Sun Sway floored at 40%, Tank bounded 50%–250%, Ult floored at 40%.
-* **Available Perks:** High Capacity, Precision Optics, Thermal Insulator, Catastrom Flow, Heat Shield, Gravity Anchor, Glass Cannon, Heavy Water, Reckless Haste.
+* **Stat Caps:** Cooling Power capped at 2.0x, Water Drain bounded 40%–150%, Crit at 3.0x, Heat Resist at 60%, Sun Sway floored at 40%, Tank bounded 50%–250%, Ult floored at 40%.
+* **Available Perks:** High Capacity, Precision Optics, Thermal Insulator, Catastrom Flow, Heat Shield, Gravity Anchor, Glass Cannon, Heavy Water, Reckless Haste, Wind Breaker, Sub-Zero Reserve, Blade Cadence.
 
 ## 4. Sun Mechanics & Threats
 * **Dynamic Movement:** Sun sways horizontally, scaling up to complex Figure-8 patterns on high waves.
@@ -45,7 +45,7 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 ## 5. Dynamic Weather & Encounters
 * **Rainstorms:** Downpour grants infinite water and passive sun cooling.
 * **Solar Eclipses:** Sky darkens; sun fires rapid Shadow Flares.
-* **Solar Convergence:** Apex Boss encounter (Wave 30+). Equatorial Driver attaches to the Sun's waist while 6–8 Solar Eye Drones orbit and project an invulnerable Golden Shield. Drones show progressive crack damage and award water on destruction. Destroying all drones overloads the Driver and shatters the shield.
+* **Solar Convergence:** Apex Boss encounter (Wave 30+). Equatorial Driver attaches to the Sun's waist while 6–8 Solar Eye Drones orbit and project an invulnerable Golden Shield. Drones show progressive crack damage and award water on destruction. Destroying all drones overloads the Driver and shatters the shield. In Phase 2, the Driver enters Overdrive, deploying an enraged, faster (+25% orbit speed) drone swarm with reactivated Golden Shield.
 
 ## 6. Environment & Visuals
 * **Dynamic Ocean:** Procedural Gerstner waves, Voronoi caustics, and subsurface scattering.

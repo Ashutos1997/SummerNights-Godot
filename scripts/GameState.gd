@@ -364,6 +364,9 @@ var max_water_mult: float = 1.0
 var cooling_power_mult: float = 1.0
 var heat_resistance: float = 0.0
 var bonus_ice_charges: int = 0
+var water_drain_mult: float = 1.0
+var wind_drift_mult: float = 1.0
+var blade_parry_bonus: float = 0.0
 var catastrom_charge: float = 0.0  # Shared Power Up charge (0.0 to 1.0)
 var celestial_charge: float:
 	get:
@@ -390,8 +393,8 @@ const WAVE_PERKS: Dictionary = {
 		"icon": "res://assets/ui/achievements/water-splash.png",
 		"title_en": "Thermal Insulator",
 		"title_kr": "열 절연체",
-		"desc_en": "+10% Cooling Power.",
-		"desc_kr": "냉각력이 10% 증가합니다."
+		"desc_en": "+6% Cooling Power, -10% Water Drain.",
+		"desc_kr": "냉각력 +6%, 물 소모량 -10%."
 	},
 	"catastrom_boost": {
 		"icon": "res://assets/ui/achievements/eclipse.png",
@@ -428,8 +431,8 @@ const WAVE_PERKS: Dictionary = {
 		"icon": "res://assets/ui/achievements/water-splash.png",
 		"title_en": "Heavy Water",
 		"title_kr": "중수",
-		"desc_en": "+30% Cooling Power, -20% Ult Charge.",
-		"desc_kr": "냉각력 +30%, 궁극기 충전 -20%.",
+		"desc_en": "+15% Cooling Power, -15% Ult Charge.",
+		"desc_kr": "냉각력 +15%, 궁극기 충전 -15%.",
 		"weight": 60
 	},
 	"reckless_haste": {
@@ -439,6 +442,30 @@ const WAVE_PERKS: Dictionary = {
 		"desc_en": "+30% Ult Charge, -10% Heat Resist.",
 		"desc_kr": "궁극기 충전 +30%, 열 저항 -10%.",
 		"weight": 60
+	},
+	"wind_breaker": {
+		"icon": "res://assets/ui/achievements/seagull.png",
+		"title_en": "Wind Breaker",
+		"title_kr": "바람막이",
+		"desc_en": "-60% Solar Wind Crosshair Drift.",
+		"desc_kr": "태양풍으로 인한 조준선 흔들림 -60%.",
+		"weight": 80
+	},
+	"subzero_reserve": {
+		"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_white.png",
+		"title_en": "Sub-Zero Reserve",
+		"title_kr": "극저온 예비탄",
+		"desc_en": "+1 Max Ice Blast Charge & Refills 1 per wave.",
+		"desc_kr": "얼음 폭발 최대 충전 +1회 및 매 웨이브 1회 보충.",
+		"weight": 70
+	},
+	"blade_cadence": {
+		"icon": "res://assets/ui/achievements/trophy.png",
+		"title_en": "Blade Cadence",
+		"title_kr": "검의 운율",
+		"desc_en": "+20% Kitsune Blade Slash Arc & +25% Parry Water Refund.",
+		"desc_kr": "구미호 검 베기 범위 +20% 및 패링 시 물 환급 +25%.",
+		"weight": 70
 	}
 }
 
@@ -460,6 +487,9 @@ func reset() -> void:
 	cooling_power_mult = 1.0
 	heat_resistance = 0.0
 	bonus_ice_charges = 0
+	water_drain_mult = 1.0
+	wind_drift_mult = 1.0
+	blade_parry_bonus = 0.0
 	catastrom_charge = 0.0
 	kitsune_mode = "cannon"
 	celestial_charge = 0.0
@@ -589,6 +619,9 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 	max_water_mult = 1.0
 	cooling_power_mult = 1.0
 	bonus_ice_charges = 0
+	water_drain_mult = 1.0
+	wind_drift_mult = 1.0
+	blade_parry_bonus = 0.0
 	heat_resistance = 0.05 if "rock_solid" in unlocked_achievements else 0.0
 	crit_damage_mult = 1.0
 	catastrom_charge_mult = 1.0
@@ -609,7 +642,9 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 	for perk_id in active_wave_perks:
 		match perk_id:
 			"capacity_boost": max_water_mult += 0.15
-			"cooling_boost": cooling_power_mult += 0.10
+			"cooling_boost":
+				cooling_power_mult += 0.06
+				water_drain_mult -= 0.10
 			"heat_shield": heat_resistance += 0.05
 			"crit_boost": crit_damage_mult += 0.15
 			"catastrom_boost": catastrom_charge_mult += 0.15
@@ -618,14 +653,21 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 				crit_damage_mult += 0.40
 				max_water_mult -= 0.15
 			"heavy_water":
-				cooling_power_mult += 0.30
-				catastrom_charge_mult -= 0.20
+				cooling_power_mult += 0.15
+				catastrom_charge_mult -= 0.15
 			"reckless_haste":
 				catastrom_charge_mult += 0.30
 				heat_resistance -= 0.10
+			"wind_breaker":
+				wind_drift_mult = max(0.20, wind_drift_mult - 0.60)
+			"subzero_reserve":
+				bonus_ice_charges += 1
+			"blade_cadence":
+				blade_parry_bonus += 25.0
 				
 	# Balanced caps and floors to prevent infinite power scaling or game-breaking penalties in late waves
-	cooling_power_mult = clamp(cooling_power_mult, 0.5, 3.5)
+	cooling_power_mult = clamp(cooling_power_mult, 0.5, 2.0)
+	water_drain_mult = clamp(water_drain_mult, 0.40, 1.5)
 	crit_damage_mult = clamp(crit_damage_mult, 1.0, 3.0)
 	heat_resistance = clamp(heat_resistance, -0.5, 0.60) # Sun always retains at least 40% heat pressure
 	sun_sway_mult = max(0.40, sun_sway_mult) # Sun sway never drops below 40% speed

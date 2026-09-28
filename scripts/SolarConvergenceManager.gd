@@ -117,7 +117,7 @@ func _init_audio() -> void:
 # ─────────────────────────────────────────────────────────────────────────────
 # Phase 1: Orbital Swarm Spawning
 # ─────────────────────────────────────────────────────────────────────────────
-func start_orbital_swarm(count: int = 6, wave: int = 1) -> void:
+func start_orbital_swarm(count: int = 6, wave: int = 1, is_phase2: bool = false) -> void:
 	clear_drones()
 	current_state = State.ORBITAL_SWARM
 	orbit_time = 0.0
@@ -125,9 +125,16 @@ func start_orbital_swarm(count: int = 6, wave: int = 1) -> void:
 	# When drones appear, the belt also appears at the same time!
 	if not is_driver_equipped:
 		materialize_solar_driver(true)
+	elif is_phase2:
+		# Overdrive re-ignition
+		if driver_core_mat:
+			driver_core_mat.emission = Color(1.0, 0.35, 0.10)
+			driver_core_mat.emission_energy_multiplier = 14.0
+			var c_tw = create_tween()
+			c_tw.tween_property(driver_core_mat, "emission_energy_multiplier", 4.5, 1.0).set_trans(Tween.TRANS_QUAD)
 
 	for i in range(count):
-		var drone_data = _create_drone(i, count, wave)
+		var drone_data = _create_drone(i, count, wave, is_phase2)
 		active_drones.append(drone_data)
 		add_child(drone_data["node"])
 
@@ -138,7 +145,7 @@ func start_orbital_swarm(count: int = 6, wave: int = 1) -> void:
 		tw.tween_interval(0.20 + i * 0.05)
 		tw.tween_property(d_node, "scale", Vector3(2.3, 2.3, 2.3), 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
-func _create_drone(index: int, total: int, wave: int = 1) -> Dictionary:
+func _create_drone(index: int, total: int, wave: int = 1, is_phase2: bool = false) -> Dictionary:
 	var drone_root = Node3D.new()
 	drone_root.name = "SolarEyeDrone_%d" % index
 	drone_root.scale = Vector3(2.3, 2.3, 2.3) # Scaled for crisp silhouette readability & arcade presence from beach
@@ -180,10 +187,15 @@ func _create_drone(index: int, total: int, wave: int = 1) -> Dictionary:
 						if not pupil_mat:
 							pupil_mat = dup_mat
 
+	if is_phase2 and pupil_mat:
+		pupil_mat.emission = Color(1.0, 0.25, 0.10)
+		pupil_mat.emission_energy_multiplier = 4.0
+
 	# Dynamic Coronal Orbit Geometry: Smooth, stately circular rotation around the Sun's perimeter
 	# Orbit radius (14.6m - 16.0m) revolving cleanly outside the Sun's 10m Golden Shield sphere
 	var angle_fraction = float(index) / float(total)
-	var orbit_speed = (0.85 + (index * 0.06)) * (1.0 if index % 2 == 0 else -1.0)
+	var speed_mult = 1.25 if is_phase2 else 1.0
+	var orbit_speed = (0.85 + (index * 0.06)) * (1.0 if index % 2 == 0 else -1.0) * speed_mult
 	var phase_offset = angle_fraction * TAU
 
 	var base_r = 14.6 + (index % 3) * 0.7
@@ -207,6 +219,8 @@ func _create_drone(index: int, total: int, wave: int = 1) -> Dictionary:
 
 	# Dynamic wave-scaled HP (Wave 1: 38.5 HP | Wave 20: 105 HP | Wave 30: 140 HP)
 	var calculated_hp = 35.0 + (wave * 3.5)
+	if is_phase2:
+		calculated_hp *= 0.85
 
 	# Dynamic Crack Fracture Overlay Meshes
 	var mesh_minor = _build_crack_mesh(index, false)

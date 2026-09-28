@@ -2739,7 +2739,7 @@ func _process(delta: float) -> void:
 		wind_elapsed += delta
 		# Turbulent drift: base drift + sine wobble for organic feel
 		var turbulence = 1.0 + sin(wind_elapsed * 5.0) * 0.35 + sin(wind_elapsed * 13.0) * 0.15
-		virtual_mouse_pos.x += wind_direction * wind_strength * turbulence * wind_level_mult * delta
+		virtual_mouse_pos.x += wind_direction * wind_strength * turbulence * wind_level_mult * delta * GameState.wind_drift_mult
 		var viewport_size = get_viewport().get_visible_rect().size
 		virtual_mouse_pos.x = clamp(virtual_mouse_pos.x, 0, viewport_size.x)
 		mouse_pos = virtual_mouse_pos
@@ -2871,10 +2871,10 @@ func _process(delta: float) -> void:
 				shoot_loop_sfx.play()
 				
 			if not is_celestial_awakened:
-				water_tank -= WATER_DRAIN_RATE * delta
+				water_tank -= WATER_DRAIN_RATE * GameState.water_drain_mult * delta
 			else:
 				water_tank = MAX_WATER
-			GameState.total_water_sprayed += WATER_DRAIN_RATE * delta
+			GameState.total_water_sprayed += WATER_DRAIN_RATE * GameState.water_drain_mult * delta
 			if not GameState.current_weapon_id in GameState.weapons_used_this_run:
 				GameState.weapons_used_this_run.append(GameState.current_weapon_id)
 				if GameState.weapons_used_this_run.size() >= 5:
@@ -4619,6 +4619,16 @@ func _trigger_phase2() -> void:
 	tw.tween_method(func(val): sun_mat.emission_energy_multiplier = val, 1.2, 4.0, 0.2)
 	tw.tween_method(func(val): sun_mat.emission_energy_multiplier = val, 4.0, 2.0, 0.3)
 	
+	# Wave 30+ Solar Convergence Phase 2 Swarm Re-engagement
+	if GameState.current_wave >= 30 and solar_convergence_mgr:
+		var d_count = 6 if GameState.current_wave < 40 else 8
+		solar_convergence_mgr.start_orbital_swarm(d_count, GameState.current_wave, true)
+		if hud and hud.has_method("show_toast"):
+			var is_kr = GameState.language == "KR"
+			var title = "태양 수렴: 2페이즈 각성!" if is_kr else "SOLAR CONVERGENCE: PHASE 2"
+			var desc = "폭주 드론 군체 및 황금 방어막 재기동!" if is_kr else "Overdrive Drone Swarm & Golden Shield Re-engaged!"
+			hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1.0, 0.45, 0.15))
+	
 	await get_tree().create_timer(0.6).timeout
 	timer_running = true
 
@@ -4766,6 +4776,33 @@ func toggle_celestial_awakening() -> void:
 	else:
 		start_celestial_awakening(15.0)
 
+func sever_flare_by_blade(flare: Dictionary) -> void:
+	if not active_flares.has(flare):
+		return
+	var f_node = flare.get("node") as Node3D
+	var f_pos = f_node.global_position if is_instance_valid(f_node) else sun.global_position
+	
+	_spawn_flare_explosion(f_pos)
+	if steam_particles:
+		steam_particles.global_position = f_pos
+		steam_particles.restart()
+	if sizzle_sfx: sizzle_sfx.play()
+	if shield_deflect_sfx: shield_deflect_sfx.play()
+	_spawn_deflected_number(f_pos)
+	
+	# Water parry refund (15.0 base, boosted by blade_parry_bonus)
+	var refund_amt = 15.0 * (1.0 + GameState.blade_parry_bonus * 0.01)
+	water_tank = min(MAX_WATER, water_tank + refund_amt)
+	water_changed.emit(water_tank, MAX_WATER)
+	
+	GameState.flares_intercepted += 1
+	if not is_celestial_awakened:
+		GameState.celestial_charge = min(1.0, GameState.celestial_charge + 0.10)
+	
+	if is_instance_valid(f_node):
+		f_node.queue_free()
+	active_flares.erase(flare)
+
 func _perform_kitsune_blade_slash() -> void:
 	if game_over or defeat_triggered or not timer_running or is_title_screen:
 		return
@@ -4817,28 +4854,26 @@ func _perform_kitsune_blade_slash() -> void:
 		celestial_hydro_blade.spawn_foxfire_slash(ray_origin, ray_normal, blade_slash_dir, is_celestial_awakened, self)
 	
 	# Melee flare cleaving / parry
-	var severed_count = 0
+	var flares_to_sever = []
+	var slash_reach = 14.0 if not is_celestial_awakened else 18.0
+	var slash_angle = 65.0 * (1.0 + GameState.blade_parry_bonus * 0.005)
 	for flare in active_flares:
 		var f_node = flare.get("node") as Node3D
 		if is_instance_valid(f_node):
 			var f_pos = f_node.global_position
 			var to_f = f_pos - ray_origin
 			var dist = to_f.length()
-			if dist < 8.5:
+			if dist <= slash_reach:
 				var angle = rad_to_deg(ray_normal.angle_to(to_f.normalized()))
-				if angle < 60.0:
-					flare["hp"] = 0.0
-					severed_count += 1
-					_spawn_deflected_number(f_pos)
+				if angle <= slash_angle:
+					flares_to_sever.append(flare)
+			elif to_f.dot(ray_normal) > 0.0 and to_f.dot(ray_normal) < 22.0:
+				var proj_pt = ray_origin + ray_normal * to_f.dot(ray_normal)
+				if f_pos.distance_to(proj_pt) < 3.2:
+					flares_to_sever.append(flare)
 	
-	if severed_count > 0:
-		if shield_deflect_sfx: shield_deflect_sfx.play()
-		# Water parry refund
-		water_tank = min(MAX_WATER, water_tank + 15.0 * severed_count)
-		water_changed.emit(water_tank, MAX_WATER)
-		GameState.flares_intercepted += severed_count
-		if not is_celestial_awakened:
-			GameState.celestial_charge = min(1.0, GameState.celestial_charge + 0.10 * severed_count)
+	for flare in flares_to_sever:
+		sever_flare_by_blade(flare)
 	
 	# Check Solar Convergence Drone Interception
 	var hit_solar_drone: bool = false
