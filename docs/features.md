@@ -22,7 +22,7 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
   * *Scatter Nozzle:* Wide spray for multi-target flare intercepts.
   * *Kitsune Buster IX:* Endless Wave 30 unlock (160 cap, 28 cool, 2.2x crit). Grants 100% Awakening meter on first unlock. Mode toggle (`[X]` / `[Y]` / MMB):
     * *Cannon Mode:* Precision stream with revolving 9-vial cylinder.
-    * *Blade Mode:* Katana melee strike (60° arc, 8.5m range). Cleaves flares for +15% water, damages drones, and strikes Heat Mirages.
+    * *Blade Mode:* Katana melee strike (60° arc, 8.5m range). Cleaves flares for +15% water, damages drones, and strikes Heat Mirages and the Sun with wave damage scaling.
   * *Gold Weapon Skin:* Unlocked at 50,000 High Score. Solid gold metallic finish with in-game Settings toggle under Display (only visible once 50k points is reached) to preserve original weapon detail if preferred.
 * **Ice Burst (Secondary `[R]`):** Freezes heat gain and sun movement for 3s. Features converged crosshair targeting, dynamic homing, and continuous swept-segment anti-tunneling. Unlocked Wave 2 / Level 3.
 * **Catastrom (Ultimate `[F]`):** Dunks Sun into ocean to clear wave. Shared Power Up pool at 100% charge. Unlocked Wave 4.
@@ -41,13 +41,13 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 * **Sunspots:** Glowing critical weakpoints that award bonus cooling and points.
 * **Solar Flare Shield:** Endless Boss Waves (15–25). Emissive cyan energy barrier blocking water until shattered with Ice Blast (`[R]`). On Wave 30+, replaced by the Equatorial Solar Driver & Golden Drone Shield.
 * **Solar Wind:** Physical crosswind pushing player crosshair (drift intensity capped at 1.75x).
-* **Heat Mirage (Boss):** Spawns two decoy suns and a collective overshield.
+* **Heat Mirage (Boss):** Spawns two decoy suns and a collective overshield (pre-Wave 30 boss waves).
 * **High Heat Warnings:** Steam boils at 75% heat; screen pulses red and heartbeat audio plays at 85%.
 * **Supernova:** Reaching 100% heat triggers a supernova cinematic and frameless stats recap.
 
 ## 5. Dynamic Weather & Encounters
 * **Rainstorms:** Downpour grants infinite water and passive sun cooling.
-* **Solar Eclipses:** Sky darkens; sun fires rapid Shadow Flares.
+* **Solar Eclipses:** Sky darkens; sun fires rapid Shadow Flares (occurrence chance balanced in late waves to maintain weather variety).
 * **Solar Convergence:** Apex Boss encounter (Wave 30+). Equatorial Solar Driver attaches to the Sun's waist (16-ray Sunburst Corona crest, glowing incandescent core, conduits, and drone bays) while orbiting Solar Eye Drones project an invulnerable Golden Shield (throttling Sun heat regen by 50%). Drones show progressive crack damage and award water (+15%/+20%) plus ultimate charge (+5%/+8%) on destruction. Destroying all drones overloads the Driver and shatters the shield. In Phase 2, the Driver enters Overdrive, deploying a lean, fast-paced escort swarm with reactivated Golden Shield.
 
 ## 6. Environment & Visuals

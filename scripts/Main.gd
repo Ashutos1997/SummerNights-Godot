@@ -2053,6 +2053,9 @@ func _spawn_solar_flare() -> void:
 	var lvl = float(GameState.level)
 	if active_weather == "eclipse":
 		flare_spawn_timer = randf_range(1.5, 3.0) # Spam shadow flares
+	elif GameState.is_survival_mode:
+		var floor_t = max(4.0, 8.0 - (GameState.current_wave * 0.25))
+		flare_spawn_timer = randf_range(floor_t, floor_t + 2.0)
 	else:
 		flare_spawn_timer = randf_range(12.0 - lvl, 15.0 - lvl)
 		
@@ -2669,8 +2672,8 @@ func _process(delta: float) -> void:
 		else:
 			hud.grab_icon.visible = false
 
-	# Heat Mirage Event
-	var can_mirage = current_config.get("has_mirage", false) or (GameState.is_survival_mode and GameState.current_wave % 5 == 0)
+	# Heat Mirage Event (pre-Wave 30 boss waves; Wave 30+ features Solar Driver encounter)
+	var can_mirage = current_config.get("has_mirage", false) or (GameState.is_survival_mode and GameState.current_wave % 5 == 0 and GameState.current_wave < 30)
 	if timer_running and can_mirage and not is_sun_frozen and not is_catastrom_active:
 		if active_mirages.size() == 0:
 			mirage_cooldown -= delta
@@ -5198,15 +5201,24 @@ func _perform_kitsune_blade_slash() -> void:
 					elif aim_dist < 1.8:
 						is_crit = true
 					
-					var base_dmg = 8.5 # Balanced cadence cooling (~24 DPS matching Kitsune weapon tier)
+					var wave_dmg_mult = 1.0
+					if GameState.is_survival_mode and GameState.current_wave >= 5:
+						wave_dmg_mult = 1.0 + (GameState.current_wave - 4) * 0.15
+					if GameState.is_survival_mode and GameState.current_wave >= 100:
+						var resist = max(0.2, 1.0 - (GameState.current_wave - 100) * 0.01)
+						wave_dmg_mult *= resist
+					
+					var base_dmg = 8.5 # Balanced cadence cooling (~24 DPS base)
 					var crit_m = 1.5 if is_crit else 1.0
-					var total_dmg = base_dmg * crit_m * GameState.cooling_power_mult
+					var total_dmg = base_dmg * crit_m * wave_dmg_mult * GameState.cooling_power_mult
 					if is_celestial_awakened:
 						total_dmg *= 1.5
 					
 					if active_mirages.size() == 0:
 						temperature = max(0.0, temperature - total_dmg)
 						heat_changed.emit(temperature, MAX_TEMP)
+					
+					GameState.add_score(int(total_dmg * 10.0))
 					
 					_spawn_damage_number(total_dmg, is_crit, crosshair_target)
 					sun_hit_reaction_timer = 0.22
@@ -5873,10 +5885,10 @@ func _start_weather_event(force_type: String = "") -> void:
 		# Survival Mode dynamic scaling
 		if GameState.is_survival_mode:
 			var minutes_survived = GameState.survival_time / 60.0
-			# Eclipse chance increases by 10 per minute, none chance decreases
+			# Eclipse chance increases with survival time, capped to maintain rain & clear weather variety
 			weights = weights.duplicate()
-			weights["eclipse"] += int(minutes_survived * 15)
-			weights["none"] = max(0, weights["none"] - int(minutes_survived * 10))
+			weights["eclipse"] = min(90, weights["eclipse"] + int(minutes_survived * 5))
+			weights["none"] = max(25, weights["none"] - int(minutes_survived * 4))
 			
 		var total_weight = weights["none"] + weights["rain"] + weights["eclipse"]
 		if total_weight <= 0:
