@@ -174,10 +174,23 @@ func start_orbital_swarm(count: int = 6, wave: int = 1, is_phase2: bool = false)
 	current_state = State.ORBITAL_SWARM
 	orbit_time = 0.0
 
-	# When drones appear, the belt also appears at the same time!
+	# When drones appear, ensure the driver is equipped!
 	if not is_driver_equipped:
 		materialize_solar_driver(true)
-	elif is_phase2:
+	else:
+		if driver_root and is_instance_valid(driver_root):
+			driver_root.visible = true
+		if driver_buckle and is_instance_valid(driver_buckle):
+			driver_buckle.scale = Vector3.ONE
+			driver_buckle.position = Vector3.ZERO
+		if belt_strap_left and is_instance_valid(belt_strap_left):
+			belt_strap_left.scale = Vector3.ONE
+			belt_strap_left.rotation.y = 0.0
+		if belt_strap_right and is_instance_valid(belt_strap_right):
+			belt_strap_right.scale = Vector3.ONE
+			belt_strap_right.rotation.y = 0.0
+
+	if is_phase2:
 		# Overdrive re-ignition
 		if sfx_driver_overdrive:
 			sfx_driver_overdrive.play()
@@ -186,6 +199,11 @@ func start_orbital_swarm(count: int = 6, wave: int = 1, is_phase2: bool = false)
 			driver_core_mat.emission_energy_multiplier = 14.0
 			var c_tw = create_tween()
 			c_tw.tween_property(driver_core_mat, "emission_energy_multiplier", 4.5, 1.0).set_trans(Tween.TRANS_QUAD)
+		if driver_conduit_mat:
+			driver_conduit_mat.emission = Color(1.0, 0.45, 0.15)
+			driver_conduit_mat.emission_energy_multiplier = 6.0
+			var cn_tw = create_tween()
+			cn_tw.tween_property(driver_conduit_mat, "emission_energy_multiplier", 3.0, 1.0).set_trans(Tween.TRANS_QUAD)
 
 	_start_drone_hum()
 
@@ -802,8 +820,6 @@ func clear_drones() -> void:
 		if is_instance_valid(node):
 			node.queue_free()
 	active_drones.clear()
-	if is_driver_equipped:
-		remove_solar_driver(true)
 	current_state = State.IDLE
 
 # ─────────────────────────────────────────────────────────────────────────────

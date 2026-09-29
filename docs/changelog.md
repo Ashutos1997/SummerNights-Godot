@@ -41,6 +41,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Level Transition Input Guards: Locked weapon inputs during fade transitions to prevent premature wave clears.
 * Weapon Wheel Overlay: Ensured background dim overlay hides immediately when transitioning to menus.
 * Dawn Breaks Achievement Requirement: Corrected unlock requirement and progress tracking from Level 5 to Level 6 to match the full 6-level Normal Mode campaign.
+* Phase 2 Solar Driver Persistence: Fixed an issue where the Equatorial Solar Driver detached and vanished upon entering Wave 30 Phase 2 due to drone clearing callbacks overriding buckle visibility; the driver now remains equipped, visible, and energized throughout Phase 2 Overdrive.
 
 
 ## [v1.5.5] - 2026-09-22
@@ -295,6 +296,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 레벨 전환 입력 잠금: 화면 페이드 전환 중 무기 입력을 잠금 처리하여 조기 클리어 방지.
 * 무기 선택 휠 오버레이: 메뉴 전환 및 휠 종료 시 배경 블러/딤 오버레이가 즉시 숨겨지도록 수정.
 * 새벽이 밝다 업적 레벨 요건 수정: 일반 모드 6개 전체 레벨 캠페인에 맞춰 업적 해금 요건 및 진행도 표시를 레벨 5에서 레벨 6으로 수정.
+* 2페이즈 솔라 드라이버 유지 버그 수정: 30웨이브 2페이즈 진입 시 드론 초기화 콜백이 버클 가시성을 덮어씌워 적도 솔라 드라이버가 해제 및 소멸하던 현상 수정; 2페이즈 오버드라이브 중에도 드라이버가 정상 장착 및 발광 상태를 유지하도록 개선.
 
 
 ## [v1.5.5] - 2026-09-22

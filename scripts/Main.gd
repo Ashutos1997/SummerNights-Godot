@@ -4319,6 +4319,7 @@ func _check_sun_defeat() -> void:
 				sun_shield_mesh.scale = Vector3.ONE
 			if solar_convergence_mgr:
 				solar_convergence_mgr.clear_drones()
+				solar_convergence_mgr.remove_solar_driver(true)
 		
 		wind_level_mult = min(2.5, 1.0 + (GameState.current_wave - 4) * 0.15)
 		if solar_wind_enabled and not prev_solar_wind:
@@ -4803,6 +4804,7 @@ func toggle_solar_drones() -> void:
 		return
 	if solar_convergence_mgr.get_active_drone_count() > 0 or solar_convergence_mgr.is_driver_active():
 		solar_convergence_mgr.clear_drones()
+		solar_convergence_mgr.remove_solar_driver(true)
 		if hud and hud.has_method("show_toast"):
 			var is_kr = GameState.language == "KR"
 			var title = "솔라 드라이버 해제" if is_kr else "SOLAR DRIVER RETRACTED"
