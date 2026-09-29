@@ -43,6 +43,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Weapon Wheel Overlay: Ensured background dim overlay hides immediately when transitioning to menus.
 * Dawn Breaks Achievement Requirement: Corrected unlock requirement and progress tracking from Level 5 to Level 6 to match the full 6-level Normal Mode campaign.
 * Phase 2 Solar Driver Persistence: Fixed an issue where the Equatorial Solar Driver detached and vanished upon entering Wave 30 Phase 2 due to drone clearing callbacks overriding buckle visibility; the driver now remains equipped, visible, and energized throughout Phase 2 Overdrive.
+* Ice Burst Hit Reliability: Fixed an issue where Ice Burst failed to freeze the sun even when aimed correctly due to muzzle-to-camera parallax offset, sun sway flight delay, and discrete frame tunneling. Projectiles now accurately converge at the sun's depth, home dynamically on the moving sun when targeted, and use continuous swept-segment collision.
 
 
 ## [v1.5.5] - 2026-09-22
@@ -299,6 +300,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 무기 선택 휠 오버레이: 메뉴 전환 및 휠 종료 시 배경 블러/딤 오버레이가 즉시 숨겨지도록 수정.
 * 새벽이 밝다 업적 레벨 요건 수정: 일반 모드 6개 전체 레벨 캠페인에 맞춰 업적 해금 요건 및 진행도 표시를 레벨 5에서 레벨 6으로 수정.
 * 2페이즈 솔라 드라이버 유지 버그 수정: 30웨이브 2페이즈 진입 시 드론 초기화 콜백이 버클 가시성을 덮어씌워 적도 솔라 드라이버가 해제 및 소멸하던 현상 수정; 2페이즈 오버드라이브 중에도 드라이버가 정상 장착 및 발광 상태를 유지하도록 개선.
+* 얼음 폭발 타격 판정 개선 및 버그 수정: 조준선이 태양을 정확히 겨누었음에도 총구-카메라 간 시차(Parallax), 비행 시간 중 태양 이동, 고속 프레임 터널링 현상으로 인해 얼음 폭발이 빗나가던 현상 수정. 태양 평면 깊이에 수렴하는 정확한 조준점 연산, 조준 시 태양 동적 유도(Homing), 연속 스윕 세그먼트 충돌 판정을 적용하여 타격 신뢰도 완벽 보장.
 
 
 ## [v1.5.5] - 2026-09-22

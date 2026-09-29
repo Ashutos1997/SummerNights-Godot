@@ -5223,17 +5223,68 @@ func _shoot_ice() -> void:
 	var blast = ice_blast_scene.instantiate()
 	blasts.add_child(blast)
 	
-	var cam_space = get_world_3d().direct_space_state
+	# Compute camera ray through crosshair
 	var ray_start = camera.project_ray_origin(virtual_mouse_pos)
-	var ray_end = ray_start + camera.project_ray_normal(virtual_mouse_pos) * 1000.0
-	var query = PhysicsRayQueryParameters3D.create(ray_start, ray_end)
-	var result = cam_space.intersect_ray(query)
-	var target_pos = ray_end
-	if result:
-		target_pos = result.position
-		
+	var ray_normal = camera.project_ray_normal(virtual_mouse_pos)
+	
+	# Determine depth of the Sun
+	var sun_pos = sun.global_position if is_instance_valid(sun) else sun_base_pos
+	var sun_z = sun_pos.z
+	
+	# Project ray to the sun's Z-depth (converging muzzle and crosshair on the sun plane)
+	var div = ray_normal.z if abs(ray_normal.z) > 0.0001 else -1.0
+	var t_sun = (sun_z - ray_start.z) / div
+	var sun_aim_pt = ray_start + ray_normal * t_sun
+	var aim_dist_to_sun = sun_aim_pt.distance_to(sun_pos)
+	
+	var target_pos = sun_aim_pt
+	var is_aimed_at_sun = (aim_dist_to_sun <= 5.5)
+	
+	# Check if aiming at a closer obstacle (e.g. Magma Rock, Heat Mirage, or Solar Drone)
+	var closest_target_dist = 9999.0
+	for rock in active_magma_rocks:
+		if is_instance_valid(rock):
+			var r_pos = rock.global_position
+			var to_r = r_pos - ray_start
+			var proj = to_r.dot(ray_normal)
+			if proj > 0.0 and proj < t_sun:
+				var pt = ray_start + ray_normal * proj
+				if r_pos.distance_to(pt) < 2.2 and proj < closest_target_dist:
+					closest_target_dist = proj
+					target_pos = r_pos
+					is_aimed_at_sun = false
+					
+	for m in active_mirages:
+		var m_node = m.get("node") as Node3D
+		if is_instance_valid(m_node):
+			var m_pos = m_node.global_position
+			var to_m = m_pos - ray_start
+			var proj = to_m.dot(ray_normal)
+			if proj > 0.0:
+				var pt = ray_start + ray_normal * proj
+				if m_pos.distance_to(pt) < 5.0 and m_pos.distance_to(pt) < aim_dist_to_sun:
+					target_pos = m_pos
+					is_aimed_at_sun = false
+
+	if solar_convergence_mgr:
+		for drone in solar_convergence_mgr.active_drones:
+			var d_node = drone.get("node") as Node3D
+			if is_instance_valid(d_node):
+				var d_pos = d_node.global_position
+				var to_d = d_pos - ray_start
+				var proj = to_d.dot(ray_normal)
+				if proj > 0.0:
+					var pt = ray_start + ray_normal * proj
+					if d_pos.distance_to(pt) < 3.2 and proj < closest_target_dist:
+						closest_target_dist = proj
+						target_pos = d_pos
+						is_aimed_at_sun = false
+
+	# Position at muzzle and aim at converged target
 	blast.global_position = muzzle.global_position
 	blast.look_at(target_pos, Vector3.UP)
+	if "targeted_sun" in blast:
+		blast.targeted_sun = is_aimed_at_sun
 
 func _spawn_damage_number(amount: float, is_crit: bool, pos: Vector3) -> void:
 	var lbl = Label3D.new()

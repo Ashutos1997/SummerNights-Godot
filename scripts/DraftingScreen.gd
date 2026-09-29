@@ -350,4 +350,3 @@ func _on_perk_selected(perk_data: Variant) -> void:
 	
 	# Emit signal so Main.gd can orchestrate the cinematic resume transition
 	perk_selected.emit(perk_id)
-
