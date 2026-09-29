@@ -3642,7 +3642,7 @@ func _update_sun_face(ratio: float) -> void:
 	var has_driver: bool = (solar_convergence_mgr != null and solar_convergence_mgr.is_driver_active())
 
 	if has_driver:
-		if phase2_triggered or (solar_convergence_mgr and solar_convergence_mgr.current_state == SolarConvergenceManager.State.OMEGA_SUN) or ratio >= 0.70:
+		if phase2_triggered or (solar_convergence_mgr and solar_convergence_mgr.current_state == SolarConvergenceManager.State.OMEGA_SUN):
 			expression = "driver_fury"
 		else:
 			expression = "driver_smirk"
@@ -5714,7 +5714,10 @@ func _start_mirage() -> void:
 			
 		var m_face = Sprite3D.new()
 		var m_has_driver: bool = (solar_convergence_mgr != null and solar_convergence_mgr.is_driver_active())
-		m_face.texture = face_textures.get("driver_smirk") if (m_has_driver and face_textures.has("driver_smirk")) else face_textures.get("angry")
+		var m_expr: String = "angry"
+		if m_has_driver:
+			m_expr = "driver_fury" if phase2_triggered else "driver_smirk"
+		m_face.texture = face_textures.get(m_expr) if face_textures.has(m_expr) else face_textures.get("angry")
 		m_face.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 		m_face.pixel_size = 0.08
 		m_face.position = Vector3(0, 0, 3.4)
@@ -5834,6 +5837,22 @@ func _end_weather_event() -> void:
 	_update_sky(false)
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		# Hotkey: [B] or [F8] to toggle Wave 30 Solar Driver boss encounter
+		if event.keycode == KEY_B or event.keycode == KEY_F8:
+			if event.shift_pressed and solar_convergence_mgr and solar_convergence_mgr.is_driver_active():
+				# Shift+B toggles Phase 2 Overdrive / Fury state
+				phase2_triggered = not phase2_triggered
+				if hud and hud.has_method("show_toast"):
+					var is_kr = GameState.language == "KR"
+					var title = "드라이버 오버드라이브: " + ("활성 (퓨리)" if phase2_triggered else "비활성 (스머크)") if is_kr else "DRIVER OVERDRIVE: " + ("ACTIVE (FURY)" if phase2_triggered else "OFF (SMIRK)")
+					hud.show_toast(title, "표정: driver_fury" if phase2_triggered else "표정: driver_smirk", "", Color(1.0, 0.6, 0.1))
+			else:
+				phase2_triggered = false
+				toggle_solar_driver()
+			get_viewport().set_input_as_handled()
+			return
+
 	if GameState.is_dev_mode and event is InputEventKey and event.pressed and not event.echo:
 		match event.keycode:
 			KEY_R:
