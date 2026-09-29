@@ -49,7 +49,7 @@ Architectural map and layout reference for `HUD.tscn`.
 * **PauseScreen (`ESC`):** Pauses tree. Houses Settings, Filters, Controls, Credits, Achievements, and Buffs.
 * **CreditsScreen:** Autoscrolling bilingual listing with complete 1:1 asset attributions.
 * **AchievementsScreen:** 3-column retro list tracking 13 achievements with live counters and gold badges.
-* **DraftingScreen (Perks):** Post-boss modal. Staggered card deal entrance with rarity badges.
+* **DraftingScreen (Perks):** Post-boss modal. Staggered card deal entrance with rarity badges and `[ MAX ROLL! ]` golden highlights.
 * **FiltersScreen:** Mutually exclusive post-processing options (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
 * **ControllerScreen:** Keyboard/Xbox layout toggle with unified "Power Up" labels for `[F]` and `[RB]`, and Mode Change (`[X]` Keyboard / `[Y]` Xbox, magenta highlight).
 * **SettingsScreen:** 3 categorized sections (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM` with Fullscreen, conditional Gold Weapon Skin toggle unlocked at 50k points, and Language) using retro badges and off-white row labels.

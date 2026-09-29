@@ -368,6 +368,7 @@ var bonus_ice_charges: int = 0
 var water_drain_mult: float = 1.0
 var wind_drift_mult: float = 1.0
 var blade_parry_bonus: float = 0.0
+var blade_arc_bonus: float = 0.0
 var catastrom_charge: float = 0.0  # Shared Power Up charge (0.0 to 1.0)
 var celestial_charge: float:
 	get:
@@ -380,77 +381,118 @@ const WAVE_PERKS: Dictionary = {
 		"icon": "res://assets/ui/achievements/water-recycling.png",
 		"title_en": "High Capacity",
 		"title_kr": "대용량",
-		"desc_en": "+15% Water Tank Size.",
-		"desc_kr": "물탱크 용량이 15% 증가합니다."
+		"desc_en": "+%d%% Water Tank Size.",
+		"desc_kr": "물탱크 용량이 %d%% 증가합니다.",
+		"min_val": 8,
+		"max_val": 15,
+		"step": 1,
+		"weight": 100
 	},
 	"crit_boost": {
 		"icon": "res://assets/ui/achievements/ball-glow.png",
 		"title_en": "Precision Optics",
 		"title_kr": "정밀 광학",
-		"desc_en": "+15% Critical Hit Damage.",
-		"desc_kr": "치명타 피해량이 15% 증가합니다."
+		"desc_en": "+%d%% Critical Hit Damage.",
+		"desc_kr": "치명타 피해량이 %d%% 증가합니다.",
+		"min_val": 8,
+		"max_val": 15,
+		"step": 1,
+		"weight": 100
 	},
 	"cooling_boost": {
 		"icon": "res://assets/ui/achievements/water-splash.png",
 		"title_en": "Thermal Insulator",
 		"title_kr": "열 절연체",
-		"desc_en": "+6% Cooling Power, -10% Water Drain (Rare).",
-		"desc_kr": "냉각력 +6%, 물 소모량 -10% (희귀).",
+		"desc_en": "+%d%% Cooling Power, -%d%% Water Drain (Rare).",
+		"desc_kr": "냉각력 +%d%%, 물 소모량 -%d%% (희귀).",
+		"min_val": 3,
+		"max_val": 6,
+		"min_val_2": 5,
+		"max_val_2": 10,
+		"step": 1,
 		"weight": 20
 	},
 	"catastrom_boost": {
 		"icon": "res://assets/ui/achievements/eclipse.png",
 		"title_en": "Catastrom Flow",
 		"title_kr": "카타스트롬 흐름",
-		"desc_en": "+15% Catastrom charge rate.",
-		"desc_kr": "카타스트롬 충전 속도가 15% 증가합니다."
+		"desc_en": "+%d%% Catastrom charge rate.",
+		"desc_kr": "카타스트롬 충전 속도가 %d%% 증가합니다.",
+		"min_val": 8,
+		"max_val": 15,
+		"step": 1,
+		"weight": 100
 	},
 	"heat_shield": {
 		"icon": "res://assets/ui/achievements/fireball.png",
 		"title_en": "Heat Shield",
 		"title_kr": "열 차폐막",
-		"desc_en": "+5% Heat Resistance.",
-		"desc_kr": "열 저항이 5% 증가합니다.",
+		"desc_en": "+%d%% Heat Resistance.",
+		"desc_kr": "열 저항이 %d%% 증가합니다.",
+		"min_val": 3,
+		"max_val": 5,
+		"step": 1,
 		"weight": 100
 	},
 	"slow_sway": {
 		"icon": "res://assets/ui/achievements/sunset.png",
 		"title_en": "Gravity Anchor",
 		"title_kr": "중력 닻",
-		"desc_en": "-10% Sun Sway Speed (Rare).",
-		"desc_kr": "태양의 흔들림 속도가 10% 감소합니다 (희귀).",
+		"desc_en": "-%d%% Sun Sway Speed (Rare).",
+		"desc_kr": "태양의 흔들림 속도가 %d%% 감소합니다 (희귀).",
+		"min_val": 5,
+		"max_val": 10,
+		"step": 1,
 		"weight": 20
 	},
 	"glass_cannon": {
 		"icon": "res://assets/ui/achievements/fireball.png",
 		"title_en": "Glass Cannon",
 		"title_kr": "유리 대포",
-		"desc_en": "+40% Crit Damage, -15% Tank Size.",
-		"desc_kr": "치명타 피해 +40%, 물탱크 용량 -15%.",
+		"desc_en": "+%d%% Crit Damage, -%d%% Tank Size.",
+		"desc_kr": "치명타 피해 +%d%%, 물탱크 용량 -%d%%.",
+		"min_val": 25,
+		"max_val": 40,
+		"min_val_2": 10,
+		"max_val_2": 15,
+		"step": 1,
 		"weight": 60
 	},
 	"heavy_water": {
 		"icon": "res://assets/ui/achievements/water-splash.png",
 		"title_en": "Heavy Water",
 		"title_kr": "중수",
-		"desc_en": "+15% Cooling Power, -15% Ult Charge (Rare).",
-		"desc_kr": "냉각력 +15%, 궁극기 충전 -15% (희귀).",
+		"desc_en": "+%d%% Cooling Power, -%d%% Ult Charge (Rare).",
+		"desc_kr": "냉각력 +%d%%, 궁극기 충전 -%d%% (희귀).",
+		"min_val": 8,
+		"max_val": 15,
+		"min_val_2": 8,
+		"max_val_2": 15,
+		"step": 1,
 		"weight": 20
 	},
 	"reckless_haste": {
 		"icon": "res://assets/ui/achievements/eclipse.png",
 		"title_en": "Reckless Haste",
 		"title_kr": "무모한 가속",
-		"desc_en": "+30% Ult Charge, -10% Heat Resist.",
-		"desc_kr": "궁극기 충전 +30%, 열 저항 -10%.",
+		"desc_en": "+%d%% Ult Charge, -%d%% Heat Resist.",
+		"desc_kr": "궁극기 충전 +%d%%, 열 저항 -%d%%.",
+		"min_val": 18,
+		"max_val": 30,
+		"min_val_2": 6,
+		"max_val_2": 10,
+		"step": 1,
 		"weight": 60
 	},
 	"wind_breaker": {
 		"icon": "res://assets/ui/achievements/seagull.png",
 		"title_en": "Wind Breaker",
 		"title_kr": "바람막이",
-		"desc_en": "-60% Solar Wind Crosshair Drift.",
-		"desc_kr": "태양풍으로 인한 조준선 흔들림 -60%.",
+		"desc_en": "-%d%% Solar Wind Crosshair Drift.",
+		"desc_kr": "태양풍으로 인한 조준선 흔들림 -%d%%.",
+		"min_val": 35,
+		"max_val": 60,
+		"step": 5,
 		"weight": 80
 	},
 	"subzero_reserve": {
@@ -459,19 +501,73 @@ const WAVE_PERKS: Dictionary = {
 		"title_kr": "극저온 예비탄",
 		"desc_en": "+1 Max Ice Blast Charge & Refills 1 per wave.",
 		"desc_kr": "얼음 폭발 최대 충전 +1회 및 매 웨이브 1회 보충.",
+		"min_val": 1,
+		"max_val": 1,
+		"step": 1,
 		"weight": 70
 	},
 	"blade_cadence": {
 		"icon": "res://assets/ui/achievements/trophy.png",
 		"title_en": "Blade Cadence",
 		"title_kr": "검의 운율",
-		"desc_en": "+20% Kitsune Blade Slash Arc & +25% Parry Water Refund.",
-		"desc_kr": "구미호 검 베기 범위 +20% 및 패링 시 물 환급 +25%.",
+		"desc_en": "+%d%% Kitsune Blade Slash Arc & +%d%% Parry Water Refund.",
+		"desc_kr": "구미호 검 베기 범위 +%d%% 및 패링 시 물 환급 +%d%%.",
+		"min_val": 10,
+		"max_val": 20,
+		"min_val_2": 15,
+		"max_val_2": 25,
+		"step": 1,
 		"weight": 70
 	}
 }
 
 var active_wave_perks: Array[String] = []
+var active_wave_perk_instances: Array[Dictionary] = []
+
+func roll_perk_instance(perk_id: String) -> Dictionary:
+	var cfg = WAVE_PERKS.get(perk_id, {})
+	var val_1: int = cfg.get("max_val", 1)
+	var val_2: int = cfg.get("max_val_2", 0)
+	var is_max_roll: bool = false
+	
+	if cfg.has("min_val") and cfg.has("max_val") and cfg.max_val > cfg.min_val:
+		var min_1: int = cfg.min_val
+		var max_1: int = cfg.max_val
+		var step_1: int = cfg.get("step", 1)
+		var total_steps: int = int((max_1 - min_1) / step_1)
+		var step_choice: int = randi_range(0, total_steps)
+		val_1 = min_1 + step_choice * step_1
+		
+		# Proportional scaling for linked second stat
+		if cfg.has("min_val_2") and cfg.has("max_val_2"):
+			var min_2: int = cfg.min_val_2
+			var max_2: int = cfg.max_val_2
+			var t: float = float(step_choice) / float(max(1, total_steps))
+			val_2 = int(round(lerp(float(min_2), float(max_2), t)))
+			
+		is_max_roll = (val_1 >= max_1)
+	elif cfg.has("max_val"):
+		val_1 = cfg.max_val
+		val_2 = cfg.get("max_val_2", 0)
+		is_max_roll = true
+		
+	return {
+		"id": perk_id,
+		"val_1": val_1,
+		"val_2": val_2,
+		"is_max_roll": is_max_roll
+	}
+
+func get_perk_description(perk_inst: Dictionary, is_kr: bool) -> String:
+	var perk_id: String = perk_inst.get("id", "")
+	var cfg = WAVE_PERKS.get(perk_id, {})
+	var template: String = cfg.get("desc_kr" if is_kr else "desc_en", "")
+	if "%d" in template:
+		if cfg.has("max_val_2"):
+			return template % [perk_inst.get("val_1", 0), perk_inst.get("val_2", 0)]
+		else:
+			return template % perk_inst.get("val_1", 0)
+	return template
 var weapons_used_this_run: Array[String] = []
 
 var crit_damage_mult: float = 1.0
@@ -492,6 +588,7 @@ func reset() -> void:
 	water_drain_mult = 1.0
 	wind_drift_mult = 1.0
 	blade_parry_bonus = 0.0
+	blade_arc_bonus = 0.0
 	catastrom_charge = 0.0
 	kitsune_mode = "cannon"
 	celestial_charge = 0.0
@@ -499,6 +596,7 @@ func reset() -> void:
 	catastrom_charge_mult = 1.0
 	sun_sway_mult = 1.0
 	active_wave_perks.clear()
+	active_wave_perk_instances.clear()
 	weapons_used_this_run.clear()
 	_evaluate_milestones()
 
@@ -626,6 +724,7 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 	water_drain_mult = 1.0
 	wind_drift_mult = 1.0
 	blade_parry_bonus = 0.0
+	blade_arc_bonus = 0.0
 	heat_resistance = 0.05 if "rock_solid" in unlocked_achievements else 0.0
 	crit_damage_mult = 1.0
 	catastrom_charge_mult = 1.0
@@ -643,31 +742,64 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 		if old_high >= 0 and old_high < 50000: emit_signal("buff_unlocked", "gold_weapon")
 
 	# Apply drafted perks
-	for perk_id in active_wave_perks:
-		match perk_id:
-			"capacity_boost": max_water_mult += 0.15
-			"cooling_boost":
-				cooling_power_mult += 0.06
-				water_drain_mult -= 0.10
-			"heat_shield": heat_resistance += 0.05
-			"crit_boost": crit_damage_mult += 0.15
-			"catastrom_boost": catastrom_charge_mult += 0.15
-			"slow_sway": sun_sway_mult -= 0.10
-			"glass_cannon":
-				crit_damage_mult += 0.40
-				max_water_mult -= 0.15
-			"heavy_water":
-				cooling_power_mult += 0.15
-				catastrom_charge_mult -= 0.15
-			"reckless_haste":
-				catastrom_charge_mult += 0.30
-				heat_resistance -= 0.10
-			"wind_breaker":
-				wind_drift_mult = max(0.20, wind_drift_mult - 0.60)
-			"subzero_reserve":
-				bonus_ice_charges += 1
-			"blade_cadence":
-				blade_parry_bonus += 25.0
+	if active_wave_perk_instances.size() > 0:
+		for perk_inst in active_wave_perk_instances:
+			var perk_id: String = perk_inst.get("id", "")
+			var v1 = float(perk_inst.get("val_1", 0)) * 0.01
+			var v2 = float(perk_inst.get("val_2", 0)) * 0.01
+			match perk_id:
+				"capacity_boost": max_water_mult += v1
+				"cooling_boost":
+					cooling_power_mult += v1
+					water_drain_mult -= v2
+				"heat_shield": heat_resistance += v1
+				"crit_boost": crit_damage_mult += v1
+				"catastrom_boost": catastrom_charge_mult += v1
+				"slow_sway": sun_sway_mult -= v1
+				"glass_cannon":
+					crit_damage_mult += v1
+					max_water_mult -= v2
+				"heavy_water":
+					cooling_power_mult += v1
+					catastrom_charge_mult -= v2
+				"reckless_haste":
+					catastrom_charge_mult += v1
+					heat_resistance -= v2
+				"wind_breaker":
+					wind_drift_mult = max(0.20, wind_drift_mult - v1)
+				"subzero_reserve":
+					bonus_ice_charges += 1
+				"blade_cadence":
+					blade_arc_bonus += float(perk_inst.get("val_1", 20))
+					blade_parry_bonus += float(perk_inst.get("val_2", 25))
+	else:
+		# Fallback if perks were added without instances (backwards compatibility)
+		for perk_id in active_wave_perks:
+			match perk_id:
+				"capacity_boost": max_water_mult += 0.15
+				"cooling_boost":
+					cooling_power_mult += 0.06
+					water_drain_mult -= 0.10
+				"heat_shield": heat_resistance += 0.05
+				"crit_boost": crit_damage_mult += 0.15
+				"catastrom_boost": catastrom_charge_mult += 0.15
+				"slow_sway": sun_sway_mult -= 0.10
+				"glass_cannon":
+					crit_damage_mult += 0.40
+					max_water_mult -= 0.15
+				"heavy_water":
+					cooling_power_mult += 0.15
+					catastrom_charge_mult -= 0.15
+				"reckless_haste":
+					catastrom_charge_mult += 0.30
+					heat_resistance -= 0.10
+				"wind_breaker":
+					wind_drift_mult = max(0.20, wind_drift_mult - 0.60)
+				"subzero_reserve":
+					bonus_ice_charges += 1
+				"blade_cadence":
+					blade_arc_bonus += 20.0
+					blade_parry_bonus += 25.0
 				
 	# Balanced caps and floors to prevent infinite power scaling or game-breaking penalties in late waves
 	cooling_power_mult = clamp(cooling_power_mult, 0.5, 2.0)

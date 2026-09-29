@@ -5026,7 +5026,7 @@ func _perform_kitsune_blade_slash() -> void:
 	# Melee flare cleaving / parry
 	var flares_to_sever = []
 	var slash_reach = 14.0 if not is_celestial_awakened else 18.0
-	var slash_angle = 65.0 * (1.0 + GameState.blade_parry_bonus * 0.005)
+	var slash_angle = 65.0 * (1.0 + GameState.blade_arc_bonus * 0.01)
 	for flare in active_flares:
 		var f_node = flare.get("node") as Node3D
 		if is_instance_valid(f_node):

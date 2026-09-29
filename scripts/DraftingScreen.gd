@@ -132,7 +132,8 @@ func show_draft() -> void:
 			choices.append(pick)
 	
 	for perk_id in choices:
-		var row = _create_perk_row(perk_id)
+		var perk_instance = GameState.roll_perk_instance(perk_id)
+		var row = _create_perk_row(perk_instance)
 		card_container.add_child(row)
 		row.modulate.a = 0.0
 		row.scale = Vector2(0.9, 0.9)
@@ -162,10 +163,20 @@ func show_draft() -> void:
 			card_container.get_child(0).grab_focus()
 	)
 	
-func _create_perk_row(perk_id: String) -> Control:
+func _create_perk_row(perk_data: Variant) -> Control:
+	var perk_instance: Dictionary
+	var perk_id: String
+	if perk_data is Dictionary:
+		perk_instance = perk_data
+		perk_id = perk_instance.get("id", "")
+	else:
+		perk_id = str(perk_data)
+		perk_instance = GameState.roll_perk_instance(perk_id)
+		
 	var perk = GameState.WAVE_PERKS[perk_id]
 	var is_kr = GameState.language == "KR"
 	var weight = perk.get("weight", 100)
+	var is_max_roll = perk_instance.get("is_max_roll", false) and perk.get("max_val", 0) > perk.get("min_val", 0)
 	
 	var rarity_name = "COMMON"
 	var rarity_color = Color(0.8, 0.85, 0.95, 0.6)
@@ -181,30 +192,35 @@ func _create_perk_row(perk_id: String) -> Control:
 	else:
 		rarity_name = "일반" if is_kr else "COMMON"
 	
+	if is_max_roll:
+		border_tint = Color(1.0, 0.85, 0.2, 0.95)
+	
 	var btn = Button.new()
 	btn.custom_minimum_size = Vector2(700, 100)
 	btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	
 	var style_normal = StyleBoxFlat.new()
-	style_normal.bg_color = Color(0.1, 0.1, 0.15, 0.8)
-	style_normal.border_width_left = 1
-	style_normal.border_width_right = 1
-	style_normal.border_width_top = 1
-	style_normal.border_width_bottom = 1
+	style_normal.bg_color = Color(0.12, 0.11, 0.16, 0.85) if is_max_roll else Color(0.1, 0.1, 0.15, 0.8)
+	style_normal.border_width_left = 2 if is_max_roll else 1
+	style_normal.border_width_right = 2 if is_max_roll else 1
+	style_normal.border_width_top = 2 if is_max_roll else 1
+	style_normal.border_width_bottom = 2 if is_max_roll else 1
 	style_normal.border_color = border_tint
-	style_normal.shadow_size = 6
+	style_normal.shadow_size = 10 if is_max_roll else 6
 	style_normal.shadow_offset = Vector2(0, 4)
-	style_normal.shadow_color = Color(0.0, 0.0, 0.0, 0.45)
+	style_normal.shadow_color = Color(1.0, 0.85, 0.2, 0.25) if is_max_roll else Color(0.0, 0.0, 0.0, 0.45)
 	style_normal.corner_radius_top_left = 6
 	style_normal.corner_radius_top_right = 6
 	style_normal.corner_radius_bottom_left = 6
 	style_normal.corner_radius_bottom_right = 6
 	
 	var style_hover = style_normal.duplicate()
-	style_hover.bg_color = Color(0.15, 0.15, 0.2, 0.9)
-	style_hover.border_color = Color(1.0, 0.9, 0.3, 1.0)
-	style_hover.shadow_size = 8
+	style_hover.bg_color = Color(0.18, 0.16, 0.22, 0.92) if is_max_roll else Color(0.15, 0.15, 0.2, 0.9)
+	style_hover.border_color = Color(1.0, 0.95, 0.4, 1.0) if is_max_roll else Color(1.0, 0.9, 0.3, 1.0)
+	style_hover.shadow_size = 12 if is_max_roll else 8
 	style_hover.shadow_offset = Vector2(0, 5)
+	if is_max_roll:
+		style_hover.shadow_color = Color(1.0, 0.85, 0.2, 0.4)
 	
 	var style_focus = style_hover.duplicate()
 	style_focus.border_color = Color(1.0, 0.85, 0.2, 1.0)
@@ -272,8 +288,19 @@ func _create_perk_row(perk_id: String) -> Control:
 	badge.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	title_row.add_child(badge)
 	
+	if is_max_roll:
+		var max_badge = Label.new()
+		max_badge.text = "[ 최고 수치! ]" if is_kr else "[ MAX ROLL! ]"
+		max_badge.add_theme_font_override("font", title_font)
+		max_badge.add_theme_font_size_override("font_size", 14)
+		max_badge.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+		max_badge.add_theme_constant_override("outline_size", 2)
+		max_badge.add_theme_color_override("font_outline_color", Color.BLACK)
+		max_badge.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		title_row.add_child(max_badge)
+	
 	var desc = Label.new()
-	desc.text = perk.desc_kr if is_kr else perk.desc_en
+	desc.text = GameState.get_perk_description(perk_instance, is_kr)
 	var body_font = load("res://assets/fonts/Galmuri11.ttf") if is_kr else load("res://assets/fonts/Inter-Medium.ttf")
 	desc.add_theme_font_override("font", body_font)
 	desc.add_theme_font_size_override("font_size", 16)
@@ -293,14 +320,24 @@ func _create_perk_row(perk_id: String) -> Control:
 	)
 	
 	btn.pressed.connect(func():
-		_on_perk_selected(perk_id)
+		_on_perk_selected(perk_instance)
 	)
 	
 	return btn
 
-func _on_perk_selected(perk_id: String) -> void:
+func _on_perk_selected(perk_data: Variant) -> void:
 	if sfx_select:
 		sfx_select.play()
+	var perk_id: String = ""
+	var perk_inst: Dictionary = {}
+	if perk_data is Dictionary:
+		perk_inst = perk_data
+		perk_id = perk_inst.get("id", "")
+	else:
+		perk_id = str(perk_data)
+		perk_inst = GameState.roll_perk_instance(perk_id)
+		
+	GameState.active_wave_perk_instances.append(perk_inst)
 	GameState.active_wave_perks.append(perk_id)
 	GameState._evaluate_milestones() # Recalculate stats
 	
@@ -313,3 +350,4 @@ func _on_perk_selected(perk_id: String) -> void:
 	
 	# Emit signal so Main.gd can orchestrate the cinematic resume transition
 	perk_selected.emit(perk_id)
+

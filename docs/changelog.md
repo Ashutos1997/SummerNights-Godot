@@ -20,6 +20,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Solar Convergence Phase 2 Swarm: When Phase 2 triggers on Wave 30+, the Equatorial Driver enters Overdrive, deploying an enraged drone swarm with reactivated Golden Shield.
 * Kitsune Blade Flare Cleaving Bugfix: Cleaved fireballs/flares now immediately detonate into water explosions, queue free, and award water parry refunds instead of passing through the player.
 * Endless Perks Rebalance & New Perks: Reduced overpowered flat cooling perks (Thermal Insulator down to +6% cooling with -10% water drain; Heavy Water down to +15% cooling with -15% ult charge) and capped cooling power multiplier at 2.0x. Added 3 new tactical perks: "Wind Breaker" (-60% solar wind crosshair drift), "Sub-Zero Reserve" (+1 ice blast charge capacity & wave refill), and "Blade Cadence" (+20% Kitsune Blade slash arc & +25% parry refund).
+* Dynamic Perk Roll Ranges & Max Roll Badge: All 12 wave drafting perks now roll within dynamic randomized ranges ([min ~ max]) with proportional trade-off scaling and a glowing golden [ MAX ROLL! ] visual badge for maximum stat rolls.
 
 ### Known Issues (Critical)
 * Fullscreen End-of-Run Dimming: Win ("Cool Down") and Lose ("The Sun Won") screens render at low brightness in fullscreen mode (under active investigation).
@@ -275,6 +276,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 태양 수렴 2페이즈 드론 군체 재출현: 30웨이브 이상 보스전에서 2페이즈 진입 시 적도 드라이버가 폭주 상태로 전환되며, 정예 드론 군체와 황금 방어막이 재배치되어 결전 난이도 강화.
 * 구미호 검 플레어 절단 버그 수정: 근접 베기 및 여우불 참격 투사체에 적중한 태양 플레어가 통과하지 않고 즉시 수류 폭발과 함께 소멸하며 패링 물 환급이 정상 적용되도록 수정.
 * 엔들리스 특성 밸런스 조정 및 신규 특성 3종: 과도했던 냉각력 특성 수치 조정(열 절연체: 냉각력 +6% 및 물 소모 -10%, 중수: 냉각력 +15% 및 궁극기 -15%) 및 냉각력 배율 상한을 2.0배로 제한. 전술적 선택지를 넓히는 신규 특성 3종("바람막이": 태양풍 조준 흔들림 -60%, "극저온 예비탄": 얼음 폭발 최대치 +1회 및 매 웨이브 1회 보충, "검의 운율": 구미호 검 베기 범위 +20% 및 패링 물 환급 +25%) 추가.
+* 무작위 특성 수치 범위 및 최고 수치 배지: 12종의 웨이브 특성이 고유한 수치 범위([최소 ~ 최대]) 내에서 무작위로 결정되며, 페널티 특성은 정비례 스케일링이 적용됩니다. 최대 수치 획득 시 화려한 황금 테두리와 [ 최고 수치! ] 배지가 표시됩니다.
 
 ### 알려진 문제 (Known Issues - Critical)
 * 전체화면 라운드 종료 화면 밝기 저하: 일반 및 무한 모드 모두에서 승리("Cool Down") 및 패배("The Sun Won") 화면이 어둡게 렌더링되는 현상 (원인 추적 중).
