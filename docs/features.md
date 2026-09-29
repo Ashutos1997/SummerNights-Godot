@@ -52,7 +52,7 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 ## 6. Environment & Visuals
 * **Dynamic Ocean:** Procedural Gerstner waves, Voronoi caustics, and subsurface scattering.
 * **Rogue Waves:** Large waves crash on the island, darkening wet sand.
-* **Sky & Atmosphere:** Day/night cycles, parallax depth clouds, starfields, and bloom.
+* **Sky & Atmosphere:** Dynamic sunset-to-twilight transition with Belt of Venus lavender-pink dusk band, luminous aquamarine waterline glow, procedural Milky Way stardust ribbon, periodic shooting stars, crystalline Evening Star (Venus), moonlit silver-cyan rimmed clouds, and temperature-reactive ocean specular reflection.
 * **Coronal Halo & Heat Waves:** Additive coronal glow and heat ripples that breathe, pulse, and extinguish with sun temperature.
 * **Sun Expressions:** Reacts dynamically to hits, crits, charging flares, Catastrom dunks, and equips dedicated Apex Boss expressions (Driver Smirk and Overdrive Fury with forehead coronal crests) during Wave 30+ Solar Convergence.
 * **Low-Poly Seagulls:** Procedural 2-joint wing rig, flight physics, and reactive escape behaviors.

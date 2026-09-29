@@ -33,6 +33,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Golden Drone Shield Combat Feedback: Removed floating "DEFLECTED" 3D text when hitting the Solar Convergence golden shield, keeping visual clarity on the boss and relying on the dedicated bilingual HUD banner notification.
 * Equatorial Solar Driver Model Polish: Redesigned the boss buckle with an iconic 16-ray Sunburst Corona central crest (elongated North/South crown rays, incandescent amber spine conduits, crimson intercardinal rays, and a glowing solar pupil core) flanked by swept aerodynamic solar wing cowls, dual horizontal conduits with bracket clamps, radiator louvers, and lateral drone docking bays.
 * Wave 30 Solar Driver Face Expressions: Added procedural boss face expressions for the Sun when the Equatorial Driver is equipped—including "Driver Smirk" (arrogant Tokusatsu boss smirk with predatory slanted almond eyes, slit pupils, arched demon brows, and a forehead coronal crest) and "Driver Fury" (Phase 2 Overdrive battle grin with wide diamond eyes, clenched teeth, and radiant flare crown) with radiant golden modulate glow.
+* Twilight & Summer Night Sky Overhaul: Revamped low-heat and boss victory skybox aesthetics from a flat blue wash into a multi-tier anime twilight gradient (deep sapphire zenith, Belt of Venus lavender-pink dusk band, and luminous aquamarine horizon waterline glow). Added procedural Summer Milky Way stardust nebula ribbon, periodic shooting star meteors, a brilliant 4-point crystalline Evening Star (Venus), and dynamic moonlit silver-cyan rim lighting on both 2D and 3D drifting clouds (`CloudLayer.gd`), smoothly harmonized with cool twilight volumetric fog, softened directional lighting, and moonlit ocean specular reflections.
 
 ### Fixed
 * Kitsune Blade Heat Mirage Damage: Fixed Kitsune Blade melee slash failing to detect and damage Heat Mirages; slash now detects decoy suns, chunks mirage HP, and triggers reactive flinch and steam particles.
@@ -286,6 +287,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 황금 드론 방어막 타격 피드백 정돈: 태양 수렴 황금 방어막 타격 시 나타나던 "DEFLECTED" 3D 텍스트를 제거하여 시야를 확보하고 전용 다국어 HUD 배너 알림에 집중하도록 개선.
 * 적도 솔라 드라이버 3D 모델 개선: 보스 버클 중앙에 16줄기 3D 태양광 코로나 문장(상하 황금 왕관 광선, 발광 앰버 도관 침, 진홍빛 광선 및 백열 태양 동공 코어)을 신설하고, 좌우 플랭크에 스웹트 솔라 윙 카울, 듀얼 앰버 플라즈마 도관과 클램프 브래킷, 방열 루버 슬롯 및 정밀 드론 도킹 베이를 추가하여 보스전 조형미 강화.
 * 30웨이브 솔라 드라이버 전용 표정 추가: 적도 드라이버 장착 시 태양의 절차적 전용 보스 표정 2종 추가—"드라이버 스머크(Driver Smirk)"(포식자풍 아몬드 슬릿 눈, 아치형 악마 눈썹, 이마 태양관 문장과 오만한 비대칭 미소) 및 "드라이버 퓨리(Driver Fury)"(2페이즈 오버드라이브 광기 어린 다이아몬드 개안, 악문 이빨 그리메이스와 방사형 플레어 왕관) 및 전용 황금 발광 모듈레이트 적용.
+* 황혼 및 '썸머 나이트' 하늘 배경 전면 개편: 태양 냉각 및 체력 소진 시 나타나던 단조로운 파란 하늘을 풍성한 멀티 티어 애니메이션 황혼 그라데이션(심우주 사파이어 천정, 금성의 띠 라벤더 핑크 더스크 밴드, 수평선 아쿠아마린 워터라인 글로우)으로 개편. 절차적 여름 은하수 성간 리본, 주기적인 유성(별똥별), 4방향 결정체 개밥바라기별(금성)을 추가하고, 2D 하늘 및 3D 부유 구름(`CloudLayer.gd`)에 달빛 실버-사이언 림 라이팅을 연동하였으며, 부드러운 박명 안개, 달빛 지향광 및 바다 표면의 은빛 반사광과 완벽하게 조화를 이루도록 개선.
 
 ### 수정됨 (Fixed)
 * 구미호 검 신기루 타격 버그 수정: 구미호 검 근접 베기가 열기 신기루를 타격하지 못하던 현상 수정; 신기루를 조준하여 베었을 때 신기루 체력 게이지가 정상 감소하고 피격 반응 및 이펙트가 발생하도록 개선.

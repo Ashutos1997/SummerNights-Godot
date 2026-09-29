@@ -98,13 +98,29 @@ void sky() {
 	sky_col = mix(bottom, upper, smoothstep(-0.05, 0.1, h));
 
 	// ── Temperature-driven cool shift ───────────────────────────────────
-	// When sun cools (sun_heat → 0) the sky shifts toward deep dusk blue
-	vec3 cool_zenith   = vec3(0.04, 0.06, 0.22);
-	vec3 cool_horizon  = vec3(0.18, 0.35, 0.72);
+	// When sun cools (sun_heat → 0), transition into multi-band twilight "Summer Night"
 	float cool_factor = 1.0 - sun_heat;
-	sky_col = mix(sky_col,
-		mix(cool_horizon, cool_zenith, smoothstep(-0.1, 0.8, h)),
-		cool_factor * 0.7);
+	
+	// Multi-band twilight palette (Belt of Venus + turquoise seafoam afterglow)
+	vec3 cool_ground        = vec3(0.02, 0.02, 0.06); // Deep abyss
+	vec3 cool_horizon       = vec3(0.08, 0.48, 0.65); // Vibrant turquoise/aquamarine sea afterglow
+	vec3 cool_twilight_band = vec3(0.38, 0.18, 0.48); // Dreamy lavender-pink twilight band (Belt of Venus)
+	vec3 cool_mid_sky       = vec3(0.07, 0.15, 0.38); // Deep royal twilight blue
+	vec3 cool_zenith        = vec3(0.02, 0.03, 0.14); // Deep cosmic midnight sapphire
+
+	// Step 1: Ground to turquoise horizon
+	vec3 cool_bottom = mix(cool_ground, cool_horizon, smoothstep(-0.05, 0.06, h));
+	
+	// Step 2: Twilight lavender-rose band just above the horizon (h ~ 0.08 - 0.25)
+	float cool_band_mask = exp(-abs(h - 0.14) * 8.5);
+	vec3 cool_banded = mix(cool_bottom, cool_twilight_band, cool_band_mask * 0.75);
+	
+	// Step 3: Upper hemisphere to mid-sky and zenith
+	vec3 cool_upper = mix(cool_banded, cool_mid_sky, smoothstep(0.08, 0.50, max(h, 0.0)));
+	cool_upper = mix(cool_upper, cool_zenith, smoothstep(0.40, 0.95, max(h, 0.0)));
+	
+	vec3 cool_sky = mix(cool_bottom, cool_upper, smoothstep(-0.05, 0.10, h));
+	sky_col = mix(sky_col, cool_sky, cool_factor * 0.88);
 		
 	// ── Eclipse override ─────────────────────────────────────────────────
 	vec3 eclipse_zenith = vec3(0.02, 0.0, 0.05);
@@ -115,7 +131,30 @@ void sky() {
 
 	// ── Horizon glow ─────────────────────────────────────────────────────
 	float glow_mask = exp(-abs(h) / horizon_glow_size);
-	sky_col += horizon_glow_color.rgb * glow_mask * 0.6 * sun_heat * (1.0 - eclipse_mix);
+	vec3 sunset_glow = horizon_glow_color.rgb * 0.6;
+	vec3 twilight_glow = vec3(0.12, 0.82, 0.92) * 0.45; // Luminous cyan/seafoam waterline glow
+	vec3 active_glow = mix(sunset_glow, twilight_glow, cool_factor);
+	sky_col += active_glow * glow_mask * (1.0 - eclipse_mix);
+
+	// ── Cosmic Nebula / Milky Way Ribbon ─────────────────────────────────
+	if (h > 0.06 && cool_factor > 0.25) {
+		vec3 galaxy_normal = normalize(vec3(0.55, 0.72, 0.42));
+		float galaxy_dist = abs(dot(dir, galaxy_normal));
+		float galaxy_band = smoothstep(0.40, 0.0, galaxy_dist);
+		
+		if (galaxy_band > 0.01) {
+			vec2 galaxy_uv = vec2(dot(dir, vec3(0.7, -0.4, 0.5)), dot(dir, vec3(-0.3, 0.5, 0.7))) * 3.2;
+			float nebula_noise = fbm(galaxy_uv);
+			float nebula_intensity = smoothstep(0.38, 0.72, nebula_noise) * galaxy_band;
+			
+			vec3 nebula_magenta = vec3(0.26, 0.08, 0.36);
+			vec3 nebula_cyan    = vec3(0.06, 0.24, 0.38);
+			vec3 nebula_col = mix(nebula_magenta, nebula_cyan, sin(galaxy_uv.x * 2.2 + TIME * 0.03) * 0.5 + 0.5);
+			
+			float nebula_vis = smoothstep(0.25, 0.80, cool_factor) * (1.0 - eclipse_mix);
+			sky_col += nebula_col * nebula_intensity * nebula_vis * 0.7;
+		}
+	}
 
 	// ── Procedural Stars ─────────────────────────────────────────────────
 	if (h > 0.0) {
@@ -145,15 +184,75 @@ void sky() {
 		float twinkle = sin(TIME * (2.0 + star_noise * 5.0) + star_noise * 100.0) * 0.5 + 0.5;
 		
 		// Map cool_factor (0.0 = hot, 1.0 = cool) so stars are fully visible earlier
-		// At cool_factor 0.6 (Sun 40% heat), stars are fully visible.
-		float star_visibility = clamp(smoothstep(0.2, 0.6, cool_factor) + eclipse_mix, 0.0, 1.0);
+		float star_visibility = clamp(smoothstep(0.15, 0.55, cool_factor) + eclipse_mix, 0.0, 1.0);
 		
-		float star_horizon_fade = smoothstep(0.1, 0.4, h);
+		float star_horizon_fade = smoothstep(0.08, 0.35, h);
 		
 		// Brightness scales with size for massive pop on the big stars
 		float brightness = mix(2.0, 10.0, star_seed);
 		
 		sky_col += star_color * (star_mask * shape) * twinkle * star_visibility * star_horizon_fade * brightness;
+	}
+
+	// ── Prominent Evening Star (Twilight Venus) ─────────────────────────
+	if (h > 0.12 && cool_factor > 0.20) {
+		vec3 venus_dir = normalize(vec3(0.68, 0.32, -0.65));
+		float venus_dist = length(dir - venus_dir);
+		
+		// Brilliant diamond core
+		float venus_core = smoothstep(0.008, 0.001, venus_dist);
+		float venus_halo = smoothstep(0.05, 0.002, venus_dist) * 0.4;
+		
+		// 4-point diffraction cross (sparkle)
+		vec3 d_rel = dir - venus_dir;
+		float cross_x = smoothstep(0.0015, 0.0, abs(d_rel.x)) * smoothstep(0.045, 0.0, abs(d_rel.y));
+		float cross_y = smoothstep(0.0015, 0.0, abs(d_rel.y)) * smoothstep(0.045, 0.0, abs(d_rel.x));
+		float venus_cross = (cross_x + cross_y) * 1.5;
+		
+		float venus_twinkle = sin(TIME * 2.8) * 0.15 + 0.85;
+		vec3 venus_col = vec3(0.88, 0.96, 1.0); // Crystalline white-cyan
+		float venus_vis = smoothstep(0.20, 0.65, cool_factor) * (1.0 - eclipse_mix);
+		
+		sky_col += venus_col * (venus_core * 3.5 + venus_halo + venus_cross) * venus_twinkle * venus_vis;
+	}
+
+	// ── Shooting Stars / Meteors ─────────────────────────────────────────
+	if (h > 0.18 && cool_factor > 0.35) {
+		float meteor_cycle = 4.0;
+		float m_time = TIME / meteor_cycle;
+		float m_id = floor(m_time);
+		float m_phase = fract(m_time);
+		
+		// Meteor streak lasts ~0.7 seconds (0.175 of cycle)
+		float streak_dur = 0.175;
+		if (m_phase < streak_dur) {
+			float t_streak = m_phase / streak_dur; // 0.0 to 1.0 along the path
+			
+			float m_seed = hash(vec2(m_id, 41.13));
+			float m_seed2 = hash(vec2(m_id + 7.3, 89.21));
+			
+			float start_azimuth = m_seed * 6.28318;
+			float start_h = mix(0.40, 0.85, m_seed2);
+			vec3 m_start = normalize(vec3(cos(start_azimuth), start_h, sin(start_azimuth)));
+			
+			vec3 m_delta = normalize(vec3(-sin(start_azimuth + 0.8), -0.65, cos(start_azimuth + 0.8))) * 0.35;
+			vec3 m_head = m_start + m_delta * t_streak;
+			
+			// Line distance on sphere
+			vec3 m_v = dir - m_start;
+			float m_proj = dot(m_v, m_delta) / dot(m_delta, m_delta);
+			m_proj = clamp(m_proj, max(0.0, t_streak - 0.40), t_streak);
+			vec3 m_closest = m_start + m_delta * m_proj;
+			float m_dist = length(dir - m_closest);
+			
+			float m_line = smoothstep(0.005, 0.0006, m_dist);
+			float tail_fade = smoothstep(max(0.0, t_streak - 0.40), t_streak, m_proj);
+			float head_glow = smoothstep(0.02, 0.0, length(dir - m_head)) * 2.0;
+			
+			vec3 meteor_color = mix(vec3(0.5, 0.85, 1.0), vec3(1.0, 0.95, 0.8), tail_fade);
+			float meteor_vis = smoothstep(0.35, 0.8, cool_factor) * (1.0 - eclipse_mix);
+			sky_col += meteor_color * (m_line * tail_fade * 4.0 + head_glow) * meteor_vis;
+		}
 	}
 
 	// ── Animated clouds (Parallax) ────────────────────────────────────────
@@ -180,7 +279,13 @@ void sky() {
 		float bg_cloud_mask = smoothstep(cloud_coverage + 0.1, cloud_coverage + 0.1 + (1.0 / cloud_sharpness), bg_noise) * altitude_fade;
 		float bg_lit = smoothstep(0.45, 0.75, bg_noise);
 		vec3 bg_cloud_col = mix(cloud_color_shadow.rgb * 0.7, cloud_color_lit.rgb * 0.8, bg_lit);
-		bg_cloud_col = mix(bg_cloud_col, vec3(0.2, 0.25, 0.45), cool_factor * 0.5);
+		
+		// Cool night clouds: deep indigo silhouettes with silver/cyan lit rims
+		vec3 bg_cool_shadow = vec3(0.05, 0.06, 0.15);
+		vec3 bg_cool_lit    = vec3(0.45, 0.65, 0.88);
+		vec3 bg_cool_col    = mix(bg_cool_shadow, bg_cool_lit, bg_lit);
+		bg_cloud_col = mix(bg_cloud_col, bg_cool_col, cool_factor * 0.82);
+
 		vec3 bg_eclipse_cloud = mix(vec3(0.005, 0.0, 0.02), vec3(0.05, 0.01, 0.1), bg_lit);
 		bg_cloud_col = mix(bg_cloud_col, bg_eclipse_cloud, eclipse_mix);
 		
@@ -190,7 +295,12 @@ void sky() {
 		float fg_cloud_mask = smoothstep(cloud_coverage, cloud_coverage + (1.0 / cloud_sharpness), fg_noise) * altitude_fade;
 		float fg_lit = smoothstep(0.45, 0.75, fg_noise);
 		vec3 fg_cloud_col = mix(cloud_color_shadow.rgb, cloud_color_lit.rgb, fg_lit);
-		fg_cloud_col = mix(fg_cloud_col, vec3(0.25, 0.3, 0.55), cool_factor * 0.5);
+		
+		vec3 fg_cool_shadow = vec3(0.06, 0.08, 0.18); // Deep plum/indigo silhouette
+		vec3 fg_cool_lit    = vec3(0.60, 0.78, 0.98); // Brilliant silver/moonlit rim
+		vec3 fg_cool_col    = mix(fg_cool_shadow, fg_cool_lit, fg_lit);
+		fg_cloud_col = mix(fg_cloud_col, fg_cool_col, cool_factor * 0.85);
+
 		vec3 fg_eclipse_cloud = mix(vec3(0.01, 0.0, 0.05), vec3(0.1, 0.02, 0.2), fg_lit);
 		fg_cloud_col = mix(fg_cloud_col, fg_eclipse_cloud, eclipse_mix);
 

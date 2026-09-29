@@ -1927,6 +1927,7 @@ func _build_environment() -> void:
 	water_mat.set_shader_parameter("pulse_curl", 0.0)
 	water_mat.set_shader_parameter("bg_wave_offset", -1000.0)
 	water_mat.set_shader_parameter("bg_pulse_height", 0.0)
+	water_mat.set_shader_parameter("sun_heat", 1.0)
 	
 	water_mesh.material = water_mat
 	var water = MeshInstance3D.new()
@@ -3965,11 +3966,18 @@ func _update_sky(instant: bool) -> void:
 	if haze_mat:
 		haze_mat.set_shader_parameter("heat_ratio", ratio)
 		
-	# Weather Overrides (Smoothly blended)
-	var base_amb = Color(0.75, 0.65, 0.6)
-	var base_dir = Color(1.0, 0.75, 0.35)
-	var base_sand_emission = 0.15 # Warm sunset glow
-	var base_sand_color = Color(0.95, 0.88, 0.75)
+	# Dynamic cool transition factor
+	var cool_ratio = 1.0 - ratio
+	
+	# Drive water shader sun_heat uniform
+	if water_mat and water_mat is ShaderMaterial:
+		water_mat.set_shader_parameter("sun_heat", ratio)
+
+	# Weather Overrides (Smoothly blended from dynamic heat base)
+	var base_amb = Color(0.75, 0.65, 0.6).lerp(Color(0.40, 0.46, 0.68), cool_ratio * 0.70)
+	var base_dir = Color(1.0, 0.75, 0.35).lerp(Color(0.68, 0.82, 1.0), cool_ratio * 0.75)
+	var base_sand_emission = lerpf(0.15, 0.05, cool_ratio) # Dim sunset glow into gentle twilight ambient
+	var base_sand_color = Color(0.95, 0.88, 0.75).lerp(Color(0.82, 0.80, 0.88), cool_ratio * 0.35)
 	
 	var target_amb = base_amb
 	var target_dir = base_dir
@@ -3990,10 +3998,14 @@ func _update_sky(instant: bool) -> void:
 	if world_env and world_env.environment:
 		var env = world_env.environment
 		env.ambient_light_color = base_amb.lerp(target_amb, weather_blend)
-		env.volumetric_fog_albedo = Color(0.9, 0.6, 0.3)
+		var sunset_fog = Color(0.9, 0.6, 0.3)
+		var twilight_fog = Color(0.22, 0.36, 0.60)
+		var base_fog = sunset_fog.lerp(twilight_fog, cool_ratio * 0.85)
+		env.volumetric_fog_albedo = base_fog.lerp(target_amb, weather_blend)
 		
 	if dir_light:
 		dir_light.light_color = base_dir.lerp(target_dir, weather_blend)
+		dir_light.light_energy = lerpf(1.35, 0.90, cool_ratio * 0.45)
 		
 	if ground_mat:
 		var current_emission_col = base_sand_color.lerp(target_sand_color, weather_blend)
@@ -4009,8 +4021,11 @@ func _update_sky(instant: bool) -> void:
 		ground_mat.emission_energy_multiplier = lerp(current_emission_energy, 0.0, sand_wetness)
 
 	var clouds_node = get_node_or_null("CloudLayer")
-	if clouds_node and clouds_node.has_method("set_weather_blend"):
-		clouds_node.set_weather_blend(active_weather, weather_blend)
+	if clouds_node:
+		if clouds_node.has_method("set_weather_blend"):
+			clouds_node.set_weather_blend(active_weather, weather_blend)
+		if clouds_node.has_method("set_sun_heat"):
+			clouds_node.set_sun_heat(ratio)
 
 	# Sun visual phases (Middle states)
 	var sun_base_albedo = Color.WHITE

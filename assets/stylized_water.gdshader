@@ -39,6 +39,9 @@ uniform float bg_wave_offset = -1000.0;
 uniform float bg_pulse_width : hint_range(0.1, 50.0, 0.1) = 15.0;
 uniform float bg_pulse_height : hint_range(0.0, 15.0, 0.1) = 0.0;
 
+// ── Temperature-driven reflection ──────────────────────────────────────────
+uniform float sun_heat : hint_range(0.0, 1.0, 0.01) = 1.0;
+
 varying float pulse_mask;
 varying float bg_pulse_mask;
 varying float wave_height_factor; // Passed to fragment for fake SSS
@@ -173,7 +176,9 @@ void fragment() {
 	
 	// ── Toon specular reflection (Toon mode) ─────────────────────────────────
 	float fresnel = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), 3.0);
-	vec3 reflection_col = vec3(0.98, 0.72, 0.35); // Warm sunset reflection
+	vec3 sunset_refl  = vec3(0.98, 0.72, 0.35); // Warm sunset reflection
+	vec3 moonlit_refl = vec3(0.38, 0.78, 0.95); // Sparkling moonlit silver-cyan reflection
+	vec3 reflection_col = mix(moonlit_refl, sunset_refl, sun_heat);
 	float dist_fade = smoothstep(150.0, 50.0, -VERTEX.z);
 	final_color = mix(final_color, reflection_col, fresnel * 0.45 * dist_fade);
 	

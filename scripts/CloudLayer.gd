@@ -26,9 +26,13 @@ func _ready() -> void:
 	_spawn_clouds()
 
 var target_weather: String = "none"
+var sun_heat_ratio: float = 1.0
 
 func set_weather_blend(weather_type: String, blend: float) -> void:
 	target_weather = weather_type
+
+func set_sun_heat(ratio: float) -> void:
+	sun_heat_ratio = clamp(ratio, 0.0, 1.0)
 
 func _spawn_clouds() -> void:
 	var rng = RandomNumberGenerator.new()
@@ -121,9 +125,16 @@ func _process(delta: float) -> void:
 			)
 
 	# Smooth color transitions
-	var target_albedo = Color(1.0, 0.84, 0.58, 0.95)
-	var target_emission = Color(0.9, 0.48, 0.15)
-	var target_emission_energy = 0.45
+	var cool_t = 1.0 - sun_heat_ratio
+	# Sunset: warm golden peach; Twilight/Night: deep twilight with moonlit silver-cyan rim
+	var sunset_albedo = Color(1.0, 0.84, 0.58, 0.95)
+	var twilight_albedo = Color(0.24, 0.32, 0.52, 0.95)
+	var target_albedo = sunset_albedo.lerp(twilight_albedo, cool_t * 0.85)
+
+	var sunset_emission = Color(0.9, 0.48, 0.15)
+	var twilight_emission = Color(0.42, 0.75, 0.95) # Moonlit silver-cyan rim
+	var target_emission = sunset_emission.lerp(twilight_emission, cool_t * 0.90)
+	var target_emission_energy = lerpf(0.45, 0.28, cool_t)
 	
 	if target_weather == "rain":
 		target_albedo = Color(0.3, 0.35, 0.4, 0.95) # Dark greyish blue
@@ -134,6 +145,6 @@ func _process(delta: float) -> void:
 		target_emission = Color(0.2, 0.0, 0.4)
 		target_emission_energy = 0.2
 		
-	cloud_mat.albedo_color = cloud_mat.albedo_color.lerp(target_albedo, delta * 1.5)
-	cloud_mat.emission = cloud_mat.emission.lerp(target_emission, delta * 1.5)
-	cloud_mat.emission_energy_multiplier = lerp(cloud_mat.emission_energy_multiplier, target_emission_energy, delta * 1.5)
+	cloud_mat.albedo_color = cloud_mat.albedo_color.lerp(target_albedo, delta * 2.0)
+	cloud_mat.emission = cloud_mat.emission.lerp(target_emission, delta * 2.0)
+	cloud_mat.emission_energy_multiplier = lerp(cloud_mat.emission_energy_multiplier, target_emission_energy, delta * 2.0)
