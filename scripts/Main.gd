@@ -974,7 +974,7 @@ func _ready() -> void:
 	phase2_triggered = false
 	if GameState.is_survival_mode and GameState.current_wave % 5 == 0:
 		is_two_phase = true
-		phase2_heat = min(150.0, 80.0 + (GameState.current_wave * 5.0))
+		phase2_heat = min(95.0, 60.0 + (GameState.current_wave * 1.0))
 	
 	solar_wind_enabled = cfg.get("solar_wind", false)
 	wind_state = 0
@@ -1211,16 +1211,16 @@ func _on_title_start_game(is_survival: bool) -> void:
 	cam_tw.tween_property(camera, "fov", 75.0, 0.6).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
 	
 	if GameState.is_survival_mode and GameState.current_wave > 1:
-		heat_regen_base = min(45.0, 2.5 + (GameState.current_wave * 0.85))
+		heat_regen_base = min(26.0, 2.5 + (GameState.current_wave * 0.45))
 		sun_figure8 = GameState.current_wave >= 3
 		solar_wind_enabled = GameState.current_wave >= 4
-		flare_spawn_timer = min(flare_spawn_timer, max(2.5, 8.0 - (GameState.current_wave * 0.5)))
-		sun_sway_amplitude = min(12.0, 3.0 + (GameState.current_wave * 0.6))
-		sun_sway_speed = min(1.2, 0.5 + (GameState.current_wave * 0.2))
-		wind_level_mult = min(2.5, 1.0 + (GameState.current_wave - 4) * 0.15)
+		flare_spawn_timer = min(flare_spawn_timer, max(4.0, 8.0 - (GameState.current_wave * 0.25)))
+		sun_sway_amplitude = min(8.0, 3.0 + (GameState.current_wave * 0.6))
+		sun_sway_speed = min(1.3, 0.5 + (GameState.current_wave * 0.05))
+		wind_level_mult = min(1.75, 1.0 + (GameState.current_wave - 4) * 0.08)
 		if GameState.current_wave % 5 == 0:
 			is_two_phase = true
-			phase2_heat = min(150.0, 80.0 + (GameState.current_wave * 5.0))
+			phase2_heat = min(95.0, 60.0 + (GameState.current_wave * 1.0))
 	if GameState.is_survival_mode and hud:
 		hud.update_ice_charges(GameState.ice_charges_remaining, max_survival_ice_charges + GameState.bonus_ice_charges)
 		if GameState.current_wave < 2 and GameState.ice_charges_remaining <= 0:
@@ -2346,9 +2346,9 @@ func _process(delta: float) -> void:
 				sun_shield_mesh.visible = false
 				sun_shield_mesh.scale = Vector3.ONE
 
-		# Standard Boss Wave Cyan Shield (only when not in drone fight)
+		# Standard Boss Wave Cyan Shield (only on pre-Wave 30 boss encounters; Wave 30+ features Solar Driver & Drones)
 		var is_boss_wave = (GameState.current_wave % 5 == 0)
-		if GameState.is_survival_mode and GameState.current_wave >= 15 and is_boss_wave:
+		if GameState.is_survival_mode and GameState.current_wave >= 15 and is_boss_wave and GameState.current_wave < 30:
 			if not is_sun_shielded:
 				sun_shield_cooldown -= delta
 				if sun_shield_cooldown <= 0.0:
@@ -2463,10 +2463,10 @@ func _process(delta: float) -> void:
 			if wave_timer < 10.0:
 				heat_regen_base = 2.0 # The Release
 			else:
-				heat_regen_base = min(45.0, 2.5 + (GameState.current_wave * 0.85)) # The Tension (Capped at Wave 50 max)
+				heat_regen_base = min(26.0, 2.5 + (GameState.current_wave * 0.45)) # Balanced Tension (smooth curve capped at 26.0)
 			
 			if is_two_phase and phase2_triggered:
-				heat_regen_base *= 1.2 # The Boss Phase is aggressive but beatable with base gun
+				heat_regen_base *= 1.15 # The Boss Phase is aggressive but beatable
 
 		
 		if not is_wheel_open:
@@ -4297,10 +4297,10 @@ func _check_sun_defeat() -> void:
 		sun_figure8 = GameState.current_wave >= 3
 		var prev_solar_wind = solar_wind_enabled
 		solar_wind_enabled = GameState.current_wave >= 4
-		flare_spawn_timer = min(flare_spawn_timer, max(2.5, 8.0 - (GameState.current_wave * 0.5)))
+		flare_spawn_timer = min(flare_spawn_timer, max(4.0, 8.0 - (GameState.current_wave * 0.25)))
 		
 		sun_sway_amplitude = min(8.0, GameState.current_wave * 1.5)
-		sun_sway_speed = min(2.0, 0.5 + GameState.current_wave * 0.2)
+		sun_sway_speed = min(1.3, 0.5 + GameState.current_wave * 0.05)
 		
 		# Prepare next boss wave
 		if GameState.current_wave % 5 == 0:
@@ -4309,7 +4309,7 @@ func _check_sun_defeat() -> void:
 			phase2_heat = min(95.0, 60.0 + (GameState.current_wave * 1.0)) # Wave 30 is 90 HP (down from 150)
 			sun_shield_cooldown = 2.5 # Initial delay before shield deploys on boss wave
 			if GameState.current_wave >= 30 and solar_convergence_mgr:
-				var d_count = 6 if GameState.current_wave < 40 else 8
+				var d_count = 6 if GameState.current_wave < 40 else 7
 				solar_convergence_mgr.start_orbital_swarm(d_count, GameState.current_wave)
 		else:
 			is_two_phase = false
@@ -4322,7 +4322,7 @@ func _check_sun_defeat() -> void:
 				solar_convergence_mgr.clear_drones()
 				solar_convergence_mgr.remove_solar_driver(true)
 		
-		wind_level_mult = min(2.5, 1.0 + (GameState.current_wave - 4) * 0.15)
+		wind_level_mult = min(1.75, 1.0 + (GameState.current_wave - 4) * 0.08)
 		if solar_wind_enabled and not prev_solar_wind:
 			wind_state = 0
 			wind_timer = randf_range(4.0, 7.0)
@@ -4335,7 +4335,9 @@ func _check_sun_defeat() -> void:
 		
 		temperature = MAX_TEMP
 		heat_changed.emit(temperature, MAX_TEMP)
-		level_timer = min(120.0, 60.0 + (level_timer * 0.5)) # Bank 50% of remaining time
+		var base_time = 75.0 if (GameState.current_wave >= 30 and GameState.current_wave % 5 == 0) else 60.0
+		var max_time = 135.0 if (GameState.current_wave >= 30 and GameState.current_wave % 5 == 0) else 120.0
+		level_timer = min(max_time, base_time + (level_timer * 0.5)) # Bank 50% of remaining time, extra breathing room on apex boss waves
 		wave_timer = 0.0
 		is_catastrom_active = false
 		_end_mirage()
@@ -4777,8 +4779,8 @@ func _trigger_phase2() -> void:
 	heat_changed.emit(temperature, MAX_TEMP)
 	phase2_started.emit()
 	
-	sun_sway_speed *= 1.3
-	sun_sway_amplitude *= 1.2
+	sun_sway_speed = min(1.5, sun_sway_speed * 1.2)
+	sun_sway_amplitude = min(10.0, sun_sway_amplitude * 1.15)
 	
 	# Visual flare — spike emission briefly
 	if is_instance_valid(sun_hit_tween):

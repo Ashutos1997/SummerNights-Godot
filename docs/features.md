@@ -37,10 +37,10 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 * **Perk Rarities:** Common (weight 70–100), Uncommon (weight 60), and Rare (Cyan/Blue badge & border, weight 20: Gravity Anchor, Thermal Insulator, Heavy Water).
 
 ## 4. Sun Mechanics & Threats
-* **Dynamic Movement:** Sun sways horizontally, scaling up to complex Figure-8 patterns on high waves.
+* **Dynamic Movement:** Sun sways horizontally, scaling up to complex Figure-8 patterns on high waves (sway speed capped at 1.3–1.5 for trackable combat).
 * **Sunspots:** Glowing critical weakpoints that award bonus cooling and points.
-* **Solar Flare Shield:** Endless Boss Waves (15+). Emissive energy barrier blocking water. Shattered with Ice Blast (`[R]`).
-* **Solar Wind:** Physical crosswind pushing player crosshair.
+* **Solar Flare Shield:** Endless Boss Waves (15–25). Emissive cyan energy barrier blocking water until shattered with Ice Blast (`[R]`). On Wave 30+, replaced by the Equatorial Solar Driver & Golden Drone Shield.
+* **Solar Wind:** Physical crosswind pushing player crosshair (drift intensity capped at 1.75x).
 * **Heat Mirage (Boss):** Spawns two decoy suns and a collective overshield.
 * **High Heat Warnings:** Steam boils at 75% heat; screen pulses red and heartbeat audio plays at 85%.
 * **Supernova:** Reaching 100% heat triggers a supernova cinematic and frameless stats recap.
