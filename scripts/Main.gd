@@ -2654,9 +2654,10 @@ func _process(delta: float) -> void:
 		else:
 			if high_heat_steam.emitting: high_heat_steam.emitting = false
 	
-	# Heat Regeneration
+	# Heat Regeneration (halved while Golden Drone Shield is actively protecting the Sun)
 	if temperature < MAX_TEMP and not is_sun_frozen and active_weather != "eclipse":
-		temperature += (heat_regen_base * (1.0 - GameState.heat_resistance)) * delta # Sun gets hotter over time
+		var drone_shield_throttle = 0.5 if is_drone_shield_active else 1.0
+		temperature += (heat_regen_base * drone_shield_throttle * (1.0 - GameState.heat_resistance)) * delta # Sun gets hotter over time
 		
 	_update_sky(false)
 	
@@ -4305,7 +4306,7 @@ func _check_sun_defeat() -> void:
 		if GameState.current_wave % 5 == 0:
 			is_two_phase = true
 			phase2_triggered = false
-			phase2_heat = min(150.0, 80.0 + (GameState.current_wave * 5.0))
+			phase2_heat = min(95.0, 60.0 + (GameState.current_wave * 1.0)) # Wave 30 is 90 HP (down from 150)
 			sun_shield_cooldown = 2.5 # Initial delay before shield deploys on boss wave
 			if GameState.current_wave >= 30 and solar_convergence_mgr:
 				var d_count = 6 if GameState.current_wave < 40 else 8
@@ -4788,7 +4789,7 @@ func _trigger_phase2() -> void:
 	
 	# Wave 30+ Solar Convergence Phase 2 Swarm Re-engagement
 	if GameState.current_wave >= 30 and solar_convergence_mgr:
-		var d_count = 6 if GameState.current_wave < 40 else 8
+		var d_count = 4 if GameState.current_wave < 40 else 5 # Leaner, punchier Phase 2 Overdrive escort
 		solar_convergence_mgr.start_orbital_swarm(d_count, GameState.current_wave, true)
 		if hud and hud.has_method("show_toast"):
 			var is_kr = GameState.language == "KR"
@@ -4853,6 +4854,16 @@ func _on_solar_drone_destroyed(pos: Vector3) -> void:
 	var refund = MAX_WATER * 0.15
 	water_tank = min(MAX_WATER, water_tank + refund)
 	water_changed.emit(water_tank, MAX_WATER)
+	
+	# Tactical Power Up Charge Refund (+5% charge)
+	if GameState.current_weapon_id == "kitsune":
+		if not is_celestial_awakened:
+			GameState.celestial_charge = min(1.0, GameState.celestial_charge + (0.05 * catastrom_buff * GameState.catastrom_charge_mult))
+	else:
+		var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
+		if can_catastrom:
+			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (0.05 * catastrom_buff * GameState.catastrom_charge_mult))
+
 	_spawn_damage_number(25.0, false, pos)
 
 func _on_solar_drone_ice_shattered(pos: Vector3) -> void:
@@ -4862,11 +4873,21 @@ func _on_solar_drone_ice_shattered(pos: Vector3) -> void:
 	var refund = MAX_WATER * 0.20
 	water_tank = min(MAX_WATER, water_tank + refund)
 	water_changed.emit(water_tank, MAX_WATER)
+	
+	# Cryo-Fracture Power Up Charge Refund (+8% charge)
+	if GameState.current_weapon_id == "kitsune":
+		if not is_celestial_awakened:
+			GameState.celestial_charge = min(1.0, GameState.celestial_charge + (0.08 * catastrom_buff * GameState.catastrom_charge_mult))
+	else:
+		var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
+		if can_catastrom:
+			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (0.08 * catastrom_buff * GameState.catastrom_charge_mult))
+
 	_spawn_damage_number(50.0, true, pos)
 	if hud and hud.has_method("show_toast"):
 		var is_kr = GameState.language == "KR"
 		var title = "냉기 분쇄!" if is_kr else "ICE SHATTER!"
-		var desc = "+500점 · 궤도 드론 결빙 파괴 (+20% 물)" if is_kr else "+500 PTS · DRONE SHATTERED (+20% WATER)"
+		var desc = "+500점 · 궤도 드론 결빙 파괴 (+20% 물, +8% 필살기)" if is_kr else "+500 PTS · DRONE SHATTERED (+20% WATER, +8% ULT)"
 		hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(0.35, 0.95, 1.0))
 
 func start_celestial_awakening(duration: float = 15.0) -> void:

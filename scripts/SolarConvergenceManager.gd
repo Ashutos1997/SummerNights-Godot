@@ -290,10 +290,10 @@ func _create_drone(index: int, total: int, wave: int = 1, is_phase2: bool = fals
 		rz + sin(init_t * 1.6 + index) * 0.4
 	)
 
-	# Dynamic wave-scaled HP (Wave 1: 38.5 HP | Wave 20: 105 HP | Wave 30: 140 HP)
-	var calculated_hp = 35.0 + (wave * 3.5)
+	# Dynamic wave-scaled HP (Wave 1: 26.3 HP | Wave 20: 51 HP | Wave 30: 64 HP | Wave 30 P2: 44.8 HP)
+	var calculated_hp = 25.0 + (wave * 1.3)
 	if is_phase2:
-		calculated_hp *= 0.85
+		calculated_hp *= 0.70 # Fast, brittle Overdrive escort
 
 	# Dynamic Crack Fracture Overlay Meshes
 	var mesh_minor = _build_crack_mesh(index, false)
