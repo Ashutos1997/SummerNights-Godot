@@ -32,6 +32,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Kitsune Buster Barrel Symmetry: Symmetrized top and bottom barrel assemblies with matching pearl-white trays, dual coolant conduits, gold brackets, and aerodynamic cowls, removing floating front sight geometry.
 * Golden Drone Shield Combat Feedback: Removed floating "DEFLECTED" 3D text when hitting the Solar Convergence golden shield, keeping visual clarity on the boss and relying on the dedicated bilingual HUD banner notification.
 * Equatorial Solar Driver Model Polish: Redesigned the boss buckle with an iconic 16-ray Sunburst Corona central crest (elongated North/South crown rays, incandescent amber spine conduits, crimson intercardinal rays, and a glowing solar pupil core) flanked by swept aerodynamic solar wing cowls, dual horizontal conduits with bracket clamps, radiator louvers, and lateral drone docking bays.
+* Wave 30 Solar Driver Face Expressions: Added procedural boss face expressions for the Sun when the Equatorial Driver is equipped—including "Driver Smirk" (arrogant Tokusatsu boss smirk with predatory slanted almond eyes, slit pupils, arched demon brows, and a forehead coronal crest) and "Driver Fury" (Phase 2 Overdrive battle grin with wide diamond eyes, clenched teeth, and radiant flare crown) with radiant golden modulate glow.
 
 ### Fixed
 * Kitsune Blade Heat Mirage Damage: Fixed Kitsune Blade melee slash failing to detect and damage Heat Mirages; slash now detects decoy suns, chunks mirage HP, and triggers reactive flinch and steam particles.
@@ -284,6 +285,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 구미호 버스터 총열 상하 대칭화: 상단 총열과 하단 언더트레이의 외형을 펄 화이트 트레이, 듀얼 냉각 도관, 골드 브래킷 및 테이퍼드 카울로 대칭 일치시키고 공중에 떠 있던 가늠쇠 블록을 제거.
 * 황금 드론 방어막 타격 피드백 정돈: 태양 수렴 황금 방어막 타격 시 나타나던 "DEFLECTED" 3D 텍스트를 제거하여 시야를 확보하고 전용 다국어 HUD 배너 알림에 집중하도록 개선.
 * 적도 솔라 드라이버 3D 모델 개선: 보스 버클 중앙에 16줄기 3D 태양광 코로나 문장(상하 황금 왕관 광선, 발광 앰버 도관 침, 진홍빛 광선 및 백열 태양 동공 코어)을 신설하고, 좌우 플랭크에 스웹트 솔라 윙 카울, 듀얼 앰버 플라즈마 도관과 클램프 브래킷, 방열 루버 슬롯 및 정밀 드론 도킹 베이를 추가하여 보스전 조형미 강화.
+* 30웨이브 솔라 드라이버 전용 표정 추가: 적도 드라이버 장착 시 태양의 절차적 전용 보스 표정 2종 추가—"드라이버 스머크(Driver Smirk)"(포식자풍 아몬드 슬릿 눈, 아치형 악마 눈썹, 이마 태양관 문장과 오만한 비대칭 미소) 및 "드라이버 퓨리(Driver Fury)"(2페이즈 오버드라이브 광기 어린 다이아몬드 개안, 악문 이빨 그리메이스와 방사형 플레어 왕관) 및 전용 황금 발광 모듈레이트 적용.
 
 ### 수정됨 (Fixed)
 * 구미호 검 신기루 타격 버그 수정: 구미호 검 근접 베기가 열기 신기루를 타격하지 못하던 현상 수정; 신기루를 조준하여 베었을 때 신기루 체력 게이지가 정상 감소하고 피격 반응 및 이펙트가 발생하도록 개선.

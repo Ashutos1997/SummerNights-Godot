@@ -1606,15 +1606,17 @@ func _build_scene() -> void:
 	sun_face = face_sprite
 	
 	face_textures = {
-		"angry":     _draw_face("angry"),
-		"annoyed":   _draw_face("annoyed"),
-		"neutral":   _draw_face("neutral"),
-		"happy":     _draw_face("happy"),
-		"dizzy":     _draw_face("dizzy"),
-		"wince":     _draw_face("wince"),
-		"crit_pain": _draw_face("crit_pain"),
-		"charging":  _draw_face("charging"),
-		"dread":     _draw_face("dread"),
+		"angry":        _draw_face("angry"),
+		"annoyed":      _draw_face("annoyed"),
+		"neutral":      _draw_face("neutral"),
+		"happy":        _draw_face("happy"),
+		"dizzy":        _draw_face("dizzy"),
+		"wince":        _draw_face("wince"),
+		"crit_pain":    _draw_face("crit_pain"),
+		"charging":     _draw_face("charging"),
+		"dread":        _draw_face("dread"),
+		"driver_smirk": _draw_face("driver_smirk"),
+		"driver_fury":  _draw_face("driver_fury"),
 	}
 	sun_face.texture = face_textures["angry"]
 	
@@ -3313,15 +3315,17 @@ func _draw_face(expression: String) -> ImageTexture:
 	var cx = FACE_SIZE / 2
 	var cy = FACE_SIZE / 2
 	match expression:
-		"angry":     _draw_angry(img, cx, cy)
-		"annoyed":   _draw_annoyed(img, cx, cy)
-		"neutral":   _draw_neutral(img, cx, cy)
-		"happy":     _draw_happy(img, cx, cy)
-		"dizzy":     _draw_dizzy(img, cx, cy)
-		"wince":     _draw_wince(img, cx, cy)
-		"crit_pain": _draw_crit_pain(img, cx, cy)
-		"charging":  _draw_charging(img, cx, cy)
-		"dread":     _draw_dread(img, cx, cy)
+		"angry":        _draw_angry(img, cx, cy)
+		"annoyed":      _draw_annoyed(img, cx, cy)
+		"neutral":      _draw_neutral(img, cx, cy)
+		"happy":        _draw_happy(img, cx, cy)
+		"dizzy":        _draw_dizzy(img, cx, cy)
+		"wince":        _draw_wince(img, cx, cy)
+		"crit_pain":    _draw_crit_pain(img, cx, cy)
+		"charging":     _draw_charging(img, cx, cy)
+		"dread":        _draw_dread(img, cx, cy)
+		"driver_smirk": _draw_driver_smirk(img, cx, cy)
+		"driver_fury":  _draw_driver_fury(img, cx, cy)
 		
 	# Add the dark orange outer stroke procedurally
 	_add_outline_to_image(img, 4, Color(0.6, 0.2, 0.0, 1.0))
@@ -3512,20 +3516,145 @@ func _draw_dread(img: Image, cx: int, cy: int):
 	_draw_circle_on_image(img, cx, cy + 24, 12, FACE_COLOR)
 	_draw_circle_on_image(img, cx, cy + 24, 5, Color(0, 0, 0, 0))
 
+func _draw_polygon_on_image(img: Image, pts: PackedVector2Array, color: Color) -> void:
+	if pts.size() < 3: return
+	var min_x = FACE_SIZE
+	var max_x = 0
+	var min_y = FACE_SIZE
+	var max_y = 0
+	for p in pts:
+		min_x = mini(min_x, int(p.x))
+		max_x = maxi(max_x, int(p.x))
+		min_y = mini(min_y, int(p.y))
+		max_y = maxi(max_y, int(p.y))
+	min_x = clampi(min_x, 0, FACE_SIZE - 1)
+	max_x = clampi(max_x, 0, FACE_SIZE - 1)
+	min_y = clampi(min_y, 0, FACE_SIZE - 1)
+	max_y = clampi(max_y, 0, FACE_SIZE - 1)
+	for y in range(min_y, max_y + 1):
+		for x in range(min_x, max_x + 1):
+			if Geometry2D.is_point_in_polygon(Vector2(x, y), pts):
+				img.set_pixel(x, y, color)
+
+func _draw_driver_smirk(img: Image, cx: int, cy: int) -> void:
+	# 1. Menacing, predatory kitsune/boss eyes (angled almond shape slanted inward)
+	var pts_l = PackedVector2Array([
+		Vector2(cx - 36, cy - 8),  # outer upper peak
+		Vector2(cx - 16, cy + 1),  # inner corner (slanted down)
+		Vector2(cx - 22, cy + 7),  # inner lower
+		Vector2(cx - 36, cy + 2)   # outer lower
+	])
+	_draw_polygon_on_image(img, pts_l, FACE_COLOR)
+	
+	var pts_r = PackedVector2Array([
+		Vector2(cx + 36, cy - 8),  # outer upper peak
+		Vector2(cx + 16, cy + 1),  # inner corner
+		Vector2(cx + 22, cy + 7),  # inner lower
+		Vector2(cx + 36, cy + 2)   # outer lower
+	])
+	_draw_polygon_on_image(img, pts_r, FACE_COLOR)
+	
+	# Sharp piercing slit pupil cutouts
+	_draw_line_on_image(img, cx - 26, cy - 4, cx - 26, cy + 4, 3, Color(0, 0, 0, 0))
+	_draw_line_on_image(img, cx + 26, cy - 4, cx + 26, cy + 4, 3, Color(0, 0, 0, 0))
+	
+	# 2. Sleek, arched demon eyebrows (placed high at cy - 25 to cy - 16)
+	_draw_line_on_image(img, cx - 40, cy - 25, cx - 14, cy - 16, 7, FACE_COLOR)
+	_draw_line_on_image(img, cx + 40, cy - 25, cx + 14, cy - 16, 7, FACE_COLOR)
+	# Inner brow downward notch
+	_draw_line_on_image(img, cx - 14, cy - 16, cx - 14, cy - 11, 5, FACE_COLOR)
+	_draw_line_on_image(img, cx + 14, cy - 16, cx + 14, cy - 11, 5, FACE_COLOR)
+	
+	# 3. Smooth, arrogant villain smirk (confident upturn on right side)
+	_draw_line_on_image(img, cx - 16, cy + 27, cx - 2, cy + 28, 6, FACE_COLOR)
+	_draw_line_on_image(img, cx - 2, cy + 28, cx + 12, cy + 25, 6, FACE_COLOR)
+	_draw_line_on_image(img, cx + 12, cy + 25, cx + 22, cy + 18, 6, FACE_COLOR)
+	_draw_line_on_image(img, cx + 21, cy + 18, cx + 24, cy + 14, 4, FACE_COLOR)
+	
+	# 4. Forehead Solar Crest Emblem (matching the 16-ray Driver Corona!)
+	var pts_crest = PackedVector2Array([
+		Vector2(cx, cy - 43),
+		Vector2(cx + 6, cy - 32),
+		Vector2(cx, cy - 21),
+		Vector2(cx - 6, cy - 32)
+	])
+	_draw_polygon_on_image(img, pts_crest, FACE_COLOR)
+	# Radiant crown needles radiating left/right
+	_draw_line_on_image(img, cx - 7, cy - 32, cx - 16, cy - 38, 4, FACE_COLOR)
+	_draw_line_on_image(img, cx + 7, cy - 32, cx + 16, cy - 38, 4, FACE_COLOR)
+
+func _draw_driver_fury(img: Image, cx: int, cy: int) -> void:
+	# 1. Burning wide angled eyes with diamond core
+	var pts_l = PackedVector2Array([
+		Vector2(cx - 38, cy - 4),
+		Vector2(cx - 24, cy - 12),
+		Vector2(cx - 14, cy + 2),
+		Vector2(cx - 24, cy + 8)
+	])
+	_draw_polygon_on_image(img, pts_l, FACE_COLOR)
+	
+	var pts_r = PackedVector2Array([
+		Vector2(cx + 38, cy - 4),
+		Vector2(cx + 24, cy - 12),
+		Vector2(cx + 14, cy + 2),
+		Vector2(cx + 24, cy + 8)
+	])
+	_draw_polygon_on_image(img, pts_r, FACE_COLOR)
+	
+	# Piercing pupil cutout
+	_draw_circle_on_image(img, cx - 24, cy - 2, 4, Color(0, 0, 0, 0))
+	_draw_circle_on_image(img, cx + 24, cy - 2, 4, Color(0, 0, 0, 0))
+	
+	# 2. Aggressive heavy brows
+	_draw_line_on_image(img, cx - 42, cy - 28, cx - 12, cy - 18, 8, FACE_COLOR)
+	_draw_line_on_image(img, cx + 42, cy - 28, cx + 12, cy - 18, 8, FACE_COLOR)
+	
+	# 3. Maniacal wide grin (clenched sharp teeth)
+	var pts_mouth = PackedVector2Array([
+		Vector2(cx - 22, cy + 22),
+		Vector2(cx + 22, cy + 22),
+		Vector2(cx + 18, cy + 32),
+		Vector2(cx - 18, cy + 32)
+	])
+	_draw_polygon_on_image(img, pts_mouth, FACE_COLOR)
+	# Tooth grid lines
+	_draw_line_on_image(img, cx - 20, cy + 27, cx + 20, cy + 27, 2, Color(0, 0, 0, 0))
+	_draw_line_on_image(img, cx - 7, cy + 23, cx - 7, cy + 31, 2, Color(0, 0, 0, 0))
+	_draw_line_on_image(img, cx + 7, cy + 23, cx + 7, cy + 31, 2, Color(0, 0, 0, 0))
+	
+	# 4. Blazing Forehead Crest with 3 coronal rays
+	var pts_crest = PackedVector2Array([
+		Vector2(cx, cy - 44),
+		Vector2(cx + 7, cy - 31),
+		Vector2(cx, cy - 18),
+		Vector2(cx - 7, cy - 31)
+	])
+	_draw_polygon_on_image(img, pts_crest, FACE_COLOR)
+	_draw_line_on_image(img, cx - 8, cy - 34, cx - 18, cy - 41, 4, FACE_COLOR)
+	_draw_line_on_image(img, cx + 8, cy - 34, cx + 18, cy - 41, 4, FACE_COLOR)
+
 func _update_sun_face(ratio: float) -> void:
 	if not is_instance_valid(sun_face): return
 	sun_face.visible = true
 	var expression: String
 	var target_color: Color = Color(2.0, 2.0, 2.0, 0.7) # Bright glowing white face (semi-transparent)
 	
-	if ratio >= 0.75: 
-		expression = "angry"
-	elif ratio >= 0.50: 
-		expression = "annoyed"
-	elif ratio >= 0.25: 
-		expression = "neutral"
-	else: 
-		expression = "happy"
+	var has_driver: bool = (solar_convergence_mgr != null and solar_convergence_mgr.is_driver_active())
+
+	if has_driver:
+		if phase2_triggered or (solar_convergence_mgr and solar_convergence_mgr.current_state == SolarConvergenceManager.State.OMEGA_SUN) or ratio >= 0.70:
+			expression = "driver_fury"
+		else:
+			expression = "driver_smirk"
+	else:
+		if ratio >= 0.75: 
+			expression = "angry"
+		elif ratio >= 0.50: 
+			expression = "annoyed"
+		elif ratio >= 0.25: 
+			expression = "neutral"
+		else: 
+			expression = "happy"
 		
 	# Dynamic situational reaction overrides (hierarchical priority)
 	# 1. Sustained water hit / critical hit on weakpoint
@@ -3542,7 +3671,10 @@ func _update_sun_face(ratio: float) -> void:
 			has_charging_flare = true
 			break
 	if has_charging_flare:
-		expression = "charging"
+		if has_driver:
+			expression = "driver_fury"
+		else:
+			expression = "charging"
 		
 	# 3. Catastrom black hole grab
 	if is_catastrom_active:
@@ -3561,6 +3693,11 @@ func _update_sun_face(ratio: float) -> void:
 		sun_face.modulate = Color(2.5, 1.4, 0.6, 0.95) # Fiery solar charge glow
 	elif sun_hit_reaction_timer > 0.0 and sun_hit_was_crit:
 		sun_face.modulate = Color(2.8, 2.8, 3.2, 0.95) # Brilliant white-hot critical flash
+	elif has_driver:
+		if expression == "driver_fury":
+			sun_face.modulate = Color(2.6, 1.8, 0.8, 0.95) # Intense incandescent golden-amber radiance
+		else:
+			sun_face.modulate = Color(2.2, 2.2, 1.8, 0.85) # Superior golden-white apex luster
 	else:
 		sun_face.modulate = target_color
 	
@@ -4673,7 +4810,9 @@ func trigger_solar_convergence() -> void:
 
 func on_solar_convergence_sun_powerup() -> void:
 	shatter_drone_shield()
-	if is_instance_valid(sun_face) and face_textures.has("charging"):
+	if is_instance_valid(sun_face) and face_textures.has("driver_fury"):
+		sun_face.texture = face_textures["driver_fury"]
+	elif is_instance_valid(sun_face) and face_textures.has("charging"):
 		sun_face.texture = face_textures["charging"]
 	sun_face_shake = 0.55
 	if is_instance_valid(sun):
@@ -5574,7 +5713,8 @@ func _start_mirage() -> void:
 			m_mesh.set_surface_override_material(0, m_mat)
 			
 		var m_face = Sprite3D.new()
-		m_face.texture = face_textures["angry"] if face_textures.has("angry") else null
+		var m_has_driver: bool = (solar_convergence_mgr != null and solar_convergence_mgr.is_driver_active())
+		m_face.texture = face_textures.get("driver_smirk") if (m_has_driver and face_textures.has("driver_smirk")) else face_textures.get("angry")
 		m_face.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 		m_face.pixel_size = 0.08
 		m_face.position = Vector3(0, 0, 3.4)

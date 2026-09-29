@@ -54,7 +54,7 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 * **Rogue Waves:** Large waves crash on the island, darkening wet sand.
 * **Sky & Atmosphere:** Day/night cycles, parallax depth clouds, starfields, and bloom.
 * **Coronal Halo & Heat Waves:** Additive coronal glow and heat ripples that breathe, pulse, and extinguish with sun temperature.
-* **Sun Expressions:** Reacts dynamically to hits, crits, charging flares, and Catastrom dunks.
+* **Sun Expressions:** Reacts dynamically to hits, crits, charging flares, Catastrom dunks, and equips dedicated Apex Boss expressions (Driver Smirk and Overdrive Fury with forehead coronal crests) during Wave 30+ Solar Convergence.
 * **Low-Poly Seagulls:** Procedural 2-joint wing rig, flight physics, and reactive escape behaviors.
 * **Retro Filters:** Optional post-processing shaders (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
 
