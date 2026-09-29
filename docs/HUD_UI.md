@@ -26,7 +26,7 @@ Architectural map and layout reference for `HUD.tscn`.
 * **Crosshair:** Dynamic reticle scaling on hits. Inner ring tracks water capacity. Flashes red when empty, green on crits.
   * *Weapon Shapes:* Unique geometry per weapon. Blade Mode uses katana crescent brackets with tsuba accents.
   * *Celestial Timer Ring:* 360° depleting cyan ring with micro-timer countdown. Pulses orange at ≤3.0s.
-* **Damage Numbers:** Floating 3D text for hits, golden crits, and cyan/gold `DEFLECTED` feedback. Electric cyan during Celestial Awakening.
+* **Damage Numbers:** Floating 3D text for hits, golden crits, and cyan `DEFLECTED` feedback on standard energy shields (suppressed on Golden Drone Shield in favor of HUD banner hint). Electric cyan during Celestial Awakening.
 * **ComboLabel & Callouts:** Displays combo multiplier (up to 3.0x) and arcade text (e.g., "CHILL!").
 * **FlareRings:** 2D diegetic charging rings telegraphing incoming flares.
 

@@ -64,5 +64,5 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 ## 6. Post-Processing & Screen Effects
 * **Layering:** `retro_postprocess.gdshader` on Layer 0 (behind HUD Layer 10) to preserve UI sharpness.
 * **Dynamic Overlays:** Heat Warning (pulsing red border at 85% heat) and Frost Border (icy tint on Ice Burst).
-* **Energy Shield FX:** Fresnel glow with ripple rings and floating cyan `DEFLECTED` combat feedback.
+* **Energy Shield FX:** Fresnel glow with ripple rings and floating cyan `DEFLECTED` combat feedback on standard energy shields.
 * **Retro Filters:** Mutually exclusive post-processing (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).

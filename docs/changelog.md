@@ -30,6 +30,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Drone Shield Audio Polish: Added automatic volume ducking to the Solar Convergence drone shield ambient hum; plays an audible entrance cue before smoothly easing down to an unobtrusive background bed (-22 dB).
 * Gold Weapon Skin Settings Toggle: Added an in-game toggle under the "DISPLAY & SYSTEM" settings category (visible only after reaching 50,000 points) allowing players to turn the Solid Gold weapon skin on or off to preserve original weapon detail.
 * Kitsune Buster Barrel Symmetry: Symmetrized top and bottom barrel assemblies with matching pearl-white trays, dual coolant conduits, gold brackets, and aerodynamic cowls, removing floating front sight geometry.
+* Golden Drone Shield Combat Feedback: Removed floating "DEFLECTED" 3D text when hitting the Solar Convergence golden shield, keeping visual clarity on the boss and relying on the dedicated bilingual HUD banner notification.
 
 ### Fixed
 * Kitsune Blade Heat Mirage Damage: Fixed Kitsune Blade melee slash failing to detect and damage Heat Mirages; slash now detects decoy suns, chunks mirage HP, and triggers reactive flinch and steam particles.
@@ -280,6 +281,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 드론 방어막 사운드 완화: 태양 수렴 드론 방어막 배경 앰비언스 사운드에 자동 볼륨 감쇠(Ducking) 적용; 첫 출현 시 명확하게 재생된 뒤 귀에 피로감을 주지 않는 잔잔한 배경 음량(-22 dB)으로 부드럽게 감쇠.
 * 황금 무기 스킨 설정 토글 추가: 총기의 원래 디테일을 감상할 수 있도록 '화면 및 시스템' 설정 카테고리에 스킨 토글 옵션 추가 (50,000점 달성 후 해금되어 설정창에 등장).
 * 구미호 버스터 총열 상하 대칭화: 상단 총열과 하단 언더트레이의 외형을 펄 화이트 트레이, 듀얼 냉각 도관, 골드 브래킷 및 테이퍼드 카울로 대칭 일치시키고 공중에 떠 있던 가늠쇠 블록을 제거.
+* 황금 드론 방어막 타격 피드백 정돈: 태양 수렴 황금 방어막 타격 시 나타나던 "DEFLECTED" 3D 텍스트를 제거하여 시야를 확보하고 전용 다국어 HUD 배너 알림에 집중하도록 개선.
 
 ### 수정됨 (Fixed)
 * 구미호 검 신기루 타격 버그 수정: 구미호 검 근접 베기가 열기 신기루를 타격하지 못하던 현상 수정; 신기루를 조준하여 베었을 때 신기루 체력 게이지가 정상 감소하고 피격 반응 및 이펙트가 발생하도록 개선.

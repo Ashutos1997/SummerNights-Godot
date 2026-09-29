@@ -5110,14 +5110,9 @@ func _spawn_deflected_number(pos: Vector3) -> void:
 	lbl.text = "DEFLECTED"
 	lbl.font = preload("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
 	lbl.font_size = 420
-	if is_drone_shield_active:
-		lbl.modulate = Color(1.0, 0.88, 0.25, 0.95)
-		lbl.outline_size = 28
-		lbl.outline_modulate = Color(0.25, 0.15, 0.0, 0.9)
-	else:
-		lbl.modulate = Color(0.3, 0.9, 1.0, 0.95)
-		lbl.outline_size = 28
-		lbl.outline_modulate = Color(0.0, 0.2, 0.4, 0.9)
+	lbl.modulate = Color(0.3, 0.9, 1.0, 0.95)
+	lbl.outline_size = 28
+	lbl.outline_modulate = Color(0.0, 0.2, 0.4, 0.9)
 	
 	var offset = Vector3(randf_range(-2.0, 2.0), randf_range(0.5, 2.5), randf_range(-1.0, 1.0))
 	add_child(lbl)
@@ -5222,8 +5217,8 @@ func _on_shield_deflect(hit_world_pos: Vector3) -> void:
 			shield_deflect_sfx.play()
 		shield_deflect_cooldown = 0.07
 
-	# 4. Floating Combat Text: "DEFLECTED"
-	if randf() < 0.3:
+	# 4. Floating Combat Text: "DEFLECTED" (suppressed on Golden Drone Shield as HUD banner notification is active)
+	if not is_drone_shield_active and randf() < 0.3:
 		_spawn_deflected_number(hit_world_pos)
 
 func _spawn_splash(pos: Vector3) -> void:
