@@ -2657,10 +2657,11 @@ func _process(delta: float) -> void:
 		else:
 			if high_heat_steam.emitting: high_heat_steam.emitting = false
 	
-	# Heat Regeneration (halved while Golden Drone Shield is actively protecting the Sun)
+	# Heat Regeneration (halved while Golden Drone Shield is active; throttled by 60% during Heat Mirage to prevent instant Supernova)
 	if temperature < MAX_TEMP and not is_sun_frozen and active_weather != "eclipse":
 		var drone_shield_throttle = 0.5 if is_drone_shield_active else 1.0
-		temperature += (heat_regen_base * drone_shield_throttle * (1.0 - GameState.heat_resistance)) * delta # Sun gets hotter over time
+		var mirage_throttle = 0.4 if active_mirages.size() > 0 else 1.0
+		temperature += (heat_regen_base * drone_shield_throttle * mirage_throttle * (1.0 - GameState.heat_resistance)) * delta # Sun gets hotter over time
 		
 	_update_sky(false)
 	
@@ -2672,12 +2673,13 @@ func _process(delta: float) -> void:
 		else:
 			hud.grab_icon.visible = false
 
-	# Heat Mirage Event (pre-Wave 30 boss waves; Wave 30+ features Solar Driver encounter)
-	var can_mirage = current_config.get("has_mirage", false) or (GameState.is_survival_mode and GameState.current_wave % 5 == 0 and GameState.current_wave < 30)
+	# Heat Mirage Event (balanced across all boss waves: Wave 5, 10, 15, 20, 25, 30, 35, 40...)
+	var can_mirage = current_config.get("has_mirage", false) or (GameState.is_survival_mode and GameState.current_wave % 5 == 0)
 	if timer_running and can_mirage and not is_sun_frozen and not is_catastrom_active:
 		if active_mirages.size() == 0:
 			mirage_cooldown -= delta
-			if temperature > 75.0 and mirage_cooldown <= 0.0 and randf() < 0.05:
+			var is_shield_blocking = is_drone_shield_active or (is_sun_shielded and GameState.current_wave < 30)
+			if not is_shield_blocking and temperature > 45.0 and mirage_cooldown <= 0.0 and randf() < 0.05:
 				_start_mirage()
 		else:
 			mirage_duration -= delta
@@ -3850,7 +3852,17 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			else:
 				shield_spray_duration = max(0.0, shield_spray_duration - delta * 2.0)
 				drone_shield_spray_duration = max(0.0, drone_shield_spray_duration - delta * 2.0)
-				if active_mirages.size() == 0:
+				if active_mirages.size() > 0:
+					# Striking the true Sun deals 1.5x bonus damage directly to the mirage overshield!
+					mirage_hp -= dmg * 1.5
+					if hud and hud.has_method("update_mirage_hp"):
+						hud.update_mirage_hp(mirage_hp, max_mirage_hp)
+					if mirage_hp <= 0.0:
+						_end_mirage()
+						active_mirages.clear()
+						if hud and hud.has_method("update_mirage_hp"):
+							hud.update_mirage_hp(0, 100)
+				else:
 					temperature = max(0.0, temperature - dmg)
 					
 				var c_mult = 1.0
@@ -3890,7 +3902,17 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			else:
 				shield_spray_duration = max(0.0, shield_spray_duration - delta * 2.0)
 				drone_shield_spray_duration = max(0.0, drone_shield_spray_duration - delta * 2.0)
-				if active_mirages.size() == 0:
+				if active_mirages.size() > 0:
+					# Striking the true Sun deals 1.5x bonus damage directly to the mirage overshield!
+					mirage_hp -= dmg * 1.5
+					if hud and hud.has_method("update_mirage_hp"):
+						hud.update_mirage_hp(mirage_hp, max_mirage_hp)
+					if mirage_hp <= 0.0:
+						_end_mirage()
+						active_mirages.clear()
+						if hud and hud.has_method("update_mirage_hp"):
+							hud.update_mirage_hp(0, 100)
+				else:
 					temperature = max(0.0, temperature - dmg)
 					
 				var c_mult = 1.0
@@ -5214,7 +5236,17 @@ func _perform_kitsune_blade_slash() -> void:
 					if is_celestial_awakened:
 						total_dmg *= 1.5
 					
-					if active_mirages.size() == 0:
+					if active_mirages.size() > 0:
+						# Slicing the true Sun with Kitsune Blade deals 1.5x bonus damage to the mirage overshield!
+						mirage_hp -= total_dmg * 1.5
+						if hud and hud.has_method("update_mirage_hp"):
+							hud.update_mirage_hp(mirage_hp, max_mirage_hp)
+						if mirage_hp <= 0.0:
+							_end_mirage()
+							active_mirages.clear()
+							if hud and hud.has_method("update_mirage_hp"):
+								hud.update_mirage_hp(0, 100)
+					else:
 						temperature = max(0.0, temperature - total_dmg)
 						heat_changed.emit(temperature, MAX_TEMP)
 					
@@ -5779,10 +5811,10 @@ func freeze_sun() -> void:
 func _start_mirage() -> void:
 	if active_mirages.size() > 0: return
 	
-	mirage_cooldown = randf_range(10.0, 15.0)
-	mirage_duration = 20.0
+	mirage_cooldown = randf_range(12.0, 16.0)
+	mirage_duration = 18.0
 	
-	max_mirage_hp = 50.0 if not GameState.is_survival_mode else 30.0 + (GameState.current_wave * 5.0)
+	max_mirage_hp = 50.0 if not GameState.is_survival_mode else min(120.0, 25.0 + (GameState.current_wave * 2.2))
 	mirage_hp = max_mirage_hp
 	if hud and hud.has_method("update_mirage_hp"):
 		hud.update_mirage_hp(mirage_hp, max_mirage_hp)
@@ -5820,6 +5852,12 @@ func _start_mirage() -> void:
 		var m_expr: String = "angry"
 		if m_has_driver:
 			m_expr = "driver_fury" if phase2_triggered else "driver_smirk"
+			var driver_scene = load("res://assets/models/solar_driver.glb")
+			if driver_scene:
+				var m_drv = driver_scene.instantiate() as Node3D
+				m_drv.position = Vector3(0.0, -3.85, 0.0)
+				m_drv.rotation.x = deg_to_rad(14.0)
+				m_sun.add_child(m_drv)
 		m_face.texture = face_textures.get(m_expr) if face_textures.has(m_expr) else face_textures.get("angry")
 		m_face.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 		m_face.pixel_size = 0.08
