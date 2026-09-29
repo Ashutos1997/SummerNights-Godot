@@ -41,7 +41,7 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 * **Sunspots:** Glowing critical weakpoints that award bonus cooling and points.
 * **Solar Flare Shield:** Endless Boss Waves (15–25). Emissive cyan energy barrier blocking water until shattered with Ice Blast (`[R]`). On Wave 30+, replaced by the Equatorial Solar Driver & Golden Drone Shield.
 * **Solar Wind:** Physical crosswind pushing player crosshair (drift intensity capped at 1.75x).
-* **Heat Mirage (Boss):** Spawns two decoy suns and a collective overshield across all boss waves. Heat regeneration is throttled by 60% during mirages, and striking the true Sun deals 1.5x bonus damage directly to the mirage overshield.
+* **Heat Mirage (Boss):** Spawns two decoy suns and a collective overshield across all boss waves with snappy 0.3s elastic pop-in and fast horizontal split lerp. Heat regeneration is throttled by 60% during mirages, and striking the true Sun deals 1.5x bonus damage directly to the mirage overshield.
 * **High Heat Warnings:** Steam boils at 75% heat; screen pulses red and heartbeat audio plays at 85%.
 * **Supernova:** Reaching 100% heat triggers a supernova cinematic and frameless stats recap.
 

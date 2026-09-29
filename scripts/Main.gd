@@ -2569,7 +2569,7 @@ func _process(delta: float) -> void:
 			var featherweight_amp = sun_sway_amplitude * (0.6 if "bird_watcher" in GameState.unlocked_achievements else 1.0)
 			sun_move_time += delta * spd_mult
 			var x_offset = sin(sun_move_time * sun_sway_speed * GameState.sun_sway_mult) * featherweight_amp
-			sun_mirage_offset = lerp(sun_mirage_offset, sun_mirage_target, delta * 1.5)
+			sun_mirage_offset = lerp(sun_mirage_offset, sun_mirage_target, delta * 5.5)
 			sun.position.x = sun_base_pos.x + x_offset + sun_mirage_offset
 			
 			if sun_figure8:
@@ -2580,7 +2580,7 @@ func _process(delta: float) -> void:
 				sun.position.y = sun_base_pos.y + sin(sun_time * sun_bob_speed) * sun_bob_amp
 				sun.position.z = sun_base_pos.z
 		else:
-			sun_mirage_offset = lerp(sun_mirage_offset, sun_mirage_target, delta * 1.5)
+			sun_mirage_offset = lerp(sun_mirage_offset, sun_mirage_target, delta * 5.5)
 			sun.position.x = sun_base_pos.x + sun_mirage_offset
 			sun.position.y = sun_base_pos.y + sin(sun_time * sun_bob_speed) * sun_bob_amp
 			sun.position.z = sun_base_pos.z
@@ -2679,7 +2679,7 @@ func _process(delta: float) -> void:
 		if active_mirages.size() == 0:
 			mirage_cooldown -= delta
 			var is_shield_blocking = is_drone_shield_active or (is_sun_shielded and GameState.current_wave < 30)
-			if not is_shield_blocking and temperature > 45.0 and mirage_cooldown <= 0.0 and randf() < 0.05:
+			if not is_shield_blocking and mirage_cooldown <= 0.0 and temperature > 30.0:
 				_start_mirage()
 		else:
 			mirage_duration -= delta
@@ -2690,7 +2690,7 @@ func _process(delta: float) -> void:
 				for m in active_mirages:
 					var node = m["node"] as Node3D
 					if is_instance_valid(node):
-						m["current_offset"] = lerp(m["current_offset"], m["offset_target"], delta * 1.5)
+						m["current_offset"] = lerp(m["current_offset"], m["offset_target"], delta * 5.5)
 						# Calculate base x_offset of the sun without mirage offset
 						var base_x_offset = 0.0
 						if sun_sway_amplitude > 0.0:
@@ -4333,6 +4333,7 @@ func _check_sun_defeat() -> void:
 			phase2_triggered = false
 			phase2_heat = min(95.0, 60.0 + (GameState.current_wave * 1.0)) # Wave 30 is 90 HP (down from 150)
 			sun_shield_cooldown = 2.5 # Initial delay before shield deploys on boss wave
+			mirage_cooldown = 1.5 # Fast initial mirage readiness on boss waves!
 			if GameState.current_wave >= 30 and solar_convergence_mgr:
 				var d_count = 6 if GameState.current_wave < 40 else 7
 				solar_convergence_mgr.start_orbital_swarm(d_count, GameState.current_wave)
@@ -4824,6 +4825,7 @@ func _trigger_phase2() -> void:
 			var desc = "폭주 드론 군체 및 황금 방어막 재기동!" if is_kr else "Overdrive Drone Swarm & Golden Shield Re-engaged!"
 			hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1.0, 0.45, 0.15))
 	
+	mirage_cooldown = 1.5 # Fast mirage readiness in Phase 2
 	await get_tree().create_timer(0.6).timeout
 	timer_running = true
 
@@ -5811,13 +5813,21 @@ func freeze_sun() -> void:
 func _start_mirage() -> void:
 	if active_mirages.size() > 0: return
 	
-	mirage_cooldown = randf_range(12.0, 16.0)
+	mirage_cooldown = randf_range(8.0, 12.0)
 	mirage_duration = 18.0
 	
 	max_mirage_hp = 50.0 if not GameState.is_survival_mode else min(120.0, 25.0 + (GameState.current_wave * 2.2))
 	mirage_hp = max_mirage_hp
 	if hud and hud.has_method("update_mirage_hp"):
 		hud.update_mirage_hp(mirage_hp, max_mirage_hp)
+	
+	# Entrance audio-visual pop
+	if is_instance_valid(shield_spawn_sfx):
+		shield_spawn_sfx.pitch_scale = 1.35
+		shield_spawn_sfx.play()
+	if steam_particles:
+		steam_particles.global_position = sun.global_position
+		steam_particles.restart()
 	
 	var positions = [-22.0, 0.0, 22.0]
 	positions.shuffle()
@@ -5826,7 +5836,12 @@ func _start_mirage() -> void:
 	for i in range(2):
 		var m_sun = Node3D.new()
 		m_sun.position = sun.position
+		m_sun.scale = Vector3.ZERO
 		add_child(m_sun)
+		
+		# Snappy elastic pop-in tween
+		var p_tw = create_tween()
+		p_tw.tween_property(m_sun, "scale", Vector3.ONE, 0.30).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		
 		var m_model = load("res://assets/models/sun_lowpoly.glb").instantiate()
 		m_model.scale = Vector3(0.32, 0.32, 0.32)
