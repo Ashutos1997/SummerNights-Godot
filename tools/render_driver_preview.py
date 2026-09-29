@@ -40,26 +40,35 @@ def render_driver_preview(glb_path, output_png):
     
     views = [
         {
-            'title': 'Solar Driver & Belt — Front View (Player View)',
-            'elev': 10, 'azim': -90, 'pos': 131
+            'title': 'Solar Driver Buckle — Front View (Central Sun & Flanks)',
+            'elev': 2, 'azim': 90, 'pos': 131,
+            'xlim': (-3.6, 3.6), 'ylim': (-2.5, 2.5), 'zlim': (-1.8, 1.8),
+            'aspect': [2.0, 1.2, 1.0], 'center_buckle': True
         },
         {
-            'title': 'Solar Driver & Belt — 3/4 Perspective Angle',
-            'elev': 25, 'azim': -55, 'pos': 132
+            'title': 'Solar Driver Buckle — 3/4 Perspective Angle',
+            'elev': 20, 'azim': 65, 'pos': 132,
+            'xlim': (-3.6, 3.6), 'ylim': (-2.5, 2.5), 'zlim': (-1.8, 1.8),
+            'aspect': [2.0, 1.2, 1.0], 'center_buckle': True
         },
         {
-            'title': 'Solar Driver & Belt — Top-Down Planetary Ring Profile',
-            'elev': 70, 'azim': -90, 'pos': 133
+            'title': 'Equatorial Planetary Belt & Driver — Full Overview',
+            'elev': 28, 'azim': 80, 'pos': 133,
+            'xlim': (-9.5, 9.5), 'ylim': (-9.5, 9.5), 'zlim': (-3.0, 3.0),
+            'aspect': [1.0, 1.0, 0.35], 'center_buckle': False
         }
     ]
     
     for v in views:
         ax = fig.add_subplot(v['pos'], projection='3d', facecolor='#0b0d14')
-        ax.set_title(v['title'], color='#ffcc33', fontsize=14, pad=14, fontweight='bold', fontfamily='sans-serif')
+        ax.set_title(v['title'], color='#ffcc33', fontsize=13, pad=12, fontweight='bold', fontfamily='sans-serif')
         ax.view_init(elev=v['elev'], azim=v['azim'])
         
         ax.set_axis_off()
-        ax.set_box_aspect([1, 1, 0.35])
+        ax.set_box_aspect(v['aspect'])
+        
+        all_tris = []
+        all_colors = []
         
         for mesh in gltf.get('meshes', []):
             for prim in mesh.get('primitives', []):
@@ -70,19 +79,26 @@ def render_driver_preview(glb_path, output_png):
                 pos = get_data(pos_idx)
                 indices = get_data(idx_idx).flatten().astype(int)
                 
-                tri_verts = pos[indices].reshape(-1, 3, 3)
+                # Map Godot coords (X, Y_up, Z_depth) -> Matplotlib 3D (X, Y_depth, Z_up)
+                pts_transformed = np.stack([pos[:, 0], pos[:, 2], pos[:, 1]], axis=-1).copy()
+                if v.get('center_buckle', False):
+                    pts_transformed[:, 1] -= 7.28 # Center buckle at depth origin
+                tri_verts = pts_transformed[indices].reshape(-1, 3, 3)
                 
                 color = mat_colors[mat_idx] if mat_idx < len(mat_colors) else [0.8, 0.8, 0.8, 1.0]
+                n_tris = len(tri_verts)
+                all_tris.extend(tri_verts)
+                all_colors.extend([color] * n_tris)
                 
-                poly = Poly3DCollection(tri_verts, alpha=1.0)
-                poly.set_facecolor(color)
-                poly.set_edgecolor([c * 0.45 for c in color[:3]] + [0.4])
-                poly.set_linewidth(0.2)
-                ax.add_collection3d(poly)
+        poly = Poly3DCollection(all_tris, alpha=1.0)
+        poly.set_facecolor(all_colors)
+        poly.set_edgecolor([[c * 0.45 for c in col[:3]] + [0.35] for col in all_colors])
+        poly.set_linewidth(0.15)
+        ax.add_collection3d(poly)
                 
-        ax.set_xlim(-9.0, 9.0)
-        ax.set_ylim(-9.0, 9.0)
-        ax.set_zlim(-3.0, 3.0)
+        ax.set_xlim(v['xlim'])
+        ax.set_ylim(v['ylim'])
+        ax.set_zlim(v['zlim'])
 
     plt.tight_layout()
     os.makedirs(os.path.dirname(output_png), exist_ok=True)

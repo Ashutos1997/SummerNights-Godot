@@ -47,7 +47,7 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 ## 5. Dynamic Weather & Encounters
 * **Rainstorms:** Downpour grants infinite water and passive sun cooling.
 * **Solar Eclipses:** Sky darkens; sun fires rapid Shadow Flares.
-* **Solar Convergence:** Apex Boss encounter (Wave 30+). Equatorial Driver attaches to the Sun's waist while 6–8 Solar Eye Drones orbit and project an invulnerable Golden Shield. Drones show progressive crack damage and award water on destruction. Destroying all drones overloads the Driver and shatters the shield. In Phase 2, the Driver enters Overdrive, deploying an enraged drone swarm with reactivated Golden Shield.
+* **Solar Convergence:** Apex Boss encounter (Wave 30+). Equatorial Solar Driver attaches to the Sun's waist (featuring a 16-ray Sunburst Corona central crest, glowing incandescent pupil core, flank conduits, and lateral drone docking bays) while 6–8 Solar Eye Drones orbit and project an invulnerable Golden Shield. Drones show progressive crack damage and award water on destruction. Destroying all drones overloads the Driver and shatters the shield. In Phase 2, the Driver enters Overdrive, deploying an enraged drone swarm with reactivated Golden Shield.
 
 ## 6. Environment & Visuals
 * **Dynamic Ocean:** Procedural Gerstner waves, Voronoi caustics, and subsurface scattering.
