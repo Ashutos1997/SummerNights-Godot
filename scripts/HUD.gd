@@ -39,6 +39,7 @@ var ice_label: Label = null
 @onready var catastrom_bar = $HUD/resource_container/catastrom_row/CatastromBar
 @onready var ready_label = $HUD/resource_container/catastrom_row/CatastromBar/ReadyLabel
 var catastrom_label: Label = null
+var _prev_weapon_id_for_meter: String = ""
 @onready var grab_icon = $HUD/GrabIcon
 
 @onready var toast_container = $HUD/ToastContainer
@@ -330,7 +331,10 @@ func _process(delta: float) -> void:
 		if catastrom_row.visible != can_show:
 			catastrom_row.visible = can_show
 			
-		if reduce_motion:
+		if _prev_weapon_id_for_meter != GameState.current_weapon_id:
+			_prev_weapon_id_for_meter = GameState.current_weapon_id
+			catastrom_bar.value = target_charge
+		elif reduce_motion:
 			catastrom_bar.value = target_charge
 		else:
 			catastrom_bar.value = lerp(catastrom_bar.value, float(target_charge), 12.0 * delta)
@@ -366,10 +370,7 @@ func _process(delta: float) -> void:
 					var p_sb = catastrom_plate.get_theme_stylebox("panel") as StyleBoxFlat
 					if p_sb:
 						p_sb.border_color = Color(0.35, 0.95, 1.0, 0.6 + pulse * 0.4)
-				if Engine.get_frames_drawn() % 30 == 0:
-					catastrom_bar.tint_progress = Color(0.50, 0.98, 1.0, 1.0)
-				elif Engine.get_frames_drawn() % 30 == 15:
-					catastrom_bar.tint_progress = Color(0.18, 0.75, 1.0, 1.0)
+				catastrom_bar.tint_progress = Color(0.18, 0.75, 1.0, 1.0).lerp(Color(0.50, 0.98, 1.0, 1.0), pulse)
 			else:
 				if ready_label:
 					ready_label.visible = false
@@ -394,10 +395,7 @@ func _process(delta: float) -> void:
 					var p_sb = catastrom_plate.get_theme_stylebox("panel") as StyleBoxFlat
 					if p_sb:
 						p_sb.border_color = Color(1.0, 0.85, 0.2, 0.6 + pulse * 0.4)
-				if Engine.get_frames_drawn() % 30 == 0:
-					catastrom_bar.tint_progress = Color(0.8, 0.4, 1.0, 1.0)
-				elif Engine.get_frames_drawn() % 30 == 15:
-					catastrom_bar.tint_progress = Color(0.6, 0.0, 1.0, 1.0)
+				catastrom_bar.tint_progress = Color(0.60, 0.0, 1.0, 1.0).lerp(Color(0.80, 0.40, 1.0, 1.0), pulse)
 			else:
 				if ready_label:
 					ready_label.visible = false
