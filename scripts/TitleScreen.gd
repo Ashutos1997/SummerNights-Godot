@@ -35,6 +35,8 @@ var best_time_lbl: Label = null
 var ach_btn: Button
 var stats_btn: Button
 var settings_btn: Button
+var mode_divider: CenterContainer = null
+var quit_prompt_btn: Button = null
 
 var achievements_screen: Control
 var stats_screen: Control
@@ -164,9 +166,20 @@ func _ready() -> void:
 		
 	if dev_btn: dev_btn.visible = false
 	
+	# Add subtle hairline divider between Game Modes and Meta Menus
+	mode_divider = CenterContainer.new()
+	mode_divider.name = "ModeDivider"
+	mode_divider.custom_minimum_size = Vector2(220, 1)
+	var div_line = ColorRect.new()
+	div_line.custom_minimum_size = Vector2(60, 1)
+	div_line.color = Color(1.0, 0.75, 0.15, 0.25)
+	mode_divider.add_child(div_line)
+	dev_btn.get_parent().add_child(mode_divider)
+	
 	# Dynamically add Achievements button
 	ach_btn = dev_btn.duplicate()
 	ach_btn.name = "AchievementsBtn"
+	ach_btn.custom_minimum_size = Vector2(220, 44)
 	ach_btn.visible = true
 	dev_btn.get_parent().add_child(ach_btn)
 	ach_btn.pressed.connect(_show_achievements)
@@ -174,6 +187,7 @@ func _ready() -> void:
 	# Dynamically add Stats button
 	stats_btn = dev_btn.duplicate()
 	stats_btn.name = "StatsBtn"
+	stats_btn.custom_minimum_size = Vector2(220, 44)
 	stats_btn.visible = true
 	dev_btn.get_parent().add_child(stats_btn)
 	stats_btn.pressed.connect(_show_stats)
@@ -181,9 +195,19 @@ func _ready() -> void:
 	# Dynamically add Settings button
 	settings_btn = dev_btn.duplicate()
 	settings_btn.name = "SettingsBtn"
+	settings_btn.custom_minimum_size = Vector2(220, 44)
 	settings_btn.visible = true
 	dev_btn.get_parent().add_child(settings_btn)
 	settings_btn.pressed.connect(_show_settings)
+	
+	# Desktop ESC Quit guidance prompt
+	quit_prompt_btn = Button.new()
+	quit_prompt_btn.name = "QuitPromptBtn"
+	quit_prompt_btn.flat = true
+	quit_prompt_btn.focus_mode = Control.FOCUS_NONE
+	quit_prompt_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	dev_btn.get_parent().add_child(quit_prompt_btn)
+	quit_prompt_btn.pressed.connect(_show_quit_popup)
 	
 	_build_achievements_screen()
 	_build_stats_screen()
@@ -206,12 +230,14 @@ func _update_language() -> void:
 		var has_dawn_breaks = "dawn_breaks" in GameState.unlocked_achievements
 		survival_btn.disabled = not has_dawn_breaks
 		if not has_dawn_breaks:
-			survival_btn.text = "무한 모드 (잠김)" if is_kr else "ENDLESS MODE (LOCKED)"
+			survival_btn.text = "무한 모드 [잠김]" if is_kr else "ENDLESS MODE [LOCKED]"
 		else:
 			survival_btn.text = "무한 모드" if is_kr else "ENDLESS MODE"
 	if dev_btn: dev_btn.text = "DEV"
 	if ach_btn: ach_btn.text = "업적" if is_kr else "ACHIEVEMENTS"
 	if stats_btn: stats_btn.text = "기록" if is_kr else "STATS"
+	if settings_btn: settings_btn.text = "설정" if is_kr else "SETTINGS"
+	if quit_prompt_btn: quit_prompt_btn.text = "[ESC] 게임 종료" if is_kr else "[ESC] QUIT GAME"
 	
 	if font:
 		var title_color = Color(1.0, 0.75, 0.15, 1.0)
@@ -317,9 +343,10 @@ func _update_language() -> void:
 				btn.add_theme_color_override("font_hover_color", Color(1.0, 0.85, 0.2, 1.0))
 				btn.add_theme_color_override("font_pressed_color", Color(1.0, 0.85, 0.2, 1.0))
 				btn.add_theme_color_override("font_focus_color", Color(1.0, 0.85, 0.2, 1.0))
-				btn.add_theme_color_override("font_disabled_color", Color(1.0, 0.85, 0.2, 1.0))
+				btn.add_theme_color_override("font_disabled_color", Color(0.55, 0.55, 0.55, 0.6))
 				btn.add_theme_color_override("font_outline_color", Color.BLACK)
 				btn.add_theme_constant_override("outline_size", 2)
+				
 				var style_normal = StyleBoxFlat.new()
 				style_normal.bg_color = Color(0, 0, 0, 0.4)
 				style_normal.border_color = Color(1.0, 0.85, 0.2, 0.6)
@@ -335,6 +362,7 @@ func _update_language() -> void:
 				
 				var style_hover = style_normal.duplicate()
 				style_hover.bg_color = Color(1.0, 0.75, 0.15, 0.2)
+				style_hover.border_color = Color(1.0, 0.9, 0.3, 1.0)
 				btn.add_theme_stylebox_override("hover", style_hover)
 				
 				var style_pressed = style_normal.duplicate()
@@ -343,11 +371,29 @@ func _update_language() -> void:
 				btn.add_theme_stylebox_override("pressed", style_pressed)
 				
 				var style_disabled = style_normal.duplicate()
-				style_disabled.bg_color = Color(0, 0, 0, 0.2)
-				style_disabled.border_color = Color(0.5, 0.5, 0.5, 0.5)
+				style_disabled.bg_color = Color(0, 0, 0, 0.25)
+				style_disabled.border_color = Color(0.4, 0.4, 0.4, 0.35)
 				btn.add_theme_stylebox_override("disabled", style_disabled)
 				
 				btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+				
+			# Style quit prompt guidance button
+			if quit_prompt_btn:
+				quit_prompt_btn.add_theme_font_override("font", font)
+				quit_prompt_btn.add_theme_font_size_override("font_size", 13 if is_kr else 12)
+				quit_prompt_btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 0.55))
+				quit_prompt_btn.add_theme_color_override("font_hover_color", Color(1.0, 0.9, 0.3, 0.95))
+				quit_prompt_btn.add_theme_color_override("font_pressed_color", Color(1.0, 1.0, 1.0, 1.0))
+				quit_prompt_btn.add_theme_color_override("font_outline_color", Color.BLACK)
+				quit_prompt_btn.add_theme_constant_override("outline_size", 2)
+				
+				var empty_style = StyleBoxEmpty.new()
+				empty_style.content_margin_top = 4
+				empty_style.content_margin_bottom = 2
+				quit_prompt_btn.add_theme_stylebox_override("normal", empty_style)
+				quit_prompt_btn.add_theme_stylebox_override("hover", empty_style)
+				quit_prompt_btn.add_theme_stylebox_override("pressed", empty_style)
+				quit_prompt_btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 
 	color_rect.modulate.a = 0.0
 	var tw = create_tween()

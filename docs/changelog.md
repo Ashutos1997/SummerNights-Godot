@@ -15,6 +15,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Title Screen Spacing Polish: Balanced vertical layout distribution by removing redundant spacer padding under the high score and subtitle lines (eliminating 44px dead space), reducing button separation to 12px, and normalizing button heights to 44px to ensure generous top and bottom breathing room.
 * Secondary Menus Close Prompt Consistency: Added localized "PRESS ESC TO CLOSE" / "닫으려면 ESC를 누르세요" guidance text under the Back button for Active Buffs, Achievements, and Stats menus with accessible 14px styling and subtle pulse animation matching Settings, Filters, and Credits screens.
 * Title Screen Modal Architecture Standardization: Aligned Title Screen Achievements and Stats modals 1:1 with the Pause Menu layout (standardizing scroll container dimensions to 700x380, container separation to 16px, adding bottom hairline Divider2, 32px title headers, and 280x44px Back buttons).
+* Title Screen Navigation Hierarchy & Button Layout: Expanded stats breathing space to 24px (Spacer2), introduced a 60px hairline divider cleanly grouping gameplay modes (Normal, Endless) from system menus (Achievements, Stats, Settings), maintained uniform flat button styling across all active options, styled locked Endless Mode with clear [LOCKED] indicator and dimmed borders, and added desktop [ESC] QUIT GAME guidance.
 * Version Synchronization: Unified release numbering to v1.7 across both GitHub and itch.io export presets and project configuration.
 
 ---
@@ -298,6 +299,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 타이틀 화면 세로 여백 및 레이아웃 최적화: 최고 점수 및 부제목 하단의 중복 여백을 제거(44px 빈 공간 해소)하고, 버튼 간격을 12px로 조정 및 버튼 높이를 44px로 표준화하여 화면 상하단 여백을 안정적으로 확보하고 시각적 균형감 개선.
 * 보조 메뉴 ESC 닫기 안내 일관성 확보: 활성화된 버프, 업적 및 기록 메뉴의 돌아가기 버튼 하단에 설정/필터/크레딧 화면과 동일한 규격의 "PRESS ESC TO CLOSE" / "닫으려면 ESC를 누르세요" 안내 텍스트(14px 폰트 및 미세 펄스 애니메이션)를 추가하여 조작 일관성 통일.
 * 타이틀 화면 모달 구조 표준화: 타이틀 화면의 업적 및 기록 모달 레이아웃을 인게임 일시정지 메뉴와 1:1로 일치 규격화 (스크롤 영역 700x380 표준화, 16px 간격, 하단 헤어라인 Divider2 구분선 추가, 32px 타이틀 및 280x44px 돌아가기 버튼 적용).
+* 타이틀 화면 조작 위계 및 버튼 레이아웃 개선: 커리어 기록 하단 여백을 24px(Spacer2)로 확장하여 시각적 여유를 확보하고, 게임플레이 모드(일반, 무한)와 시스템 메뉴(업적, 기록, 설정) 사이에 60px 헤어라인 구분선을 추가하여 메뉴 위계 정립. 모든 활성 버튼에 통일된 레트로 플랫 스타일을 유지하고, 잠긴 무한 모드에 명확한 [잠김] 표기 및 비활성화 톤을 적용하며, 하단에 데스크톱 [ESC] 게임 종료 안내 추가.
 * 버전 번호 통일 동기화: GitHub 및 itch.io의 모든 내보내기 프리셋과 프로젝트 설정 버전 번호를 v1.7로 일치 동기화.
 
 ---
