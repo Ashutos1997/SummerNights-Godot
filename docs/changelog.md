@@ -43,6 +43,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Vector Icons & Credits Sync: Added Game-icons.net (Lorc, Delapouite, CC BY 3.0) attribution for newly integrated UI and perk vector icons across READMEs and in-game HUD Credits screen.
 * Solar Driver & Phase 2 Toast Face Icons: Integrated the Sun boss's procedural expressions as dedicated high-contrast HUD toast icons—the arrogant "Driver Smirk" (`driver_smirk.png`) for Solar Driver Equipped / Deployed and the Wave 30 Convergence banner, and the fierce "Driver Fury" (`driver_fury.png`) for the Phase 2 Overdrive Swarm entrance.
 * Export Presets Versioning: Updated build version numbers across Godot export presets—set to v1.6 for itch.io releases and v1.5.6 for GitHub releases, synchronized with project configuration.
+* Atmospheric Horizon Bloom & Seamless Sea Blending: Replaced the sharp exponential horizon glow cusp in the sky shader with a smooth Gaussian bloom softly biased toward the sun, aligned the lower hemisphere with deep oceanic blue, and tapered the glow along the sea waterline, completely eliminating the rigid "tube" seam artifact without altering gameplay, camera framing, or island geometry.
 
 ### Fixed
 * Kitsune Blade Heat Mirage Damage: Fixed Kitsune Blade melee slash failing to detect and damage Heat Mirages; slash now detects decoy suns, chunks mirage HP, and triggers reactive flinch and steam particles.
@@ -309,6 +310,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 벡터 아이콘 및 크레딧 동기화: 신규 UI 및 퍽 벡터 아이콘에 대한 Game-icons.net (Lorc, Delapouite, CC BY 3.0) 라이선스 표기를 영문/한국어 README 및 인게임 HUD 크레딧 화면에 1:1 동기화 반영.
 * 솔라 드라이버 및 2페이즈 전용 표정 토스트 아이콘: 보스 전용 절차적 표정을 고대비 HUD 알림 아이콘으로 연동—솔라 드라이버 장착/전개 및 30웨이브 수렴 감지 배너에는 오만한 "드라이버 스머크"(`driver_smirk.png`)를, 2페이즈 폭주 진입 알림에는 "드라이버 퓨리"(`driver_fury.png`)를 각각 적용.
 * 내보내기 프리셋 버전 번호 갱신: 고도 엔진 내보내기 프리셋의 빌드 번호를 프로젝트 구성에 맞춰 itch.io 배포용은 v1.6으로, GitHub 배포용은 v1.5.6으로 각각 갱신 반영.
+* 대기 지평선 블룸 및 자연스러운 해수면 블렌딩: 하늘 셰이더의 날카로운 지평선 발광 첨점을 태양 방향으로 부드럽게 퍼지는 가우시안 대기 블룸으로 개편하고, 하부 반구 색상을 심해 네이비 톤으로 일치시켜 수평선 이음새와 인위적인 "발광 튜브" 현상을 게임플레이, 카메라 구도 및 섬 지형 변형 없이 완벽히 해소.
 
 ### 수정됨 (Fixed)
 * 구미호 검 신기루 타격 버그 수정: 구미호 검 근접 베기가 열기 신기루를 타격하지 못하던 현상 수정; 신기루를 조준하여 베었을 때 신기루 체력 게이지가 정상 감소하고 피격 반응 및 이펙트가 발생하도록 개선.

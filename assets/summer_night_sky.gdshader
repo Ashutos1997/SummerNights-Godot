@@ -10,14 +10,15 @@ render_mode use_half_res_pass;
 uniform vec4 sky_zenith_color   : source_color = vec4(0.07, 0.03, 0.18, 1.0); // Deep dark purple at top
 uniform vec4 sky_horizon_color  : source_color = vec4(0.85, 0.28, 0.06, 1.0); // Deep orange at horizon
 uniform vec4 sky_sunset_color   : source_color = vec4(0.98, 0.52, 0.08, 1.0); // Bright amber band
-uniform vec4 ground_color        : source_color = vec4(0.04, 0.02, 0.08, 1.0); // Near-black ground
+uniform vec4 ground_color        : source_color = vec4(0.06, 0.14, 0.30, 1.0); // Deep ocean horizon blue
 uniform float horizon_spread     : hint_range(0.5, 8.0, 0.1) = 3.2;
 uniform float sunset_band_height : hint_range(0.0, 0.4, 0.01) = 0.12;
 uniform float sunset_band_sharp  : hint_range(1.0, 30.0, 0.5) = 12.0;
 
-// ── Horizon glow ────────────────────────────────────────────────────────────
-uniform vec4 horizon_glow_color : source_color = vec4(1.0, 0.55, 0.12, 1.0); // Warm amber glow
-uniform float horizon_glow_size : hint_range(0.005, 0.15, 0.001) = 0.035;
+// ── Horizon glow (Atmospheric Bloom) ────────────────────────────────────────
+uniform vec4 horizon_glow_color  : source_color = vec4(1.0, 0.58, 0.14, 1.0); // Warm amber sunset glow
+uniform float horizon_glow_size  : hint_range(0.01, 0.25, 0.005) = 0.08;      // Broad Gaussian dispersion
+uniform float horizon_glow_offset: hint_range(-0.1, 0.1, 0.005) = -0.015;     // Aligns peak with 3D ocean waterline
 
 // ── Animated cloud layer ────────────────────────────────────────────────────
 uniform vec4 cloud_color_lit    : source_color = vec4(0.98, 0.62, 0.22, 1.0); // Lit cloud (orange-gold)
@@ -85,11 +86,12 @@ void sky() {
 	// horizon blend factor (compressed at bottom)
 	float t_horizon = clamp(h * horizon_spread, -1.0, 1.0) * 0.5 + 0.5;
 
-	// Bottom half: ground -> horizon
-	vec3 bottom = mix(ground_color.rgb, sky_horizon_color.rgb, smoothstep(-0.05, 0.05, h));
+	// Bottom half: deep ocean horizon -> sunset sky
+	vec3 bottom = mix(ground_color.rgb, sky_horizon_color.rgb, smoothstep(-0.06, 0.05, h));
 
-	// Sunset amber band just above horizon
-	float band_mask = exp(-abs(h - sunset_band_height) * sunset_band_sharp);
+	// Sunset amber band just above horizon (smooth Gaussian instead of sharp cusp)
+	float band_diff = (h - sunset_band_height) * (sunset_band_sharp * 0.45);
+	float band_mask = exp(-band_diff * band_diff);
 	vec3 banded = mix(bottom, sky_sunset_color.rgb, band_mask * 0.85);
 
 	// Upper half: blend to zenith
@@ -102,17 +104,18 @@ void sky() {
 	float cool_factor = 1.0 - sun_heat;
 	
 	// Multi-band twilight palette (Belt of Venus + turquoise seafoam afterglow)
-	vec3 cool_ground        = vec3(0.02, 0.02, 0.06); // Deep abyss
+	vec3 cool_ground        = vec3(0.03, 0.08, 0.20); // Deep twilight oceanic navy (matches ocean depth)
 	vec3 cool_horizon       = vec3(0.08, 0.48, 0.65); // Vibrant turquoise/aquamarine sea afterglow
 	vec3 cool_twilight_band = vec3(0.38, 0.18, 0.48); // Dreamy lavender-pink twilight band (Belt of Venus)
 	vec3 cool_mid_sky       = vec3(0.07, 0.15, 0.38); // Deep royal twilight blue
 	vec3 cool_zenith        = vec3(0.02, 0.03, 0.14); // Deep cosmic midnight sapphire
 
-	// Step 1: Ground to turquoise horizon
-	vec3 cool_bottom = mix(cool_ground, cool_horizon, smoothstep(-0.05, 0.06, h));
+	// Step 1: Deep ocean to turquoise horizon
+	vec3 cool_bottom = mix(cool_ground, cool_horizon, smoothstep(-0.06, 0.05, h));
 	
 	// Step 2: Twilight lavender-rose band just above the horizon (h ~ 0.08 - 0.25)
-	float cool_band_mask = exp(-abs(h - 0.14) * 8.5);
+	float cool_band_diff = (h - 0.14) * 4.2;
+	float cool_band_mask = exp(-cool_band_diff * cool_band_diff);
 	vec3 cool_banded = mix(cool_bottom, cool_twilight_band, cool_band_mask * 0.75);
 	
 	// Step 3: Upper hemisphere to mid-sky and zenith
@@ -129,10 +132,17 @@ void sky() {
 		mix(eclipse_horizon, eclipse_zenith, smoothstep(-0.1, 0.8, h)),
 		eclipse_mix);
 
-	// ── Horizon glow ─────────────────────────────────────────────────────
-	float glow_mask = exp(-abs(h) / horizon_glow_size);
-	vec3 sunset_glow = horizon_glow_color.rgb * 0.6;
-	vec3 twilight_glow = vec3(0.12, 0.82, 0.92) * 0.45; // Luminous cyan/seafoam waterline glow
+	// ── Atmospheric Horizon Glow (Replaces sharp "tube" with natural sunset bloom) ──
+	float h_norm = (h - horizon_glow_offset) / horizon_glow_size;
+	float glow_mask = exp(-h_norm * h_norm * 0.5);
+	// Taper below the sea waterline so the deep ocean stays rich and deep
+	glow_mask *= smoothstep(-0.12, -0.02, h);
+	// Soft forward bias toward the sun (-Z direction)
+	float fwd_bias = mix(0.55, 1.0, clamp(-dir.z, 0.0, 1.0));
+	glow_mask *= fwd_bias;
+
+	vec3 sunset_glow = horizon_glow_color.rgb * 0.45;
+	vec3 twilight_glow = vec3(0.10, 0.68, 0.82) * 0.32; // Luminous seafoam waterline glow
 	vec3 active_glow = mix(sunset_glow, twilight_glow, cool_factor);
 	sky_col += active_glow * glow_mask * (1.0 - eclipse_mix);
 
