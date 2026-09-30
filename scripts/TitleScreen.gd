@@ -488,11 +488,7 @@ func _start_game(is_survival: bool, is_dev: bool = false) -> void:
 func _on_lang_btn_pressed() -> void:
 	if is_starting: return
 	
-	var audio = AudioStreamPlayer.new()
-	audio.stream = load("res://assets/sfx/ui_tick.wav")
-	audio.bus = "SFX"
-	add_child(audio)
-	audio.play()
+	UIJuice.play_tick()
 	
 	GameState.language = "KR" if GameState.language == "EN" else "EN"
 	GameState.save_settings()
@@ -539,7 +535,7 @@ func _build_achievements_screen() -> void:
 	
 	var vbox = VBoxContainer.new()
 	vbox.name = "VBoxContainer"
-	vbox.add_theme_constant_override("separation", 24)
+	vbox.add_theme_constant_override("separation", 16)
 	center.add_child(vbox)
 	
 	var title_row = HBoxContainer.new()
@@ -577,7 +573,7 @@ func _build_achievements_screen() -> void:
 	vbox.add_child(divider)
 	
 	var scroll = ScrollContainer.new()
-	scroll.custom_minimum_size = Vector2(700, 440)
+	scroll.custom_minimum_size = Vector2(700, 380)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	vbox.add_child(scroll)
@@ -590,10 +586,22 @@ func _build_achievements_screen() -> void:
 	achievement_list.add_theme_constant_override("separation", 16)
 	list_margin.add_child(achievement_list)
 	
+	var divider2 = HSeparator.new()
+	divider2.name = "Divider2"
+	var div2_style = StyleBoxLine.new()
+	div2_style.color = Color(1.0, 0.88, 0.3, 0.35)
+	div2_style.grow_begin = 0
+	div2_style.grow_end = 0
+	div2_style.thickness = 2
+	div2_style.content_margin_top = 0
+	div2_style.content_margin_bottom = 0
+	divider2.add_theme_stylebox_override("separator", div2_style)
+	vbox.add_child(divider2)
+	
 	var back_btn = Button.new()
 	back_btn.name = "BackBtn"
 	back_btn.text = "BACK"
-	back_btn.custom_minimum_size = Vector2(280, 52)
+	back_btn.custom_minimum_size = Vector2(280, 44)
 	
 	var btn_center = CenterContainer.new()
 	btn_center.name = "CenterContainer"
@@ -604,9 +612,14 @@ func _build_achievements_screen() -> void:
 	achievements_prompt_lbl.name = "ClosePrompt"
 	achievements_prompt_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	achievements_prompt_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	achievements_prompt_lbl.add_theme_color_override("font_color", Color(1, 0.8, 0.2, 0.35))
-	achievements_prompt_lbl.add_theme_font_size_override("font_size", 14)
 	achievements_prompt_lbl.text = "PRESS ESC TO CLOSE"
+	_style_label(achievements_prompt_lbl, 14, Color(1.0, 0.88, 0.3, 0.85), null)
+	achievements_prompt_lbl.add_theme_constant_override("outline_size", 1)
+	achievements_prompt_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+	if not GameState.reduce_motion:
+		var sp_tw = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		sp_tw.tween_property(achievements_prompt_lbl, "modulate:a", 0.7, 1.2)
+		sp_tw.tween_property(achievements_prompt_lbl, "modulate:a", 1.0, 1.2)
 	vbox.add_child(achievements_prompt_lbl)
 	
 	back_btn.pressed.connect(_hide_achievements)
@@ -625,7 +638,7 @@ func _show_achievements() -> void:
 	
 	var title = achievements_screen.get_node("CenterContainer/VBoxContainer/TitleRow/Title")
 	title.text = "업적" if is_kr else "ACHIEVEMENTS"
-	_style_label(title, 36, Color(1.0, 0.85, 0.2, 1.0), font)
+	_style_label(title, 32, Color(1.0, 0.85, 0.2, 1.0), font)
 	title.add_theme_constant_override("outline_size", 4)
 	title.add_theme_color_override("font_outline_color", Color.BLACK)
 	
@@ -643,6 +656,9 @@ func _show_achievements() -> void:
 	if achievements_prompt_lbl:
 		achievements_prompt_lbl.text = "닫으려면 ESC를 누르세요" if is_kr else "PRESS ESC TO CLOSE"
 		if font: achievements_prompt_lbl.add_theme_font_override("font", font)
+		achievements_prompt_lbl.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 0.85))
+		achievements_prompt_lbl.add_theme_constant_override("outline_size", 1)
+		achievements_prompt_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 	back_btn.add_theme_font_size_override("font_size", 22)
 	back_btn.add_theme_constant_override("letter_spacing", 1)
 	back_btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
@@ -828,24 +844,14 @@ func _show_achievements() -> void:
 	var back_node = achievements_screen.get_node_or_null("CenterContainer/VBoxContainer/CenterContainer/BackBtn")
 	if back_node: back_node.grab_focus()
 	
-	var audio = AudioStreamPlayer.new()
-	audio.stream = load("res://assets/sfx/ui_tick.wav")
-	audio.bus = "SFX"
-	add_child(audio)
-	audio.play()
-	audio.finished.connect(audio.queue_free)
+	UIJuice.play_tick()
 
 func _hide_achievements() -> void:
 	if not achievements_screen or not achievements_screen.visible: return
 	if achievements_screen.get_meta("is_hiding", false): return
 	achievements_screen.set_meta("is_hiding", true)
 	
-	var audio = AudioStreamPlayer.new()
-	audio.stream = load("res://assets/sfx/ui_tick.wav")
-	audio.bus = "SFX"
-	add_child(audio)
-	audio.play()
-	audio.finished.connect(audio.queue_free)
+	UIJuice.play_tick()
 	
 	var tw = create_tween()
 	tw.tween_property(achievements_screen, "modulate:a", 0.0, 0.2)
@@ -1146,7 +1152,7 @@ func _build_stats_screen() -> void:
 	
 	var vbox = VBoxContainer.new()
 	vbox.name = "VBoxContainer"
-	vbox.add_theme_constant_override("separation", 24)
+	vbox.add_theme_constant_override("separation", 16)
 	center.add_child(vbox)
 	
 	var title_row = HBoxContainer.new()
@@ -1189,10 +1195,22 @@ func _build_stats_screen() -> void:
 	stats_list.add_theme_constant_override("separation", 10)
 	vbox.add_child(stats_list)
 	
+	var divider2 = HSeparator.new()
+	divider2.name = "Divider2"
+	var div2_style = StyleBoxLine.new()
+	div2_style.color = Color(1.0, 0.88, 0.3, 0.35)
+	div2_style.grow_begin = 0
+	div2_style.grow_end = 0
+	div2_style.thickness = 2
+	div2_style.content_margin_top = 0
+	div2_style.content_margin_bottom = 0
+	divider2.add_theme_stylebox_override("separator", div2_style)
+	vbox.add_child(divider2)
+	
 	var back_btn = Button.new()
 	back_btn.name = "BackBtn"
 	back_btn.text = "BACK"
-	back_btn.custom_minimum_size = Vector2(280, 52)
+	back_btn.custom_minimum_size = Vector2(280, 44)
 	
 	var btn_center = CenterContainer.new()
 	btn_center.name = "CenterContainer"
@@ -1203,9 +1221,14 @@ func _build_stats_screen() -> void:
 	stats_prompt_lbl.name = "ClosePrompt"
 	stats_prompt_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	stats_prompt_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	stats_prompt_lbl.add_theme_color_override("font_color", Color(1, 0.8, 0.2, 0.35))
-	stats_prompt_lbl.add_theme_font_size_override("font_size", 14)
 	stats_prompt_lbl.text = "PRESS ESC TO CLOSE"
+	_style_label(stats_prompt_lbl, 14, Color(1.0, 0.88, 0.3, 0.85), null)
+	stats_prompt_lbl.add_theme_constant_override("outline_size", 1)
+	stats_prompt_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+	if not GameState.reduce_motion:
+		var sp_tw = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		sp_tw.tween_property(stats_prompt_lbl, "modulate:a", 0.7, 1.2)
+		sp_tw.tween_property(stats_prompt_lbl, "modulate:a", 1.0, 1.2)
 	vbox.add_child(stats_prompt_lbl)
 	
 	back_btn.pressed.connect(_hide_stats)
@@ -1223,7 +1246,7 @@ func _show_stats() -> void:
 	
 	var title = stats_screen.get_node("CenterContainer/VBoxContainer/TitleRow/Title")
 	title.text = "기록" if is_kr else "LIFETIME STATS"
-	_style_label(title, 36, Color(1.0, 0.85, 0.2, 1.0), font)
+	_style_label(title, 32, Color(1.0, 0.85, 0.2, 1.0), font)
 	title.add_theme_constant_override("outline_size", 4)
 	title.add_theme_color_override("font_outline_color", Color.BLACK)
 	
@@ -1233,6 +1256,9 @@ func _show_stats() -> void:
 	if stats_prompt_lbl:
 		stats_prompt_lbl.text = "닫으려면 ESC를 누르세요" if is_kr else "PRESS ESC TO CLOSE"
 		if font: stats_prompt_lbl.add_theme_font_override("font", font)
+		stats_prompt_lbl.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 0.85))
+		stats_prompt_lbl.add_theme_constant_override("outline_size", 1)
+		stats_prompt_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 	back_btn.add_theme_font_size_override("font_size", 22)
 	back_btn.add_theme_constant_override("letter_spacing", 1)
 	back_btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
@@ -1398,24 +1424,14 @@ func _show_stats() -> void:
 	
 	if back_btn: back_btn.grab_focus()
 	
-	var audio = AudioStreamPlayer.new()
-	audio.stream = load("res://assets/sfx/ui_tick.wav")
-	audio.bus = "SFX"
-	add_child(audio)
-	audio.play()
-	audio.finished.connect(audio.queue_free)
+	UIJuice.play_tick()
 
 func _hide_stats() -> void:
 	if not stats_screen or not stats_screen.visible: return
 	if stats_screen.get_meta("is_hiding", false): return
 	stats_screen.set_meta("is_hiding", true)
 	
-	var audio = AudioStreamPlayer.new()
-	audio.stream = load("res://assets/sfx/ui_tick.wav")
-	audio.bus = "SFX"
-	add_child(audio)
-	audio.play()
-	audio.finished.connect(audio.queue_free)
+	UIJuice.play_tick()
 	
 	var tw = create_tween()
 	tw.tween_property(stats_screen, "modulate:a", 0.0, 0.2)
@@ -2124,12 +2140,7 @@ func _show_settings() -> void:
 	
 	_update_setting_lang_toggle(GameState.language == "KR")
 	
-	var audio = AudioStreamPlayer.new()
-	audio.stream = load("res://assets/sfx/ui_tick.wav")
-	audio.bus = "SFX"
-	add_child(audio)
-	audio.play()
-	audio.finished.connect(audio.queue_free)
+	UIJuice.play_tick()
 	
 	settings_screen.modulate.a = 0.0
 	settings_screen.visible = true
@@ -2143,12 +2154,7 @@ func _hide_settings() -> void:
 	if settings_screen.get_meta("is_hiding", false): return
 	settings_screen.set_meta("is_hiding", true)
 	
-	var audio = AudioStreamPlayer.new()
-	audio.stream = load("res://assets/sfx/ui_tick.wav")
-	audio.bus = "SFX"
-	add_child(audio)
-	audio.play()
-	audio.finished.connect(audio.queue_free)
+	UIJuice.play_tick()
 	
 	var tw = create_tween()
 	tw.tween_property(settings_screen, "modulate:a", 0.0, 0.2)
