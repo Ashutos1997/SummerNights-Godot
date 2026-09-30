@@ -680,21 +680,20 @@ func load_settings() -> void:
 		var loaded_achievements = config.get_value("Stats", "unlocked_achievements", [])
 		unlocked_achievements.assign(loaded_achievements)
 		
-		# Apply loaded fullscreen state with a slight delay to ensure macOS window server is ready
-		# Do not check window_get_mode() immediately, as MacOS might still be in transition
-		if is_inside_tree() and get_tree():
-			var apply_timer = get_tree().create_timer(0.1)
-			apply_timer.timeout.connect(func():
-				if fullscreen:
-					_apply_window_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
-				else:
-					_apply_window_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-			)
-		else:
+	# Apply fullscreen state (whether loaded from config or default true) with a slight delay for macOS window server
+	if is_inside_tree() and get_tree():
+		var apply_timer = get_tree().create_timer(0.1)
+		apply_timer.timeout.connect(func():
 			if fullscreen:
 				_apply_window_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 			else:
 				_apply_window_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		)
+	else:
+		if fullscreen:
+			_apply_window_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+		else:
+			_apply_window_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 
 func _apply_window_mode(mode: int) -> void:
 	DisplayServer.window_set_mode(mode)

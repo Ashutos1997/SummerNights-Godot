@@ -127,6 +127,7 @@ var settings_cat_system_lbl: Label = null
 
 var kenney_font: Font
 var galmuri_font: Font
+var inter_font: Font
 var lang_btn_en: Button
 var lang_btn_kr: Button
 
@@ -607,7 +608,9 @@ func _ready() -> void:
 	
 	kenney_font = load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
 	galmuri_font = load("res://assets/fonts/Galmuri11.ttf")
+	inter_font = load("res://assets/fonts/Inter-Medium.ttf")
 	var font = kenney_font
+	var body_font: Font = galmuri_font if is_kr else inter_font
 	
 	if ready_label:
 		ready_label.visible = false
@@ -720,14 +723,14 @@ func _ready() -> void:
 			else:
 				p_lbl.modulate.a = 1.0
  
-	# Row Labels styling (13.4:1 contrast PASS)
+	# Row Labels styling (13.4:1 contrast PASS - even number system: 16px body font)
 	for row_name in ["RowSFX", "RowSens", "RowMotion", "RowVibration", "RowFullscreen", "RowGoldSkin"]:
 		var r_node = $HUD/SettingsScreen/CenterContainer/VBoxContainer.get_node_or_null(row_name)
 		if r_node:
 			var r_lbl = r_node.get_node_or_null("Label")
 			if r_lbl:
-				_style_lbl(r_lbl, 17, Color(0.92, 0.92, 0.92, 0.95), 2, Color.BLACK, font)
-				r_lbl.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+				_style_lbl(r_lbl, 16, Color(0.92, 0.92, 0.92, 0.95), 2, Color.BLACK, body_font)
+				r_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
 	for row_name in ["RowColorDepth", "RowDithering", "RowPS1", "RowHeatwave"]:
 		var filter_r_node = $HUD/FiltersScreen/CenterContainer/VBoxContainer.get_node_or_null(row_name)
@@ -741,7 +744,7 @@ func _ready() -> void:
 	_build_settings_category_headers(font)
 
 	# Build language row programmatically (below RowFullscreen)
-	_build_lang_row(font)
+	_build_lang_row(body_font)
 
 	if pause_resume_btn:
 		pause_resume_btn.pressed.connect(_on_pause_resume_pressed)
@@ -879,7 +882,18 @@ func _ready() -> void:
 	style_btn_on.set_border_width_all(1)
 	style_btn_on.set_corner_radius_all(4)
 
-	for btn in [motion_check, vibration_check, fullscreen_check, gold_skin_check, color_depth_check, dithering_check, ps1_check, heatwave_check]:
+	for btn in [motion_check, vibration_check, fullscreen_check, gold_skin_check]:
+		if btn:
+			if body_font: btn.add_theme_font_override("font", body_font)
+			btn.add_theme_font_size_override("font_size", 14)
+			btn.add_theme_constant_override("outline_size", 2)
+			btn.add_theme_color_override("font_outline_color", Color.BLACK)
+			btn.add_theme_stylebox_override("normal", style_btn_off)
+			btn.add_theme_stylebox_override("hover", style_btn_off)
+			btn.add_theme_stylebox_override("pressed", style_btn_on)
+			btn.add_theme_stylebox_override("focus", style_focus)
+
+	for btn in [color_depth_check, dithering_check, ps1_check, heatwave_check]:
 		if btn:
 			if font: btn.add_theme_font_override("font", font)
 			btn.add_theme_font_size_override("font_size", 18)
@@ -1006,7 +1020,7 @@ func _build_settings_category_headers(font: Font) -> void:
 		lbl.text = title_kr if is_kr else title_en
 		var cur_font = galmuri_font if is_kr else kenney_font
 		if cur_font: lbl.add_theme_font_override("font", cur_font)
-		lbl.add_theme_font_size_override("font_size", 14 if is_kr else 13)
+		lbl.add_theme_font_size_override("font_size", 14)
 		lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
 		lbl.add_theme_constant_override("outline_size", 1)
 		lbl.add_theme_color_override("font_outline_color", Color.BLACK)
@@ -1071,9 +1085,12 @@ func _build_settings_category_headers(font: Font) -> void:
 	if div2:
 		div2.add_theme_constant_override("separation", 18)
 
-func _build_lang_row(font: Font) -> void:
+func _build_lang_row(in_body_font: Font = null) -> void:
 	var vbox = $HUD/SettingsScreen/CenterContainer/VBoxContainer
 	if not vbox: return
+
+	var is_kr = GameState.language == "KR"
+	var row_font: Font = in_body_font if in_body_font else (galmuri_font if is_kr else inter_font)
 
 	var spacer_prompt = vbox.get_node_or_null("SpacerPrompt")
 	if spacer_prompt: spacer_prompt.visible = false
@@ -1085,13 +1102,15 @@ func _build_lang_row(font: Font) -> void:
 
 	var lbl = Label.new()
 	lbl.name = "Label"
-	lbl.text = "Language"
+	lbl.text = "언어" if is_kr else "Language"
 	lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_style_lbl(lbl, 17, Color(0.92, 0.92, 0.92, 0.95), 2, Color.BLACK, font)
+	_style_lbl(lbl, 16, Color(0.92, 0.92, 0.92, 0.95), 2, Color.BLACK, row_font)
+	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	row.add_child(lbl)
 
 	# ENG | KOR inline toggle (matches ON/OFF button visual language)
 	var toggle_box = HBoxContainer.new()
+	toggle_box.name = "ToggleBox"
 	toggle_box.add_theme_constant_override("separation", 0)
 	toggle_box.size_flags_horizontal = Control.SIZE_SHRINK_END
 
@@ -1099,8 +1118,8 @@ func _build_lang_row(font: Font) -> void:
 	var btn_en = Button.new()
 	btn_en.name = "LangEN"
 	btn_en.text = "ENG"
-	if kenney_font: btn_en.add_theme_font_override("font", kenney_font)
-	btn_en.add_theme_font_size_override("font_size", 18)
+	if row_font: btn_en.add_theme_font_override("font", row_font)
+	btn_en.add_theme_font_size_override("font_size", 14)
 	btn_en.add_theme_constant_override("outline_size", 1)
 	btn_en.add_theme_color_override("font_outline_color", Color.BLACK)
 	var lang_focus = StyleBoxFlat.new()
@@ -1118,9 +1137,10 @@ func _build_lang_row(font: Font) -> void:
 
 	# Separator
 	var sep = Label.new()
+	sep.name = "Sep"
 	sep.text = " | "
-	if kenney_font: sep.add_theme_font_override("font", kenney_font)
-	sep.add_theme_font_size_override("font_size", 18)
+	if row_font: sep.add_theme_font_override("font", row_font)
+	sep.add_theme_font_size_override("font_size", 14)
 	sep.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 0.35))
 	toggle_box.add_child(sep)
 
@@ -1128,8 +1148,8 @@ func _build_lang_row(font: Font) -> void:
 	var btn_kr = Button.new()
 	btn_kr.name = "LangKR"
 	btn_kr.text = "KOR"
-	if kenney_font: btn_kr.add_theme_font_override("font", kenney_font)
-	btn_kr.add_theme_font_size_override("font_size", 18)
+	if row_font: btn_kr.add_theme_font_override("font", row_font)
+	btn_kr.add_theme_font_size_override("font_size", 14)
 	btn_kr.add_theme_constant_override("outline_size", 1)
 	btn_kr.add_theme_color_override("font_outline_color", Color.BLACK)
 	btn_kr.add_theme_stylebox_override("focus", lang_focus)
@@ -1437,8 +1457,8 @@ func _apply_language(lang: String) -> void:
 				var r_lbl = r.get_node_or_null("Label")
 				if r_lbl:
 					r_lbl.text = row_texts_kr[i] if is_kr else row_texts_en[i]
-					if font: r_lbl.add_theme_font_override("font", font)
-					r_lbl.add_theme_font_size_override("font_size", 20)
+					if body_font: r_lbl.add_theme_font_override("font", body_font)
+					r_lbl.add_theme_font_size_override("font_size", 16)
 					r_lbl.add_theme_color_override("font_color", Color(0.92, 0.92, 0.92, 0.95))
 					r_lbl.add_theme_color_override("font_hover_color", Color(0.92, 0.92, 0.92, 0.95))
 					r_lbl.add_theme_color_override("font_pressed_color", Color(0.92, 0.92, 0.92, 0.95))
@@ -1446,23 +1466,43 @@ func _apply_language(lang: String) -> void:
 					r_lbl.add_theme_color_override("font_disabled_color", Color(0.92, 0.92, 0.92, 0.95))
 					r_lbl.add_theme_constant_override("outline_size", 2)
 					r_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+					r_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
-		# Categorized Section Badges
+		# Toggle buttons & options under categories: body_font, 14px (even number system)
+		for btn in [motion_check, vibration_check, fullscreen_check, gold_skin_check]:
+			if btn:
+				if body_font: btn.add_theme_font_override("font", body_font)
+				btn.add_theme_font_size_override("font_size", 14)
+
+		if lang_btn_en and body_font:
+			lang_btn_en.add_theme_font_override("font", body_font)
+			lang_btn_en.add_theme_font_size_override("font_size", 14)
+		if lang_btn_kr and body_font:
+			lang_btn_kr.add_theme_font_override("font", body_font)
+			lang_btn_kr.add_theme_font_size_override("font_size", 14)
+		var lang_row = settings_vbox.get_node_or_null("RowLanguage")
+		if lang_row:
+			var sep = lang_row.get_node_or_null("ToggleBox/Sep")
+			if sep and body_font:
+				sep.add_theme_font_override("font", body_font)
+				sep.add_theme_font_size_override("font_size", 14)
+
+		# Categorized Section Badges (14px even number system)
 		if settings_cat_audio_lbl:
 			settings_cat_audio_lbl.text = "오디오" if is_kr else "AUDIO"
 			var cur_font = galmuri_font if is_kr else kenney_font
 			if cur_font: settings_cat_audio_lbl.add_theme_font_override("font", cur_font)
-			settings_cat_audio_lbl.add_theme_font_size_override("font_size", 14 if is_kr else 13)
+			settings_cat_audio_lbl.add_theme_font_size_override("font_size", 14)
 		if settings_cat_gameplay_lbl:
 			settings_cat_gameplay_lbl.text = "조작 및 편의" if is_kr else "GAMEPLAY & CONTROLS"
 			var cur_font = galmuri_font if is_kr else kenney_font
 			if cur_font: settings_cat_gameplay_lbl.add_theme_font_override("font", cur_font)
-			settings_cat_gameplay_lbl.add_theme_font_size_override("font_size", 14 if is_kr else 13)
+			settings_cat_gameplay_lbl.add_theme_font_size_override("font_size", 14)
 		if settings_cat_system_lbl:
 			settings_cat_system_lbl.text = "화면 및 시스템" if is_kr else "DISPLAY & SYSTEM"
 			var cur_font = galmuri_font if is_kr else kenney_font
 			if cur_font: settings_cat_system_lbl.add_theme_font_override("font", cur_font)
-			settings_cat_system_lbl.add_theme_font_size_override("font_size", 14 if is_kr else 13)
+			settings_cat_system_lbl.add_theme_font_size_override("font_size", 14)
 
 	for btn in [settings_back_btn]:
 		if btn:

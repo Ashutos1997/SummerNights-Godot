@@ -7,6 +7,8 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### Improved
 * Atmospheric Horizon Bloom & Seamless Sea Blending: Replaced the sharp exponential horizon glow cusp in the sky shader with a smooth Gaussian bloom softly biased toward the sun, aligned the lower hemisphere with deep oceanic blue, and tapered the glow along the sea waterline, completely eliminating the rigid "tube" seam artifact without altering gameplay, camera framing, or island geometry.
+* Fullscreen Window Mode by Default: Configured the engine display mode to fullscreen and ensured default fullscreen state applies across all boots and platforms.
+* Settings Menu Legibility & Even-Number System: Standardized all setting rows and controls under the 3 categories (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`) to use the body typeface (`Inter-Medium.ttf` for EN, `Galmuri11.ttf` for KR), scaled row labels to 16px, scaled toggle/language buttons to 14px, and set category badges to 14px, strictly adhering to an even-number pixel sizing system for clean readability.
 * Version Synchronization: Unified release numbering to v1.7 across both GitHub and itch.io export presets and project configuration.
 
 ---
@@ -282,6 +284,8 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### 개선됨 (Improved)
 * 대기 지평선 블룸 및 자연스러운 해수면 블렌딩: 하늘 셰이더의 날카로운 지평선 발광 첨점을 태양 방향으로 부드럽게 퍼지는 가우시안 대기 블룸으로 개편하고, 하부 반구 색상을 심해 네이비 톤으로 일치시켜 수평선 이음새와 인위적인 "발광 튜브" 현상을 게임플레이, 카메라 구도 및 섬 지형 변형 없이 완벽히 해소.
+* 기본 전체화면 실행 모드 설정: 엔진 디스플레이 초기화 설정을 전체화면 모드로 구성하고, 첫 실행 및 모든 플랫폼에서 기본 전체화면 상태가 안정적으로 적용되도록 개선.
+* 설정 화면 가독성 및 짝수 폰트 크기 체계 개편: 3개 카테고리(`오디오`, `조작 및 편의`, `화면 및 시스템`) 하위의 모든 설정 항목 및 컨트롤 텍스트를 가독성이 뛰어난 본문 서체(`Inter-Medium.ttf` 영문 / `Galmuri11.ttf` 한국어)로 통일하고, 항목 라벨을 16px, 토글/언어 버튼을 14px, 카테고리 배지를 14px로 조정하여 완벽한 짝수 픽셀 스케일 체계 적용.
 * 버전 번호 통일 동기화: GitHub 및 itch.io의 모든 내보내기 프리셋과 프로젝트 설정 버전 번호를 v1.7로 일치 동기화.
 
 ---

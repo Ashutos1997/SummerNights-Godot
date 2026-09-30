@@ -45,7 +45,7 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 * **Weapon Wheel:** 6 procedural slices with 12px linear gap spacing, centered 3D previews, and 4px depth shadows. Bottom card displays archetype badges, responsive stat bars, and crit multipliers.
 * **Drafting Screen (Perks):** 3-card deal entrance with 6px drop shadows and rarity badges (`[ RARE ]`, `[ UNCOMMON ]`, `[ COMMON ]`). Max rolls feature an enhanced golden border and glowing `[ MAX ROLL! ]` / `[ 최고 수치! ]` badge.
 * **Achievement Cards:** 700x100 cards with 64x64 icon plates, progress bars, and cyber gold completion badges.
-* **Settings Screen:** 3 categorized sections (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`) using retro badges, 12px VBox separation, 28px category clearance, and 17px off-white body labels (`Color(0.92, 0.92, 0.92, 0.95)`).
+* **Settings Screen:** 3 categorized sections (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`) using 14px retro badges, 12px VBox separation, 28px category clearance, unified body typography (`Inter-Medium.ttf` EN / `Galmuri11.ttf` KR) with 16px off-white labels (`Color(0.92, 0.92, 0.92, 0.95)`), and 14px toggle/language buttons (even number system).
 * **Game Over Recap:** Frameless 380px stat rows with 32x32 retro plates and milestone badges (`[ NEW BEST! ]`).
 * **Celestial Awakening Presentation:**
   * *World (Layer 0):* Ethereal Domain filter with indigo split-toning and cyan anamorphic flares.
@@ -53,7 +53,7 @@ Design tokens, color palettes, typography, and component specifications for *Sum
   * *Audio:* CC0 activation swell and deactivation dissipation SFX.
 
 ### Boot Splash & Startup Continuity
-* **Window Initialization:** Launches directly with dark background `Color(0.02, 0.01, 0.05, 1)` with stock splash disabled.
+* **Window Initialization:** Launches directly in Fullscreen mode with dark background `Color(0.02, 0.01, 0.05, 1)` with stock splash disabled.
 * **Branding Sequence:** Monochrome Godot logo with "M A D E   W I T H" gold text, flanked by 2px hairline wings.
 * **Frame Tracing:** Dedicated `SplashBorderDrawer` progressively traces the 2px gold frame over 3.0s in sync with `ps1_startup.wav`, transitioning smoothly to the title screen.
 
