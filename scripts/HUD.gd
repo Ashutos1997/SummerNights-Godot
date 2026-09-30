@@ -267,7 +267,8 @@ func update_weather_icon(weather_type: String) -> void:
 	weather_icon_container.visible = true
 	
 	if weather_type == "none":
-		weather_icon.texture = load("res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png")
+		weather_icon.texture = load("res://assets/ui/icons/sun.svg")
+		weather_icon.modulate = Color(1.0, 0.85, 0.25, 1.0)
 		if _weather_pulse_tween:
 			_weather_pulse_tween.kill()
 		weather_icon_container.scale = Vector2(1, 1)
@@ -275,8 +276,10 @@ func update_weather_icon(weather_type: String) -> void:
 		
 	if weather_type == "rain":
 		weather_icon.texture = load("res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_white.png")
+		weather_icon.modulate = Color(0.4, 0.85, 1.0, 1.0)
 	elif weather_type == "eclipse":
 		weather_icon.texture = load("res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_red.png")
+		weather_icon.modulate = Color.WHITE
 		
 	if _weather_pulse_tween:
 		_weather_pulse_tween.kill()
@@ -3280,7 +3283,7 @@ func show_weapon_unlock() -> void:
 	var is_kr = GameState.language == "KR"
 	var title = "무기 해금됨" if is_kr else "WEAPON UNLOCKED"
 	var desc = "[TAB] 을 길게 눌러 장착" if is_kr else "HOLD [TAB] TO EQUIP"
-	show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1.0, 0.9, 0.2, 1.0))
+	show_toast(title, desc, "res://assets/ui/icons/padlock-open.svg", Color(1.0, 0.85, 0.20, 1.0))
 
 func show_catastrom_unlock() -> void:
 	var is_kr = GameState.language == "KR"
@@ -3336,7 +3339,7 @@ func show_convergence_banner() -> void:
 	banner.add_child(hbox)
 
 	var icon = TextureRect.new()
-	icon.texture = load("res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png")
+	icon.texture = load("res://assets/ui/icons/sun.svg")
 	icon.custom_minimum_size = Vector2(36, 36)
 	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED

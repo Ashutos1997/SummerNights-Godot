@@ -4823,7 +4823,7 @@ func _trigger_phase2() -> void:
 			var is_kr = GameState.language == "KR"
 			var title = "태양 수렴: 2페이즈 각성!" if is_kr else "SOLAR CONVERGENCE: PHASE 2"
 			var desc = "폭주 드론 군체 및 황금 방어막 재기동!" if is_kr else "Overdrive Drone Swarm & Golden Shield Re-engaged!"
-			hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1.0, 0.45, 0.15))
+			hud.show_toast(title, desc, "res://assets/ui/icons/delivery-drone.svg", Color(1.0, 0.45, 0.15))
 	
 	mirage_cooldown = 1.5 # Fast mirage readiness in Phase 2
 	await get_tree().create_timer(0.6).timeout
@@ -4847,7 +4847,7 @@ func toggle_solar_drones() -> void:
 			var is_kr = GameState.language == "KR"
 			var title = "솔라 드라이버 장착!" if is_kr else "SOLAR DRIVER EQUIPPED!"
 			var desc = "적도 행성 벨트 및 드론 군체 전개" if is_kr else "Planetary Belt & Drone Swarm Deployed"
-			hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1.0, 0.8, 0.2))
+			hud.show_toast(title, desc, "res://assets/ui/icons/delivery-drone.svg", Color(1.0, 0.80, 0.20))
 
 func toggle_solar_driver() -> void:
 	toggle_solar_drones()
@@ -4917,7 +4917,7 @@ func _on_solar_drone_ice_shattered(pos: Vector3) -> void:
 		var is_kr = GameState.language == "KR"
 		var title = "냉기 분쇄!" if is_kr else "ICE SHATTER!"
 		var desc = "+500점 · 궤도 드론 결빙 파괴 (+20% 물, +8% 필살기)" if is_kr else "+500 PTS · DRONE SHATTERED (+20% WATER, +8% ULT)"
-		hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(0.35, 0.95, 1.0))
+		hud.show_toast(title, desc, "res://assets/ui/icons/shatter.svg", Color(0.35, 0.95, 1.0))
 
 func start_celestial_awakening(duration: float = 15.0) -> void:
 	# Exclusively locked to Kitsune Buster IX
@@ -4926,7 +4926,7 @@ func start_celestial_awakening(duration: float = 15.0) -> void:
 			var is_kr = GameState.language == "KR"
 			var title = "구미호 버스터 IX 필요" if is_kr else "KITSUNE BUSTER IX REQUIRED"
 			var desc = "신성의 각성은 구미호 버스터 전용입니다" if is_kr else "CELESTIAL AWAKENING REQUIRES KITSUNE BUSTER IX"
-			hud.show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1.0, 0.85, 0.4, 1.0))
+			hud.show_toast(title, desc, "res://assets/ui/hud_elements/meter_celestial.svg", Color(0.35, 0.95, 1.0))
 		return
 
 	is_celestial_awakened = true
@@ -6007,7 +6007,7 @@ func _unhandled_input(event: InputEvent) -> void:
 					GameState.unlock_achievement(locked.pick_random())
 				else:
 					if hud:
-						hud.show_toast("All Unlocked!", "Reset settings.cfg to test again.", "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_yellow.png", Color(1,1,1))
+						hud.show_toast("All Unlocked!", "Reset settings.cfg to test again.", "res://assets/ui/icons/padlock-open.svg", Color(1.0, 0.85, 0.2))
 
 			KEY_W:
 				if level_timer > 0.0:

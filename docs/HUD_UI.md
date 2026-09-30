@@ -18,9 +18,9 @@ Architectural map and layout reference for `HUD.tscn`.
 * **TopRightInfo (VBoxContainer):** Strict 24px right-aligned container.
   * **TimerLabel:** Wave time remaining. Pulses red and bounces when <10s.
   * **ScoreLabel:** Live arcade score. Scales up on score events.
-* **WeatherIconContainer:** Persistent icon showing active weather (Normal, Rain, Eclipse).
+* **WeatherIconContainer:** Persistent icon showing active weather (Normal sun with solar gold modulate, Rain, Eclipse).
 * **WeatherTimerLabel:** Precise eclipse countdown (requires "Shadow Walker" achievement).
-* **ToastContainer:** Deferred transient alerts (weapon unlocks, Catastrom/Celestial ready, shield prompts).
+* **ToastContainer:** Deferred transient alerts with bespoke vector icons (weapon unlocks, Catastrom/Celestial ready, shield prompts, drone events).
 
 ### Center
 * **Crosshair:** Dynamic reticle scaling on hits. Inner ring tracks water capacity. Flashes red when empty, green on crits.

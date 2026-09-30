@@ -114,7 +114,7 @@ const BUFFS: Dictionary = {
 		"desc_kr": "물총의 냉각력이 영구적으로 증가했습니다."
 	},
 	"ice_upgrade": {
-		"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_white.png",
+		"icon": "res://assets/ui/icons/ice-spear.svg",
 		"title_en": "Extra Ice Charge",
 		"title_kr": "추가 얼음 충전",
 		"desc_en": "Spawn with an additional Ice Burst charge.",
@@ -496,7 +496,7 @@ const WAVE_PERKS: Dictionary = {
 		"weight": 80
 	},
 	"subzero_reserve": {
-		"icon": "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_star_white.png",
+		"icon": "res://assets/ui/icons/thermometer-cold.svg",
 		"title_en": "Sub-Zero Reserve",
 		"title_kr": "극저온 예비탄",
 		"desc_en": "+1 Max Ice Blast Charge & Refills 1 per wave.",
