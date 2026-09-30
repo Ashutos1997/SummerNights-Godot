@@ -87,19 +87,27 @@ var last_callout_tier: int = 0
 @onready var pause_resume_btn   = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/ResumeBtn
 @onready var settings_btn       = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/SettingsBtn
 @onready var filters_btn        = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/FiltersBtn
-@onready var controller_btn     = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/ControllerBtn
-@onready var keyboard_row = $HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow
-@onready var xbox_row = $HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow
 @onready var credits_btn        = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/CreditsBtn
+@onready var controller_btn     = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/ControllerBtn
 @onready var pause_menu_btn     = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/MainMenuBtn
 @onready var esc_hint_label     = $HUD/esc_hint_label
+
+var achievements_btn: Button
+var buffs_btn: Button
+var achievements_prompt: Label = null
+var buffs_prompt: Label = null
+
+@onready var keyboard_row = $HUD/ControllerScreen/CenterContainer/VBoxContainer/KeyboardRow
+@onready var xbox_row = $HUD/ControllerScreen/CenterContainer/VBoxContainer/XboxRow
 
 @onready var settings_screen   = $HUD/SettingsScreen
 @onready var settings_bg       = $HUD/SettingsScreen/BG
 @onready var settings_title    = $HUD/SettingsScreen/CenterContainer/VBoxContainer/TitleRow/Title
 @onready var settings_prompt   = $HUD/SettingsScreen/CenterContainer/VBoxContainer/ClosePrompt
 @onready var sfx_slider        = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowSFX/Slider
+@onready var sfx_val_lbl       = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowSFX/ValLabel
 @onready var sens_slider       = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowSens/Slider
+@onready var sens_val_lbl      = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowSens/ValLabel
 @onready var motion_check      = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowMotion/Check
 @onready var vibration_check   = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowVibration/Check
 @onready var fullscreen_check  = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowFullscreen/Check
@@ -138,11 +146,9 @@ var lang_btn_kr: Button
 @onready var credits_vbox     = $HUD/CreditsScreen/CenterContainer/VBoxContainer
 @onready var credits_back_btn = $HUD/CreditsScreen/CenterContainer/VBoxContainer/BackBtn
 
-var achievements_btn: Button
 var achievements_screen: Control
 var achievement_list: VBoxContainer
 
-var buffs_btn: Button
 var buffs_screen: Control
 var buffs_list: VBoxContainer
 
@@ -737,12 +743,15 @@ func _ready() -> void:
 		if filter_r_node:
 			var r_lbl = filter_r_node.get_node_or_null("Label")
 			if r_lbl:
-				_style_lbl(r_lbl, 17, Color(0.92, 0.92, 0.92, 0.95), 2, Color.BLACK, font)
-				r_lbl.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+				_style_lbl(r_lbl, 16, Color(0.92, 0.92, 0.92, 0.95), 2, Color.BLACK, body_font)
+				r_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			var r_btn = filter_r_node.get_node_or_null("Check")
+			if r_btn:
+				if body_font: r_btn.add_theme_font_override("font", body_font)
+				r_btn.add_theme_font_size_override("font_size", 14)
 
-	# Build categorized section badges for Settings Screen (Option B: Tactile Retro Badges)
+	# Build categorized section badges for Settings Screen and Pause Menu (Tactile Retro Badges)
 	_build_settings_category_headers(font)
-
 	# Build language row programmatically (below RowFullscreen)
 	_build_lang_row(body_font)
 
@@ -895,8 +904,8 @@ func _ready() -> void:
 
 	for btn in [color_depth_check, dithering_check, ps1_check, heatwave_check]:
 		if btn:
-			if font: btn.add_theme_font_override("font", font)
-			btn.add_theme_font_size_override("font_size", 18)
+			if body_font: btn.add_theme_font_override("font", body_font)
+			btn.add_theme_font_size_override("font_size", 14)
 			btn.add_theme_constant_override("outline_size", 2)
 			btn.add_theme_color_override("font_outline_color", Color.BLACK)
 			btn.add_theme_stylebox_override("normal", style_btn_off)
@@ -910,6 +919,14 @@ func _ready() -> void:
 	# Apply GameState values to controls
 	sfx_slider.value = GameState.sfx_volume
 	sens_slider.value = GameState.mouse_sensitivity
+	if sfx_val_lbl:
+		sfx_val_lbl.text = "%d%%" % int(round(GameState.sfx_volume * 100.0))
+		if body_font: sfx_val_lbl.add_theme_font_override("font", body_font)
+		sfx_val_lbl.add_theme_font_size_override("font_size", 14)
+	if sens_val_lbl:
+		sens_val_lbl.text = "%.1fx" % GameState.mouse_sensitivity
+		if body_font: sens_val_lbl.add_theme_font_override("font", body_font)
+		sens_val_lbl.add_theme_font_size_override("font_size", 14)
 	motion_check.button_pressed = GameState.reduce_motion
 	if vibration_check: vibration_check.button_pressed = GameState.vibration_enabled
 	fullscreen_check.button_pressed = GameState.fullscreen
@@ -1504,12 +1521,20 @@ func _apply_language(lang: String) -> void:
 			if cur_font: settings_cat_system_lbl.add_theme_font_override("font", cur_font)
 			settings_cat_system_lbl.add_theme_font_size_override("font_size", 14)
 
+		if sfx_val_lbl and body_font:
+			sfx_val_lbl.add_theme_font_override("font", body_font)
+			sfx_val_lbl.add_theme_font_size_override("font_size", 14)
+		if sens_val_lbl and body_font:
+			sens_val_lbl.add_theme_font_override("font", body_font)
+			sens_val_lbl.add_theme_font_size_override("font_size", 14)
+
 	for btn in [settings_back_btn]:
 		if btn:
 			btn.text = "뒤로" if is_kr else "BACK"
 			if font: btn.add_theme_font_override("font", font)
 
 	if settings_prompt:
+		settings_prompt.text = "닫으려면 ESC를 누르세요" if is_kr else "PRESS ESC TO CLOSE"
 		if font: settings_prompt.add_theme_font_override("font", font)
 
 	# ── Filters panel ─────────────────────────────────────────────────────────
@@ -1540,8 +1565,8 @@ func _apply_language(lang: String) -> void:
 				var r_lbl = r.get_node_or_null("Label")
 				if r_lbl:
 					r_lbl.text = filter_labels[r_name]
-					if font: r_lbl.add_theme_font_override("font", font)
-					r_lbl.add_theme_font_size_override("font_size", 20)
+					if body_font: r_lbl.add_theme_font_override("font", body_font)
+					r_lbl.add_theme_font_size_override("font_size", 16)
 					r_lbl.add_theme_color_override("font_color", Color(0.92, 0.92, 0.92, 0.95))
 					r_lbl.add_theme_color_override("font_hover_color", Color(0.92, 0.92, 0.92, 0.95))
 					r_lbl.add_theme_color_override("font_pressed_color", Color(0.92, 0.92, 0.92, 0.95))
@@ -1549,6 +1574,11 @@ func _apply_language(lang: String) -> void:
 					r_lbl.add_theme_color_override("font_disabled_color", Color(0.92, 0.92, 0.92, 0.95))
 					r_lbl.add_theme_constant_override("outline_size", 2)
 					r_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+					r_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+				var r_btn = r.get_node_or_null("Check")
+				if r_btn:
+					if body_font: r_btn.add_theme_font_override("font", body_font)
+					r_btn.add_theme_font_size_override("font_size", 14)
 
 		for sep_name in ["Divider", "Divider2"]:
 			var sep = filter_vbox.get_node_or_null(sep_name)
@@ -1780,6 +1810,7 @@ func _apply_language(lang: String) -> void:
 			if font: btn.add_theme_font_override("font", font)
 
 	if credits_prompt:
+		credits_prompt.text = "닫으려면 ESC를 누르세요" if is_kr else "PRESS ESC TO CLOSE"
 		if font: credits_prompt.add_theme_font_override("font", font)
 
 	# ── Win screen ────────────────────────────────────────────────────────────
@@ -1931,6 +1962,12 @@ func _apply_language(lang: String) -> void:
 	if buffs_btn:
 		buffs_btn.text = "활성화된 버프" if is_kr else "ACTIVE BUFFS"
 		if font: buffs_btn.add_theme_font_override("font", font)
+	if achievements_prompt:
+		achievements_prompt.text = "닫으려면 ESC를 누르세요" if is_kr else "PRESS ESC TO CLOSE"
+		if font: achievements_prompt.add_theme_font_override("font", font)
+	if buffs_prompt:
+		buffs_prompt.text = "닫으려면 ESC를 누르세요" if is_kr else "PRESS ESC TO CLOSE"
+		if font: buffs_prompt.add_theme_font_override("font", font)
 	if pause_menu_btn:
 		pause_menu_btn.text = "메인 메뉴" if is_kr else "MAIN MENU"
 		if font: pause_menu_btn.add_theme_font_override("font", font)
@@ -1982,6 +2019,8 @@ func _update_toggle_btn(btn: Button, enabled: bool) -> void:
 func _on_sfx_volume_changed(val: float) -> void:
 	GameState.sfx_volume = val
 	GameState.save_settings()
+	if sfx_val_lbl:
+		sfx_val_lbl.text = "%d%%" % int(round(val * 100.0))
 	var db_val = linear_to_db(val)
 	var idx1 = AudioServer.get_bus_index("SFX_WEAPON")
 	if idx1 != -1: AudioServer.set_bus_volume_db(idx1, db_val)
@@ -1993,6 +2032,8 @@ func _on_sfx_volume_changed(val: float) -> void:
 func _on_sens_changed(val: float) -> void:
 	GameState.mouse_sensitivity = val
 	GameState.save_settings()
+	if sens_val_lbl:
+		sens_val_lbl.text = "%.1fx" % val
 	sensitivity_changed.emit(val)
 
 func _on_motion_toggled(enabled: bool) -> void:
@@ -3708,6 +3749,18 @@ func _build_achievements_screen() -> void:
 	btn_center.add_child(back_btn)
 	vbox.add_child(btn_center)
 	
+	achievements_prompt = Label.new()
+	achievements_prompt.name = "ClosePrompt"
+	achievements_prompt.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	achievements_prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	achievements_prompt.text = "PRESS ESC TO CLOSE"
+	_style_lbl(achievements_prompt, 14, Color(1.0, 0.88, 0.3, 0.85), 1, Color.BLACK, null)
+	if not GameState.reduce_motion:
+		var sp_tw = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		sp_tw.tween_property(achievements_prompt, "modulate:a", 0.7, 1.2)
+		sp_tw.tween_property(achievements_prompt, "modulate:a", 1.0, 1.2)
+	vbox.add_child(achievements_prompt)
+	
 	back_btn.pressed.connect(hide_achievements_screen)
 
 func show_achievements_screen() -> void:
@@ -3737,6 +3790,9 @@ func show_achievements_screen() -> void:
 	var back_btn = achievements_screen.get_node("CenterContainer/VBoxContainer/CenterContainer/BackBtn")
 	back_btn.text = "돌아가기" if is_kr else "BACK"
 	if font: back_btn.add_theme_font_override("font", font)
+	if achievements_prompt:
+		achievements_prompt.text = "닫으려면 ESC를 누르세요" if is_kr else "PRESS ESC TO CLOSE"
+		if font: achievements_prompt.add_theme_font_override("font", font)
 	back_btn.add_theme_font_size_override("font_size", 22)
 	back_btn.add_theme_constant_override("letter_spacing", 1)
 	back_btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
@@ -4040,6 +4096,18 @@ func _build_buffs_screen() -> void:
 	btn_center.add_child(back_btn)
 	vbox.add_child(btn_center)
 	
+	buffs_prompt = Label.new()
+	buffs_prompt.name = "ClosePrompt"
+	buffs_prompt.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	buffs_prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	buffs_prompt.text = "PRESS ESC TO CLOSE"
+	_style_lbl(buffs_prompt, 14, Color(1.0, 0.88, 0.3, 0.85), 1, Color.BLACK, null)
+	if not GameState.reduce_motion:
+		var sp_tw = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		sp_tw.tween_property(buffs_prompt, "modulate:a", 0.7, 1.2)
+		sp_tw.tween_property(buffs_prompt, "modulate:a", 1.0, 1.2)
+	vbox.add_child(buffs_prompt)
+	
 	back_btn.pressed.connect(hide_buffs_screen)
 
 func show_buffs_screen() -> void:
@@ -4070,6 +4138,9 @@ func show_buffs_screen() -> void:
 	var back_btn = buffs_screen.get_node("CenterContainer/VBoxContainer/CenterContainer/BackBtn")
 	back_btn.text = "돌아가기" if is_kr else "BACK"
 	if font: back_btn.add_theme_font_override("font", font)
+	if buffs_prompt:
+		buffs_prompt.text = "닫으려면 ESC를 누르세요" if is_kr else "PRESS ESC TO CLOSE"
+		if font: buffs_prompt.add_theme_font_override("font", font)
 	back_btn.add_theme_font_size_override("font_size", 22)
 	back_btn.add_theme_constant_override("letter_spacing", 1)
 	back_btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))

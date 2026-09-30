@@ -9,6 +9,11 @@ All notable changes to the Summer Nights project will be documented in this file
 * Atmospheric Horizon Bloom & Seamless Sea Blending: Replaced the sharp exponential horizon glow cusp in the sky shader with a smooth Gaussian bloom softly biased toward the sun, aligned the lower hemisphere with deep oceanic blue, and tapered the glow along the sea waterline, completely eliminating the rigid "tube" seam artifact without altering gameplay, camera framing, or island geometry.
 * Fullscreen Window Mode by Default: Configured the engine display mode to fullscreen and ensured default fullscreen state applies across all boots and platforms.
 * Settings Menu Legibility & Even-Number System: Standardized all setting rows and controls under the 3 categories (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`) to use the body typeface (`Inter-Medium.ttf` for EN, `Galmuri11.ttf` for KR), scaled row labels to 16px, scaled toggle/language buttons to 14px, and set category badges to 14px, strictly adhering to an even-number pixel sizing system for clean readability.
+* Settings Slider Real-Time Readouts: Added dedicated percentage and multiplier numeric readouts (`100%`, `1.0x`) in cyber gold beside Master Volume and Mouse Sensitivity sliders with instant value updates.
+* Filters Screen Polish: Standardized Filters Screen typography to match Settings (16px `Inter-Medium.ttf` / `Galmuri11.ttf` body font for row labels, 14px for toggle buttons, and compact 110x34px button dimensions).
+* Title Screen Settings Access: Added a dedicated `SETTINGS` button to the Title Screen with a categorized 3-section settings modal (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`), persistent setting saving, live bilingual switching, and seamless `[ESC]` close handling.
+* Title Screen Spacing Polish: Balanced vertical layout distribution by removing redundant spacer padding under the high score and subtitle lines (eliminating 44px dead space), reducing button separation to 12px, and normalizing button heights to 44px to ensure generous top and bottom breathing room.
+* Secondary Menus Close Prompt Consistency: Added localized "PRESS ESC TO CLOSE" / "닫으려면 ESC를 누르세요" guidance text under the Back button for Active Buffs, Achievements, and Stats menus with accessible 14px styling and subtle pulse animation matching Settings, Filters, and Credits screens.
 * Version Synchronization: Unified release numbering to v1.7 across both GitHub and itch.io export presets and project configuration.
 
 ---
@@ -286,6 +291,11 @@ All notable changes to the Summer Nights project will be documented in this file
 * 대기 지평선 블룸 및 자연스러운 해수면 블렌딩: 하늘 셰이더의 날카로운 지평선 발광 첨점을 태양 방향으로 부드럽게 퍼지는 가우시안 대기 블룸으로 개편하고, 하부 반구 색상을 심해 네이비 톤으로 일치시켜 수평선 이음새와 인위적인 "발광 튜브" 현상을 게임플레이, 카메라 구도 및 섬 지형 변형 없이 완벽히 해소.
 * 기본 전체화면 실행 모드 설정: 엔진 디스플레이 초기화 설정을 전체화면 모드로 구성하고, 첫 실행 및 모든 플랫폼에서 기본 전체화면 상태가 안정적으로 적용되도록 개선.
 * 설정 화면 가독성 및 짝수 폰트 크기 체계 개편: 3개 카테고리(`오디오`, `조작 및 편의`, `화면 및 시스템`) 하위의 모든 설정 항목 및 컨트롤 텍스트를 가독성이 뛰어난 본문 서체(`Inter-Medium.ttf` 영문 / `Galmuri11.ttf` 한국어)로 통일하고, 항목 라벨을 16px, 토글/언어 버튼을 14px, 카테고리 배지를 14px로 조정하여 완벽한 짝수 픽셀 스케일 체계 적용.
+* 설정 슬라이더 실시간 수치 표시: 전체 볼륨 및 마우스 감도 슬라이더 우측에 사이버 골드 컬러의 퍼센트 및 배율 실시간 수치 라벨(`100%`, `1.0x`)을 추가하여 정확한 설정값 확인 지원.
+* 필터 화면 타이포그래피 통일: 설정 화면 규격에 맞춰 항목 라벨을 16px 본문 서체(`Inter-Medium.ttf` / `Galmuri11.ttf`), 토글 버튼을 14px 및 110x34px 규격으로 표준화.
+* 타이틀 화면 설정 모달 추가: 메인 타이틀 화면에 `SETTINGS` (설정) 버튼을 신설하고 인게임과 동일한 3대 카테고리(`오디오`, `조작 및 편의`, `화면 및 시스템`) 모달 창을 연동하여 영구 저장, 실시간 언어 전환 및 `[ESC]` 닫기 지원.
+* 타이틀 화면 세로 여백 및 레이아웃 최적화: 최고 점수 및 부제목 하단의 중복 여백을 제거(44px 빈 공간 해소)하고, 버튼 간격을 12px로 조정 및 버튼 높이를 44px로 표준화하여 화면 상하단 여백을 안정적으로 확보하고 시각적 균형감 개선.
+* 보조 메뉴 ESC 닫기 안내 일관성 확보: 활성화된 버프, 업적 및 기록 메뉴의 돌아가기 버튼 하단에 설정/필터/크레딧 화면과 동일한 규격의 "PRESS ESC TO CLOSE" / "닫으려면 ESC를 누르세요" 안내 텍스트(14px 폰트 및 미세 펄스 애니메이션)를 추가하여 조작 일관성 통일.
 * 버전 번호 통일 동기화: GitHub 및 itch.io의 모든 내보내기 프리셋과 프로젝트 설정 버전 번호를 v1.7로 일치 동기화.
 
 ---

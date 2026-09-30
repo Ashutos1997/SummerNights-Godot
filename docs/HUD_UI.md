@@ -45,16 +45,16 @@ Architectural map and layout reference for `HUD.tscn`.
 ---
 
 ## 2. Screen Overlays (Menus)
-* **Unified Styling:** All menus use a 96px left margin, 24px vertical separation, golden borders, dark dim, and 280x52 buttons.
-* **PauseScreen (`ESC`):** Pauses tree. Houses Settings, Filters, Controls, Credits, Achievements, and Buffs.
+* **Unified Styling:** All menus use a 96px left margin, 24px vertical separation, golden borders, dark dim, uniform Back buttons, and localized "PRESS ESC TO CLOSE" / "닫으려면 ESC를 누르세요" guidance prompts.
+* **PauseScreen (`ESC`):** Pauses tree. Clean vertical layout (280px width, 16px separation, 44px uniform buttons) housing Resume, Settings, Filters, Credits, Controls, Achievements, Buffs, and Main Menu with unbroken 8-button focus navigation.
 * **CreditsScreen:** Autoscrolling bilingual listing with complete 1:1 asset attributions.
-* **AchievementsScreen:** 3-column retro list tracking 13 achievements with live counters and gold badges.
+* **AchievementsScreen:** 3-column retro list tracking 13 achievements with live counters, gold badges, and [ESC] close prompt.
 * **DraftingScreen (Perks):** Post-boss modal. Staggered card deal entrance with rarity badges and `[ MAX ROLL! ]` golden highlights.
-* **FiltersScreen:** Mutually exclusive post-processing options (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
+* **FiltersScreen:** Mutually exclusive post-processing options (Retro Colors, Dithering, PS1 Shading, Heatwave 1984) with standardized 16px body typography (`Inter-Medium.ttf` / `Galmuri11.ttf`) and 110x34px toggle buttons.
 * **ControllerScreen:** Keyboard/Xbox layout toggle with unified "Power Up" labels for `[F]` and `[RB]`, and Mode Change (`[X]` Keyboard / `[Y]` Xbox, magenta highlight).
-* **SettingsScreen:** 3 categorized sections (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM` with Fullscreen, conditional Gold Weapon Skin toggle unlocked at 50k points, and Language) using 14px retro badges, 16px body font row labels (`Inter-Medium.ttf` / `Galmuri11.ttf`), and 14px toggle buttons (even number system).
+* **SettingsScreen:** 3 categorized sections (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM` with Fullscreen, conditional Gold Weapon Skin toggle unlocked at 50k points, and Language) using 14px retro badges, 16px body font row labels (`Inter-Medium.ttf` / `Galmuri11.ttf`), 14px toggle buttons (even number system), and real-time numeric/percentage readouts (`100%`, `1.0x`).
 * **WeaponWheel (`TAB`):** Slows time to 0.2x. 6-slice procedural wedge with 3D previews, stat bars, and crit multipliers.
-* **TitleScreen:** Main menu with custom Godot boot splash, high score, and Best Endless Wave display.
+* **TitleScreen:** Main menu with custom Godot boot splash, high score, Best Endless Wave display, direct access to full dedicated Settings modal, and balanced vertical layout distribution.
 * **End State Screens:** Frameless stats flow for Wave Reached, Survival Time, and Score.
 
 ---

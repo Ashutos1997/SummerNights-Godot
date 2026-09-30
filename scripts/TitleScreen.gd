@@ -34,11 +34,34 @@ var orig_credit_y: float = 0.0
 var best_time_lbl: Label = null
 var ach_btn: Button
 var stats_btn: Button
+var settings_btn: Button
 
 var achievements_screen: Control
 var stats_screen: Control
+var settings_screen: Control
 var quit_popup: Control
 var achievement_list: VBoxContainer
+
+var setting_sfx_slider: HSlider
+var setting_sfx_val_lbl: Label
+var setting_sens_slider: HSlider
+var setting_sens_val_lbl: Label
+var setting_motion_check: Button
+var setting_vibration_check: Button
+var setting_fullscreen_check: Button
+var setting_gold_skin_check: Button
+var setting_gold_skin_row: HBoxContainer
+var setting_lang_btn_en: Button
+var setting_lang_btn_kr: Button
+var settings_title_lbl: Label
+var settings_prompt_lbl: Label
+var achievements_prompt_lbl: Label
+var stats_prompt_lbl: Label
+var settings_back_btn: Button
+var setting_cat_audio_lbl: Label
+var setting_cat_gameplay_lbl: Label
+var setting_cat_system_lbl: Label
+var setting_row_labels: Dictionary = {}
 var border_progress: float = -1.0:
 	set(value):
 		border_progress = value
@@ -155,12 +178,21 @@ func _ready() -> void:
 	dev_btn.get_parent().add_child(stats_btn)
 	stats_btn.pressed.connect(_show_stats)
 	
+	# Dynamically add Settings button
+	settings_btn = dev_btn.duplicate()
+	settings_btn.name = "SettingsBtn"
+	settings_btn.visible = true
+	dev_btn.get_parent().add_child(settings_btn)
+	settings_btn.pressed.connect(_show_settings)
+	
 	_build_achievements_screen()
 	_build_stats_screen()
+	_build_settings_screen()
 	_build_quit_popup()
 	_update_language()
 
 func _update_language() -> void:
+	_apply_settings_language()
 
 	var is_kr = GameState.language == "KR"
 	var font_path = "res://assets/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
@@ -250,7 +282,7 @@ func _update_language() -> void:
 			best_time_lbl.add_theme_constant_override("outline_size", 4)
 			# Breathing room above best time line
 			var best_time_style = StyleBoxEmpty.new()
-			best_time_style.content_margin_top = 6
+			best_time_style.content_margin_top = 2
 			best_time_lbl.add_theme_stylebox_override("normal", best_time_style)
 			
 		# High Score Display
@@ -270,14 +302,14 @@ func _update_language() -> void:
 				high_score_lbl.add_theme_constant_override("outline_size", 4)
 				# Breathing room above high score line
 				var hs_style = StyleBoxEmpty.new()
-				hs_style.content_margin_top = 4
+				hs_style.content_margin_top = 2
 				high_score_lbl.add_theme_stylebox_override("normal", hs_style)
 			else:
 				high_score_lbl.visible = false
 			
 		# Style buttons
 		if normal_btn and survival_btn and dev_btn:
-			for btn in [normal_btn, survival_btn, dev_btn, lang_btn, ach_btn, stats_btn]:
+			for btn in [normal_btn, survival_btn, dev_btn, lang_btn, ach_btn, stats_btn, settings_btn]:
 				if not btn: continue
 				btn.add_theme_font_override("font", font)
 				btn.add_theme_font_size_override("font_size", 20 if is_kr else 18)
@@ -568,6 +600,15 @@ func _build_achievements_screen() -> void:
 	btn_center.add_child(back_btn)
 	vbox.add_child(btn_center)
 	
+	achievements_prompt_lbl = Label.new()
+	achievements_prompt_lbl.name = "ClosePrompt"
+	achievements_prompt_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	achievements_prompt_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	achievements_prompt_lbl.add_theme_color_override("font_color", Color(1, 0.8, 0.2, 0.35))
+	achievements_prompt_lbl.add_theme_font_size_override("font_size", 14)
+	achievements_prompt_lbl.text = "PRESS ESC TO CLOSE"
+	vbox.add_child(achievements_prompt_lbl)
+	
 	back_btn.pressed.connect(_hide_achievements)
 
 func _show_achievements() -> void:
@@ -599,6 +640,9 @@ func _show_achievements() -> void:
 	var back_btn = achievements_screen.get_node("CenterContainer/VBoxContainer/CenterContainer/BackBtn")
 	back_btn.text = "돌아가기" if is_kr else "BACK"
 	if font: back_btn.add_theme_font_override("font", font)
+	if achievements_prompt_lbl:
+		achievements_prompt_lbl.text = "닫으려면 ESC를 누르세요" if is_kr else "PRESS ESC TO CLOSE"
+		if font: achievements_prompt_lbl.add_theme_font_override("font", font)
 	back_btn.add_theme_font_size_override("font_size", 22)
 	back_btn.add_theme_constant_override("letter_spacing", 1)
 	back_btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
@@ -856,6 +900,11 @@ func _input(event: InputEvent) -> void:
 			
 		if stats_screen and stats_screen.visible:
 			_hide_stats()
+			get_viewport().set_input_as_handled()
+			return
+		
+		if settings_screen and settings_screen.visible:
+			_hide_settings()
 			get_viewport().set_input_as_handled()
 			return
 		
@@ -1150,6 +1199,15 @@ func _build_stats_screen() -> void:
 	btn_center.add_child(back_btn)
 	vbox.add_child(btn_center)
 	
+	stats_prompt_lbl = Label.new()
+	stats_prompt_lbl.name = "ClosePrompt"
+	stats_prompt_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	stats_prompt_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	stats_prompt_lbl.add_theme_color_override("font_color", Color(1, 0.8, 0.2, 0.35))
+	stats_prompt_lbl.add_theme_font_size_override("font_size", 14)
+	stats_prompt_lbl.text = "PRESS ESC TO CLOSE"
+	vbox.add_child(stats_prompt_lbl)
+	
 	back_btn.pressed.connect(_hide_stats)
 
 func _show_stats() -> void:
@@ -1172,6 +1230,9 @@ func _show_stats() -> void:
 	var back_btn = stats_screen.get_node("CenterContainer/VBoxContainer/CenterContainer/BackBtn")
 	back_btn.text = "돌아가기" if is_kr else "BACK"
 	if font: back_btn.add_theme_font_override("font", font)
+	if stats_prompt_lbl:
+		stats_prompt_lbl.text = "닫으려면 ESC를 누르세요" if is_kr else "PRESS ESC TO CLOSE"
+		if font: stats_prompt_lbl.add_theme_font_override("font", font)
 	back_btn.add_theme_font_size_override("font_size", 22)
 	back_btn.add_theme_constant_override("letter_spacing", 1)
 	back_btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
@@ -1362,4 +1423,737 @@ func _hide_stats() -> void:
 		stats_screen.visible = false
 		stats_screen.set_meta("is_hiding", false)
 		if stats_btn: stats_btn.grab_focus()
+	)
+
+func _update_toggle_btn(btn: Button, enabled: bool) -> void:
+	if not btn: return
+	btn.button_pressed = enabled
+	if enabled:
+		btn.text = "ON"
+		btn.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 1.0))
+		btn.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 0.6, 1.0))
+	else:
+		btn.text = "OFF"
+		btn.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9, 0.85))
+		btn.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 1.0, 1.0))
+
+func _update_setting_lang_toggle(is_kr: bool) -> void:
+	if not setting_lang_btn_en or not setting_lang_btn_kr: return
+	if is_kr:
+		setting_lang_btn_kr.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 1.0))
+		setting_lang_btn_kr.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 0.6, 1.0))
+		setting_lang_btn_en.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9, 0.5))
+		setting_lang_btn_en.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 1.0, 0.8))
+	else:
+		setting_lang_btn_en.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 1.0))
+		setting_lang_btn_en.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 0.6, 1.0))
+		setting_lang_btn_kr.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9, 0.5))
+		setting_lang_btn_kr.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 1.0, 0.8))
+
+func _apply_settings_language() -> void:
+	var is_kr = GameState.language == "KR"
+	var font_path = "res://assets/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
+	var font = load(font_path)
+	var body_font_path = "res://assets/fonts/Galmuri11.ttf" if is_kr else "res://assets/fonts/Inter-Medium.ttf"
+	var body_font = load(body_font_path)
+	
+	if title_lbl: title_lbl.text = "썸머" if is_kr else "SUMMER"
+	if title2_lbl: title2_lbl.text = "나이츠" if is_kr else "NIGHTS"
+	if subtitle_lbl: subtitle_lbl.text = "태양을 식혀라" if is_kr else "COOL DOWN THE SUN"
+	if normal_btn: normal_btn.text = "일반 모드" if is_kr else "NORMAL MODE"
+	if survival_btn:
+		var has_dawn_breaks = "dawn_breaks" in GameState.unlocked_achievements
+		survival_btn.disabled = not has_dawn_breaks
+		if not has_dawn_breaks:
+			survival_btn.text = "무한 모드 (잠김)" if is_kr else "ENDLESS MODE (LOCKED)"
+		else:
+			survival_btn.text = "무한 모드" if is_kr else "ENDLESS MODE"
+	if dev_btn: dev_btn.text = "DEV"
+	if ach_btn: ach_btn.text = "업적" if is_kr else "ACHIEVEMENTS"
+	if stats_btn: stats_btn.text = "기록" if is_kr else "STATS"
+	if settings_btn: settings_btn.text = "설정" if is_kr else "SETTINGS"
+
+	if font:
+		for btn in [normal_btn, survival_btn, dev_btn, ach_btn, stats_btn, settings_btn]:
+			if btn:
+				btn.add_theme_font_override("font", font)
+				btn.add_theme_font_size_override("font_size", 20 if is_kr else 18)
+
+		if subtitle_lbl:
+			_style_label(subtitle_lbl, 20 if is_kr else 18, Color(1.0, 0.75, 0.15, 1.0), font)
+		if credit_lbl:
+			_style_label(credit_lbl, 14 if is_kr else 12, Color(1.0, 1.0, 1.0, 0.7), font)
+
+		if best_time_lbl and (GameState.best_survival_time > 0.0 or GameState.best_wave > 0):
+			var m = int(GameState.best_survival_time) / 60
+			var s = int(GameState.best_survival_time) % 60
+			var time_str = "%02d:%02d" % [m, s]
+			if GameState.best_wave > 0 and GameState.best_survival_time > 0.0:
+				best_time_lbl.text = "최고 기록: %d 웨이브 (%s)" % [GameState.best_wave, time_str] if is_kr else "BEST ENDLESS: WAVE %d (%s)" % [GameState.best_wave, time_str]
+			elif GameState.best_wave > 0:
+				best_time_lbl.text = "최고 웨이브: %d" % GameState.best_wave if is_kr else "BEST ENDLESS: WAVE %d" % GameState.best_wave
+			else:
+				best_time_lbl.text = "최고 기록: %s" % time_str if is_kr else "BEST ENDLESS TIME: %s" % time_str
+			_style_label(best_time_lbl, 16 if is_kr else 14, Color(0.4, 0.9, 0.4, 1.0), font)
+
+		if high_score_lbl and GameState.high_score > 0:
+			var score_str = str(GameState.high_score)
+			var formatted_score = ""
+			for i in range(score_str.length()):
+				if i > 0 and i % 3 == 0:
+					formatted_score = "," + formatted_score
+				formatted_score = score_str[score_str.length() - 1 - i] + formatted_score
+			high_score_lbl.text = "최고 점수: %s" % formatted_score if is_kr else "HIGH SCORE: %s" % formatted_score
+			_style_label(high_score_lbl, 16 if is_kr else 14, Color(0.4, 0.9, 0.4, 1.0), font)
+
+	# Update top-right LangBtn highlight
+	if lang_highlight and en_label and kr_label:
+		var tw = create_tween()
+		tw.set_ease(Tween.EASE_OUT)
+		tw.set_trans(Tween.TRANS_SINE)
+		tw.set_parallel(true)
+		if is_kr:
+			tw.tween_property(lang_highlight, "position:x", 48.0, 0.25)
+			tw.tween_property(en_label, "theme_override_colors/font_color", Color(1.0, 0.85, 0.2, 1.0), 0.25)
+			tw.tween_property(kr_label, "theme_override_colors/font_color", Color(0.0, 0.0, 0.0, 1.0), 0.25)
+		else:
+			tw.tween_property(lang_highlight, "position:x", 0.0, 0.25)
+			tw.tween_property(en_label, "theme_override_colors/font_color", Color(0.0, 0.0, 0.0, 1.0), 0.25)
+			tw.tween_property(kr_label, "theme_override_colors/font_color", Color(1.0, 0.85, 0.2, 1.0), 0.25)
+
+	# Update Settings Screen modal
+	if settings_screen:
+		if settings_title_lbl:
+			settings_title_lbl.text = "설정" if is_kr else "SETTINGS"
+			_style_label(settings_title_lbl, 40, Color(1.0, 0.85, 0.2, 1.0), font)
+			settings_title_lbl.add_theme_constant_override("outline_size", 4)
+			settings_title_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		if setting_cat_audio_lbl:
+			setting_cat_audio_lbl.text = "오디오" if is_kr else "AUDIO"
+			if font: setting_cat_audio_lbl.add_theme_font_override("font", font)
+		if setting_cat_gameplay_lbl:
+			setting_cat_gameplay_lbl.text = "조작 및 편의" if is_kr else "GAMEPLAY & CONTROLS"
+			if font: setting_cat_gameplay_lbl.add_theme_font_override("font", font)
+		if setting_cat_system_lbl:
+			setting_cat_system_lbl.text = "화면 및 시스템" if is_kr else "DISPLAY & SYSTEM"
+			if font: setting_cat_system_lbl.add_theme_font_override("font", font)
+
+		var row_names = {
+			"RowSFX": "전체 볼륨" if is_kr else "Master Volume",
+			"RowSens": "마우스 감도" if is_kr else "Sensitivity",
+			"RowMotion": "화면 흔들림 감소" if is_kr else "Reduce Motion",
+			"RowVibration": "진동" if is_kr else "Vibration",
+			"RowFullscreen": "전체 화면" if is_kr else "Fullscreen",
+			"RowLanguage": "언어" if is_kr else "Language",
+			"RowGoldSkin": "황금 무기 스킨" if is_kr else "Gold Gun Skin"
+		}
+		for r_key in row_names:
+			var r_lbl = setting_row_labels.get(r_key)
+			if r_lbl:
+				r_lbl.text = row_names[r_key]
+				if body_font: r_lbl.add_theme_font_override("font", body_font)
+				r_lbl.add_theme_font_size_override("font_size", 16)
+				r_lbl.add_theme_color_override("font_color", Color(0.92, 0.92, 0.92, 0.95))
+				r_lbl.add_theme_constant_override("outline_size", 2)
+				r_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+
+		for chk in [setting_motion_check, setting_vibration_check, setting_fullscreen_check, setting_gold_skin_check]:
+			if chk:
+				if body_font: chk.add_theme_font_override("font", body_font)
+				chk.add_theme_font_size_override("font_size", 14)
+		if setting_lang_btn_en and body_font:
+			setting_lang_btn_en.add_theme_font_override("font", body_font)
+			setting_lang_btn_en.add_theme_font_size_override("font_size", 14)
+		if setting_lang_btn_kr and body_font:
+			setting_lang_btn_kr.add_theme_font_override("font", body_font)
+			setting_lang_btn_kr.add_theme_font_size_override("font_size", 14)
+		if setting_sfx_val_lbl and body_font:
+			setting_sfx_val_lbl.add_theme_font_override("font", body_font)
+			setting_sfx_val_lbl.add_theme_font_size_override("font_size", 14)
+		if setting_sens_val_lbl and body_font:
+			setting_sens_val_lbl.add_theme_font_override("font", body_font)
+			setting_sens_val_lbl.add_theme_font_size_override("font_size", 14)
+
+		_update_setting_lang_toggle(is_kr)
+
+		if settings_back_btn:
+			settings_back_btn.text = "돌아가기" if is_kr else "BACK"
+			if font: settings_back_btn.add_theme_font_override("font", font)
+			settings_back_btn.add_theme_font_size_override("font_size", 20 if is_kr else 18)
+			settings_back_btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+			settings_back_btn.add_theme_constant_override("outline_size", 2)
+			settings_back_btn.add_theme_color_override("font_outline_color", Color.BLACK)
+		if settings_prompt_lbl:
+			settings_prompt_lbl.text = "닫으려면 ESC를 누르세요" if is_kr else "PRESS ESC TO CLOSE"
+			if font: settings_prompt_lbl.add_theme_font_override("font", font)
+		if achievements_prompt_lbl:
+			achievements_prompt_lbl.text = "닫으려면 ESC를 누르세요" if is_kr else "PRESS ESC TO CLOSE"
+			if font: achievements_prompt_lbl.add_theme_font_override("font", font)
+		if stats_prompt_lbl:
+			stats_prompt_lbl.text = "닫으려면 ESC를 누르세요" if is_kr else "PRESS ESC TO CLOSE"
+			if font: stats_prompt_lbl.add_theme_font_override("font", font)
+
+func _build_settings_screen() -> void:
+	settings_screen = Control.new()
+	settings_screen.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	settings_screen.visible = false
+	settings_screen.z_index = 50
+	add_child(settings_screen)
+	
+	var bg = ColorRect.new()
+	bg.color = Color(0.02, 0.01, 0.05, 0.96)
+	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	settings_screen.add_child(bg)
+	
+	var border = Panel.new()
+	border.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	border.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	border.offset_left = 24
+	border.offset_top = 24
+	border.offset_right = -24
+	border.offset_bottom = -24
+	
+	var border_style = StyleBoxFlat.new()
+	border_style.bg_color = Color(0, 0, 0, 0)
+	border_style.border_width_left = 2
+	border_style.border_width_top = 2
+	border_style.border_width_right = 2
+	border_style.border_width_bottom = 2
+	border_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
+	border_style.corner_radius_top_left = 8
+	border_style.corner_radius_top_right = 8
+	border_style.corner_radius_bottom_left = 8
+	border_style.corner_radius_bottom_right = 8
+	border.add_theme_stylebox_override("panel", border_style)
+	settings_screen.add_child(border)
+	
+	var center = CenterContainer.new()
+	center.name = "CenterContainer"
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	settings_screen.add_child(center)
+	
+	var vbox = VBoxContainer.new()
+	vbox.name = "VBoxContainer"
+	vbox.custom_minimum_size = Vector2(560, 0)
+	vbox.add_theme_constant_override("separation", 12)
+	center.add_child(vbox)
+	
+	var title_row = HBoxContainer.new()
+	title_row.name = "TitleRow"
+	title_row.add_theme_constant_override("separation", 12)
+	title_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_child(title_row)
+	
+	var title_icon = TextureRect.new()
+	title_icon.name = "TitleIcon"
+	title_icon.custom_minimum_size = Vector2(32, 32)
+	title_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title_icon.texture = load("res://assets/ui/menu_icons/settings.png")
+	title_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	title_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	title_icon.modulate = Color(1.0, 0.85, 0.2, 1.0)
+	title_row.add_child(title_icon)
+	
+	settings_title_lbl = Label.new()
+	settings_title_lbl.name = "Title"
+	settings_title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	settings_title_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	title_row.add_child(settings_title_lbl)
+	
+	var divider = HSeparator.new()
+	divider.name = "Divider"
+	var div_style = StyleBoxLine.new()
+	div_style.color = Color(1.0, 0.88, 0.3, 0.35)
+	div_style.grow_begin = 0
+	div_style.grow_end = 0
+	div_style.thickness = 1
+	divider.add_theme_stylebox_override("separator", div_style)
+	vbox.add_child(divider)
+
+	var make_cat = func(node_name: String, title_en: String, title_kr: String, top_margin: int) -> MarginContainer:
+		var wrap = MarginContainer.new()
+		wrap.name = node_name
+		wrap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		wrap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		if top_margin > 0:
+			wrap.add_theme_constant_override("margin_top", top_margin)
+		
+		var row = HBoxContainer.new()
+		row.name = "HBox"
+		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_theme_constant_override("separation", 12)
+		row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		wrap.add_child(row)
+		
+		var plate = PanelContainer.new()
+		plate.name = "Plate"
+		plate.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		
+		var p_style = StyleBoxFlat.new()
+		p_style.bg_color = Color(1.0, 0.85, 0.2, 0.12)
+		p_style.border_color = Color(1.0, 0.85, 0.2, 0.5)
+		p_style.set_border_width_all(1)
+		p_style.set_corner_radius_all(4)
+		p_style.content_margin_left = 10
+		p_style.content_margin_right = 10
+		p_style.content_margin_top = 2
+		p_style.content_margin_bottom = 2
+		plate.add_theme_stylebox_override("panel", p_style)
+		
+		var lbl = Label.new()
+		lbl.name = "Label"
+		lbl.text = title_kr if GameState.language == "KR" else title_en
+		lbl.add_theme_font_size_override("font_size", 14)
+		lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+		lbl.add_theme_constant_override("outline_size", 1)
+		lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		plate.add_child(lbl)
+		row.add_child(plate)
+		
+		var sep = HSeparator.new()
+		sep.name = "Hairline"
+		sep.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		sep.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		sep.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		
+		var line_style = StyleBoxLine.new()
+		line_style.color = Color(1.0, 0.85, 0.2, 0.28)
+		line_style.thickness = 1
+		line_style.vertical = false
+		sep.add_theme_stylebox_override("separator", line_style)
+		row.add_child(sep)
+		return wrap
+
+	var style_btn_off = StyleBoxFlat.new()
+	style_btn_off.bg_color = Color(0, 0, 0, 0.4)
+	style_btn_off.border_color = Color(1.0, 0.88, 0.3, 0.4)
+	style_btn_off.set_border_width_all(1)
+	style_btn_off.set_corner_radius_all(4)
+
+	var style_btn_on = StyleBoxFlat.new()
+	style_btn_on.bg_color = Color(1.0, 0.88, 0.3, 0.25)
+	style_btn_on.border_color = Color(1.0, 0.88, 0.3, 1.0)
+	style_btn_on.set_border_width_all(1)
+	style_btn_on.set_corner_radius_all(4)
+
+	var style_focus = StyleBoxFlat.new()
+	style_focus.bg_color = Color(0, 0, 0, 0)
+	style_focus.border_color = Color(1.0, 0.85, 0.2, 1.0)
+	style_focus.set_border_width_all(2)
+	style_focus.set_corner_radius_all(6)
+
+	var grab_tex = load("res://assets/ui/kenney_ui_pack/slide_hangle.png")
+
+	# 1. AUDIO category
+	var cat_audio_wrap = make_cat.call("CatHeaderAudio", "AUDIO", "오디오", 6)
+	vbox.add_child(cat_audio_wrap)
+	setting_cat_audio_lbl = cat_audio_wrap.get_node("HBox/Plate/Label")
+
+	# RowSFX
+	var row_sfx = HBoxContainer.new()
+	row_sfx.name = "RowSFX"
+	row_sfx.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(row_sfx)
+
+	var sfx_lbl = Label.new()
+	sfx_lbl.name = "Label"
+	sfx_lbl.custom_minimum_size = Vector2(280, 0)
+	sfx_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	sfx_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	sfx_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	row_sfx.add_child(sfx_lbl)
+	setting_row_labels["RowSFX"] = sfx_lbl
+
+	setting_sfx_slider = HSlider.new()
+	setting_sfx_slider.name = "Slider"
+	setting_sfx_slider.custom_minimum_size = Vector2(180, 28)
+	setting_sfx_slider.size_flags_horizontal = Control.SIZE_SHRINK_END
+	setting_sfx_slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	setting_sfx_slider.min_value = 0.0
+	setting_sfx_slider.max_value = 1.0
+	setting_sfx_slider.step = 0.05
+	setting_sfx_slider.value = GameState.sfx_volume
+	if grab_tex:
+		setting_sfx_slider.add_theme_icon_override("grabber", grab_tex)
+		setting_sfx_slider.add_theme_icon_override("grabber_highlight", grab_tex)
+	setting_sfx_slider.value_changed.connect(func(val):
+		GameState.sfx_volume = val
+		GameState.save_settings()
+		if setting_sfx_val_lbl: setting_sfx_val_lbl.text = "%d%%" % int(round(val * 100.0))
+		var db_val = linear_to_db(val)
+		var idx1 = AudioServer.get_bus_index("SFX_WEAPON")
+		if idx1 != -1: AudioServer.set_bus_volume_db(idx1, db_val)
+		var idx2 = AudioServer.get_bus_index("SFX_UI")
+		if idx2 != -1: AudioServer.set_bus_volume_db(idx2, db_val)
+		var idx_master = AudioServer.get_bus_index("Master")
+		if idx_master != -1: AudioServer.set_bus_volume_db(idx_master, db_val)
+	)
+	row_sfx.add_child(setting_sfx_slider)
+
+	setting_sfx_val_lbl = Label.new()
+	setting_sfx_val_lbl.name = "ValLabel"
+	setting_sfx_val_lbl.custom_minimum_size = Vector2(52, 28)
+	setting_sfx_val_lbl.size_flags_horizontal = Control.SIZE_SHRINK_END
+	setting_sfx_val_lbl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	setting_sfx_val_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	setting_sfx_val_lbl.add_theme_color_override("font_color", Color(1, 0.88, 0.3, 1))
+	setting_sfx_val_lbl.add_theme_font_size_override("font_size", 14)
+	setting_sfx_val_lbl.text = "%d%%" % int(round(GameState.sfx_volume * 100.0))
+	setting_sfx_val_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	setting_sfx_val_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	row_sfx.add_child(setting_sfx_val_lbl)
+
+	# 2. GAMEPLAY & CONTROLS category
+	var cat_gameplay_wrap = make_cat.call("CatHeaderGameplay", "GAMEPLAY & CONTROLS", "조작 및 편의", 12)
+	vbox.add_child(cat_gameplay_wrap)
+	setting_cat_gameplay_lbl = cat_gameplay_wrap.get_node("HBox/Plate/Label")
+
+	# RowSens
+	var row_sens = HBoxContainer.new()
+	row_sens.name = "RowSens"
+	row_sens.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(row_sens)
+
+	var sens_lbl = Label.new()
+	sens_lbl.name = "Label"
+	sens_lbl.custom_minimum_size = Vector2(280, 0)
+	sens_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	sens_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	sens_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	row_sens.add_child(sens_lbl)
+	setting_row_labels["RowSens"] = sens_lbl
+
+	setting_sens_slider = HSlider.new()
+	setting_sens_slider.name = "Slider"
+	setting_sens_slider.custom_minimum_size = Vector2(180, 28)
+	setting_sens_slider.size_flags_horizontal = Control.SIZE_SHRINK_END
+	setting_sens_slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	setting_sens_slider.min_value = 0.1
+	setting_sens_slider.max_value = 2.0
+	setting_sens_slider.step = 0.1
+	setting_sens_slider.value = GameState.mouse_sensitivity
+	if grab_tex:
+		setting_sens_slider.add_theme_icon_override("grabber", grab_tex)
+		setting_sens_slider.add_theme_icon_override("grabber_highlight", grab_tex)
+	setting_sens_slider.value_changed.connect(func(val):
+		GameState.mouse_sensitivity = val
+		GameState.save_settings()
+		if setting_sens_val_lbl: setting_sens_val_lbl.text = "%.1fx" % val
+	)
+	row_sens.add_child(setting_sens_slider)
+
+	setting_sens_val_lbl = Label.new()
+	setting_sens_val_lbl.name = "ValLabel"
+	setting_sens_val_lbl.custom_minimum_size = Vector2(52, 28)
+	setting_sens_val_lbl.size_flags_horizontal = Control.SIZE_SHRINK_END
+	setting_sens_val_lbl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	setting_sens_val_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	setting_sens_val_lbl.add_theme_color_override("font_color", Color(1, 0.88, 0.3, 1))
+	setting_sens_val_lbl.add_theme_font_size_override("font_size", 14)
+	setting_sens_val_lbl.text = "%.1fx" % GameState.mouse_sensitivity
+	setting_sens_val_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	setting_sens_val_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	row_sens.add_child(setting_sens_val_lbl)
+
+	# RowMotion
+	var row_motion = HBoxContainer.new()
+	row_motion.name = "RowMotion"
+	row_motion.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(row_motion)
+
+	var motion_lbl = Label.new()
+	motion_lbl.name = "Label"
+	motion_lbl.custom_minimum_size = Vector2(280, 0)
+	motion_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	motion_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	motion_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	row_motion.add_child(motion_lbl)
+	setting_row_labels["RowMotion"] = motion_lbl
+
+	setting_motion_check = Button.new()
+	setting_motion_check.custom_minimum_size = Vector2(110, 34)
+	setting_motion_check.size_flags_horizontal = Control.SIZE_SHRINK_END
+	setting_motion_check.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	setting_motion_check.toggle_mode = true
+	setting_motion_check.add_theme_stylebox_override("normal", style_btn_off)
+	setting_motion_check.add_theme_stylebox_override("hover", style_btn_off)
+	setting_motion_check.add_theme_stylebox_override("pressed", style_btn_on)
+	setting_motion_check.add_theme_stylebox_override("focus", style_focus)
+	setting_motion_check.toggled.connect(func(enabled):
+		GameState.reduce_motion = enabled
+		GameState.save_settings()
+		_update_toggle_btn(setting_motion_check, enabled)
+	)
+	row_motion.add_child(setting_motion_check)
+
+	# RowVibration
+	var row_vibration = HBoxContainer.new()
+	row_vibration.name = "RowVibration"
+	row_vibration.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(row_vibration)
+
+	var vib_lbl = Label.new()
+	vib_lbl.name = "Label"
+	vib_lbl.custom_minimum_size = Vector2(280, 0)
+	vib_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	vib_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vib_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	row_vibration.add_child(vib_lbl)
+	setting_row_labels["RowVibration"] = vib_lbl
+
+	setting_vibration_check = Button.new()
+	setting_vibration_check.custom_minimum_size = Vector2(110, 34)
+	setting_vibration_check.size_flags_horizontal = Control.SIZE_SHRINK_END
+	setting_vibration_check.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	setting_vibration_check.toggle_mode = true
+	setting_vibration_check.add_theme_stylebox_override("normal", style_btn_off)
+	setting_vibration_check.add_theme_stylebox_override("hover", style_btn_off)
+	setting_vibration_check.add_theme_stylebox_override("pressed", style_btn_on)
+	setting_vibration_check.add_theme_stylebox_override("focus", style_focus)
+	setting_vibration_check.toggled.connect(func(enabled):
+		GameState.vibration_enabled = enabled
+		GameState.save_settings()
+		_update_toggle_btn(setting_vibration_check, enabled)
+	)
+	row_vibration.add_child(setting_vibration_check)
+
+	# 3. DISPLAY & SYSTEM category
+	var cat_system_wrap = make_cat.call("CatHeaderSystem", "DISPLAY & SYSTEM", "화면 및 시스템", 12)
+	vbox.add_child(cat_system_wrap)
+	setting_cat_system_lbl = cat_system_wrap.get_node("HBox/Plate/Label")
+
+	# RowFullscreen
+	var row_fs = HBoxContainer.new()
+	row_fs.name = "RowFullscreen"
+	row_fs.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(row_fs)
+
+	var fs_lbl = Label.new()
+	fs_lbl.name = "Label"
+	fs_lbl.custom_minimum_size = Vector2(280, 0)
+	fs_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	fs_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	fs_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	row_fs.add_child(fs_lbl)
+	setting_row_labels["RowFullscreen"] = fs_lbl
+
+	setting_fullscreen_check = Button.new()
+	setting_fullscreen_check.custom_minimum_size = Vector2(110, 34)
+	setting_fullscreen_check.size_flags_horizontal = Control.SIZE_SHRINK_END
+	setting_fullscreen_check.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	setting_fullscreen_check.toggle_mode = true
+	setting_fullscreen_check.add_theme_stylebox_override("normal", style_btn_off)
+	setting_fullscreen_check.add_theme_stylebox_override("hover", style_btn_off)
+	setting_fullscreen_check.add_theme_stylebox_override("pressed", style_btn_on)
+	setting_fullscreen_check.add_theme_stylebox_override("focus", style_focus)
+	setting_fullscreen_check.toggled.connect(func(enabled):
+		GameState.fullscreen = enabled
+		GameState.save_settings()
+		_update_toggle_btn(setting_fullscreen_check, enabled)
+		if enabled:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+		else:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+	)
+	row_fs.add_child(setting_fullscreen_check)
+
+	# RowLanguage
+	var row_lang = HBoxContainer.new()
+	row_lang.name = "RowLanguage"
+	row_lang.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(row_lang)
+
+	var lang_lbl = Label.new()
+	lang_lbl.name = "Label"
+	lang_lbl.custom_minimum_size = Vector2(280, 0)
+	lang_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	lang_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	lang_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	row_lang.add_child(lang_lbl)
+	setting_row_labels["RowLanguage"] = lang_lbl
+
+	var toggle_box = HBoxContainer.new()
+	toggle_box.name = "ToggleBox"
+	toggle_box.add_theme_constant_override("separation", 0)
+	toggle_box.size_flags_horizontal = Control.SIZE_SHRINK_END
+	row_lang.add_child(toggle_box)
+
+	var baked_style = StyleBoxFlat.new()
+	baked_style.bg_color = Color(0, 0, 0, 0)
+	baked_style.set_border_width_all(0)
+	baked_style.content_margin_left = 10
+	baked_style.content_margin_right = 10
+	baked_style.content_margin_top = 3
+	baked_style.content_margin_bottom = 3
+
+	setting_lang_btn_en = Button.new()
+	setting_lang_btn_en.name = "LangEN"
+	setting_lang_btn_en.text = "ENG"
+	setting_lang_btn_en.add_theme_font_size_override("font_size", 14)
+	setting_lang_btn_en.add_theme_constant_override("outline_size", 1)
+	setting_lang_btn_en.add_theme_color_override("font_outline_color", Color.BLACK)
+	setting_lang_btn_en.add_theme_stylebox_override("normal", baked_style)
+	setting_lang_btn_en.add_theme_stylebox_override("hover", baked_style)
+	setting_lang_btn_en.add_theme_stylebox_override("pressed", baked_style)
+	setting_lang_btn_en.add_theme_stylebox_override("focus", style_focus)
+	setting_lang_btn_en.pressed.connect(func():
+		GameState.language = "EN"
+		GameState.save_settings()
+		_apply_settings_language()
+	)
+	toggle_box.add_child(setting_lang_btn_en)
+
+	var lang_sep = Label.new()
+	lang_sep.name = "Sep"
+	lang_sep.text = " | "
+	lang_sep.add_theme_font_size_override("font_size", 14)
+	lang_sep.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 0.35))
+	toggle_box.add_child(lang_sep)
+
+	setting_lang_btn_kr = Button.new()
+	setting_lang_btn_kr.name = "LangKR"
+	setting_lang_btn_kr.text = "KOR"
+	setting_lang_btn_kr.add_theme_font_size_override("font_size", 14)
+	setting_lang_btn_kr.add_theme_constant_override("outline_size", 1)
+	setting_lang_btn_kr.add_theme_color_override("font_outline_color", Color.BLACK)
+	setting_lang_btn_kr.add_theme_stylebox_override("normal", baked_style)
+	setting_lang_btn_kr.add_theme_stylebox_override("hover", baked_style)
+	setting_lang_btn_kr.add_theme_stylebox_override("pressed", baked_style)
+	setting_lang_btn_kr.add_theme_stylebox_override("focus", style_focus)
+	setting_lang_btn_kr.pressed.connect(func():
+		GameState.language = "KR"
+		GameState.save_settings()
+		_apply_settings_language()
+	)
+	toggle_box.add_child(setting_lang_btn_kr)
+
+	# RowGoldSkin
+	setting_gold_skin_row = HBoxContainer.new()
+	setting_gold_skin_row.name = "RowGoldSkin"
+	setting_gold_skin_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(setting_gold_skin_row)
+
+	var gold_lbl = Label.new()
+	gold_lbl.name = "Label"
+	gold_lbl.custom_minimum_size = Vector2(280, 0)
+	gold_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	gold_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	gold_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	setting_gold_skin_row.add_child(gold_lbl)
+	setting_row_labels["RowGoldSkin"] = gold_lbl
+
+	setting_gold_skin_check = Button.new()
+	setting_gold_skin_check.custom_minimum_size = Vector2(110, 34)
+	setting_gold_skin_check.size_flags_horizontal = Control.SIZE_SHRINK_END
+	setting_gold_skin_check.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	setting_gold_skin_check.toggle_mode = true
+	setting_gold_skin_check.add_theme_stylebox_override("normal", style_btn_off)
+	setting_gold_skin_check.add_theme_stylebox_override("hover", style_btn_off)
+	setting_gold_skin_check.add_theme_stylebox_override("pressed", style_btn_on)
+	setting_gold_skin_check.add_theme_stylebox_override("focus", style_focus)
+	setting_gold_skin_check.toggled.connect(func(enabled):
+		GameState.gold_skin_enabled = enabled
+		GameState.save_settings()
+		_update_toggle_btn(setting_gold_skin_check, enabled)
+	)
+	setting_gold_skin_row.add_child(setting_gold_skin_check)
+
+	# Divider 2
+	var divider2 = HSeparator.new()
+	divider2.name = "Divider2"
+	var div2_style = StyleBoxLine.new()
+	div2_style.color = Color(1.0, 0.88, 0.3, 0.35)
+	div2_style.thickness = 1
+	divider2.add_theme_stylebox_override("separator", div2_style)
+	divider2.add_theme_constant_override("separation", 16)
+	vbox.add_child(divider2)
+
+	# Back button
+	settings_back_btn = Button.new()
+	settings_back_btn.name = "BackBtn"
+	settings_back_btn.custom_minimum_size = Vector2(260, 38)
+	settings_back_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	var back_style = StyleBoxFlat.new()
+	back_style.bg_color = Color(0, 0, 0, 0.4)
+	back_style.border_color = Color(1.0, 0.85, 0.2, 0.6)
+	back_style.set_border_width_all(2)
+	back_style.set_corner_radius_all(0)
+	back_style.content_margin_left = 16
+	back_style.content_margin_right = 16
+	back_style.content_margin_top = 6
+	back_style.content_margin_bottom = 6
+	settings_back_btn.add_theme_stylebox_override("normal", back_style)
+	var back_hover = back_style.duplicate()
+	back_hover.bg_color = Color(1.0, 0.75, 0.15, 0.2)
+	settings_back_btn.add_theme_stylebox_override("hover", back_hover)
+	var back_pressed = back_style.duplicate()
+	back_pressed.bg_color = Color(1.0, 0.85, 0.2, 0.4)
+	back_pressed.border_color = Color(1.0, 0.9, 0.3, 1.0)
+	settings_back_btn.add_theme_stylebox_override("pressed", back_pressed)
+	settings_back_btn.add_theme_stylebox_override("focus", style_focus)
+	settings_back_btn.pressed.connect(_hide_settings)
+	vbox.add_child(settings_back_btn)
+
+	# Close prompt
+	settings_prompt_lbl = Label.new()
+	settings_prompt_lbl.name = "ClosePrompt"
+	settings_prompt_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	settings_prompt_lbl.add_theme_color_override("font_color", Color(1, 0.8, 0.2, 0.35))
+	settings_prompt_lbl.add_theme_font_size_override("font_size", 14)
+	vbox.add_child(settings_prompt_lbl)
+
+func _show_settings() -> void:
+	if is_starting or not settings_screen: return
+	
+	_update_toggle_btn(setting_motion_check, GameState.reduce_motion)
+	_update_toggle_btn(setting_vibration_check, GameState.vibration_enabled)
+	_update_toggle_btn(setting_fullscreen_check, GameState.fullscreen)
+	_update_toggle_btn(setting_gold_skin_check, GameState.gold_skin_enabled)
+	if setting_gold_skin_row:
+		setting_gold_skin_row.visible = "dawn_breaks" in GameState.unlocked_achievements
+	if setting_sfx_slider:
+		setting_sfx_slider.value = GameState.sfx_volume
+	if setting_sfx_val_lbl:
+		setting_sfx_val_lbl.text = "%d%%" % int(round(GameState.sfx_volume * 100.0))
+	if setting_sens_slider:
+		setting_sens_slider.value = GameState.mouse_sensitivity
+	if setting_sens_val_lbl:
+		setting_sens_val_lbl.text = "%.1fx" % GameState.mouse_sensitivity
+	
+	_update_setting_lang_toggle(GameState.language == "KR")
+	
+	var audio = AudioStreamPlayer.new()
+	audio.stream = load("res://assets/sfx/ui_tick.wav")
+	audio.bus = "SFX"
+	add_child(audio)
+	audio.play()
+	audio.finished.connect(audio.queue_free)
+	
+	settings_screen.modulate.a = 0.0
+	settings_screen.visible = true
+	var tw = create_tween()
+	tw.tween_property(settings_screen, "modulate:a", 1.0, 0.2)
+	await tw.finished
+	if setting_sfx_slider: setting_sfx_slider.grab_focus()
+
+func _hide_settings() -> void:
+	if not settings_screen or not settings_screen.visible: return
+	if settings_screen.get_meta("is_hiding", false): return
+	settings_screen.set_meta("is_hiding", true)
+	
+	var audio = AudioStreamPlayer.new()
+	audio.stream = load("res://assets/sfx/ui_tick.wav")
+	audio.bus = "SFX"
+	add_child(audio)
+	audio.play()
+	audio.finished.connect(audio.queue_free)
+	
+	var tw = create_tween()
+	tw.tween_property(settings_screen, "modulate:a", 0.0, 0.2)
+	tw.tween_callback(func():
+		settings_screen.visible = false
+		settings_screen.set_meta("is_hiding", false)
+		if settings_btn: settings_btn.grab_focus()
 	)

@@ -63,7 +63,8 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 * **Juice:** Screen shake, drop shadows, UI scale bounces, audio ticks, and golden ember bursts on flare parries.
 * **Crosshairs:** Dynamic reticles per weapon tracking water capacity. Blade mode uses katana crescent brackets.
 * **Achievements:** 13 unlockable achievements with live HUD progress tracking, retro plates, and permanent stat buffs.
-* **Menus:** Unified gold borders, 96px margins, Gamepad navigation, fullscreen window initialization, and categorized Settings sections with even-number body typography.
+* **Menus:** Unified gold borders, 96px margins, Gamepad navigation, fullscreen window initialization, categorized Settings sections with even-number body typography, real-time numeric/percentage slider readouts (`100%`, `1.0x`), Title Screen direct Settings modal access with instant language switching, balanced Title Screen vertical distribution with standardized button spacing, and localized "PRESS ESC TO CLOSE" guidance prompts on all secondary menus.
+* **Filters Screen Polish:** Standardized 16px body typography (`Inter-Medium.ttf` / `Galmuri11.ttf`) and 110x34px toggle buttons matching the Settings design system.
 * **Boot Splash:** PS1-inspired intro with progressive golden border tracing and monochrome Godot logo.
 * **Accessibility:** Full Xbox controller support with haptics/aim-assist, "Reduce Motion" toggle, and EN/KR localization.
 
