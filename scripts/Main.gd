@@ -5493,10 +5493,6 @@ func _on_shield_deflect(hit_world_pos: Vector3) -> void:
 			shield_deflect_sfx.play()
 		shield_deflect_cooldown = 0.07
 
-	# 4. Floating Combat Text: "DEFLECTED" (suppressed on Golden Drone Shield as HUD banner notification is active)
-	if not is_drone_shield_active and randf() < 0.3:
-		_spawn_deflected_number(hit_world_pos)
-
 func _spawn_splash(pos: Vector3) -> void:
 	if splash_particles_pool.is_empty(): return
 	var splash = splash_particles_pool[splash_idx]
