@@ -206,6 +206,7 @@ SummerNights-Godot/
 | 컨트롤러 SVGs (Controller SVGs) | Oscar Nilsson | CC0 |
 | 고도 엔진 로고 및 브랜딩 (Godot Engine Logo) | Andrea Calabró (Godot Foundation) | CC BY 4.0 |
 | 메뉴 및 업적 아이콘 (Menu & Achievement Icons) | Game-icons.net | CC BY 3.0 |
+| UI 및 퍽 벡터 아이콘 (얼음 창, 극저온 온도계, 태양, 열린 자물쇠, 드론, 분쇄) | Game-icons.net (Lorc, Delapouite) | CC BY 3.0 |
 | HUD 미터 아이콘 (HUD Meter Icons) | Yudhi Restu Pebriyanto, Jaya99, balyanbinmalkan (Noun Project) | CC BY 3.0 |
 | UI - 신성의 성광 미터 아이콘 (Celestial Starburst Meter Icon) | 수작업 SVG 벡터 아이콘 (Hand-crafted SVG Vector Icon) | CC0 |
 | SFX - 40가지 CC0 물/물결 효과음 | OpenGameArt | CC0 |

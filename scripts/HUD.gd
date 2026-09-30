@@ -1636,6 +1636,8 @@ func _apply_language(lang: String) -> void:
 			if itm_ui1: itm_ui1.text = "UI Pack Adventure  ·  Kenney  ·  CC0" if is_kr else "Kenney UI Pack Adventure  ·  kenney.nl  ·  CC0"
 			var itm_ui1b = credits_list.get_node_or_null("ItmUI1b")
 			if itm_ui1b: itm_ui1b.text = "메뉴 및 업적 아이콘  ·  Game-icons.net  ·  CC BY 3.0" if is_kr else "Menu & Achievement Icons  ·  Game-icons.net  ·  CC BY 3.0"
+			var itm_ui1e = credits_list.get_node_or_null("ItmUI1e")
+			if itm_ui1e: itm_ui1e.text = "UI 및 퍽 벡터 아이콘  ·  Game-icons.net (Lorc, Delapouite)  ·  CC BY 3.0" if is_kr else "UI & Perk Vector Icons  ·  Game-icons.net (Lorc, Delapouite)  ·  CC BY 3.0"
 			var itm_ui1c = credits_list.get_node_or_null("ItmUI1c")
 			if itm_ui1c: itm_ui1c.text = "컨트롤러 SVGs  ·  Oscar Nilsson  ·  CC0" if is_kr else "Controller SVGs  ·  Oscar Nilsson  ·  CC0"
 			var itm_ui1d = credits_list.get_node_or_null("ItmUI1d")

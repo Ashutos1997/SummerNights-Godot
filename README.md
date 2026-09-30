@@ -206,6 +206,7 @@ SummerNights-Godot/
 | Controller SVGs | Oscar Nilsson | CC0 |
 | Godot Engine Logo & Branding | Andrea Calabró (Godot Foundation) | CC BY 4.0 |
 | Menu & Achievement Icons | Game-icons.net | CC BY 3.0 |
+| UI & Perk Vector Icons (Ice Spear, Cold Thermometer, Sun, Padlock, Drone, Shatter) | Game-icons.net (Lorc, Delapouite) | CC BY 3.0 |
 | HUD Meter Icons | Yudhi Restu Pebriyanto, Jaya99, balyanbinmalkan (Noun Project) | CC BY 3.0 |
 | UI - Celestial Starburst Meter Icon | Hand-crafted SVG Vector Icon | CC0 |
 | SFX - 40 CC0 Water/Splash/Slime | OpenGameArt | CC0 |
