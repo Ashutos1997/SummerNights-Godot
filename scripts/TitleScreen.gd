@@ -253,13 +253,17 @@ func _update_language() -> void:
 				lbl.add_theme_constant_override("shadow_offset_y", 4)
 				lbl.add_theme_constant_override("shadow_outline_size", 12)
 				lbl.add_theme_constant_override("outline_size", 8)
+				lbl.scale = Vector2.ONE
+				lbl.modulate = Color.WHITE
 				
 		_style_label(subtitle_lbl, 20 if is_kr else 18, Color(1.0, 0.75, 0.15, 1.0), font)
 		# Subtitle also gets a subtle outline for legibility against the 3D background
 		if subtitle_lbl:
 			subtitle_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
 			subtitle_lbl.add_theme_constant_override("outline_size", 4)
-		_style_label(credit_lbl, 14 if is_kr else 12, Color(1.0, 1.0, 1.0, 0.7), font)
+		if credit_lbl:
+			credit_lbl.text = "SUMMER NIGHTS v1.7 · GODOT 4 · GDSCRIPT · FORWARD+"
+			_style_label(credit_lbl, 14 if is_kr else 12, Color(1.0, 1.0, 1.0, 0.7), font)
 		
 
 		var en_font = load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
@@ -323,7 +327,7 @@ func _update_language() -> void:
 					formatted_score = score_str[score_str.length() - 1 - i] + formatted_score
 				
 				high_score_lbl.text = "최고 점수: %s" % formatted_score if is_kr else "HIGH SCORE: %s" % formatted_score
-				_style_label(high_score_lbl, 16 if is_kr else 14, Color(0.4, 0.9, 0.4, 1.0), font)
+				_style_label(high_score_lbl, 16 if is_kr else 14, Color(1.0, 0.85, 0.2, 1.0), font)
 				high_score_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
 				high_score_lbl.add_theme_constant_override("outline_size", 4)
 				# Breathing room above high score line
@@ -1527,13 +1531,14 @@ func _apply_settings_language() -> void:
 		var has_dawn_breaks = "dawn_breaks" in GameState.unlocked_achievements
 		survival_btn.disabled = not has_dawn_breaks
 		if not has_dawn_breaks:
-			survival_btn.text = "무한 모드 (잠김)" if is_kr else "ENDLESS MODE (LOCKED)"
+			survival_btn.text = "무한 모드 [잠김]" if is_kr else "ENDLESS MODE [LOCKED]"
 		else:
 			survival_btn.text = "무한 모드" if is_kr else "ENDLESS MODE"
 	if dev_btn: dev_btn.text = "DEV"
 	if ach_btn: ach_btn.text = "업적" if is_kr else "ACHIEVEMENTS"
 	if stats_btn: stats_btn.text = "기록" if is_kr else "STATS"
 	if settings_btn: settings_btn.text = "설정" if is_kr else "SETTINGS"
+	if quit_prompt_btn: quit_prompt_btn.text = "[ESC] 게임 종료" if is_kr else "[ESC] QUIT GAME"
 
 	if font:
 		for btn in [normal_btn, survival_btn, dev_btn, ach_btn, stats_btn, settings_btn]:
@@ -1541,9 +1546,15 @@ func _apply_settings_language() -> void:
 				btn.add_theme_font_override("font", font)
 				btn.add_theme_font_size_override("font_size", 20 if is_kr else 18)
 
+		for lbl in [title_lbl, title2_lbl]:
+			if lbl:
+				lbl.scale = Vector2.ONE
+				lbl.modulate = Color.WHITE
+
 		if subtitle_lbl:
 			_style_label(subtitle_lbl, 20 if is_kr else 18, Color(1.0, 0.75, 0.15, 1.0), font)
 		if credit_lbl:
+			credit_lbl.text = "SUMMER NIGHTS v1.7 · GODOT 4 · GDSCRIPT · FORWARD+"
 			_style_label(credit_lbl, 14 if is_kr else 12, Color(1.0, 1.0, 1.0, 0.7), font)
 
 		if best_time_lbl and (GameState.best_survival_time > 0.0 or GameState.best_wave > 0):
@@ -1566,7 +1577,7 @@ func _apply_settings_language() -> void:
 					formatted_score = "," + formatted_score
 				formatted_score = score_str[score_str.length() - 1 - i] + formatted_score
 			high_score_lbl.text = "최고 점수: %s" % formatted_score if is_kr else "HIGH SCORE: %s" % formatted_score
-			_style_label(high_score_lbl, 16 if is_kr else 14, Color(0.4, 0.9, 0.4, 1.0), font)
+			_style_label(high_score_lbl, 16 if is_kr else 14, Color(1.0, 0.85, 0.2, 1.0), font)
 
 	# Update top-right LangBtn highlight
 	if lang_highlight and en_label and kr_label:

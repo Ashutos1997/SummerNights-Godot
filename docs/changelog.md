@@ -16,6 +16,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Secondary Menus Close Prompt Consistency: Added localized "PRESS ESC TO CLOSE" / "닫으려면 ESC를 누르세요" guidance text under the Back button for Active Buffs, Achievements, and Stats menus with accessible 14px styling and subtle pulse animation matching Settings, Filters, and Credits screens.
 * Title Screen Modal Architecture Standardization: Aligned Title Screen Achievements and Stats modals 1:1 with the Pause Menu layout (standardizing scroll container dimensions to 700x380, container separation to 16px, adding bottom hairline Divider2, 32px title headers, and 280x44px Back buttons).
 * Title Screen Navigation Hierarchy & Button Layout: Expanded stats breathing space to 24px (Spacer2), introduced a 60px hairline divider cleanly grouping gameplay modes (Normal, Endless) from system menus (Achievements, Stats, Settings), maintained uniform flat button styling across all active options, styled locked Endless Mode with clear [LOCKED] indicator and dimmed borders, and added desktop [ESC] QUIT GAME guidance.
+* Title Screen Micro-Polish Suite: Applied semantic color tokens to player records (Cyber Gold for High Score, Neon Mint for Best Endless Wave), maintained crisp stationary arcade typography, and updated the bottom footer to include the release version stamp (SUMMER NIGHTS v1.7).
 * Version Synchronization: Unified release numbering to v1.7 across both GitHub and itch.io export presets and project configuration.
 
 ---
@@ -300,6 +301,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 보조 메뉴 ESC 닫기 안내 일관성 확보: 활성화된 버프, 업적 및 기록 메뉴의 돌아가기 버튼 하단에 설정/필터/크레딧 화면과 동일한 규격의 "PRESS ESC TO CLOSE" / "닫으려면 ESC를 누르세요" 안내 텍스트(14px 폰트 및 미세 펄스 애니메이션)를 추가하여 조작 일관성 통일.
 * 타이틀 화면 모달 구조 표준화: 타이틀 화면의 업적 및 기록 모달 레이아웃을 인게임 일시정지 메뉴와 1:1로 일치 규격화 (스크롤 영역 700x380 표준화, 16px 간격, 하단 헤어라인 Divider2 구분선 추가, 32px 타이틀 및 280x44px 돌아가기 버튼 적용).
 * 타이틀 화면 조작 위계 및 버튼 레이아웃 개선: 커리어 기록 하단 여백을 24px(Spacer2)로 확장하여 시각적 여유를 확보하고, 게임플레이 모드(일반, 무한)와 시스템 메뉴(업적, 기록, 설정) 사이에 60px 헤어라인 구분선을 추가하여 메뉴 위계 정립. 모든 활성 버튼에 통일된 레트로 플랫 스타일을 유지하고, 잠긴 무한 모드에 명확한 [잠김] 표기 및 비활성화 톤을 적용하며, 하단에 데스크톱 [ESC] 게임 종료 안내 추가.
+* 타이틀 화면 디테일 및 시각적 폴리시: 커리어 기록에 시맨틱 컬러 토큰 적용(최고 점수는 사이버 골드, 무한 모드 기록은 네온 민트), 선명하고 정갈한 레트로 아케이드 고정 타이포그래피 유지, 하단 푸터 텍스트에 릴리스 버전 번호(SUMMER NIGHTS v1.7) 명기.
 * 버전 번호 통일 동기화: GitHub 및 itch.io의 모든 내보내기 프리셋과 프로젝트 설정 버전 번호를 v1.7로 일치 동기화.
 
 ---
