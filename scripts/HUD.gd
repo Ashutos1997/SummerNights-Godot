@@ -3176,7 +3176,7 @@ func update_ice_charges(charges: int, max_charges: int) -> void:
 	if is_instance_valid(ice_notch_overlay):
 		ice_notch_overlay.queue_redraw()
 
-func show_toast(title: String, description: String, icon_path: String, color: Color) -> void:
+func show_toast(title: String, description: String, icon_input = "", color: Color = Color.WHITE, icon_modulate: Variant = null) -> void:
 	if not toast_container: return
 	
 	var is_kr = GameState.language == "KR"
@@ -3201,14 +3201,26 @@ func show_toast(title: String, description: String, icon_path: String, color: Co
 	hbox.add_theme_constant_override("separation", 12)
 	panel.add_child(hbox)
 	
-	if icon_path != "":
+	var tex: Texture2D = null
+	var is_face_icon: bool = false
+	if icon_input is Texture2D:
+		tex = icon_input
+	elif icon_input is String and icon_input != "":
+		tex = load(icon_input)
+		if "driver_" in icon_input or "face_" in icon_input:
+			is_face_icon = true
+	
+	if tex != null:
 		var tex_rect = TextureRect.new()
-		tex_rect.texture = load(icon_path)
+		tex_rect.texture = tex
 		tex_rect.custom_minimum_size = Vector2(32, 32)
 		tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		tex_rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		tex_rect.modulate = color
+		if icon_modulate != null:
+			tex_rect.modulate = icon_modulate
+		else:
+			tex_rect.modulate = Color.WHITE if is_face_icon else color
 		hbox.add_child(tex_rect)
 	
 	var vbox = VBoxContainer.new()
@@ -3341,11 +3353,11 @@ func show_convergence_banner() -> void:
 	banner.add_child(hbox)
 
 	var icon = TextureRect.new()
-	icon.texture = load("res://assets/ui/icons/sun.svg")
+	icon.texture = load("res://assets/ui/icons/driver_smirk.png")
 	icon.custom_minimum_size = Vector2(36, 36)
 	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon.modulate = Color(1.0, 0.85, 0.25)
+	icon.modulate = Color.WHITE
 	hbox.add_child(icon)
 
 	var vbox = VBoxContainer.new()

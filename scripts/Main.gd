@@ -1385,6 +1385,7 @@ func _build_scene() -> void:
 	solar_convergence_mgr.drone_destroyed.connect(_on_solar_drone_destroyed)
 	solar_convergence_mgr.drone_shattered_by_ice.connect(_on_solar_drone_ice_shattered)
 	solar_convergence_mgr.convergence_completed.connect(shatter_drone_shield)
+	solar_convergence_mgr.solar_driver_equipped.connect(_on_solar_driver_equipped)
 	
 	# ── Weather Rain Particles ───────────────────────────────────────────────
 	weather_rain_particles = GPUParticles3D.new()
@@ -4337,6 +4338,8 @@ func _check_sun_defeat() -> void:
 			if GameState.current_wave >= 30 and solar_convergence_mgr:
 				var d_count = 6 if GameState.current_wave < 40 else 7
 				solar_convergence_mgr.start_orbital_swarm(d_count, GameState.current_wave)
+				if GameState.current_wave == 30 and hud and hud.has_method("show_convergence_banner"):
+					hud.show_convergence_banner()
 		else:
 			is_two_phase = false
 			phase2_triggered = false
@@ -4823,7 +4826,7 @@ func _trigger_phase2() -> void:
 			var is_kr = GameState.language == "KR"
 			var title = "태양 수렴: 2페이즈 각성!" if is_kr else "SOLAR CONVERGENCE: PHASE 2"
 			var desc = "폭주 드론 군체 및 황금 방어막 재기동!" if is_kr else "Overdrive Drone Swarm & Golden Shield Re-engaged!"
-			hud.show_toast(title, desc, "res://assets/ui/icons/delivery-drone.svg", Color(1.0, 0.45, 0.15))
+			hud.show_toast(title, desc, "res://assets/ui/icons/driver_fury.png", Color(1.0, 0.45, 0.15))
 	
 	mirage_cooldown = 1.5 # Fast mirage readiness in Phase 2
 	await get_tree().create_timer(0.6).timeout
@@ -4843,11 +4846,13 @@ func toggle_solar_drones() -> void:
 	else:
 		var test_wave = GameState.current_wave if GameState.is_survival_mode else 30
 		solar_convergence_mgr.start_orbital_swarm(6, test_wave)
-		if hud and hud.has_method("show_toast"):
-			var is_kr = GameState.language == "KR"
-			var title = "솔라 드라이버 장착!" if is_kr else "SOLAR DRIVER EQUIPPED!"
-			var desc = "적도 행성 벨트 및 드론 군체 전개" if is_kr else "Planetary Belt & Drone Swarm Deployed"
-			hud.show_toast(title, desc, "res://assets/ui/icons/delivery-drone.svg", Color(1.0, 0.80, 0.20))
+
+func _on_solar_driver_equipped(_pos: Vector3) -> void:
+	if hud and hud.has_method("show_toast"):
+		var is_kr = GameState.language == "KR"
+		var title = "솔라 드라이버 장착!" if is_kr else "SOLAR DRIVER EQUIPPED!"
+		var desc = "적도 행성 벨트 및 드론 군체 전개" if is_kr else "Planetary Belt & Drone Swarm Deployed"
+		hud.show_toast(title, desc, "res://assets/ui/icons/driver_smirk.png", Color(1.0, 0.80, 0.20))
 
 func toggle_solar_driver() -> void:
 	toggle_solar_drones()
