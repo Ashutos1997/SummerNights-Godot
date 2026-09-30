@@ -42,6 +42,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Bespoke UI Vector Icons (SVG Integration): Replaced generic star placeholder icons across the game with bespoke vector icons: "Extra Ice Charge" perk (`ice-spear.svg`), "Sub-Zero Reserve" perk (`thermometer-cold.svg`), clear/calm weather indicator (`sun.svg` with radiant solar gold modulate), weapon unlock toasts (`padlock-open.svg`), drone swarm neutralized toasts (`delivery-drone.svg`), and drone ice shatter toasts (`shatter.svg` with electric cyan modulate).
 * Vector Icons & Credits Sync: Added Game-icons.net (Lorc, Delapouite, CC BY 3.0) attribution for newly integrated UI and perk vector icons across READMEs and in-game HUD Credits screen.
 * Solar Driver & Phase 2 Toast Face Icons: Integrated the Sun boss's procedural expressions as dedicated high-contrast HUD toast icons—the arrogant "Driver Smirk" (`driver_smirk.png`) for Solar Driver Equipped / Deployed and the Wave 30 Convergence banner, and the fierce "Driver Fury" (`driver_fury.png`) for the Phase 2 Overdrive Swarm entrance.
+* Export Presets Versioning: Updated build version numbers across Godot export presets—set to v1.6 for itch.io releases and v1.5.6 for GitHub releases, synchronized with project configuration.
 
 ### Fixed
 * Kitsune Blade Heat Mirage Damage: Fixed Kitsune Blade melee slash failing to detect and damage Heat Mirages; slash now detects decoy suns, chunks mirage HP, and triggers reactive flinch and steam particles.
@@ -307,6 +308,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 맞춤형 UI 벡터 아이콘 적용 (SVG 연동): 게임 전반에 임시로 사용되던 별(Star) 플레이스홀더 아이콘을 전용 벡터 SVG 아이콘으로 교체: "추가 얼음 충전" 특성(`ice-spear.svg`), "극저온 예비탄" 특성(`thermometer-cold.svg`), 맑음/평온 날씨 표시기(`sun.svg` 및 황금빛 모듈레이트), 무기 해금 토스트(`padlock-open.svg`), 드론 군체 무력화 토스트(`delivery-drone.svg`), 드론 결빙 분쇄 토스트(`shatter.svg` 및 일렉트릭 사이언 모듈레이트).
 * 벡터 아이콘 및 크레딧 동기화: 신규 UI 및 퍽 벡터 아이콘에 대한 Game-icons.net (Lorc, Delapouite, CC BY 3.0) 라이선스 표기를 영문/한국어 README 및 인게임 HUD 크레딧 화면에 1:1 동기화 반영.
 * 솔라 드라이버 및 2페이즈 전용 표정 토스트 아이콘: 보스 전용 절차적 표정을 고대비 HUD 알림 아이콘으로 연동—솔라 드라이버 장착/전개 및 30웨이브 수렴 감지 배너에는 오만한 "드라이버 스머크"(`driver_smirk.png`)를, 2페이즈 폭주 진입 알림에는 "드라이버 퓨리"(`driver_fury.png`)를 각각 적용.
+* 내보내기 프리셋 버전 번호 갱신: 고도 엔진 내보내기 프리셋의 빌드 번호를 프로젝트 구성에 맞춰 itch.io 배포용은 v1.6으로, GitHub 배포용은 v1.5.6으로 각각 갱신 반영.
 
 ### 수정됨 (Fixed)
 * 구미호 검 신기루 타격 버그 수정: 구미호 검 근접 베기가 열기 신기루를 타격하지 못하던 현상 수정; 신기루를 조준하여 베었을 때 신기루 체력 게이지가 정상 감소하고 피격 반응 및 이펙트가 발생하도록 개선.
