@@ -17,6 +17,10 @@ All notable changes to the Summer Nights project will be documented in this file
 * Title Screen Modal Architecture Standardization: Aligned Title Screen Achievements and Stats modals 1:1 with the Pause Menu layout (standardizing scroll container dimensions to 700x380, container separation to 16px, adding bottom hairline Divider2, 32px title headers, and 280x44px Back buttons).
 * Title Screen Navigation Hierarchy & Button Layout: Expanded stats breathing space to 24px (Spacer2), introduced a 60px hairline divider cleanly grouping gameplay modes (Normal, Endless) from system menus (Achievements, Stats, Settings), maintained uniform flat button styling across all active options, styled locked Endless Mode with clear [LOCKED] indicator and dimmed borders, and added desktop [ESC] QUIT GAME guidance.
 * Title Screen Micro-Polish Suite: Applied semantic color tokens to player records (Cyber Gold for High Score, Neon Mint for Best Endless Wave), maintained crisp stationary arcade typography, and updated the bottom footer to include the release version stamp (SUMMER NIGHTS v1.7).
+* Volumetric God Rays & Mie Scattering: Configured forward Mie scattering (`volumetric_fog_anisotropy = 0.72`, density `0.0075`) with boosted directional light volumetric fog energy (`1.7`), casting radiant golden sunbeams in daylight that gracefully transition into serene, lower-opacity silver-blue crepuscular rays in cool twilight to prevent the blue sky from looking bland.
+* Ocean Sunset Reflection Glade: Added an anisotropic directional specular sun reflection corridor to the stylized ocean shader (`stylized_water.gdshader`) with dynamic wave-crest sparkles, concentrating a brilliant golden glint column directly under the setting Sun that transitions to moonlit silver-cyan in twilight.
+* Atmospheric Drifting Embers & Motes: Added a lightweight ambient particle system (`ambient_motes_particles`) producing floating golden solar heat embers during daylight and high heat that drift with convection currents and solar winds, seamlessly transitioning into bioluminescent fireflies as dusk falls.
+* Viewmodel Weapon & Arm Visual Polish: Upgraded first-person blasters and arms with semi-gloss toon shading, specular highlights, and warm horizon sunset rim lighting. Added an illuminated translucent glass water reservoir canister to standard blaster weapons that dynamically tracks water tank levels, glows vibrant cyan, and pulses amber during low-water emergencies.
 * Version Synchronization: Unified release numbering to v1.7 across both GitHub and itch.io export presets and project configuration.
 
 ---
@@ -302,6 +306,10 @@ All notable changes to the Summer Nights project will be documented in this file
 * 타이틀 화면 모달 구조 표준화: 타이틀 화면의 업적 및 기록 모달 레이아웃을 인게임 일시정지 메뉴와 1:1로 일치 규격화 (스크롤 영역 700x380 표준화, 16px 간격, 하단 헤어라인 Divider2 구분선 추가, 32px 타이틀 및 280x44px 돌아가기 버튼 적용).
 * 타이틀 화면 조작 위계 및 버튼 레이아웃 개선: 커리어 기록 하단 여백을 24px(Spacer2)로 확장하여 시각적 여유를 확보하고, 게임플레이 모드(일반, 무한)와 시스템 메뉴(업적, 기록, 설정) 사이에 60px 헤어라인 구분선을 추가하여 메뉴 위계 정립. 모든 활성 버튼에 통일된 레트로 플랫 스타일을 유지하고, 잠긴 무한 모드에 명확한 [잠김] 표기 및 비활성화 톤을 적용하며, 하단에 데스크톱 [ESC] 게임 종료 안내 추가.
 * 타이틀 화면 디테일 및 시각적 폴리시: 커리어 기록에 시맨틱 컬러 토큰 적용(최고 점수는 사이버 골드, 무한 모드 기록은 네온 민트), 선명하고 정갈한 레트로 아케이드 고정 타이포그래피 유지, 하단 푸터 텍스트에 릴리스 버전 번호(SUMMER NIGHTS v1.7) 명기.
+* 황혼 대기 갓 레이(빛내림) 구현: 전방 미 산란(Mie Scattering, 비등방성 0.72, 안개 밀도 0.0075)과 지향성 광원 안개 에너지(1.7)를 구성하여 황금빛 빛줄기를 연출하고, 푸른 황혼 하늘로 전환될 때도 은은한 저투명도 은청색 빛줄기와 태양 코로나 오라가 자연스럽게 지속되도록 조율하여 화면의 깊이감 유지.
+* 바다 노을 수면 반사광(선 로드) 구현: 바다 셰이더(`stylized_water.gdshader`)에 비등방성 방향성 태양 반사광 회랑과 파도 능선 반짝임 스파클을 추가하여, 지는 태양 바로 아래로 뻗어 나가는 화려한 황금빛 수면 반사 기둥(황혼 시 은빛 청록색으로 전환) 연출.
+* 대기 부유 태양 불씨 및 모트 입자: 가벼운 앰비언트 파티클 시스템(`ambient_motes_particles`)을 신설하여 낮 시간대 및 고열 상태에서 대류 기류와 태양풍을 타고 부유하는 황금빛 태양 열기 불씨를 연출하고, 황혼이 되면 자연스럽게 생체발광 반딧불이 모트로 전환되도록 구현.
+* 1인칭 무기 및 팔 시각 폴리시: 1인칭 블래스터 및 플레이어 팔 메시에 반광 툰 셰이딩, 스펙큘러 하이라이트 및 따뜻한 수평선 노을 림 라이팅을 적용하여 배경과의 시각적 분리감 강화. 스탠다드 계열 블래스터에 수냉 탱크 잔량을 실시간 추적하고 저수분 경고 펄스를 발산하는 투명 유리 수액 용기 캐니스터 탑재.
 * 버전 번호 통일 동기화: GitHub 및 itch.io의 모든 내보내기 프리셋과 프로젝트 설정 버전 번호를 v1.7로 일치 동기화.
 
 ---

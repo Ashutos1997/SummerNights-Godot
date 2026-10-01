@@ -247,7 +247,6 @@ func _create_drone(index: int, total: int, wave: int = 1, is_phase2: bool = fals
 					dup_mat.rim_enabled = true
 					dup_mat.rim = 0.85
 					dup_mat.rim_tint = 0.45
-					dup_mat.rim_color = Color(1.0, 0.88, 0.35)
 					dup_mat.backlight_enabled = true
 					dup_mat.backlight = Color(0.38, 0.28, 0.16)
 					mesh_node.set_surface_override_material(s_idx, dup_mat)
@@ -921,7 +920,6 @@ func _setup_driver_materials(node: Node) -> void:
 				dup_mat.rim_enabled = true
 				dup_mat.rim = 0.70
 				dup_mat.rim_tint = 0.45
-				dup_mat.rim_color = Color(1.0, 0.88, 0.35)
 				node.set_surface_override_material(s_idx, dup_mat)
 
 				var m_name = dup_mat.resource_name if dup_mat.resource_name != "" else orig_mat.resource_name

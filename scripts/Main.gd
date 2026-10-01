@@ -137,6 +137,8 @@ var gun_model: Node3D
 var is_swapping_weapon: bool = false
 var weapon_swap_tween: Tween
 var kitsune_water_materials: Array[StandardMaterial3D] = []
+var blaster_fluid_core: MeshInstance3D = null
+var blaster_fluid_mat: StandardMaterial3D = null
 var kitsune_tube_pulse_phase: float = 0.0
 var kitsune_cyl_spin_speed: float = 0.0
 var kitsune_cyl_spin_angle: float = 0.0
@@ -213,6 +215,7 @@ func _load_weapon_model() -> void:
 		_apply_kitsune_mode_visuals(GameState.kitsune_mode, true)
 		
 	_adjust_gun_materials(gun_model)
+	_setup_blaster_water_reservoir(gun_model)
 	gun.add_child(gun_model)
 	
 	_recalculate_stats()
@@ -653,6 +656,8 @@ var weather_timer: float = 0.0
 var weather_duration: float = 0.0
 var weather_rain_particles: GPUParticles3D
 var fireflies_particles: GPUParticles3D
+var ambient_motes_particles: GPUParticles3D = null
+var ambient_motes_mat: StandardMaterial3D = null
 var weather_blend: float = 0.0
 
 var foliage_props: Array[Node3D] = []
@@ -1297,21 +1302,16 @@ func _build_scene() -> void:
 	env_res.ssr_fade_out = 2.0
 	env_res.ssr_depth_tolerance = 0.2
 	
-	# ── SDFGI — disabled at runtime (requires editor bake); SSIL + SSAO cover GI
-	# env_res.sdfgi_enabled = true  # Only works when set in editor
-	
-	# ── Volumetric Fog — warm atmospheric haze
+	# ── Volumetric Fog & Crepuscular God Rays ──
 	env_res.volumetric_fog_enabled = true
-	env_res.volumetric_fog_density = 0.003 # Lowered to prevent distant water from disappearing into fog
-	env_res.volumetric_fog_albedo = Color(0.9, 0.6, 0.3, 1.0)
+	env_res.volumetric_fog_density = 0.0075 # Balanced to catch god rays without obscuring ocean
+	env_res.volumetric_fog_albedo = Color(0.95, 0.68, 0.35, 1.0)
 	env_res.volumetric_fog_emission = Color(0.0, 0.0, 0.0)
 	env_res.volumetric_fog_emission_energy = 0.0
 	env_res.volumetric_fog_gi_inject = 1.0
-	env_res.volumetric_fog_anisotropy = 0.2
-	env_res.volumetric_fog_length = 64.0
-	env_res.volumetric_fog_sky_affect = 0.3
-	
-
+	env_res.volumetric_fog_anisotropy = 0.72 # Strong forward Mie scattering produces brilliant god rays toward camera
+	env_res.volumetric_fog_length = 72.0
+	env_res.volumetric_fog_sky_affect = 0.25
 	
 	# Color grading
 	env_res.adjustment_enabled = true
@@ -1326,6 +1326,7 @@ func _build_scene() -> void:
 	dir_light = DirectionalLight3D.new()
 	dir_light.light_color = Color(1.0, 0.75, 0.35)  # Warm golden
 	dir_light.light_energy = 1.35
+	dir_light.light_volumetric_fog_energy = 1.7 # Punchy radiant sunbeams
 	dir_light.light_specular = 0.0 # Prevent shiny reflection spots on the sand
 	dir_light.shadow_enabled = true
 	dir_light.shadow_blur = 3.5
@@ -1488,6 +1489,8 @@ func _build_scene() -> void:
 	add_child(fireflies_particles)
 	fireflies_particles.position = Vector3(0, -1.0, 5.0) # Down near the sand, slightly back
 	fireflies_particles.emitting = true
+
+	_build_ambient_motes()
 
 
 	# ── Animated Drifting Low-Poly 3D Cloud Layer ───────────────────────────
@@ -1886,7 +1889,6 @@ func _build_environment() -> void:
 	
 	# Stylized PBR Sand Textures (Poly Haven Coast Sand 01)
 	var sand_diff = load("res://assets/Textures/sand/coast_sand_01_diff_1k.jpg")
-	var sand_nor = load("res://assets/Textures/sand/coast_sand_01_nor_gl_1k.exr")
 	var sand_rough = load("res://assets/Textures/sand/coast_sand_01_rough_1k.exr")
 	
 	ground_mat = StandardMaterial3D.new()
@@ -1902,11 +1904,7 @@ func _build_environment() -> void:
 	ground_mat.emission_energy_multiplier = 0.15
 	
 	# Normal Map detail
-	ground_mat.normal_enabled = true
-	ground_mat.normal_texture = sand_nor
-	ground_mat.normal_scale = 1.0
-	# Detail texture removed to prevent "cooked" overly dark noise. 
-	# The albedo_texture handles the noise, and albedo_color will tint it properly.
+	ground_mat.normal_enabled = false
 	ground_mat.detail_enabled = false
 	ground_mesh.material = ground_mat
 	var ground = MeshInstance3D.new()
@@ -1929,6 +1927,7 @@ func _build_environment() -> void:
 	water_mat.set_shader_parameter("bg_wave_offset", -1000.0)
 	water_mat.set_shader_parameter("bg_pulse_height", 0.0)
 	water_mat.set_shader_parameter("sun_heat", 1.0)
+	water_mat.set_shader_parameter("sun_position", sun_base_pos)
 	
 	water_mesh.material = water_mat
 	var water = MeshInstance3D.new()
@@ -2029,7 +2028,53 @@ func _build_environment() -> void:
 					
 				env_node.add_child(prop)
 		
+func _build_ambient_motes() -> void:
+	ambient_motes_particles = GPUParticles3D.new()
+	ambient_motes_particles.name = "AmbientMotes"
 	
+	var quad = QuadMesh.new()
+	quad.size = Vector2(0.06, 0.06)
+	
+	ambient_motes_mat = StandardMaterial3D.new()
+	ambient_motes_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	ambient_motes_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	ambient_motes_mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	ambient_motes_mat.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+	ambient_motes_mat.albedo_color = Color(1.0, 0.80, 0.35, 0.85) # Solar heat ember
+	quad.material = ambient_motes_mat
+	
+	var proc = ParticleProcessMaterial.new()
+	proc.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	proc.emission_box_extents = Vector3(12.0, 4.0, 10.0)
+	proc.direction = Vector3(0.0, 1.0, 0.1)
+	proc.spread = 45.0
+	proc.initial_velocity_min = 0.2
+	proc.initial_velocity_max = 0.6
+	proc.gravity = Vector3(0.0, 0.10, -0.04) # Lazy rising convection drift
+	proc.scale_min = 0.5
+	proc.scale_max = 1.3
+	
+	var scale_curve = Curve.new()
+	scale_curve.add_point(Vector2(0.0, 0.0))
+	scale_curve.add_point(Vector2(0.2, 1.0))
+	scale_curve.add_point(Vector2(0.8, 1.0))
+	scale_curve.add_point(Vector2(1.0, 0.0))
+	var scale_tex = CurveTexture.new()
+	scale_tex.curve = scale_curve
+	proc.scale_curve = scale_tex
+	
+	ambient_motes_particles.process_material = proc
+	ambient_motes_particles.draw_pass_1 = quad
+	ambient_motes_particles.amount = 65
+	ambient_motes_particles.lifetime = 6.0
+	ambient_motes_particles.explosiveness = 0.0
+	ambient_motes_particles.randomness = 0.8
+	ambient_motes_particles.visibility_aabb = AABB(Vector3(-15, -5, -20), Vector3(30, 15, 30))
+	
+	add_child(ambient_motes_particles)
+	ambient_motes_particles.position = Vector3(0, 1.0, -6.0)
+	ambient_motes_particles.emitting = true
+
 
 func _relocate_sunspot() -> void:
 	sunspot_timer = 4.5
@@ -2293,6 +2338,8 @@ func _process(delta: float) -> void:
 	
 	if GameState.current_weapon_id == "kitsune":
 		_process_kitsune_visuals(delta)
+	else:
+		_process_blaster_water_reservoir(delta)
 	
 	# Celestial Awakening countdown, infinite reservoir & creation aura
 	if is_celestial_awakened:
@@ -2554,6 +2601,13 @@ func _process(delta: float) -> void:
 			target_gravity.x = wind_direction * (wind_strength / 20.0) # Blow them sideways
 		ff_mat.gravity = ff_mat.gravity.lerp(target_gravity, delta * 2.0)
 
+	if is_instance_valid(ambient_motes_particles) and ambient_motes_particles.process_material:
+		var motes_proc = ambient_motes_particles.process_material as ParticleProcessMaterial
+		var target_drift = Vector3(0.0, 0.10, -0.04)
+		if wind_state == 2 and solar_wind_enabled:
+			target_drift.x = wind_direction * (wind_strength / 14.0)
+		motes_proc.gravity = motes_proc.gravity.lerp(target_drift, delta * 2.0)
+
 	# Increase difficulty based on level
 	var regen_rate = heat_regen_base
 		
@@ -2606,7 +2660,7 @@ func _process(delta: float) -> void:
 		var halo_pulse = sin(sun_time * 2.0) * 0.025 * sun_heat_ratio
 		var halo_scale = (0.75 + 0.25 * sun_heat_ratio) + halo_pulse
 		sky_god_rays_node.scale = Vector3(halo_scale, halo_scale, 1.0)
-		sky_god_rays_node.visible = sun_heat_ratio > 0.005
+		sky_god_rays_node.visible = true
 	
 	_sync_light_to_sun()
 	# Breathing pulse & Temperature scaling
@@ -3761,8 +3815,15 @@ func _adjust_gun_materials(node: Node) -> void:
 					new_mat.albedo_color = Color(1.0, 0.85, 0.1) # Solid Gold!
 					new_mat.metallic = 0.8
 					new_mat.roughness = 0.2
-				elif GameState.current_weapon_id != "kitsune" and new_mat.metallic > 0.1:
-					new_mat.metallic = 0.0
+				elif GameState.current_weapon_id != "kitsune":
+					# Stylized semi-gloss toon finish with warm horizon rim lighting
+					new_mat.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
+					new_mat.roughness = 0.36
+					new_mat.metallic = 0.15
+					new_mat.metallic_specular = 0.65
+					new_mat.rim_enabled = true
+					new_mat.rim = 0.50
+					new_mat.rim_tint = 0.40
 				node.set_surface_override_material(i, new_mat)
 				
 				if GameState.current_weapon_id == "kitsune":
@@ -3772,6 +3833,119 @@ func _adjust_gun_materials(node: Node) -> void:
 							kitsune_water_materials.append(new_mat)
 	for child in node.get_children():
 		_adjust_gun_materials(child)
+
+func _setup_blaster_water_reservoir(gun_root: Node3D) -> void:
+	blaster_fluid_core = null
+	blaster_fluid_mat = null
+	
+	if GameState.current_weapon_id == "kitsune":
+		return
+		
+	var reservoir = Node3D.new()
+	reservoir.name = "WaterReservoir"
+	
+	# Position horizontally on the upper-left of the blaster body in first-person view
+	var pos = Vector3(-0.065, 0.11, 0.02)
+	if GameState.current_weapon_id == "tidal":
+		pos = Vector3(-0.085, 0.14, 0.06)
+	elif GameState.current_weapon_id == "heavy":
+		pos = Vector3(-0.075, 0.12, 0.0)
+	elif GameState.current_weapon_id == "precision":
+		pos = Vector3(-0.05, 0.09, 0.04)
+	reservoir.position = pos
+	reservoir.rotation_degrees = Vector3(90.0, 0.0, 0.0)
+	
+	# 1. Outer clear glass vial
+	var glass_mesh = CylinderMesh.new()
+	glass_mesh.top_radius = 0.022
+	glass_mesh.bottom_radius = 0.022
+	glass_mesh.height = 0.16
+	
+	var glass_mat = StandardMaterial3D.new()
+	glass_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	glass_mat.albedo_color = Color(0.85, 0.98, 1.0, 0.25)
+	glass_mat.roughness = 0.08
+	glass_mat.metallic = 0.15
+	glass_mat.rim_enabled = true
+	glass_mat.rim = 0.6
+	glass_mat.rim_tint = 0.5
+	
+	var glass_inst = MeshInstance3D.new()
+	glass_inst.name = "GlassCasing"
+	glass_inst.mesh = glass_mesh
+	glass_inst.material_override = glass_mat
+	reservoir.add_child(glass_inst)
+	
+	# 2. Mounting metal collars on ends
+	var collar_mesh = CylinderMesh.new()
+	collar_mesh.top_radius = 0.025
+	collar_mesh.bottom_radius = 0.025
+	collar_mesh.height = 0.016
+	
+	var collar_mat = StandardMaterial3D.new()
+	collar_mat.albedo_color = Color(0.85, 0.72, 0.28) # Warm brass / cyber gold collar
+	collar_mat.metallic = 0.8
+	collar_mat.roughness = 0.25
+	
+	var collar_front = MeshInstance3D.new()
+	collar_front.mesh = collar_mesh
+	collar_front.material_override = collar_mat
+	collar_front.position = Vector3(0, 0.075, 0)
+	reservoir.add_child(collar_front)
+	
+	var collar_back = MeshInstance3D.new()
+	collar_back.mesh = collar_mesh
+	collar_back.material_override = collar_mat
+	collar_back.position = Vector3(0, -0.075, 0)
+	reservoir.add_child(collar_back)
+	
+	# 3. Inner glowing fluid core
+	var fluid_mesh = CylinderMesh.new()
+	fluid_mesh.top_radius = 0.018
+	fluid_mesh.bottom_radius = 0.018
+	fluid_mesh.height = 0.14
+	
+	blaster_fluid_mat = StandardMaterial3D.new()
+	blaster_fluid_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	blaster_fluid_mat.albedo_color = Color(0.2, 0.9, 1.0, 0.85)
+	blaster_fluid_mat.emission_enabled = true
+	blaster_fluid_mat.emission = Color(0.15, 0.75, 1.0)
+	blaster_fluid_mat.emission_energy_multiplier = 1.3
+	blaster_fluid_mat.roughness = 0.2
+	
+	blaster_fluid_core = MeshInstance3D.new()
+	blaster_fluid_core.name = "FluidCore"
+	blaster_fluid_core.mesh = fluid_mesh
+	blaster_fluid_core.material_override = blaster_fluid_mat
+	reservoir.add_child(blaster_fluid_core)
+	
+	gun_root.add_child(reservoir)
+
+func _process_blaster_water_reservoir(delta: float) -> void:
+	if not is_instance_valid(blaster_fluid_core) or not blaster_fluid_mat:
+		return
+	
+	var water_pct = clampf(water_tank / maxf(MAX_WATER, 0.001), 0.0, 1.0)
+	var target_scale_y = maxf(water_pct, 0.04)
+	blaster_fluid_core.scale.y = lerpf(blaster_fluid_core.scale.y, target_scale_y, delta * 14.0)
+	blaster_fluid_core.position.y = -0.07 * (1.0 - target_scale_y)
+	
+	var target_col: Color
+	var target_energy: float
+	if water_pct <= 0.001:
+		target_col = Color(0.12, 0.35, 0.50)
+		target_energy = 0.2
+	elif water_pct < 0.25:
+		var warn_t = 1.0 - (water_pct / 0.25)
+		target_col = Color(0.2, 0.9, 1.0).lerp(Color(1.0, 0.48, 0.12), warn_t)
+		target_energy = 1.0 + 0.8 * abs(sin(Time.get_ticks_msec() * 0.008))
+	else:
+		target_col = Color(0.2, 0.9, 1.0)
+		target_energy = 1.5 if is_shooting else 1.0
+	
+	blaster_fluid_mat.emission = target_col
+	blaster_fluid_mat.emission_energy_multiplier = target_energy
+	blaster_fluid_mat.albedo_color = Color(target_col.r, target_col.g, target_col.b, 0.85)
 
 func _setup_sun_mesh_and_material(node: Node) -> MeshInstance3D:
 	var first_mesh: MeshInstance3D = null
@@ -3996,9 +4170,11 @@ func _update_sky(instant: bool) -> void:
 	# Dynamic cool transition factor
 	var cool_ratio = 1.0 - ratio
 	
-	# Drive water shader sun_heat uniform
+	# Drive water shader sun_heat and sun_position uniforms
 	if water_mat and water_mat is ShaderMaterial:
 		water_mat.set_shader_parameter("sun_heat", ratio)
+		var s_pos = sun.global_position if is_instance_valid(sun) else sun_base_pos
+		water_mat.set_shader_parameter("sun_position", s_pos)
 
 	# Weather Overrides (Smoothly blended from dynamic heat base)
 	var base_amb = Color(0.75, 0.65, 0.6).lerp(Color(0.40, 0.46, 0.68), cool_ratio * 0.70)
@@ -4025,14 +4201,26 @@ func _update_sky(instant: bool) -> void:
 	if world_env and world_env.environment:
 		var env = world_env.environment
 		env.ambient_light_color = base_amb.lerp(target_amb, weather_blend)
-		var sunset_fog = Color(0.9, 0.6, 0.3)
-		var twilight_fog = Color(0.22, 0.36, 0.60)
+		var sunset_fog = Color(0.95, 0.68, 0.35)
+		var twilight_fog = Color(0.48, 0.68, 0.92) # Luminous ethereal twilight azure (retains soft silver-blue god rays)
 		var base_fog = sunset_fog.lerp(twilight_fog, cool_ratio * 0.85)
 		env.volumetric_fog_albedo = base_fog.lerp(target_amb, weather_blend)
+		env.volumetric_fog_density = lerpf(0.0075, 0.0055, cool_ratio) # Serene lower fog level in twilight so night sky remains crisp
+		
+	if ambient_motes_mat:
+		var ember_col = Color(1.0, 0.78, 0.30, 0.85) # High heat solar ember
+		var twilight_firefly_col = Color(0.35, 0.95, 0.70, 0.75) # Cool twilight firefly mote
+		var target_col = ember_col.lerp(twilight_firefly_col, cool_ratio)
+		if active_weather == "eclipse":
+			target_col = Color(0.85, 0.35, 1.0, 0.75) # Void violet mote
+		elif active_weather == "rain":
+			target_col = Color(0.60, 0.75, 0.90, 0.35) # Dim raindrop mist
+		ambient_motes_mat.albedo_color = target_col
 		
 	if dir_light:
 		dir_light.light_color = base_dir.lerp(target_dir, weather_blend)
 		dir_light.light_energy = lerpf(1.35, 0.90, cool_ratio * 0.45)
+		dir_light.light_volumetric_fog_energy = lerpf(1.7, 1.15, cool_ratio) # Soft, ethereal lower-level god rays in blue twilight
 		
 	if ground_mat:
 		var current_emission_col = base_sand_color.lerp(target_sand_color, weather_blend)
@@ -4046,6 +4234,7 @@ func _update_sky(instant: bool) -> void:
 		# Wet sand also extinguishes the glow
 		ground_mat.emission = current_emission_col.lerp(current_emission_col.darkened(0.7), sand_wetness)
 		ground_mat.emission_energy_multiplier = lerp(current_emission_energy, 0.0, sand_wetness)
+		ground_mat.emission_enabled = true
 
 	var clouds_node = get_node_or_null("CloudLayer")
 	if clouds_node:
@@ -4096,9 +4285,11 @@ func _update_sky(instant: bool) -> void:
 	sun_mat.emission_energy_multiplier = emission_mult
 	if sun_ray_mat:
 		sun_ray_mat.emission = ray_base_emission
-		sun_ray_mat.albedo_color = Color(ray_base_albedo.r, ray_base_albedo.g, ray_base_albedo.b, ratio * 0.95)
+		var cool_ray_alpha = lerpf(0.30, 0.95, ratio) # Keeps subtle, low-opacity crown when cool
+		sun_ray_mat.albedo_color = Color(ray_base_albedo.r, ray_base_albedo.g, ray_base_albedo.b, cool_ray_alpha)
 		var base_mult = 1.5 if temperature > 75.0 else (1.1 if temperature > 40.0 else 0.6)
-		sun_ray_mat.emission_energy_multiplier = base_mult * ratio * lerpf(1.0, 2.5, weather_blend if active_weather == "eclipse" else 0.0)
+		var ray_mult = lerpf(0.35, 1.0, ratio)
+		sun_ray_mat.emission_energy_multiplier = base_mult * ray_mult * lerpf(1.0, 2.5, weather_blend if active_weather == "eclipse" else 0.0)
 		
 	if sky_god_rays_mat:
 		var god_ray_heat = ratio
@@ -4118,8 +4309,8 @@ func _update_sky(instant: bool) -> void:
 			ray_col = Color(0.42, 0.78, 1.0, 0.28) # Frost icy flare
 			wave_spd = 0.9 # Glacial crystal ripples
 		elif temperature < 40.0:
-			ray_col = Color(0.68, 0.62, 0.96, 0.24) # Twilight lavender
-			wave_spd = 1.6
+			ray_col = Color(0.55, 0.78, 1.0, 0.30) # Twilight moonlit azure aura at lower opacity
+			wave_spd = 1.2 # Calmer, serene twilight breathing
 		sky_god_rays_mat.set_shader_parameter("ray_color", ray_col)
 		sky_god_rays_mat.set_shader_parameter("wave_speed", wave_spd)
 		

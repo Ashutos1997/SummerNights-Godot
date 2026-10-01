@@ -51,11 +51,12 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 * **Solar Convergence:** Apex Boss encounter (Wave 30+). Equatorial Solar Driver attaches to the Sun's waist (16-ray Sunburst Corona crest, glowing incandescent core, conduits, and drone bays) while orbiting Solar Eye Drones project an invulnerable Golden Shield (throttling Sun heat regen by 50%). Drones show progressive crack damage and award water (+15%/+20%) plus ultimate charge (+5%/+8%) on destruction. Destroying all drones overloads the Driver and shatters the shield. In Phase 2, the Driver enters Overdrive, deploying a lean, fast-paced escort swarm with reactivated Golden Shield.
 
 ## 6. Environment & Visuals
-* **Dynamic Ocean:** Procedural Gerstner waves, Voronoi caustics, and subsurface scattering.
+* **Dynamic Ocean:** Procedural Gerstner waves, Voronoi caustics, subsurface scattering, and shimmering directional sun reflection glade with wave sparkles.
 * **Rogue Waves:** Large waves crash on the island, darkening wet sand.
-* **Sky & Atmosphere:** Dynamic sunset-to-twilight transition with Belt of Venus lavender-pink dusk band, luminous aquamarine waterline glow, procedural Milky Way stardust ribbon, periodic shooting stars, crystalline Evening Star (Venus), moonlit silver-cyan rimmed clouds, and temperature-reactive ocean specular reflection.
+* **Sky & Atmosphere:** Dynamic sunset-to-twilight transition, forward Mie-scattering volumetric god rays (with serene silver-blue rays in cool twilight), airborne solar heat embers transitioning to twilight firefly motes, Belt of Venus lavender dusk band, aquamarine waterline glow, procedural Milky Way ribbon, shooting stars, and Venus star.
 * **Coronal Halo & Heat Waves:** Additive coronal glow and heat ripples that breathe, pulse, and extinguish with sun temperature.
 * **Sun Expressions:** Reacts dynamically to hits, crits, charging flares, Catastrom dunks, and equips dedicated Apex Boss expressions (Driver Smirk and Overdrive Fury with forehead coronal crests) during Wave 30+ Solar Convergence. Also integrated directly as HUD toast and banner icons for Driver Equipped and Phase 2 Overdrive events.
+* **Weapon & First-Person Polish:** Semi-gloss toon shading and warm sunset rim lighting on blaster models and player arms, complemented by live illuminated glass fluid reservoir canisters tracking water capacity and low-water warning pulses.
 * **Low-Poly Seagulls:** Procedural 2-joint wing rig, flight physics, and reactive escape behaviors.
 * **Retro Filters:** Optional post-processing shaders (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
 

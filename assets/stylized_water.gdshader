@@ -39,8 +39,10 @@ uniform float bg_wave_offset = -1000.0;
 uniform float bg_pulse_width : hint_range(0.1, 50.0, 0.1) = 15.0;
 uniform float bg_pulse_height : hint_range(0.0, 15.0, 0.1) = 0.0;
 
-// ── Temperature-driven reflection ──────────────────────────────────────────
+// ── Temperature-driven reflection & Sun Glint ──────────────────────────────
 uniform float sun_heat : hint_range(0.0, 1.0, 0.01) = 1.0;
+uniform vec3  sun_position = vec3(0.0, 13.5, -42.0);
+uniform float sun_glint_intensity : hint_range(0.0, 5.0, 0.1) = 2.4;
 
 varying float pulse_mask;
 varying float bg_pulse_mask;
@@ -174,13 +176,39 @@ void fragment() {
 	
 	vec3 final_color = mix(water_base, color_foam.rgb, foam_final_mask);
 	
+	// ── Directional Sun Glint / Shimmering Sunset Path ────────────────────────
+	vec3 to_sun = normalize(sun_position - world_pos);
+	vec3 cam_pos = INV_VIEW_MATRIX[3].xyz;
+	vec3 view_dir = normalize(cam_pos - world_pos);
+	vec3 half_v = normalize(to_sun + view_dir);
+	float n_dot_h = max(dot(NORMAL, half_v), 0.0);
+
+	// Anisotropic specular stretch across the wave surface
+	float sun_glint = pow(n_dot_h, 32.0);
+
+	// Column alignment mask along the XZ axis towards the Sun
+	vec2 to_sun_xz = normalize(sun_position.xz - world_pos.xz);
+	vec2 to_cam_xz = normalize(cam_pos.xz - world_pos.xz);
+	float col_align = max(dot(to_sun_xz, -to_cam_xz), 0.0);
+	float col_mask = pow(col_align, 10.0); // Elongated golden glade corridor
+
+	// Dynamic wave crest sparkles
+	float sparkle = pow(noise(world_pos.xz * 2.8 + vec2(TIME * 0.45, -TIME * 0.3)), 2.5) * 2.0;
+
+	// Dynamic reflection color driven by sun temperature
+	vec3 sunset_glint_col   = vec3(1.0, 0.85, 0.45); // Radiant warm golden amber
+	vec3 twilight_glint_col = vec3(0.45, 0.85, 1.0);  // Moonlit silver-cyan
+	vec3 glint_col = mix(twilight_glint_col, sunset_glint_col, sun_heat);
+
+	float total_glint = (sun_glint * 1.5 + sun_glint * sparkle * 1.8) * col_mask * sun_glint_intensity;
+	final_color += glint_col * total_glint;
+
 	// ── Toon specular reflection (Toon mode) ─────────────────────────────────
 	float fresnel = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), 3.0);
 	vec3 sunset_refl  = vec3(0.98, 0.72, 0.35); // Warm sunset reflection
 	vec3 moonlit_refl = vec3(0.38, 0.78, 0.95); // Sparkling moonlit silver-cyan reflection
 	vec3 reflection_col = mix(moonlit_refl, sunset_refl, sun_heat);
-	float dist_fade = smoothstep(150.0, 50.0, -VERTEX.z);
-	final_color = mix(final_color, reflection_col, fresnel * 0.45 * dist_fade);
+	final_color = mix(final_color, reflection_col, fresnel * 0.35);
 	
 	ALBEDO = final_color;
 	ALPHA = mix(color_shallow.a, color_deep.a, depth_factor);

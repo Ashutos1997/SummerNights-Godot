@@ -28,13 +28,15 @@ void fragment() {
 	
 	// Envelope: ripples emerge gently past sun disk and fade before outer perimeter
 	float ripple_envelope = smoothstep(0.12, 0.32, dist) * (1.0 - smoothstep(0.5, 0.95, dist));
-	float heat_waves = ripples * ripple_envelope * 0.52 * heat_ratio;
+	float wave_factor = mix(0.25, 1.0, heat_ratio);
+	float heat_waves = ripples * ripple_envelope * 0.52 * wave_factor;
 	
 	// Combined luminous celestial aura
 	float total_lum = (core_glow + heat_waves) * outer_fade;
 	
-	// Dynamic heat scaling: dissolves cleanly to 0.0 as sun cools
-	float alpha = clamp(total_lum * ray_color.a * heat_ratio, 0.0, 1.0);
+	// Dynamic heat scaling: in sunset, full radiant energy (1.0); in cool twilight, retains a serene lower-opacity presence (0.35 level)
+	float ray_level = mix(0.35, 1.0, heat_ratio);
+	float alpha = clamp(total_lum * ray_color.a * ray_level, 0.0, 1.0);
 	
 	ALBEDO = ray_color.rgb;
 	ALPHA = alpha;
