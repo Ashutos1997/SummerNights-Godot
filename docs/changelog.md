@@ -21,6 +21,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Ocean Sunset Reflection Glade: Added an anisotropic directional specular sun reflection corridor to the stylized ocean shader (`stylized_water.gdshader`) with dynamic wave-crest sparkles, concentrating a brilliant golden glint column directly under the setting Sun that transitions to moonlit silver-cyan in twilight.
 * Atmospheric Drifting Embers & Motes: Added a lightweight ambient particle system (`ambient_motes_particles`) producing floating golden solar heat embers during daylight and high heat that drift with convection currents and solar winds, seamlessly transitioning into bioluminescent fireflies as dusk falls.
 * Viewmodel Weapon & Arm Visual Polish: Upgraded first-person blasters and arms with semi-gloss toon shading, specular highlights, and warm horizon sunset rim lighting. Added an illuminated translucent glass water reservoir canister to standard blaster weapons that dynamically tracks water tank levels, glows vibrant cyan, and pulses amber during low-water emergencies.
+* Scatter Nozzle Viewmodel Orientation: Corrected the 180° reversed model rotation on the Scatter Nozzle so its dual barrels face forward toward targets instead of facing backward.
 * Version Synchronization: Unified release numbering to v1.7 across both GitHub and itch.io export presets and project configuration.
 
 ---
@@ -310,6 +311,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 바다 노을 수면 반사광(선 로드) 구현: 바다 셰이더(`stylized_water.gdshader`)에 비등방성 방향성 태양 반사광 회랑과 파도 능선 반짝임 스파클을 추가하여, 지는 태양 바로 아래로 뻗어 나가는 화려한 황금빛 수면 반사 기둥(황혼 시 은빛 청록색으로 전환) 연출.
 * 대기 부유 태양 불씨 및 모트 입자: 가벼운 앰비언트 파티클 시스템(`ambient_motes_particles`)을 신설하여 낮 시간대 및 고열 상태에서 대류 기류와 태양풍을 타고 부유하는 황금빛 태양 열기 불씨를 연출하고, 황혼이 되면 자연스럽게 생체발광 반딧불이 모트로 전환되도록 구현.
 * 1인칭 무기 및 팔 시각 폴리시: 1인칭 블래스터 및 플레이어 팔 메시에 반광 툰 셰이딩, 스펙큘러 하이라이트 및 따뜻한 수평선 노을 림 라이팅을 적용하여 배경과의 시각적 분리감 강화. 스탠다드 계열 블래스터에 수냉 탱크 잔량을 실시간 추적하고 저수분 경고 펄스를 발산하는 투명 유리 수액 용기 캐니스터 탑재.
+* 산탄 노즐 1인칭 무기 방향 보정: 산탄 노즐(Scatter Nozzle) 모델이 180도 반대로 뒤집혀 있던 회전 각도를 보정하여 듀얼 총열이 플레이어 전방을 똑바로 향하도록 수정.
 * 버전 번호 통일 동기화: GitHub 및 itch.io의 모든 내보내기 프리셋과 프로젝트 설정 버전 번호를 v1.7로 일치 동기화.
 
 ---

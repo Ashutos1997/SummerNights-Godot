@@ -211,6 +211,9 @@ func _load_weapon_model() -> void:
 	if GameState.current_weapon_id == "tidal":
 		# Tidal Gatling model pivot is slightly offset, push it left to center the barrels
 		gun_model.position.x -= 0.15
+	elif GameState.current_weapon_id == "scatter":
+		# Scatter Nozzle model is oriented 180 degrees opposite, rotate to face forward
+		gun_model.rotation_degrees = Vector3(0, 0, 0)
 	elif GameState.current_weapon_id == "kitsune":
 		_apply_kitsune_mode_visuals(GameState.kitsune_mode, true)
 		
@@ -3852,6 +3855,8 @@ func _setup_blaster_water_reservoir(gun_root: Node3D) -> void:
 		pos = Vector3(-0.075, 0.12, 0.0)
 	elif GameState.current_weapon_id == "precision":
 		pos = Vector3(-0.05, 0.09, 0.04)
+	elif GameState.current_weapon_id == "scatter":
+		pos = Vector3(0.065, 0.11, -0.02)
 	reservoir.position = pos
 	reservoir.rotation_degrees = Vector3(90.0, 0.0, 0.0)
 	
