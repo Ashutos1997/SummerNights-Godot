@@ -2866,6 +2866,8 @@ func end_overtime() -> void:
 		timer_label.modulate = Color.WHITE
 		timer_label.scale = Vector2.ONE
 		timer_label.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 1.0))
+		var prefix = "시간: " if GameState.language == "KR" else "TIME: "
+		timer_label.text = prefix + "0:00"
 	if score_label:
 		score_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.3, 1.0))
 
