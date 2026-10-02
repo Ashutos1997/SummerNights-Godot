@@ -80,6 +80,10 @@ var last_callout_tier: int = 0
 @onready var retry_btn         = $HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer/RetryBtn
 @onready var menu_btn          = $HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer/MenuBtn
 
+var is_overtime: bool = false
+var overtime_tween: Tween = null
+var was_bankruptcy_defeat: bool = false
+
 
 
 @onready var pause_screen       = $HUD/pause_screen
@@ -2828,6 +2832,7 @@ func show_buff_toast(id: String) -> void:
 	_show_toast("버프 활성화!", "BUFF UNLOCKED!", buff["title_kr"], buff["title_en"], buff["icon"], 110.0, buff_toast_container)
 
 func hide_win_screen() -> void:
+	end_overtime()
 	if win_screen:
 		win_screen.visible = false
 		win_screen.modulate.a = 0.0
@@ -2835,6 +2840,43 @@ func hide_win_screen() -> void:
 var timer_pulse_active: bool = false
 var timer_pulse_tween: Tween = null
 var _last_urgency_sec: int = -1
+
+func start_overtime() -> void:
+	is_overtime = true
+	_stop_timer_pulse()
+	if timer_label:
+		var ot_text = "[ 연장전 ]" if GameState.language == "KR" else "[ OVERTIME ]"
+		timer_label.text = ot_text
+		timer_label.add_theme_color_override("font_color", Color(1.0, 0.22, 0.22, 1.0))
+		if not reduce_motion:
+			if is_instance_valid(overtime_tween):
+				overtime_tween.kill()
+			overtime_tween = create_tween().set_loops()
+			overtime_tween.tween_property(timer_label, "modulate", Color(1.4, 0.3, 0.3, 1.0), 0.3).set_trans(Tween.TRANS_SINE)
+			overtime_tween.tween_property(timer_label, "modulate", Color(1.0, 0.8, 0.8, 0.7), 0.3).set_trans(Tween.TRANS_SINE)
+	if score_label:
+		score_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.3, 1.0))
+
+func end_overtime() -> void:
+	is_overtime = false
+	if is_instance_valid(overtime_tween):
+		overtime_tween.kill()
+		overtime_tween = null
+	if timer_label:
+		timer_label.modulate = Color.WHITE
+		timer_label.scale = Vector2.ONE
+		timer_label.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 1.0))
+	if score_label:
+		score_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.3, 1.0))
+
+func update_overtime_score_burn(current_score: int, _burn_amount: int) -> void:
+	_update_score_display(current_score)
+	if score_label:
+		score_label.add_theme_color_override("font_color", Color(1.0, 0.25, 0.25, 1.0))
+		if not reduce_motion and score_label.scale == Vector2.ONE:
+			var tw = create_tween()
+			score_label.scale = Vector2(1.08, 1.08)
+			tw.tween_property(score_label, "scale", Vector2.ONE, 0.15)
 
 func _stop_timer_pulse() -> void:
 	timer_pulse_active = false
@@ -2849,6 +2891,11 @@ func _stop_timer_pulse() -> void:
 
 func _on_timer_tick(seconds: float) -> void:
 	if not timer_label: return
+	if is_overtime:
+		var ot_text = "[ 연장전 ]" if GameState.language == "KR" else "[ OVERTIME ]"
+		timer_label.text = ot_text
+		timer_label.add_theme_color_override("font_color", Color(1.0, 0.22, 0.22, 1.0))
+		return
 	var total_secs = max(0, int(ceil(seconds))) if seconds > 0.0 else 0
 	var mins = total_secs / 60
 	var secs = total_secs % 60
@@ -3045,6 +3092,7 @@ func _build_recap_stat_row(icon_path: String, label_text: String, value_text: St
 
 func show_lose_screen() -> void:
 	if not lose_screen: return
+	end_overtime()
 	if weapon_wheel and weapon_wheel.has_method("close_immediate"):
 		weapon_wheel.close_immediate()
 	elif weapon_wheel and weapon_wheel.active:
@@ -3059,6 +3107,16 @@ func show_lose_screen() -> void:
 		lose_wave_time_lbl.hide()
 		
 	var is_kr = GameState.language == "KR"
+	
+	if was_bankruptcy_defeat:
+		was_bankruptcy_defeat = false
+		if lose_title2_lbl:
+			var title_font: Font = galmuri_font if is_kr else kenney_font
+			lose_title2_lbl.text = "파산: 점수를 모두 소진했습니다" if is_kr else "BANKRUPT: ALL SCORE DEPLETED"
+			lose_title2_lbl.show()
+			_style_lbl(lose_title2_lbl, 24, Color(1.0, 0.35, 0.35, 1.0), 3, Color.BLACK, title_font)
+	elif lose_title2_lbl:
+		lose_title2_lbl.hide()
 	
 	var format_int = func(num: int) -> String:
 		var num_str = str(num)
@@ -3612,6 +3670,9 @@ func update_kitsune_mode_display(_mode: String = "") -> void:
 
 func _on_score_updated(new_score: int) -> void:
 	if not score_label: return
+	if is_overtime:
+		_update_score_display(new_score)
+		return
 	if is_instance_valid(score_tween):
 		score_tween.kill()
 	

@@ -52,6 +52,10 @@ Design tokens, color palettes, typography, and component specifications for *Sum
   * *World (Layer 0):* Ethereal Domain filter with indigo split-toning and cyan anamorphic flares.
   * *HUD (Layer 10):* Breathing cyan energy vignette, 360° reticle timer ring, and holographic text shadows.
   * *Audio:* CC0 activation swell and deactivation dissipation SFX.
+* **Paid in Full Overtime HUD:**
+  * *Timer Badge:* Pulsing crimson `[ OVERTIME ]` / `[ 연장전 ]` badge (`Color(1.0, 0.22, 0.22)`) with 0.3s sine pulse loop.
+  * *Score Drain:* Warning red font color (`Color(1.0, 0.25, 0.25)`) with subtle 1.08x scale twitches per burn pulse.
+  * *Bankruptcy Recap:* Dedicated subtitle (`Color(1.0, 0.35, 0.35)`) on defeat screen: `"BANKRUPT: ALL SCORE DEPLETED"` / `"파산: 점수를 모두 소진했습니다"`.
 
 ### Boot Splash & Startup Continuity
 * **Window Initialization:** Launches directly in Fullscreen mode with dark background `Color(0.02, 0.01, 0.05, 1)` with stock splash disabled.
@@ -60,6 +64,7 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 
 ## 5. Procedural Sun Expressions & Rays
 * **Face Texture:** 128x128 RGBA8 procedural texture with 4px outline, reacting to heat and combat events.
+* **Overtime Shock:** Procedural expression featuring contracted pill eyes, high arched startled eyebrows, round open dropped jaw, and a procedural temple sweat droplet bead with pale-amber shock modulate (`Color(2.4, 2.0, 1.4, 0.95)`).
 * **Coronal Halo:** Additive coronal glow and heat ripples (`god_rays.gdshader`) that expand and extinguish with sun temperature.
 
 ## 6. Post-Processing & Screen Effects

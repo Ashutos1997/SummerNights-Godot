@@ -95,6 +95,13 @@ const ACHIEVEMENTS: Dictionary = {
 		"title_kr": "클라이맥스",
 		"desc_en": "Activate Celestial Awakening with Kitsune Buster IX.",
 		"desc_kr": "구미호 버스터 IX로 신성의 각성을 발동하세요."
+	},
+	"paid_in_full": {
+		"icon": "res://assets/ui/achievements/trophy.png",
+		"title_en": "Paid in Full",
+		"title_kr": "완납",
+		"desc_en": "Defeat a Boss during Overtime after burning at least 5,000 Score.",
+		"desc_kr": "연장전에서 5,000점 이상의 점수를 소모하고 보스를 격파하세요."
 	}
 }
 
@@ -350,6 +357,7 @@ var survival_time: float = 0.0
 var best_survival_time: float = 0.0
 var best_wave: int = 0
 var current_score: int = 0
+var is_overtime_active: bool = false
 var high_score: int = 0
 var seagulls_shooed: int = 0
 var flares_intercepted: int = 0
@@ -580,6 +588,7 @@ func reset() -> void:
 	current_wave = 1
 	survival_time = 0.0
 	current_score = 0
+	is_overtime_active = false
 	
 	max_water_mult = 1.0
 	cooling_power_mult = 1.0
@@ -704,7 +713,7 @@ func _apply_window_mode(mode: int) -> void:
 		DisplayServer.window_set_position(screen_size / 2 - Vector2i(1280, 720) / 2)
 
 func add_score(amount: int) -> void:
-	if amount <= 0: return
+	if amount <= 0 or is_overtime_active: return
 	current_score += amount
 	if current_score > high_score:
 		var old_high = high_score

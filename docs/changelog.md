@@ -5,6 +5,12 @@ All notable changes to the Summer Nights project will be documented in this file
 ## [v1.7] - WIP
 *(Note: Releases are now unified to v1.7 across both GitHub and itch.io)*
 
+### Added
+* "Paid in Full" Boss Overtime: Added an emergency overtime system scoped exclusively to Boss Waves (Levels 5–6, Endless every 5th wave). Hitting `0:00` with banked score initiates Overtime instead of instant Supernova defeat. Banked score drains on an accelerating curve as life-support time, score inflow freezes to prevent perk-stacking immortality loops, and Sun heat regen halts. Defeating the boss clears Overtime and restores normal score accumulation for the next wave, while score hitting 0 causes bankruptcy defeat.
+* Procedural "Overtime Shock" Sun Expression: Added a dedicated procedural Boss Sun expression for Overtime featuring contracted shock pill eyes, high arched startled eyebrows, a round open dropped jaw, and a procedural temple sweat droplet bead with radiant pale-amber shock modulate.
+* "Paid in Full" Achievement: Added a new achievement (`paid_in_full` / "완납") unlocked by defeating a Boss during Overtime after burning at least 5,000 banked score.
+* HUD Overtime Visuals & Bankruptcy Feedback: Added a pulsing `[ OVERTIME ]` / `[ 연장전 ]` crimson timer badge, warning red score burn feedback, and a dedicated bankruptcy defeat subtitle (`"BANKRUPT: ALL SCORE DEPLETED"` / `"파산: 점수를 모두 소진했습니다"`).
+
 ### Improved
 * Atmospheric Horizon Bloom & Seamless Sea Blending: Replaced the sharp exponential horizon glow cusp in the sky shader with a smooth Gaussian bloom softly biased toward the sun, aligned the lower hemisphere with deep oceanic blue, and tapered the glow along the sea waterline, completely eliminating the rigid "tube" seam artifact without altering gameplay, camera framing, or island geometry.
 * Fullscreen Window Mode by Default: Configured the engine display mode to fullscreen and ensured default fullscreen state applies across all boots and platforms.
@@ -294,6 +300,12 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ## [v1.7] - WIP
 *(참고: 이번 릴리스부터 GitHub 및 itch.io 배포 버전 번호가 v1.7로 통일 동기화됩니다)*
+
+### 추가됨 (Added)
+* "완납 (Paid in Full)" 보스전 연장전 메커니즘: 보스 웨이브(일반 모드 레벨 5·6, 무한 모드 매 5번째 웨이브) 전용 비상 연장전 시스템 추가. 타이머가 `0:00`에 도달했을 때 점수가 남아있다면 즉시 패배하지 않고 연장전에 돌입합니다. 누적 점수가 가속 소모 곡선에 따라 생명 연장 시간으로 소진되며, 무한 퍽 중첩을 통한 불사 악용을 방지하기 위해 점수 획득이 동결되고 태양의 자연 열기 회복이 정지됩니다. 점수가 0이 되기 전 보스를 격파하면 생존하여 다음 웨이브에서 점수를 정상 획득할 수 있으며, 점수가 바닥나면 파산 패배가 발생합니다.
+* 절차적 "연장전 경악 (Overtime Shock)" 태양 표정: 연장전 돌입 시 태양 보스의 전용 절차적 표정 추가—패배 타이머가 끝났음에도 쓰러지지 않는 플레이어를 보고 경악하여 작게 축소된 알약 형태의 동공, 높게 치켜뜬 아치형 눈썹, 벌어진 턱, 관자놀이에 맺힌 절차적 땀방울 및 은은한 호박색 충격 오라 연출.
+* 신규 업적 "완납 (Paid in Full)": 연장전에서 5,000점 이상의 점수를 소모하고 보스를 격파할 시 해금되는 신규 업적 추가.
+* HUD 연장전 UI 및 파산 피드백: 타이머 플레이트에 펄스 애니메이션이 적용된 진홍색 `[ 연장전 ]` / `[ OVERTIME ]` 배지, 경고성 붉은 점수 소모 연출, 게임 오버 화면 전용 파산 자막(`"파산: 점수를 모두 소진했습니다"` / `"BANKRUPT: ALL SCORE DEPLETED"`) 구현.
 
 ### 개선됨 (Improved)
 * 대기 지평선 블룸 및 자연스러운 해수면 블렌딩: 하늘 셰이더의 날카로운 지평선 발광 첨점을 태양 방향으로 부드럽게 퍼지는 가우시안 대기 블룸으로 개편하고, 하부 반구 색상을 심해 네이비 톤으로 일치시켜 수평선 이음새와 인위적인 "발광 튜브" 현상을 게임플레이, 카메라 구도 및 섬 지형 변형 없이 완벽히 해소.

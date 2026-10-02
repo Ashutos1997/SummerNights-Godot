@@ -44,6 +44,7 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 * **Heat Mirage (Boss):** Spawns two decoy suns and a collective overshield across all boss waves with snappy 0.3s elastic pop-in and fast horizontal split lerp. Heat regeneration is throttled by 60% during mirages, and striking the true Sun deals 1.5x bonus damage directly to the mirage overshield.
 * **High Heat Warnings:** Steam boils at 75% heat; screen pulses red and heartbeat audio plays at 85%.
 * **Supernova:** Reaching 100% heat triggers a supernova cinematic and frameless stats recap.
+* **"Paid in Full" Boss Overtime:** On Boss Waves (Levels 5–6, Endless every 5th wave), hitting `0:00` with banked score initiates Overtime instead of instant defeat. Score burns on an accelerating curve as emergency time, score inflow freezes, and Sun heat regen halts. Defeating the boss clears Overtime and unlocks the "Paid in Full" achievement if $\ge 5,000$ score was burned; score hitting 0 causes bankruptcy defeat.
 
 ## 5. Dynamic Weather & Encounters
 * **Rainstorms:** Downpour grants infinite water and passive sun cooling.
@@ -55,7 +56,7 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 * **Rogue Waves:** Large waves crash on the island, darkening wet sand.
 * **Sky & Atmosphere:** Dynamic sunset-to-twilight transition, forward Mie-scattering volumetric god rays (with serene silver-blue rays in cool twilight), airborne solar heat embers transitioning to twilight firefly motes, Belt of Venus lavender dusk band, aquamarine waterline glow, procedural Milky Way ribbon, shooting stars, and Venus star.
 * **Coronal Halo & Heat Waves:** Additive coronal glow and heat ripples that breathe, pulse, and extinguish with sun temperature.
-* **Sun Expressions:** Reacts dynamically to hits, crits, charging flares, Catastrom dunks, and equips dedicated Apex Boss expressions (Driver Smirk and Overdrive Fury with forehead coronal crests) during Wave 30+ Solar Convergence. Also integrated directly as HUD toast and banner icons for Driver Equipped and Phase 2 Overdrive events.
+* **Sun Expressions:** Reacts dynamically to hits, crits, charging flares, Catastrom dunks, Solar Driver states (Driver Smirk and Overdrive Fury), and Paid in Full Overtime (procedural "Overtime Shock" with contracted shock pill eyes, high startled brows, round open dropped jaw, and temple sweat bead). Also integrated directly as HUD toast and banner icons.
 * **Weapon & First-Person Polish:** Semi-gloss toon shading and warm sunset rim lighting on blaster models and player arms, complemented by live illuminated glass fluid reservoir canisters tracking water capacity and low-water warning pulses.
 * **Low-Poly Seagulls:** Procedural 2-joint wing rig, flight physics, and reactive escape behaviors.
 * **Retro Filters:** Optional post-processing shaders (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).

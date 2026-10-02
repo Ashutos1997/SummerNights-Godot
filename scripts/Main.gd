@@ -90,6 +90,10 @@ var sun_sway_speed: float = 0.0
 var sun_figure8: bool = false
 var sun_move_time: float = 0.0
 var level_timer: float = 0.0
+var is_overtime: bool = false
+var overtime_elapsed: float = 0.0
+var overtime_score_burned: int = 0
+var overtime_burn_accumulator: float = 0.0
 var wave_timer: float = 0.0
 var ocean_wave_timer: Timer
 var is_vertical_wave_active: bool = false
@@ -1202,6 +1206,7 @@ func _on_title_start_game(is_survival: bool) -> void:
 		vol_tw.tween_property(ambient_sfx, "volume_db", -20.0, 1.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	
 	is_title_screen = false
+	_end_overtime()
 	Engine.time_scale = 1.0
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	hud._apply_language(GameState.language)
@@ -1624,6 +1629,7 @@ func _build_scene() -> void:
 		"dread":        _draw_face("dread"),
 		"driver_smirk": _draw_face("driver_smirk"),
 		"driver_fury":  _draw_face("driver_fury"),
+		"overtime_shock": _draw_face("overtime_shock"),
 	}
 	sun_face.texture = face_textures["angry"]
 	
@@ -2483,32 +2489,34 @@ func _process(delta: float) -> void:
 		var spd_mult = 0.0 if is_sun_frozen else 1.0
 		sun_time += delta * spd_mult
 		
-		level_timer -= delta
-		timer_tick.emit(level_timer)
-		if level_timer <= 0.0:
-			timer_running = false
-			game_over = true
-			if is_celestial_awakened:
-				end_celestial_awakening()
-			GameState.total_deaths += 1
-			GameState.save_settings()
-			GameState.log_playtest_round("Loss", Time.get_unix_time_from_system() - round_start_time, GameState.current_weapon_id)
-			is_shooting = false
-			_stop_vibrate()
-			if gun_spray: gun_spray.emitting = false
+		if not is_overtime:
+			level_timer -= delta
+			timer_tick.emit(level_timer)
+			if level_timer <= 0.0:
+				level_timer = 0.0
+				if _is_boss_encounter() and GameState.current_score > 0:
+					_start_overtime()
+				else:
+					_trigger_supernova_loss()
+		else:
+			timer_tick.emit(0.0)
+			overtime_elapsed += delta
+			var burn_rate: float = maxf(800.0, float(GameState.current_score) * 0.08) * (1.0 + overtime_elapsed * 0.25)
+			overtime_burn_accumulator += burn_rate * delta
+			var burn_points: int = int(overtime_burn_accumulator)
+			if burn_points > 0:
+				overtime_burn_accumulator -= float(burn_points)
+				GameState.current_score = maxi(0, GameState.current_score - burn_points)
+				overtime_score_burned += burn_points
+				GameState.emit_signal("score_updated", GameState.current_score)
+				if hud and hud.has_method("update_overtime_score_burn"):
+					hud.update_overtime_score_burn(GameState.current_score, burn_points)
 			
-			# Supernova Game Over Cinematic
-			if not reduce_motion:
-				shake(2.0, 0.15)
-				
-			if sun_mat:
-				var tw = create_tween()
-				tw.tween_property(sun_mat, "emission_energy_multiplier", 16.0, 1.2)
-				tw.parallel().tween_property(sun_mat, "albedo_color", Color(5.0, 3.0, 1.5), 1.2)
-				if sun_mesh:
-					tw.parallel().tween_property(sun_mesh, "scale", Vector3(25.0, 25.0, 25.0), 1.2).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_EXPO)
-					
-			supernova_triggered.emit()
+			if GameState.current_score <= 0:
+				if hud and "was_bankruptcy_defeat" in hud:
+					hud.was_bankruptcy_defeat = true
+				_end_overtime()
+				_trigger_supernova_loss()
 			
 		if GameState.is_survival_mode:
 			GameState.survival_time += delta
@@ -2715,11 +2723,12 @@ func _process(delta: float) -> void:
 		else:
 			if high_heat_steam.emitting: high_heat_steam.emitting = false
 	
-	# Heat Regeneration (halved while Golden Drone Shield is active; throttled by 60% during Heat Mirage to prevent instant Supernova)
+	# Heat Regeneration (halved while Golden Drone Shield is active; throttled by 60% during Heat Mirage to prevent instant Supernova; halted during Overtime)
 	if temperature < MAX_TEMP and not is_sun_frozen and active_weather != "eclipse":
 		var drone_shield_throttle = 0.5 if is_drone_shield_active else 1.0
 		var mirage_throttle = 0.4 if active_mirages.size() > 0 else 1.0
-		temperature += (heat_regen_base * drone_shield_throttle * mirage_throttle * (1.0 - GameState.heat_resistance)) * delta # Sun gets hotter over time
+		var overtime_throttle = 0.0 if is_overtime else 1.0
+		temperature += (heat_regen_base * overtime_throttle * drone_shield_throttle * mirage_throttle * (1.0 - GameState.heat_resistance)) * delta # Sun gets hotter over time
 		
 	_update_sky(false)
 	
@@ -3368,6 +3377,58 @@ func _input(event: InputEvent) -> void:
 		if sun.position.y <= 0.0:
 			_trigger_catastrom_dunk()
 
+func _is_boss_encounter() -> bool:
+	if GameState.is_survival_mode:
+		return (GameState.current_wave % 5 == 0)
+	return GameState.level >= 5
+
+func _start_overtime() -> void:
+	is_overtime = true
+	GameState.is_overtime_active = true
+	overtime_elapsed = 0.0
+	overtime_score_burned = 0
+	overtime_burn_accumulator = 0.0
+	level_timer = 0.0
+	if hud and hud.has_method("start_overtime"):
+		hud.start_overtime()
+	_update_sun_face(temperature / MAX_TEMP)
+	if not reduce_motion:
+		shake(0.6, 0.08)
+	if sizzle_sfx:
+		sizzle_sfx.play()
+
+func _end_overtime() -> void:
+	if not is_overtime: return
+	is_overtime = false
+	GameState.is_overtime_active = false
+	if hud and hud.has_method("end_overtime"):
+		hud.end_overtime()
+
+func _trigger_supernova_loss() -> void:
+	timer_running = false
+	game_over = true
+	if is_celestial_awakened:
+		end_celestial_awakening()
+	GameState.total_deaths += 1
+	GameState.save_settings()
+	GameState.log_playtest_round("Loss", Time.get_unix_time_from_system() - round_start_time, GameState.current_weapon_id)
+	is_shooting = false
+	_stop_vibrate()
+	if gun_spray: gun_spray.emitting = false
+	
+	# Supernova Game Over Cinematic
+	if not reduce_motion:
+		shake(2.0, 0.15)
+		
+	if sun_mat:
+		var tw = create_tween()
+		tw.tween_property(sun_mat, "emission_energy_multiplier", 16.0, 1.2)
+		tw.parallel().tween_property(sun_mat, "albedo_color", Color(5.0, 3.0, 1.5), 1.2)
+		if sun_mesh:
+			tw.parallel().tween_property(sun_mesh, "scale", Vector3(25.0, 25.0, 25.0), 1.2).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_EXPO)
+			
+	supernova_triggered.emit()
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Sun Face Procedural Drawing
 # ─────────────────────────────────────────────────────────────────────────────
@@ -3391,6 +3452,7 @@ func _draw_face(expression: String) -> ImageTexture:
 		"dread":        _draw_dread(img, cx, cy)
 		"driver_smirk": _draw_driver_smirk(img, cx, cy)
 		"driver_fury":  _draw_driver_fury(img, cx, cy)
+		"overtime_shock": _draw_overtime_shock(img, cx, cy)
 		
 	# Add the dark orange outer stroke procedurally
 	_add_outline_to_image(img, 4, Color(0.6, 0.2, 0.0, 1.0))
@@ -3698,6 +3760,29 @@ func _draw_driver_fury(img: Image, cx: int, cy: int) -> void:
 	_draw_line_on_image(img, cx - 8, cy - 34, cx - 18, cy - 41, 4, FACE_COLOR)
 	_draw_line_on_image(img, cx + 8, cy - 34, cx + 18, cy - 41, 4, FACE_COLOR)
 
+func _draw_overtime_shock(img: Image, cx: int, cy: int) -> void:
+	# 1. Shrunk / contracted pill eyes (pupils shrunk to small pills in utter shock)
+	_draw_pill_on_image(img, cx - 24, cy - 4, 8, 14, FACE_COLOR)
+	_draw_pill_on_image(img, cx + 24, cy - 4, 8, 14, FACE_COLOR)
+	
+	# 2. High arched startled / worried eyebrows (angled high above contracted eyes)
+	_draw_line_on_image(img, cx - 38, cy - 22, cx - 14, cy - 28, 6, FACE_COLOR)
+	_draw_line_on_image(img, cx + 38, cy - 22, cx + 14, cy - 28, 6, FACE_COLOR)
+	
+	# 3. Gaping shivering round "O" jaw in disbelief
+	_draw_circle_on_image(img, cx, cy + 25, 12, FACE_COLOR)
+	_draw_circle_on_image(img, cx, cy + 25, 5, Color(0, 0, 0, 0))
+	
+	# 4. Prominent procedural sweat droplet bead on right temple
+	_draw_circle_on_image(img, cx + 44, cy - 10, 6, FACE_COLOR)
+	var pts_drop = PackedVector2Array([
+		Vector2(cx + 47, cy - 22),
+		Vector2(cx + 39, cy - 10),
+		Vector2(cx + 49, cy - 10)
+	])
+	_draw_polygon_on_image(img, pts_drop, FACE_COLOR)
+	_draw_circle_on_image(img, cx + 46, cy + 4, 3, FACE_COLOR)
+
 func _update_sun_face(ratio: float) -> void:
 	if not is_instance_valid(sun_face): return
 	sun_face.visible = true
@@ -3745,7 +3830,11 @@ func _update_sun_face(ratio: float) -> void:
 	if is_catastrom_active:
 		expression = "dread"
 		
-	# 4. Sun Frozen / Defeated (highest priority)
+	# 4. Overtime "Paid in Full" shock
+	if is_overtime:
+		expression = "overtime_shock"
+		
+	# 5. Sun Frozen / Defeated (highest priority)
 	if is_sun_frozen:
 		expression = "dizzy"
 
@@ -3754,6 +3843,8 @@ func _update_sun_face(ratio: float) -> void:
 	
 	if is_sun_frozen:
 		sun_face.modulate = Color(0.2, 0.5, 2.5) # Deep icy blue flash
+	elif is_overtime:
+		sun_face.modulate = Color(2.4, 2.0, 1.4, 0.95) # Pale amber shock glow
 	elif has_charging_flare:
 		sun_face.modulate = Color(2.5, 1.4, 0.6, 0.95) # Fiery solar charge glow
 	elif sun_hit_reaction_timer > 0.0 and sun_hit_was_crit:
@@ -4473,6 +4564,12 @@ func _check_sun_defeat() -> void:
 				GameState.unlock_achievement("wave_master")
 		GameState.ice_charges_remaining = min(10, GameState.ice_charges_remaining + 1)
 		
+		# Paid in Full Boss Overtime evaluation
+		if is_overtime:
+			if overtime_score_burned >= 5000:
+				GameState.unlock_achievement("paid_in_full")
+			_end_overtime()
+			
 		# Boss wave reward
 		if (GameState.current_wave - 1) % 5 == 0:
 			water_tank = MAX_WATER
@@ -4583,6 +4680,10 @@ func _win() -> void:
 	timer_running = false
 	is_shooting = false
 	can_shoot = false
+	if is_overtime:
+		if overtime_score_burned >= 5000:
+			GameState.unlock_achievement("paid_in_full")
+		_end_overtime()
 	if is_celestial_awakened:
 		end_celestial_awakening()
 	if active_weather == "eclipse":
@@ -4636,6 +4737,7 @@ func _win() -> void:
 			water_refill_count = 0
 			is_measuring = false
 			is_catastrom_active = false
+			_end_overtime()
 			if is_celestial_awakened:
 				end_celestial_awakening()
 			_end_mirage()
