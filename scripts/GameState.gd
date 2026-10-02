@@ -97,7 +97,7 @@ const ACHIEVEMENTS: Dictionary = {
 		"desc_kr": "구미호 버스터 IX로 신성의 각성을 발동하세요."
 	},
 	"paid_in_full": {
-		"icon": "res://assets/ui/achievements/trophy.png",
+		"icon": "res://assets/ui/icons/cash.svg",
 		"title_en": "Paid in Full",
 		"title_kr": "완납",
 		"desc_en": "Defeat a Boss during Overtime after burning at least 5,000 Score.",
