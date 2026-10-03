@@ -4686,8 +4686,6 @@ func _check_sun_defeat() -> void:
 			if GameState.current_wave >= 30 and solar_convergence_mgr:
 				var d_count = 6 if GameState.current_wave < 40 else 7
 				solar_convergence_mgr.start_orbital_swarm(d_count, GameState.current_wave)
-				if GameState.current_wave == 30 and hud and hud.has_method("show_convergence_banner"):
-					hud.show_convergence_banner()
 		else:
 			is_two_phase = false
 			phase2_triggered = false
@@ -6582,4 +6580,3 @@ func _spawn_heat_surge_flares() -> void:
 		_create_flare_node(target, randf_range(3.2, 3.8))
 	if sizzle_sfx and not sizzle_sfx.playing:
 		sizzle_sfx.play()
-
