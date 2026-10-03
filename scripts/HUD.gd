@@ -3079,7 +3079,7 @@ func present_wave_timer(initial_seconds: float) -> void:
 		flying_timer_label.modulate.a = 0.0
 		timer_intro_tween = create_tween()
 		timer_intro_tween.tween_property(flying_timer_label, "modulate:a", 1.0, 0.25)
-		timer_intro_tween.tween_interval(0.5)
+		timer_intro_tween.tween_interval(2.0)
 		timer_intro_tween.tween_property(flying_timer_label, "modulate:a", 0.0, 0.2)
 		timer_intro_tween.tween_callback(func():
 			if is_instance_valid(flying_timer_label): flying_timer_label.visible = false
@@ -3100,10 +3100,10 @@ func present_wave_timer(initial_seconds: float) -> void:
 	timer_intro_tween.tween_property(flying_timer_label, "scale", Vector2(1.7, 1.7), 0.32).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	timer_intro_tween.tween_property(flying_timer_label, "modulate", Color(1.0, 0.85, 0.2, 1.0), 0.32).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	
-	# Stage 2: Floating breath (0.50s)
+	# Stage 2: Center Hold & Floating Breath (2.2s: clear, unhurried, readable)
 	timer_intro_tween.chain().set_parallel(true)
-	timer_intro_tween.tween_property(flying_timer_label, "position:y", center_start.y - 6.0, 0.50).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	timer_intro_tween.tween_property(flying_timer_label, "scale", Vector2(1.75, 1.75), 0.50).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	timer_intro_tween.tween_property(flying_timer_label, "position:y", center_start.y - 8.0, 2.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	timer_intro_tween.tween_property(flying_timer_label, "scale", Vector2(1.78, 1.78), 2.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	
 	# Stage 3: Smooth Glide Arc (0.85s, gentle sine easing)
 	timer_intro_tween.chain().set_parallel(true)

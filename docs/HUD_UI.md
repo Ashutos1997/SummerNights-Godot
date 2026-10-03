@@ -17,7 +17,7 @@ Architectural map and layout reference for `HUD.tscn`.
 
 ### Top-Right
 * **TopRightInfo (VBoxContainer):** Strict 24px right-aligned container.
-  * **TimerLabel:** Wave time remaining. At wave/level start, punches into screen center (`scale 1.7x`, luminous solar flash), floats/breathes for `0.50s`, and glides over a `0.85s` curved arc (`TRANS_SINE` / `TRANS_QUAD`) directly into its top-right HUD anchor with a `1.15x` landing pulse. Pulses red and bounces when <10s. In Boss Overtime ("Paid in Full"), displays pulsing crimson `[ OVERTIME ]` / `[ 연장전 ]` badge.
+  * **TimerLabel:** Wave time remaining. At wave/level start, punches into screen center (`scale 1.7x`, luminous solar flash), floats/breathes for `2.2s` (allowing clear reading), and glides over a `0.85s` curved arc (`TRANS_SINE` / `TRANS_QUAD`) directly into its top-right HUD anchor with a `1.15x` landing pulse. Pulses red and bounces when <10s. In Boss Overtime ("Paid in Full"), displays pulsing crimson `[ OVERTIME ]` / `[ 연장전 ]` badge.
   * **ScoreLabel:** Live arcade score. Scales up on score events; flashes warning red during Overtime score drain.
 * **WeatherIconContainer:** Persistent icon showing active weather (Normal sun with solar gold modulate, Rain, Eclipse).
 * **WeatherTimerLabel:** Precise eclipse countdown (requires "Shadow Walker" achievement).
