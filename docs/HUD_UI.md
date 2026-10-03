@@ -49,7 +49,7 @@ Architectural map and layout reference for `HUD.tscn`.
 * **Unified Styling:** All menus use a 96px left margin, 24px vertical separation, golden borders, dark dim, uniform Back buttons, and localized "PRESS ESC TO CLOSE" / "닫으려면 ESC를 누르세요" guidance prompts.
 * **PauseScreen (`ESC`):** Pauses tree. Clean vertical layout (280px width, 16px separation, 44px uniform buttons) housing Resume, Settings, Filters, Credits, Controls, Achievements, Buffs, and Main Menu with unbroken 8-button focus navigation.
 * **CreditsScreen:** Autoscrolling bilingual listing with complete 1:1 asset attributions.
-* **AchievementsScreen:** 3-column retro list tracking 14 achievements with live counters, gold badges, and [ESC] close prompt.
+* **AchievementsScreen:** Scrollable retro list tracking 14 achievements on 700x100 cards (4px Retro Flat Plate radius, 64x64 icon plates, concentric 4px/3px progress bars), live counters, gold completion badges, and [ESC] close prompt.
 * **DraftingScreen (Perks):** Post-boss modal. Staggered card deal entrance with rarity badges and `[ MAX ROLL! ]` golden highlights.
 * **FiltersScreen:** Mutually exclusive post-processing options (Retro Colors, Dithering, PS1 Shading, Heatwave 1984) with standardized 16px body typography (`Inter-Medium.ttf` / `Galmuri11.ttf`) and 110x34px toggle buttons.
 * **ControllerScreen:** Keyboard/Xbox layout toggle with unified "Power Up" labels for `[F]` and `[RB]`, and Mode Change (`[X]` Keyboard / `[Y]` Xbox, magenta highlight).

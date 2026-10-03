@@ -782,10 +782,7 @@ func _show_achievements() -> void:
 		style.border_width_top = 1
 		style.border_width_bottom = 1
 		style.border_color = Color(1.0, 0.85, 0.2, 0.5) if unlocked else Color(0.3, 0.3, 0.3, 0.5)
-		style.corner_radius_top_left = 6
-		style.corner_radius_top_right = 6
-		style.corner_radius_bottom_left = 6
-		style.corner_radius_bottom_right = 6
+		style.set_corner_radius_all(4)
 		panel.add_theme_stylebox_override("panel", style)
 		var margin = MarginContainer.new()
 		margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -888,7 +885,7 @@ func _show_achievements() -> void:
 			
 			var pbar_fill = StyleBoxFlat.new()
 			pbar_fill.bg_color = Color(1.0, 0.85, 0.2, 0.9)
-			pbar_fill.set_corner_radius_all(4)
+			pbar_fill.set_corner_radius_all(3)
 			
 			pbar.add_theme_stylebox_override("background", pbar_bg)
 			pbar.add_theme_stylebox_override("fill", pbar_fill)

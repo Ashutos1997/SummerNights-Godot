@@ -12,9 +12,11 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 * **Controller Highlights:** Gold (Pause), Lime (Weapons), Cyan (Ice Blast), Orange (Power Up), Magenta (Mode Change).
 
 ## 2. Corner Radii
-* **0px:** Standard buttons (Main Menu, dialog popups).
-* **4px:** Retro Flat Plates and Badges (Resource meters, Perks, Stat rows, Toast notifications).
-* **16px:** Large panels and overlays (Weapon Wheel, Cards).
+* **0px:** Standard buttons (Main Menu, dialog popups, Back buttons).
+* **3px:** Concentric Progress Bar fill (`4px` track - `1px` border padding).
+* **4px:** Retro Flat Plates and Badges (Resource meters, Perks, Stat rows, Toast notifications, Achievement & Buff Cards).
+* **8px:** Global menu modal frames (2px gold border).
+* **16px:** Large radial panels and overlays (Weapon Wheel).
 
 ## 3. Typography
 * **English (EN):** `Kenney Future.ttf` (Titles/Headers), `Inter-Medium.ttf` (Body/Labels).
@@ -55,7 +57,7 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 ### Interactive Elements
 * **Weapon Wheel:** 6 procedural slices with 12px linear gap spacing, centered 3D previews, and 4px depth shadows. Bottom card displays archetype badges, responsive stat bars, and crit multipliers.
 * **Drafting Screen (Perks):** 3-card deal entrance with 6px drop shadows and rarity badges (`[ RARE ]`, `[ UNCOMMON ]`, `[ COMMON ]`). Max rolls feature an enhanced golden border and glowing `[ MAX ROLL! ]` / `[ 최고 수치! ]` badge.
-* **Achievement Cards:** 700x100 cards with 64x64 icon plates, progress bars, and cyber gold completion badges.
+* **Achievement & Buff Cards:** 700x100 cards adhering to the 4px Retro Flat Plate rule with 64x64 recessed icon plates (4px radii), cyber gold completion badges, and concentric progress bars (4px track / 3px fill).
 * **Settings Screen:** 3 categorized sections (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`) using 14px retro badges, 12px VBox separation, 28px category clearance, unified body typography (`Inter-Medium.ttf` EN / `Galmuri11.ttf` KR) with 16px off-white labels (`Color(0.92, 0.92, 0.92, 0.95)`), 14px toggle/language buttons (even number system), and dedicated cyber gold real-time slider numeric readouts (`100%`, `1.0x`). Mirrored 1:1 in Title Screen.
 * **Pause Menu:** Flat vertical column layout (280px width, 16px separation, 44px uniform buttons) housing Resume, Settings, Filters, Credits, Achievements, Active Buffs, Controls, and Main Menu with unbroken 8-button focus navigation.
 * **Title Screen Layout:** Symmetric horizontal split layout centered on screen (840px × 400px, `alignment = ALIGNMENT_CENTER`). Left column: flush-left title (64px EN / 78px KR with 4px letter-spacing), 60px horizontal hairline divider `Color(1.0, 0.75, 0.15, 0.35)`, subtitle (18px EN / 20px KR), high score (Cyber Gold), best endless wave (Neon Mint). 1px × 280px vertical gold hairline divider centered in 56px margin (28px symmetrical padding). Right column: 240px button stack with 60px hairline grouping gameplay modes (`NORMAL MODE`, `ENDLESS MODE`) from system/meta menus (`ACHIEVEMENTS`, `STATS`, `SETTINGS`), `[LOCKED]` state, `[ESC] QUIT GAME` prompt, and version footer (`v1.7`).
