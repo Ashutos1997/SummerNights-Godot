@@ -3832,6 +3832,21 @@ func show_drones_shield_hint() -> void:
 	var kicker = "[ TACTICAL ALERT ]" if not is_kr else "[ 전술 경고 ]"
 	show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_yellow.png", Color(1.0, 0.85, 0.20, 1.0), null, kicker)
 
+func show_thermal_surge_warning() -> void:
+	var is_kr = GameState.language == "KR"
+	var title = "태양 열기 폭주 경보!" if is_kr else "SOLAR SURGE WARNING!"
+	var desc = "얼음 폭발이나 검으로 저지하세요! [R / 우클릭]" if is_kr else "DISRUPT WITH ICE BLAST OR BLADE! [R / RMB]"
+	var kicker = "[ CRITICAL HAZARD ]" if not is_kr else "[ 치명적 위협 ]"
+	show_toast(title, desc, "res://assets/ui/hud_elements/meter_catastrom.svg", Color(1.0, 0.4, 0.1, 1.0), null, kicker)
+	flash_ice_hint()
+
+func show_thermal_surge_disrupted() -> void:
+	var is_kr = GameState.language == "KR"
+	var title = "열기 폭주 저지 성공!" if is_kr else "SURGE DISRUPTED!"
+	var desc = "태양이 3.5초간 열기 동결 상태에 빠집니다 (+1,500점)" if is_kr else "Sun thermally stunned for 3.5s! (+1,500 PTS)"
+	var kicker = "[ TACTICAL SUCCESS ]" if not is_kr else "[ 전술 성공 ]"
+	show_toast(title, desc, "res://assets/ui/hud_elements/meter_ice.svg", Color(0.2, 0.85, 1.0, 1.0), null, kicker)
+
 func flash_ice_hint() -> void:
 	if not ice_row or not ice_row.visible:
 		return

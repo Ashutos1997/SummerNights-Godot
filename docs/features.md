@@ -31,6 +31,7 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 ## 3. Rogue-lite Perks (Endless Mode)
 * **Drafting:** Choose 1 of 3 randomized perk cards after boss waves. Staggered card deal entrance with rarity badges.
 * **Randomized Roll Ranges:** Perks roll within bounded ranges `[min ~ max]` with proportional trade-off scaling on dual-stat perks. Maximum stat rolls display a glowing gold border and `[ MAX ROLL! ]` / `[ 최고 수치! ]` badge.
+* **Diminishing Returns & Stacking UI:** Stacking 3 or more copies of the same perk incurs diminishing returns (1st & 2nd = 100%, 3rd = 75%, 4th+ = 55%). Drafting Screen cards display amber stack badges (`[ 3RD STACK · 75% ]` / `[ 3중첩 · 효율 75% ]`) and real-time recalculated effective stats.
 * **HUD Tracker:** Top-left active buff icons with stack badges.
 * **Stat Caps:** Cooling Power capped at 2.0x, Water Drain bounded 40%–150%, Crit at 3.0x, Heat Resist at 60%, Sun Sway floored at 40%, Tank bounded 50%–250%, Ult floored at 40%.
 * **Available Perks:** High Capacity, Precision Optics, Thermal Insulator, Catastrom Flow, Heat Shield, Gravity Anchor, Glass Cannon, Heavy Water, Reckless Haste, Wind Breaker, Sub-Zero Reserve, Blade Cadence.
@@ -38,6 +39,8 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 
 ## 4. Sun Mechanics & Threats
 * **Dynamic Movement:** Sun sways horizontally, scaling up to complex Figure-8 patterns on high waves (sway speed capped at 1.3–1.5 for trackable combat).
+* **Endgame Durability Scaling:** Post-Wave 20 in Endless Mode, Sun heat capacity scales by $+2.2\%$/wave (`MAX_TEMP * (1.0 + (wave - 20) * 0.022)`), maintaining engaging 20–32s TTK combat against stacked player perks.
+* **Reactive Solar Heat Surge (Wave 25+):** Suppressing the Sun below 20% heat for $>6.0$s triggers a 1.2s Thermal Flash warning. Can be disrupted via Ice Blast (`[R]`) or Kitsune Blade, awarding +1,500 pts, a 3.5s Sun freeze stun, and a cyan shockwave ring. If uncountered, the Sun unleashes a multi-layered shockwave (+15% heat recovery, 3 spread flares, 10% water tank evaporation, radial lens distortion ripple, and 3D expanding dual TorusMesh rings).
 * **Sunspots:** Glowing critical weakpoints that award bonus cooling and points.
 * **Solar Flare Shield:** Endless Boss Waves (15–25). Emissive cyan energy barrier blocking water until shattered with Ice Blast (`[R]`). On Wave 30+, replaced by the Equatorial Solar Driver & Golden Drone Shield.
 * **Solar Wind:** Physical crosswind pushing player crosshair (drift intensity capped at 1.75x).

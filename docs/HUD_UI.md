@@ -21,7 +21,7 @@ Architectural map and layout reference for `HUD.tscn`.
   * **ScoreLabel:** Live arcade score. Scales up on score events; flashes warning red during Overtime score drain.
 * **WeatherIconContainer:** Persistent icon showing active weather (Normal sun with solar gold modulate, Rain, Eclipse).
 * **WeatherTimerLabel:** Precise eclipse countdown (requires "Shadow Walker" achievement).
-* **ToastContainer (VBoxContainer):** 380px right-docked notification column (24px screen margin, 8px separation). Renders Cyberpunk Arcade Plate alerts (weapon unlocks, Catastrom/Celestial ready, weather events, shield prompts, drone caches) with recessed 40x40 icon plates, 3-tier bilingual typography (`Kenney Future` headers / `Inter-Medium` & `Galmuri11` body), 1.5px bottom depletion countdown bars, and automatic upward reflow.
+* **ToastContainer (VBoxContainer):** 380px right-docked notification column (24px screen margin, 8px separation). Renders Cyberpunk Arcade Plate alerts (weapon unlocks, Catastrom/Celestial ready, weather events, shield prompts, drone caches, Thermal Surge Warnings `[ CRITICAL HAZARD ]`, and Surge Disrupted toasts `[ TACTICAL SUCCESS ]`) with recessed 40x40 icon plates, 3-tier bilingual typography (`Kenney Future` headers / `Inter-Medium` & `Galmuri11` body), 1.5px bottom depletion countdown bars, and automatic upward reflow.
 
 ### Center
 * **Crosshair:** Dynamic reticle scaling on hits. Inner ring tracks water capacity. Flashes red when empty, green on crits.
@@ -50,7 +50,7 @@ Architectural map and layout reference for `HUD.tscn`.
 * **PauseScreen (`ESC`):** Pauses tree. Clean vertical layout (280px width, 16px separation, 44px uniform buttons) housing Resume, Settings, Filters, Credits, Controls, Achievements, Buffs, and Main Menu with unbroken 8-button focus navigation.
 * **CreditsScreen:** Autoscrolling bilingual listing with complete 1:1 asset attributions.
 * **AchievementsScreen:** Scrollable retro list tracking 14 achievements on 700x100 cards (4px Retro Flat Plate radius, 64x64 icon plates, concentric 4px/3px progress bars), live counters, gold completion badges, and [ESC] close prompt.
-* **DraftingScreen (Perks):** Post-boss modal. Staggered card deal entrance with rarity badges and `[ MAX ROLL! ]` golden highlights.
+* **DraftingScreen (Perks):** Post-boss modal. Staggered card deal entrance with rarity badges, `[ MAX ROLL! ]` golden highlights, and amber stack badges (`[ 3RD STACK · 75% ]` / `[ 3중첩 · 효율 75% ]`) with live recalculated effective descriptions when stacking $\ge 2$ copies.
 * **FiltersScreen:** Mutually exclusive post-processing options (Retro Colors, Dithering, PS1 Shading, Heatwave 1984) with standardized 16px body typography (`Inter-Medium.ttf` / `Galmuri11.ttf`) and 110x34px toggle buttons.
 * **ControllerScreen:** Keyboard/Xbox layout toggle with unified "Power Up" labels for `[F]` and `[RB]`, and Mode Change (`[X]` Keyboard / `[Y]` Xbox, magenta highlight).
 * **SettingsScreen:** 3 categorized sections (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM` with Fullscreen, conditional Gold Weapon Skin toggle unlocked at 50k points, and Language) using 14px retro badges, 16px body font row labels (`Inter-Medium.ttf` / `Galmuri11.ttf`), 14px toggle buttons (even number system), and real-time numeric/percentage readouts (`100%`, `1.0x`).

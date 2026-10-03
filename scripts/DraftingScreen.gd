@@ -299,8 +299,26 @@ func _create_perk_row(perk_data: Variant) -> Control:
 		max_badge.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		title_row.add_child(max_badge)
 	
+	var existing_count: int = GameState.get_perk_stack_count(perk_id)
+	if existing_count >= 2:
+		var eff: float = GameState.get_stack_efficiency(existing_count)
+		var pct: int = int(round(eff * 100.0))
+		var stack_badge = Label.new()
+		if is_kr:
+			stack_badge.text = "[ %d중첩 · 효율 %d%% ]" % [existing_count + 1, pct]
+		else:
+			var suffix = "3RD" if existing_count == 2 else ("%dTH" % (existing_count + 1))
+			stack_badge.text = "[ %s STACK · %d%% ]" % [suffix, pct]
+		stack_badge.add_theme_font_override("font", title_font)
+		stack_badge.add_theme_font_size_override("font_size", 14)
+		stack_badge.add_theme_color_override("font_color", Color(1.0, 0.75, 0.2, 0.95))
+		stack_badge.add_theme_constant_override("outline_size", 2)
+		stack_badge.add_theme_color_override("font_outline_color", Color.BLACK)
+		stack_badge.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		title_row.add_child(stack_badge)
+	
 	var desc = Label.new()
-	desc.text = GameState.get_perk_description(perk_instance, is_kr)
+	desc.text = GameState.get_perk_description(perk_instance, is_kr, existing_count)
 	var body_font = load("res://assets/fonts/Galmuri11.ttf") if is_kr else load("res://assets/fonts/Inter-Medium.ttf")
 	desc.add_theme_font_override("font", body_font)
 	desc.add_theme_font_size_override("font_size", 16)

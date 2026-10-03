@@ -566,16 +566,49 @@ func roll_perk_instance(perk_id: String) -> Dictionary:
 		"is_max_roll": is_max_roll
 	}
 
-func get_perk_description(perk_inst: Dictionary, is_kr: bool) -> String:
+func get_perk_stack_count(perk_id: String) -> int:
+	var count: int = 0
+	for p in active_wave_perk_instances:
+		if p.get("id", "") == perk_id:
+			count += 1
+	return count
+
+func get_stack_efficiency(stack_index: int) -> float:
+	# 0-based stack index: 0 = 1st stack, 1 = 2nd stack, 2 = 3rd stack, 3+ = 4th stack onwards
+	if stack_index <= 1:
+		return 1.0 # 1st and 2nd stacks grant 100% full effect
+	elif stack_index == 2:
+		return 0.75 # 3rd stack operates at 75% efficiency
+	else:
+		return 0.55 # 4th and further stacks operate at 55% efficiency
+
+func get_perk_description(perk_inst: Dictionary, is_kr: bool, stack_count: int = 0) -> String:
 	var perk_id: String = perk_inst.get("id", "")
 	var cfg = WAVE_PERKS.get(perk_id, {})
 	var template: String = cfg.get("desc_kr" if is_kr else "desc_en", "")
+	var eff: float = get_stack_efficiency(stack_count)
+	var raw_v1: int = perk_inst.get("val_1", 0)
+	var raw_v2: int = perk_inst.get("val_2", 0)
+	var v1: int = int(round(float(raw_v1) * eff))
+	var v2: int = int(round(float(raw_v2) * eff))
+	
+	var base_desc: String = ""
 	if "%d" in template:
 		if cfg.has("max_val_2"):
-			return template % [perk_inst.get("val_1", 0), perk_inst.get("val_2", 0)]
+			base_desc = template % [v1, v2]
 		else:
-			return template % perk_inst.get("val_1", 0)
-	return template
+			base_desc = template % v1
+	else:
+		base_desc = template
+	
+	if eff < 1.0:
+		var pct: int = int(round(eff * 100.0))
+		if is_kr:
+			base_desc += " (%d중첩 · 효율 %d%% 적용)" % [stack_count + 1, pct]
+		else:
+			var suffix = "3rd" if stack_count == 2 else ("%dth" % (stack_count + 1))
+			base_desc += " (%s stack · %d%% efficiency)" % [suffix, pct]
+	return base_desc
 var weapons_used_this_run: Array[String] = []
 
 var crit_damage_mult: float = 1.0
@@ -749,12 +782,17 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 	if high_score >= 50000:
 		if old_high >= 0 and old_high < 50000: emit_signal("buff_unlocked", "gold_weapon")
 
-	# Apply drafted perks
+	# Apply drafted perks with stack-based diminishing returns
 	if active_wave_perk_instances.size() > 0:
+		var perk_stack_counts: Dictionary = {}
 		for perk_inst in active_wave_perk_instances:
 			var perk_id: String = perk_inst.get("id", "")
-			var v1 = float(perk_inst.get("val_1", 0)) * 0.01
-			var v2 = float(perk_inst.get("val_2", 0)) * 0.01
+			var current_stack: int = perk_stack_counts.get(perk_id, 0)
+			perk_stack_counts[perk_id] = current_stack + 1
+			var eff: float = get_stack_efficiency(current_stack)
+			
+			var v1 = float(perk_inst.get("val_1", 0)) * 0.01 * eff
+			var v2 = float(perk_inst.get("val_2", 0)) * 0.01 * eff
 			match perk_id:
 				"capacity_boost": max_water_mult += v1
 				"cooling_boost":
@@ -778,8 +816,8 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 				"subzero_reserve":
 					bonus_ice_charges += 1
 				"blade_cadence":
-					blade_arc_bonus += float(perk_inst.get("val_1", 20))
-					blade_parry_bonus += float(perk_inst.get("val_2", 25))
+					blade_arc_bonus += float(perk_inst.get("val_1", 20)) * eff
+					blade_parry_bonus += float(perk_inst.get("val_2", 25)) * eff
 	else:
 		# Fallback if perks were added without instances (backwards compatibility)
 		for perk_id in active_wave_perks:

@@ -4,6 +4,19 @@ extends Node3D
 # ─── Game State ──────────────────────────────────────────────────────────────
 var temperature: float    = 100.0
 const MAX_TEMP: float     = 100.0
+var current_max_temp: float = MAX_TEMP
+
+# Heat Surge (Thermal Flash) Mechanic State (Endless Wave 25+)
+var heat_suppression_timer: float = 0.0
+var heat_surge_cooldown: float = 0.0
+var is_heat_surge_warning: bool = false
+var heat_surge_warning_timer: float = 0.0
+
+func _get_current_max_temp() -> float:
+	if GameState.is_survival_mode and GameState.current_wave > 20:
+		return MAX_TEMP * (1.0 + float(GameState.current_wave - 20) * 0.022)
+	return MAX_TEMP
+
 var water_tank: float     = 100.0
 var MAX_WATER: float      = 100.0
 var current_weapon_power: float = 14.0
@@ -1086,7 +1099,9 @@ func _ready() -> void:
 	)
 	mouse_sensitivity = GameState.mouse_sensitivity
 	reduce_motion = GameState.reduce_motion
-	heat_changed.emit(temperature, MAX_TEMP)
+	current_max_temp = _get_current_max_temp()
+	temperature = current_max_temp
+	heat_changed.emit(temperature, current_max_temp)
 	water_changed.emit(water_tank, MAX_WATER)
 
 	shoot_loop_sfx = _create_sfx("res://assets/audio/sfx/shoot_loop.ogg", -10.0, 1, "SFX_WEAPON")
@@ -1240,6 +1255,13 @@ func _on_title_start_game(is_survival: bool) -> void:
 		if GameState.current_wave < 2 and GameState.ice_charges_remaining <= 0:
 			hud.ice_row.visible = false
 	
+	current_max_temp = _get_current_max_temp()
+	temperature = current_max_temp
+	heat_changed.emit(temperature, current_max_temp)
+	heat_suppression_timer = 0.0
+	heat_surge_cooldown = 4.0
+	is_heat_surge_warning = false
+	heat_surge_warning_timer = 0.0
 	timer_running = true
 	virtual_mouse_pos = get_viewport().get_visible_rect().size / 2.0
 	prev_virtual_mouse_pos = virtual_mouse_pos
@@ -2120,98 +2142,103 @@ func _spawn_solar_flare() -> void:
 		flare_count = 2 if GameState.current_wave < 15 else 3
 		
 	for i in range(flare_count):
-		var flare_root = Node3D.new()
-		
-		# Low-Poly Solar Mass Cluster (5 overlapping low-poly spheres matching CloudLayer style)
-		var puff_offsets = [
-			Vector3(0, 0, 0),
-			Vector3(0.6, 0.2, 0.1),
-			Vector3(-0.5, -0.2, -0.1),
-			Vector3(0.2, 0.4, -0.2),
-			Vector3(-0.3, -0.3, 0.2)
-		]
-		
-		for offset in puff_offsets:
-			var mesh_inst = MeshInstance3D.new()
-			var sphere = SphereMesh.new()
-			sphere.radius = randf_range(0.6, 1.0)
-			sphere.height = sphere.radius * 2.0
-			sphere.radial_segments = 8
-			sphere.rings = 6
-			mesh_inst.mesh = sphere
-			if active_weather == "eclipse":
-				var shadow_mat = StandardMaterial3D.new()
-				shadow_mat.albedo_color = Color(0.1, 0.0, 0.2)
-				shadow_mat.emission_enabled = true
-				shadow_mat.emission = Color(0.4, 0.0, 0.8)
-				shadow_mat.emission_energy_multiplier = 3.0
-				mesh_inst.material_override = shadow_mat
-			else:
-				mesh_inst.material_override = flare_mat
-			mesh_inst.position = offset
-			flare_root.add_child(mesh_inst)
-			
-		flare_root.visible = false
-			
-		var flare_spin_speed = Vector3(randf_range(-2.0, 2.0), randf_range(1.0, 3.0), randf_range(-2.0, 2.0))
-	
-		# Fiery OmniLight Aura
-		var f_light = OmniLight3D.new()
-		if active_weather == "eclipse":
-			f_light.light_color = Color(0.5, 0.1, 1.0)
-		else:
-			f_light.light_color = Color(1.0, 0.55, 0.1)
-		f_light.light_energy = 3.5
-		f_light.omni_range = 8.0
-		flare_root.add_child(f_light)
-	
-		# Embers trail
-		var trail = GPUParticles3D.new()
-		var t_mat = ParticleProcessMaterial.new()
-		t_mat.direction = Vector3(0, 0, 1)
-		t_mat.spread = 40.0
-		t_mat.initial_velocity_min = 2.0
-		t_mat.initial_velocity_max = 6.0
-		t_mat.scale_min = 0.3
-		t_mat.scale_max = 0.9
-		var t_mesh = SphereMesh.new()
-		t_mesh.radius = 0.3
-		t_mesh.height = 0.6
-		var t_mesh_mat = StandardMaterial3D.new()
-		if active_weather == "eclipse":
-			t_mesh_mat.albedo_color = Color(0.3, 0.0, 0.6)
-			t_mesh_mat.emission_enabled = true
-			t_mesh_mat.emission = Color(0.5, 0.1, 0.9)
-		else:
-			t_mesh_mat.albedo_color = Color(1.0, 0.5, 0.1)
-			t_mesh_mat.emission_enabled = true
-			t_mesh_mat.emission = Color(1.0, 0.6, 0.1)
-		t_mesh_mat.emission_energy_multiplier = 4.0
-		t_mesh.material = t_mesh_mat
-		trail.process_material = t_mat
-		trail.draw_pass_1 = t_mesh
-		trail.amount = 16
-		flare_root.add_child(trail)
-		
-		add_child(flare_root)
-		flare_root.global_position = sun.global_position
-		
-		var start_pos = sun.global_position
 		var target_pos = Vector3(randf_range(-8.0, 8.0), -1.0, randf_range(1.0, 5.0))
 		var duration = randf_range(3.8, 4.4) # Comfortable 4-second readable flight duration
 		if active_weather == "eclipse":
 			duration = randf_range(1.8, 2.4) # Shadow flares move significantly faster!
+		_create_flare_node(target_pos, duration)
 		
-		active_flares.append({
-			"node": flare_root,
-			"start_pos": start_pos,
-			"target_pos": target_pos,
-			"progress": 0.0,
-			"duration": duration,
-			"spin": flare_spin_speed,
-			"hp": 1.0,
-			"charge_timer": 0.6
-		})
+	if sizzle_sfx and not sizzle_sfx.playing:
+		sizzle_sfx.play()
+
+func _create_flare_node(target_pos: Vector3, duration: float) -> void:
+	var flare_root = Node3D.new()
+	
+	# Low-Poly Solar Mass Cluster (5 overlapping low-poly spheres matching CloudLayer style)
+	var puff_offsets = [
+		Vector3(0, 0, 0),
+		Vector3(0.6, 0.2, 0.1),
+		Vector3(-0.5, -0.2, -0.1),
+		Vector3(0.2, 0.4, -0.2),
+		Vector3(-0.3, -0.3, 0.2)
+	]
+	
+	for offset in puff_offsets:
+		var mesh_inst = MeshInstance3D.new()
+		var sphere = SphereMesh.new()
+		sphere.radius = randf_range(0.6, 1.0)
+		sphere.height = sphere.radius * 2.0
+		sphere.radial_segments = 8
+		sphere.rings = 6
+		mesh_inst.mesh = sphere
+		if active_weather == "eclipse":
+			var shadow_mat = StandardMaterial3D.new()
+			shadow_mat.albedo_color = Color(0.1, 0.0, 0.2)
+			shadow_mat.emission_enabled = true
+			shadow_mat.emission = Color(0.4, 0.0, 0.8)
+			shadow_mat.emission_energy_multiplier = 3.0
+			mesh_inst.material_override = shadow_mat
+		else:
+			mesh_inst.material_override = flare_mat
+		mesh_inst.position = offset
+		flare_root.add_child(mesh_inst)
+		
+	flare_root.visible = false
+		
+	var flare_spin_speed = Vector3(randf_range(-2.0, 2.0), randf_range(1.0, 3.0), randf_range(-2.0, 2.0))
+
+	# Fiery OmniLight Aura
+	var f_light = OmniLight3D.new()
+	if active_weather == "eclipse":
+		f_light.light_color = Color(0.5, 0.1, 1.0)
+	else:
+		f_light.light_color = Color(1.0, 0.55, 0.1)
+	f_light.light_energy = 3.5
+	f_light.omni_range = 8.0
+	flare_root.add_child(f_light)
+
+	# Embers trail
+	var trail = GPUParticles3D.new()
+	var t_mat = ParticleProcessMaterial.new()
+	t_mat.direction = Vector3(0, 0, 1)
+	t_mat.spread = 40.0
+	t_mat.initial_velocity_min = 2.0
+	t_mat.initial_velocity_max = 6.0
+	t_mat.scale_min = 0.3
+	t_mat.scale_max = 0.9
+	var t_mesh = SphereMesh.new()
+	t_mesh.radius = 0.3
+	t_mesh.height = 0.6
+	var t_mesh_mat = StandardMaterial3D.new()
+	if active_weather == "eclipse":
+		t_mesh_mat.albedo_color = Color(0.3, 0.0, 0.6)
+		t_mesh_mat.emission_enabled = true
+		t_mesh_mat.emission = Color(0.5, 0.1, 0.9)
+	else:
+		t_mesh_mat.albedo_color = Color(1.0, 0.5, 0.1)
+		t_mesh_mat.emission_enabled = true
+		t_mesh_mat.emission = Color(1.0, 0.6, 0.1)
+	t_mesh_mat.emission_energy_multiplier = 4.0
+	t_mesh.material = t_mesh_mat
+	trail.process_material = t_mat
+	trail.draw_pass_1 = t_mesh
+	trail.amount = 16
+	flare_root.add_child(trail)
+	
+	add_child(flare_root)
+	flare_root.global_position = sun.global_position
+	
+	var start_pos = sun.global_position
+	active_flares.append({
+		"node": flare_root,
+		"start_pos": start_pos,
+		"target_pos": target_pos,
+		"progress": 0.0,
+		"duration": duration,
+		"spin": flare_spin_speed,
+		"hp": 1.0,
+		"charge_timer": 0.6
+	})
 		
 	if sizzle_sfx and not sizzle_sfx.playing:
 		sizzle_sfx.play()
@@ -2246,7 +2273,8 @@ func _update_flares(delta: float) -> void:
 				
 			var progression = GameState.current_wave if GameState.is_survival_mode else GameState.level
 			var heat_dmg = min(12.0, 4.0 + (progression - 1) * 1.0)
-			temperature = min(MAX_TEMP, temperature + heat_dmg)
+			temperature = min(current_max_temp, temperature + heat_dmg)
+			heat_changed.emit(temperature, current_max_temp)
 			_vibrate(0.5, 0.0, 0.2)
 			
 			# Visceral Consequences
@@ -2656,7 +2684,7 @@ func _process(delta: float) -> void:
 	if sun_mesh:
 		sun_mesh.rotation.y += 0.5 * delta * spd_mult
 	
-	var sun_heat_ratio = clamp(temperature / MAX_TEMP, 0.0, 1.0)
+	var sun_heat_ratio = clamp(temperature / current_max_temp, 0.0, 1.0)
 	
 	# 1. Stylized Corona Ring (Scale & rotate smoothly with temperature)
 	if sun_corona_mesh:
@@ -2677,7 +2705,7 @@ func _process(delta: float) -> void:
 	_sync_light_to_sun()
 	# Breathing pulse & Temperature scaling
 	var pulse = 1.0 + sin(sun_time * 4.0) * 0.02
-	var ratio = temperature / MAX_TEMP
+	var ratio = temperature / current_max_temp
 	var target_scale = (0.4 + 0.6 * ratio) * pulse
 	
 	if is_dragging_sun:
@@ -2725,11 +2753,37 @@ func _process(delta: float) -> void:
 			if high_heat_steam.emitting: high_heat_steam.emitting = false
 	
 	# Heat Regeneration (halved while Golden Drone Shield is active; throttled by 60% during Heat Mirage to prevent instant Supernova; halted during Overtime)
-	if temperature < MAX_TEMP and not is_sun_frozen and active_weather != "eclipse":
+	if temperature < current_max_temp and not is_sun_frozen and active_weather != "eclipse":
 		var drone_shield_throttle = 0.5 if is_drone_shield_active else 1.0
 		var mirage_throttle = 0.4 if active_mirages.size() > 0 else 1.0
 		var overtime_throttle = 0.0 if is_overtime else 1.0
 		temperature += (heat_regen_base * overtime_throttle * drone_shield_throttle * mirage_throttle * (1.0 - GameState.heat_resistance)) * delta # Sun gets hotter over time
+		
+	# ─── Reactive Solar Heat Surge Logic (Endless Wave 25+) ───────────────────
+	if GameState.is_survival_mode and GameState.current_wave >= 25 and timer_running and not defeat_triggered and not is_title_screen:
+		if heat_surge_cooldown > 0.0:
+			heat_surge_cooldown -= delta
+		
+		var heat_pct = temperature / current_max_temp
+		if is_heat_surge_warning:
+			heat_surge_warning_timer -= delta
+			# Rapid thermal vibration & coronal pulsing during warning
+			if not reduce_motion:
+				sun_face_shake = max(sun_face_shake, 0.14)
+			if sun_corona_mesh:
+				sun_corona_mesh.scale = Vector3.ONE * (1.2 + randf_range(0.0, 0.25))
+			
+			if heat_surge_warning_timer <= 0.0:
+				is_heat_surge_warning = false
+				_trigger_solar_heat_surge()
+		else:
+			# Track continuous suppression below 20% heat capacity
+			if heat_pct <= 0.20 and not is_sun_frozen and not is_catastrom_active:
+				heat_suppression_timer += delta
+				if heat_suppression_timer >= 6.0 and heat_surge_cooldown <= 0.0:
+					_start_heat_surge_warning()
+			else:
+				heat_suppression_timer = max(0.0, heat_suppression_timer - delta * 1.5)
 		
 	_update_sky(false)
 	
@@ -3392,7 +3446,7 @@ func _start_overtime() -> void:
 	level_timer = 0.0
 	if hud and hud.has_method("start_overtime"):
 		hud.start_overtime()
-	_update_sun_face(temperature / MAX_TEMP)
+	_update_sun_face(temperature / current_max_temp)
 	if not reduce_motion:
 		shake(0.6, 0.08)
 	if sizzle_sfx:
@@ -4249,7 +4303,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 # Temp system / Middle States
 # ─────────────────────────────────────────────────────────────────────────────
 func _update_sky(instant: bool) -> void:
-	var ratio = temperature / MAX_TEMP
+	var ratio = temperature / current_max_temp
 	ratio = clamp(ratio, 0.0, 1.0)
 	
 	# Drive shader sky heat uniform — controls orange→blue sky transition
@@ -4413,7 +4467,7 @@ func _update_sky(instant: bool) -> void:
 		
 	sun_bob_speed = t_bob_spd
 	sun_bob_amp = t_bob_amp
-	heat_changed.emit(temperature, MAX_TEMP)
+	heat_changed.emit(temperature, current_max_temp)
 	
 func _clear_active_hazards() -> void:
 	for flare in active_flares:
@@ -4656,8 +4710,13 @@ func _check_sun_defeat() -> void:
 			if wind_particles: wind_particles.emitting = false
 			if wind_sfx: wind_sfx.stop()
 		
-		temperature = MAX_TEMP
-		heat_changed.emit(temperature, MAX_TEMP)
+		current_max_temp = _get_current_max_temp()
+		temperature = current_max_temp
+		heat_changed.emit(temperature, current_max_temp)
+		heat_suppression_timer = 0.0
+		heat_surge_cooldown = 4.0
+		is_heat_surge_warning = false
+		heat_surge_warning_timer = 0.0
 		var base_time = 75.0 if (GameState.current_wave >= 30 and GameState.current_wave % 5 == 0) else 60.0
 		var max_time = 135.0 if (GameState.current_wave >= 30 and GameState.current_wave % 5 == 0) else 120.0
 		level_timer = min(max_time, base_time + (level_timer * 0.5)) # Bank 50% of remaining time, extra breathing room on apex boss waves
@@ -4729,8 +4788,9 @@ func _win() -> void:
 	else:
 		# Seamless reload
 		var reload = func():
-			temperature = MAX_TEMP
-			heat_changed.emit(temperature, MAX_TEMP)
+			current_max_temp = _get_current_max_temp()
+			temperature = current_max_temp
+			heat_changed.emit(temperature, current_max_temp)
 			water_tank = MAX_WATER
 			game_over = false
 			defeat_triggered = false
@@ -5108,7 +5168,7 @@ func _trigger_phase2() -> void:
 	timer_running = false # pause timer briefly
 	
 	temperature = phase2_heat
-	heat_changed.emit(temperature, MAX_TEMP)
+	heat_changed.emit(temperature, current_max_temp)
 	phase2_started.emit()
 	
 	sun_sway_speed = min(1.5, sun_sway_speed * 1.2)
@@ -5402,6 +5462,8 @@ func _perform_kitsune_blade_slash() -> void:
 	
 	for flare in flares_to_sever:
 		sever_flare_by_blade(flare)
+	if flares_to_sever.size() > 0 and is_heat_surge_warning:
+		_disrupt_heat_surge("blade")
 	
 	# Check Solar Convergence Drone Interception
 	var hit_solar_drone: bool = false
@@ -5520,6 +5582,8 @@ func _perform_kitsune_blade_slash() -> void:
 				
 				GameState.add_score(int(total_dmg * 10.0))
 			elif aim_dist < 4.8: # Matches gun hit detection radius for the Sun
+				if is_heat_surge_warning:
+					_disrupt_heat_surge("blade")
 				if is_sun_shielded:
 					_on_shield_deflect(crosshair_target)
 					if is_drone_shield_active:
@@ -5558,7 +5622,7 @@ func _perform_kitsune_blade_slash() -> void:
 								hud.update_mirage_hp(0, 100)
 					else:
 						temperature = max(0.0, temperature - total_dmg)
-						heat_changed.emit(temperature, MAX_TEMP)
+						heat_changed.emit(temperature, current_max_temp)
 					
 					GameState.add_score(int(total_dmg * 10.0))
 					
@@ -6009,6 +6073,8 @@ func shatter_drone_shield() -> void:
 		get_tree().create_timer(1.2).timeout.connect(burst.queue_free)
 
 func freeze_sun() -> void:
+	if is_heat_surge_warning:
+		_disrupt_heat_surge("ice")
 	if is_sun_shielded:
 		if is_drone_shield_active:
 			# Golden Drone Shield is powered by active orbital drones! Direct Ice Blast is deflected.
@@ -6349,5 +6415,171 @@ func _update_post_process_settings() -> void:
 		post_process_mat.set_shader_parameter("heatwave_1984_enabled", GameState.filter_heatwave)
 		if not is_celestial_awakened:
 			post_process_mat.set_shader_parameter("celestial_mix", 0.0)
-			post_process_mat.set_shader_parameter("celestial_shockwave", 0.0)
-			post_process_mat.set_shader_parameter("celestial_shockwave_intensity", 0.0)
+			if celestial_shockwave_tween == null or not celestial_shockwave_tween.is_valid():
+				post_process_mat.set_shader_parameter("celestial_shockwave", 0.0)
+				post_process_mat.set_shader_parameter("celestial_shockwave_intensity", 0.0)
+
+# ─── Solar Heat Surge & Multi-Layered Shockwave Animation (Wave 25+) ──────────
+func _start_heat_surge_warning() -> void:
+	if is_heat_surge_warning or defeat_triggered or game_over or not timer_running:
+		return
+	is_heat_surge_warning = true
+	heat_surge_warning_timer = 1.2
+	if hud and hud.has_method("show_thermal_surge_warning"):
+		hud.show_thermal_surge_warning()
+	if sizzle_sfx and not sizzle_sfx.playing:
+		sizzle_sfx.play()
+
+func _disrupt_heat_surge(by_source: String) -> void:
+	if not is_heat_surge_warning:
+		return
+	is_heat_surge_warning = false
+	heat_suppression_timer = 0.0
+	heat_surge_cooldown = 14.0
+	
+	# Freeze and thermally stun Sun for 3.5s
+	is_sun_frozen = true
+	sun_freeze_timer = 3.5
+	
+	# Tactical Score Bonus
+	GameState.add_score(1500)
+	
+	# Feedback: SFX, camera jolt & haptics
+	if ice_hit_sfx:
+		ice_hit_sfx.play()
+	shake(0.5, 0.2)
+	_vibrate(0.5, 0.5, 0.2)
+	
+	# Cryogenic Azure Torus Disruption Ring
+	_spawn_3d_thermal_shockwave_ring(sun.global_position, Color(0.2, 0.85, 1.0, 0.95), 0.52, 0.0)
+	
+	# HUD Toast Banner
+	if hud and hud.has_method("show_thermal_surge_disrupted"):
+		hud.show_thermal_surge_disrupted()
+
+func _trigger_solar_heat_surge() -> void:
+	if defeat_triggered or game_over:
+		return
+	
+	# 1. Solar Heat Recovery (+15% of current max temp capacity)
+	var surge_recovery = current_max_temp * 0.15
+	temperature = min(current_max_temp, temperature + surge_recovery)
+	heat_changed.emit(temperature, current_max_temp)
+	heat_suppression_timer = 0.0
+	heat_surge_cooldown = 18.0
+	
+	# 2. Camera Rumble & Heavy Controller Haptics
+	shake(0.65, 0.35)
+	_vibrate(0.7, 0.7, 0.35)
+	
+	# 3. Dynamic Sound FX: Bass Boom + Solar Roar
+	if flare_impact_sfx:
+		var orig_pitch = flare_impact_sfx.pitch_scale
+		flare_impact_sfx.pitch_scale = 0.32
+		flare_impact_sfx.play()
+		get_tree().create_timer(0.4).timeout.connect(func():
+			if is_instance_valid(flare_impact_sfx):
+				flare_impact_sfx.pitch_scale = orig_pitch
+		)
+	if sizzle_sfx and not sizzle_sfx.playing:
+		sizzle_sfx.play()
+		
+	# 4. Cinematic Retro Post-Process Radial Lens Distortion Ripple
+	if not GameState.reduce_motion and post_process_mat:
+		if celestial_shockwave_tween and celestial_shockwave_tween.is_valid():
+			celestial_shockwave_tween.kill()
+		post_process_mat.set_shader_parameter("celestial_shockwave", 0.0)
+		post_process_mat.set_shader_parameter("celestial_shockwave_intensity", 1.25)
+		celestial_shockwave_tween = create_tween().set_parallel(true)
+		celestial_shockwave_tween.tween_method(func(v: float): post_process_mat.set_shader_parameter("celestial_shockwave", v), 0.0, 1.5, 0.65).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		celestial_shockwave_tween.tween_method(func(v: float): post_process_mat.set_shader_parameter("celestial_shockwave_intensity", v), 1.25, 0.0, 0.65).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+		celestial_shockwave_tween.chain().tween_callback(func():
+			if post_process_mat:
+				post_process_mat.set_shader_parameter("celestial_shockwave", 0.0)
+				post_process_mat.set_shader_parameter("celestial_shockwave_intensity", 0.0)
+		)
+	
+	# 5. Dual Concentric 3D Expanding Torus Rings in World Space
+	# Primary incandescent solar ring
+	_spawn_3d_thermal_shockwave_ring(sun.global_position, Color(1.0, 0.45, 0.05, 0.95), 0.68, 0.0)
+	# Secondary white-hot plasma wavefront (slightly delayed)
+	_spawn_3d_thermal_shockwave_ring(sun.global_position, Color(1.0, 0.90, 0.50, 0.85), 0.60, 0.06)
+	
+	# 6. Screen Flash Overlay on HUD
+	if hud:
+		var flash = ColorRect.new()
+		flash.color = Color(1.0, 0.45, 0.1, 0.35)
+		flash.anchor_right = 1.0
+		flash.anchor_bottom = 1.0
+		flash.z_index = 140
+		flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		hud.add_child(flash)
+		var ftw = create_tween()
+		ftw.tween_property(flash, "modulate:a", 0.0, 0.35)
+		ftw.tween_callback(flash.queue_free)
+	
+	# 7. Player Water Tank Vapor Evaporation (-10% water)
+	water_tank = max(0.0, water_tank - 10.0)
+	water_changed.emit(water_tank, MAX_WATER)
+	if steam_particles:
+		steam_particles.global_position = gun.global_position if is_instance_valid(gun) else Vector3(0, -0.5, 3.0)
+		steam_particles.restart()
+		
+	# 8. 3-Way Ejected Solar Flares
+	_spawn_heat_surge_flares()
+
+func _spawn_3d_thermal_shockwave_ring(origin_pos: Vector3, ring_color: Color, duration: float, delay: float = 0.0) -> void:
+	var ring_mesh_inst = MeshInstance3D.new()
+	var torus = TorusMesh.new()
+	torus.inner_radius = 0.88
+	torus.outer_radius = 1.0
+	torus.rings = 32
+	torus.ring_segments = 16
+	ring_mesh_inst.mesh = torus
+	
+	var mat = StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	mat.albedo_color = ring_color
+	mat.emission_enabled = true
+	mat.emission = Color(ring_color.r, ring_color.g, ring_color.b)
+	mat.emission_energy_multiplier = 3.5
+	ring_mesh_inst.material_override = mat
+	
+	add_child(ring_mesh_inst)
+	ring_mesh_inst.global_position = origin_pos
+	
+	# Orient ring so its circle plane faces the camera
+	if camera and is_instance_valid(camera):
+		ring_mesh_inst.look_at(camera.global_position, Vector3.UP)
+		ring_mesh_inst.rotate_object_local(Vector3(1, 0, 0), PI / 2.0)
+	
+	ring_mesh_inst.scale = Vector3(0.4, 0.4, 0.4)
+	ring_mesh_inst.visible = delay <= 0.0
+	
+	var tw = create_tween()
+	if delay > 0.0:
+		tw.tween_interval(delay)
+		tw.tween_callback(func():
+			if is_instance_valid(ring_mesh_inst):
+				ring_mesh_inst.visible = true
+		)
+	
+	tw.set_parallel(true)
+	tw.tween_property(ring_mesh_inst, "scale", Vector3(15.0, 15.0, 15.0), duration).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
+	tw.tween_property(mat, "albedo_color:a", 0.0, duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	tw.tween_property(mat, "emission_energy_multiplier", 0.0, duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	tw.chain().tween_callback(ring_mesh_inst.queue_free)
+
+func _spawn_heat_surge_flares() -> void:
+	var spread_targets = [
+		Vector3(-6.5, -1.0, 3.0),
+		Vector3(0.0, -1.0, 3.5),
+		Vector3(6.5, -1.0, 3.0)
+	]
+	for target in spread_targets:
+		_create_flare_node(target, randf_range(3.2, 3.8))
+	if sizzle_sfx and not sizzle_sfx.playing:
+		sizzle_sfx.play()
+

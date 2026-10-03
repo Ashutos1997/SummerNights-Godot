@@ -7,6 +7,7 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 ## 1. Color Palette
 * **Primary Accents:** Deep Gold `Color(1.0, 0.75, 0.15, 1.0)`, Bright Yellow `Color(1.0, 0.85, 0.2, 1.0)`.
 * **Secondary Accents:** Cyan `Color(0.2, 0.8, 1.0, 1.0)`, Water Blue `Color(0.1, 0.65, 0.95, 1.0)`.
+* **Hazard & Alert Accents:** Amber Stack & Surge Warning `Color(1.0, 0.75, 0.2, 0.95)`, Disruption Cyan `Color(0.2, 0.85, 1.0, 1.0)`.
 * **Energy Shields:** Cyan Boss Shield `Color(0.2, 0.8, 1.0, 0.9)`, Golden Drone Shield `Color(1.0, 0.82, 0.18, 0.95)`.
 * **Backgrounds:** Global Menu `Color(0.02, 0.01, 0.05, 0.96)`, Dark Panel `Color(0.05, 0.02, 0.1, 0.85)`.
 * **Controller Highlights:** Gold (Pause), Lime (Weapons), Cyan (Ice Blast), Orange (Power Up), Magenta (Mode Change).
@@ -56,7 +57,7 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 
 ### Interactive Elements
 * **Weapon Wheel:** 6 procedural slices with 12px linear gap spacing, centered 3D previews, and 4px depth shadows. Bottom card displays archetype badges, responsive stat bars, and crit multipliers.
-* **Drafting Screen (Perks):** 3-card deal entrance with 6px drop shadows and rarity badges (`[ RARE ]`, `[ UNCOMMON ]`, `[ COMMON ]`). Max rolls feature an enhanced golden border and glowing `[ MAX ROLL! ]` / `[ 최고 수치! ]` badge.
+* **Drafting Screen (Perks):** 3-card deal entrance with 6px drop shadows and rarity badges (`[ RARE ]`, `[ UNCOMMON ]`, `[ COMMON ]`). Max rolls feature an enhanced golden border and glowing `[ MAX ROLL! ]` / `[ 최고 수치! ]` badge. Stacking $\ge 2$ copies displays an amber badge (`[ 3RD STACK · 75% ]` / `[ 3중첩 · 효율 75% ]`) with live recalculated effective descriptions reflecting diminishing returns.
 * **Achievement & Buff Cards:** 700x100 cards adhering to the 4px Retro Flat Plate rule with 64x64 recessed icon plates (4px radii), cyber gold completion badges, and concentric progress bars (4px track / 3px fill).
 * **Settings Screen:** 3 categorized sections (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`) using 14px retro badges, 12px VBox separation, 28px category clearance, unified body typography (`Inter-Medium.ttf` EN / `Galmuri11.ttf` KR) with 16px off-white labels (`Color(0.92, 0.92, 0.92, 0.95)`), 14px toggle/language buttons (even number system), and dedicated cyber gold real-time slider numeric readouts (`100%`, `1.0x`). Mirrored 1:1 in Title Screen.
 * **Pause Menu:** Flat vertical column layout (280px width, 16px separation, 44px uniform buttons) housing Resume, Settings, Filters, Credits, Achievements, Active Buffs, Controls, and Main Menu with unbroken 8-button focus navigation.
@@ -85,4 +86,5 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 * **Layering:** `retro_postprocess.gdshader` on Layer 0 (behind HUD Layer 10) to preserve UI sharpness.
 * **Dynamic Overlays:** Heat Warning (pulsing red border at 85% heat) and Frost Border (icy tint on Ice Burst).
 * **Energy Shield FX:** Fresnel glow with ripple rings and impact sparks, relying on dedicated bilingual HUD banner notifications for tactical feedback.
+* **Multi-Layered Solar Heat Surge Shockwave:** Cinematic explosion triggered if late-wave thermal warning is uncountered. Synthesizes a radial post-process lens distortion ripple (`celestial_shockwave` 0.0 to 1.5), 3D dual concentric expanding TorusMesh rings (fiery primary crest and white-hot secondary plasma wavefront) billboarded to the player camera, a warm amber screen flash (`Color(1.0, 0.45, 0.1, 0.35)`), heavy camera shake, and deep bass boom SFX.
 * **Retro Filters:** Mutually exclusive post-processing (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
