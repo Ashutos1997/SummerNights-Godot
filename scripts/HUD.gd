@@ -201,13 +201,17 @@ var _weather_pulse_tween: Tween
 var drafting_screen = null
 
 func show_drafting_screen() -> void:
+	_finish_timer_intro_immediately()
 	if not drafting_screen:
 		drafting_screen = load("res://scripts/DraftingScreen.gd").new()
 		drafting_screen.name = "DraftingScreen"
+		drafting_screen.z_index = 50
 		$HUD.add_child(drafting_screen)
 		# Keep transition overlay on top for fade-to-black during cinematic
 		if transition_overlay:
 			$HUD.move_child(transition_overlay, -1)
+	else:
+		drafting_screen.z_index = 50
 	drafting_screen.show_draft()
 
 func update_active_perks_hud() -> void:
@@ -559,6 +563,18 @@ func _ready() -> void:
 	end_screen.visible = false
 	if mirage_bar:
 		mirage_bar.visible = false
+	
+	# Ensure all overlay menus draw strictly on top of HUD gameplay elements (z_index = 50)
+	if pause_screen: pause_screen.z_index = 50
+	if settings_screen: settings_screen.z_index = 50
+	if filters_screen: filters_screen.z_index = 50
+	if controller_screen: controller_screen.z_index = 50
+	if credits_screen: credits_screen.z_index = 50
+	if win_screen: win_screen.z_index = 50
+	if end_screen: end_screen.z_index = 50
+	if lose_screen: lose_screen.z_index = 50
+	if weapon_wheel: weapon_wheel.z_index = 50
+	if transition_overlay: transition_overlay.z_index = 100
 	
 
 		
@@ -2423,6 +2439,7 @@ func _on_critical_hit() -> void:
 
 
 func _on_sun_defeated(level: int) -> void:
+	_finish_timer_intro_immediately()
 	if weapon_wheel and weapon_wheel.has_method("close_immediate"):
 		weapon_wheel.close_immediate()
 	elif weapon_wheel and weapon_wheel.active:
@@ -2458,6 +2475,7 @@ func fade_from_black(duration: float = 1.0, hide_win: bool = true) -> Signal:
 	return tw.finished
 
 func show_end_screen() -> void:
+	_finish_timer_intro_immediately()
 	if weapon_wheel and weapon_wheel.has_method("close_immediate"):
 		weapon_wheel.close_immediate()
 	elif weapon_wheel and weapon_wheel.active:
@@ -2496,6 +2514,7 @@ func _input(event: InputEvent) -> void:
 	if event.is_action("ui_weapons") and not event.is_echo():
 		if event.pressed:
 			if not weapon_wheel.active and not pause_screen.visible and not win_screen.visible and not end_screen.visible and not lose_screen.visible:
+				_finish_timer_intro_immediately()
 				weapon_wheel.open()
 				get_viewport().set_input_as_handled()
 		else:
@@ -2550,6 +2569,7 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 		elif is_pause:
+			_finish_timer_intro_immediately()
 			_pause_game()
 			get_viewport().set_input_as_handled()
 			return
@@ -2563,6 +2583,7 @@ func _input(event: InputEvent) -> void:
 			return
 
 func _pause_game() -> void:
+	_finish_timer_intro_immediately()
 	if weapon_wheel and weapon_wheel.has_method("close_immediate"):
 		weapon_wheel.close_immediate()
 	elif weapon_wheel and weapon_wheel.active:
@@ -2626,6 +2647,7 @@ func _on_credits_pressed() -> void:
 	_open_credits()
 
 func _on_controller_pressed() -> void:
+	_finish_timer_intro_immediately()
 	if ui_tick_player: ui_tick_player.play()
 	if filters_screen: filters_screen.visible = false
 	controller_screen.visible = true
@@ -2647,6 +2669,7 @@ func _close_controller() -> void:
 
 
 func _open_settings() -> void:
+	_finish_timer_intro_immediately()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	if filters_screen: filters_screen.visible = false
 	if credits_screen: credits_screen.visible = false
@@ -2674,6 +2697,7 @@ func _close_settings() -> void:
 
 
 func _open_filters() -> void:
+	_finish_timer_intro_immediately()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	if settings_screen: settings_screen.visible = false
 	if credits_screen: credits_screen.visible = false
@@ -2721,6 +2745,7 @@ func _close_filters() -> void:
 
 
 func _open_credits() -> void:
+	_finish_timer_intro_immediately()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	if settings_screen: settings_screen.visible = false
 	if filters_screen: filters_screen.visible = false
@@ -3022,15 +3047,38 @@ func update_overtime_score_burn(current_score: int, _burn_amount: int) -> void:
 			score_label.scale = Vector2(1.08, 1.08)
 			tw.tween_property(score_label, "scale", Vector2.ONE, 0.15)
 
-func present_wave_timer(initial_seconds: float) -> void:
-	if not timer_label or initial_seconds <= 0.0: return
-	
+func _finish_timer_intro_immediately() -> void:
 	if is_instance_valid(timer_intro_tween):
 		timer_intro_tween.kill()
 		timer_intro_tween = null
 	if is_instance_valid(flying_timer_label):
 		flying_timer_label.queue_free()
 		flying_timer_label = null
+	timer_intro_active = false
+	if is_instance_valid(timer_label):
+		timer_label.modulate.a = 1.0
+		timer_label.scale = Vector2.ONE
+
+func _is_any_menu_open() -> bool:
+	if get_tree().paused: return true
+	if pause_screen and pause_screen.visible: return true
+	if settings_screen and settings_screen.visible: return true
+	if filters_screen and filters_screen.visible: return true
+	if controller_screen and controller_screen.visible: return true
+	if credits_screen and credits_screen.visible: return true
+	if achievements_screen and achievements_screen.visible: return true
+	if buffs_screen and buffs_screen.visible: return true
+	if drafting_screen and drafting_screen.visible: return true
+	if weapon_wheel and weapon_wheel.active: return true
+	if win_screen and win_screen.visible: return true
+	if end_screen and end_screen.visible: return true
+	if lose_screen and lose_screen.visible: return true
+	return false
+
+func present_wave_timer(initial_seconds: float) -> void:
+	if not timer_label or initial_seconds <= 0.0: return
+	
+	_finish_timer_intro_immediately()
 	
 	var is_kr = (GameState.language == "KR")
 	var font_path = "res://assets/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
@@ -3043,8 +3091,17 @@ func present_wave_timer(initial_seconds: float) -> void:
 	var prefix = "시간: " if is_kr else "TIME: "
 	var full_text = prefix + time_formatted
 	
-	# Keep stationary top-right timer hidden during the intro presentation
+	# Update stationary top-right timer text immediately
 	timer_label.text = full_text
+
+	# If any menu is open or game is paused, keep stationary timer visible and skip the center intro
+	if _is_any_menu_open():
+		timer_label.modulate.a = 1.0
+		timer_label.scale = Vector2.ONE
+		timer_intro_active = false
+		return
+	
+	# Keep stationary top-right timer hidden during the intro presentation
 	timer_label.modulate.a = 0.0
 	
 	# Determine virtual canvas 2D dimensions
@@ -3073,7 +3130,10 @@ func present_wave_timer(initial_seconds: float) -> void:
 	flying_timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	flying_timer_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	flying_timer_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	flying_timer_label.z_index = 0
 	$HUD.add_child(flying_timer_label)
+	if pause_screen:
+		$HUD.move_child(flying_timer_label, pause_screen.get_index())
 	
 	_style_lbl(flying_timer_label, font_sz, Color(1.0, 0.8, 0.2, 1.0), 3, Color.BLACK, font)
 	flying_timer_label.text = full_text
@@ -3133,16 +3193,8 @@ func _stop_timer_pulse() -> void:
 	if is_instance_valid(timer_pulse_tween):
 		timer_pulse_tween.kill()
 		timer_pulse_tween = null
-	if is_instance_valid(timer_intro_tween):
-		timer_intro_tween.kill()
-		timer_intro_tween = null
-	if is_instance_valid(flying_timer_label):
-		flying_timer_label.queue_free()
-		flying_timer_label = null
-	timer_intro_active = false
+	_finish_timer_intro_immediately()
 	if timer_label:
-		timer_label.modulate.a = 1.0
-		timer_label.scale = Vector2.ONE
 		timer_label.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 1.0))
 
 func _on_timer_tick(seconds: float) -> void:
@@ -3352,6 +3404,7 @@ func _build_recap_stat_row(icon_path: String, label_text: String, value_text: St
 
 func show_lose_screen() -> void:
 	if not lose_screen: return
+	_finish_timer_intro_immediately()
 	end_overtime()
 	if weapon_wheel and weapon_wheel.has_method("close_immediate"):
 		weapon_wheel.close_immediate()
@@ -4138,6 +4191,7 @@ func _build_achievements_screen() -> void:
 
 func show_achievements_screen() -> void:
 	if not achievements_screen: return
+	_finish_timer_intro_immediately()
 	
 	for child in achievement_list.get_children():
 		child.queue_free()
@@ -4482,6 +4536,7 @@ func _build_buffs_screen() -> void:
 
 func show_buffs_screen() -> void:
 	if not buffs_screen: return
+	_finish_timer_intro_immediately()
 	_play_ui_tick()
 	
 	for child in buffs_list.get_children():

@@ -13,6 +13,7 @@ var sfx_select: AudioStreamPlayer
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	z_index = 50
 	
 	sfx_deal = AudioStreamPlayer.new()
 	sfx_deal.stream = load("res://assets/audio/sfx/perk_deal.wav")

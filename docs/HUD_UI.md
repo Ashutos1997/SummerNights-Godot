@@ -17,7 +17,7 @@ Architectural map and layout reference for `HUD.tscn`.
 
 ### Top-Right
 * **TopRightInfo (VBoxContainer):** Strict 24px right-aligned container.
-  * **TimerLabel:** Wave time remaining. At wave/level start, fades into screen center (`scale 1.6x`), holds for `2.5s` (allowing clear reading of the live countdown), and glides smoothly over `0.85s` (`TRANS_QUAD` / `TRANS_SINE`) directly into its top-right HUD anchor. Pulses red and bounces when <10s. In Boss Overtime ("Paid in Full"), displays pulsing crimson `[ OVERTIME ]` / `[ 연장전 ]` badge.
+  * **TimerLabel:** Wave time remaining. At wave/level start, fades into screen center (`scale 1.6x`), holds for `2.5s` (allowing clear reading of the live countdown), and glides smoothly over `0.85s` (`TRANS_QUAD` / `TRANS_SINE`) directly into its top-right HUD anchor. Suppressed immediately if any modal menu is open or if paused. Pulses red and bounces when <10s. In Boss Overtime ("Paid in Full"), displays pulsing crimson `[ OVERTIME ]` / `[ 연장전 ]` badge.
   * **ScoreLabel:** Live arcade score. Scales up on score events; flashes warning red during Overtime score drain.
 * **WeatherIconContainer:** Persistent icon showing active weather (Normal sun with solar gold modulate, Rain, Eclipse).
 * **WeatherTimerLabel:** Precise eclipse countdown (requires "Shadow Walker" achievement).
@@ -46,6 +46,7 @@ Architectural map and layout reference for `HUD.tscn`.
 ---
 
 ## 2. Screen Overlays (Menus)
+* **Z-Index Layering:** All modal menus (`PauseScreen`, `DraftingScreen`, `SettingsScreen`, `FiltersScreen`, `ControllerScreen`, `CreditsScreen`, `AchievementsScreen`, `BuffsScreen`, `WeaponWheel`, `WinScreen`, `EndScreen`, `LoseScreen`) render at `z_index = 50`, strictly above all HUD gameplay elements (`z_index = 0`). Opening any menu immediately dismisses active timer intro animations. Screen transition fades render at `z_index = 100`.
 * **Unified Styling:** All menus use a 96px left margin, 24px vertical separation, golden borders, dark dim, uniform Back buttons, and localized "PRESS ESC TO CLOSE" / "닫으려면 ESC를 누르세요" guidance prompts.
 * **PauseScreen (`ESC`):** Pauses tree. Clean vertical layout (280px width, 16px separation, 44px uniform buttons) housing Resume, Settings, Filters, Credits, Controls, Achievements, Buffs, and Main Menu with unbroken 8-button focus navigation.
 * **CreditsScreen:** Autoscrolling bilingual listing with complete 1:1 asset attributions.
