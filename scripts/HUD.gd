@@ -3317,31 +3317,97 @@ func update_ice_charges(charges: int, max_charges: int) -> void:
 	if is_instance_valid(ice_notch_overlay):
 		ice_notch_overlay.queue_redraw()
 
-func show_toast(title: String, description: String, icon_input = "", color: Color = Color.WHITE, icon_modulate: Variant = null) -> void:
+func show_toast(title: String, description: String, icon_input = "", color: Color = Color.WHITE, icon_modulate: Variant = null, kicker: String = "") -> void:
 	if not toast_container: return
 	
 	var is_kr = GameState.language == "KR"
-	var font = kenney_font if kenney_font else load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+	var title_font: Font = galmuri_font if is_kr else kenney_font
+	var body_font: Font = galmuri_font if is_kr else inter_font
 	
+	# Determine context-aware micro-category kicker tag if not supplied
+	if kicker == "":
+		var t_upper = title.to_upper()
+		var icon_str = str(icon_input).to_lower()
+		if "UNLOCK" in t_upper or "해금" in title or "padlock" in icon_str:
+			kicker = "[ UNLOCK ]" if not is_kr else "[ 무기 해금 ]"
+		elif "CELESTIAL" in t_upper or "각성" in title or "celestial" in icon_str:
+			kicker = "[ TRANSCEND ]" if not is_kr else "[ 각성 준비 ]"
+		elif "CATASTROM" in t_upper or "카타스트롬" in title or "DUNK" in t_upper or "덩크" in title or "catastrom" in icon_str:
+			kicker = "[ DUNK READY ]" if not is_kr else "[ 덩크 준비 ]"
+		elif "WEATHER" in t_upper or "기상" in title or "RAIN" in t_upper or "폭우" in title or "ECLIPSE" in t_upper or "일식" in title:
+			kicker = "[ WEATHER EVENT ]" if not is_kr else "[ 기상 이변 ]"
+		elif "DRONE" in t_upper or "드론" in title or "CACHE" in t_upper or "보급" in title or "drone" in icon_str:
+			kicker = "[ SUPPLY DROP ]" if not is_kr else "[ 보급 전달 ]"
+		elif "SHIELD" in t_upper or "실드" in title:
+			kicker = "[ TACTICAL ALERT ]" if not is_kr else "[ 전술 경고 ]"
+		else:
+			kicker = "[ NOTICE ]" if not is_kr else "[ 알림 ]"
+			
+	var toast = Control.new()
+	toast.custom_minimum_size = Vector2(380, 72)
+	toast.size_flags_horizontal = Control.SIZE_SHRINK_END
+	
+	# Root Panel Container
 	var panel = PanelContainer.new()
+	panel.name = "Panel"
+	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	
 	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.05, 0.05, 0.1, 0.85)
-	style.border_color = color
-	style.set_border_width_all(2)
-	style.corner_radius_top_left = 6
-	style.corner_radius_top_right = 6
-	style.corner_radius_bottom_right = 6
-	style.corner_radius_bottom_left = 6
-	style.content_margin_left = 12
-	style.content_margin_right = 16
-	style.content_margin_top = 8
-	style.content_margin_bottom = 8
+	style.bg_color = Color(0.04, 0.04, 0.08, 0.94)
+	style.border_width_left = 1
+	style.border_width_top = 1
+	style.border_width_right = 1
+	style.border_width_bottom = 1
+	style.border_color = Color(color.r, color.g, color.b, 0.35)
+	style.corner_radius_top_left = 0
+	style.corner_radius_top_right = 0
+	style.corner_radius_bottom_right = 0
+	style.corner_radius_bottom_left = 0
+	style.shadow_color = Color(0, 0, 0, 0.7)
+	style.shadow_size = 12
+	style.shadow_offset = Vector2(0, 4)
 	panel.add_theme_stylebox_override("panel", style)
+	toast.add_child(panel)
 	
-	var hbox = HBoxContainer.new()
-	hbox.add_theme_constant_override("separation", 12)
-	panel.add_child(hbox)
+	# Content Margin Container (Symmetrical 16px horizontal margins)
+	var margin = MarginContainer.new()
+	margin.name = "ContentMargin"
+	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	margin.add_theme_constant_override("margin_left", 16)
+	margin.add_theme_constant_override("margin_right", 16)
+	margin.add_theme_constant_override("margin_top", 10)
+	margin.add_theme_constant_override("margin_bottom", 10)
+	panel.add_child(margin)
 	
+	# Content Row
+	var content_row = HBoxContainer.new()
+	content_row.name = "ContentRow"
+	content_row.add_theme_constant_override("separation", 14)
+	content_row.alignment = BoxContainer.ALIGNMENT_BEGIN
+	margin.add_child(content_row)
+	
+	# Recessed Icon Plate (40x40 even number dimensions)
+	var icon_plate = PanelContainer.new()
+	icon_plate.name = "IconPlate"
+	icon_plate.custom_minimum_size = Vector2(40, 40)
+	icon_plate.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	icon_plate.pivot_offset = Vector2(20, 20)
+	
+	var plate_style = StyleBoxFlat.new()
+	plate_style.bg_color = Color(0.02, 0.02, 0.04, 0.95)
+	plate_style.border_width_left = 1
+	plate_style.border_width_top = 1
+	plate_style.border_width_right = 1
+	plate_style.border_width_bottom = 1
+	plate_style.border_color = Color(color.r, color.g, color.b, 0.45)
+	plate_style.corner_radius_top_left = 2
+	plate_style.corner_radius_top_right = 2
+	plate_style.corner_radius_bottom_right = 2
+	plate_style.corner_radius_bottom_left = 2
+	icon_plate.add_theme_stylebox_override("panel", plate_style)
+	
+	# Resolve icon texture
 	var tex: Texture2D = null
 	var is_face_icon: bool = false
 	if icon_input is Texture2D:
@@ -3350,115 +3416,155 @@ func show_toast(title: String, description: String, icon_input = "", color: Colo
 		tex = load(icon_input)
 		if "driver_" in icon_input or "face_" in icon_input:
 			is_face_icon = true
-	
+			
+	var icon_tex = TextureRect.new()
 	if tex != null:
-		var tex_rect = TextureRect.new()
-		tex_rect.texture = tex
-		tex_rect.custom_minimum_size = Vector2(32, 32)
-		tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		tex_rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		if icon_modulate != null:
-			tex_rect.modulate = icon_modulate
-		else:
-			tex_rect.modulate = Color.WHITE if is_face_icon else color
-		hbox.add_child(tex_rect)
+		icon_tex.texture = tex
+	icon_tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon_tex.custom_minimum_size = Vector2(26, 26)
+	icon_tex.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	icon_tex.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	if icon_modulate != null:
+		icon_tex.modulate = icon_modulate
+	else:
+		icon_tex.modulate = Color.WHITE if is_face_icon else color
+	icon_plate.add_child(icon_tex)
+	content_row.add_child(icon_plate)
 	
-	var vbox = VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 0)
-	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	hbox.add_child(vbox)
+	# Text Column
+	var text_col = VBoxContainer.new()
+	text_col.name = "TextCol"
+	text_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	text_col.alignment = BoxContainer.ALIGNMENT_CENTER
+	text_col.add_theme_constant_override("separation", 2)
+	content_row.add_child(text_col)
 	
+	# 1. Kicker Label (Micro-category tag) -> Uses BODY typeface
+	var kicker_lbl = Label.new()
+	kicker_lbl.name = "KickerLabel"
+	kicker_lbl.text = kicker
+	kicker_lbl.add_theme_font_override("font", body_font)
+	kicker_lbl.add_theme_font_size_override("font_size", 10)
+	kicker_lbl.add_theme_color_override("font_color", color)
+	kicker_lbl.add_theme_constant_override("letter_spacing", 1)
+	text_col.add_child(kicker_lbl)
+	
+	# 2. Main Title Label -> Uses TITLE typeface
 	var title_lbl = Label.new()
+	title_lbl.name = "TitleLabel"
 	title_lbl.text = title
-	title_lbl.add_theme_font_override("font", font)
-	title_lbl.add_theme_font_size_override("font_size", 24 if is_kr else 20)
-	title_lbl.add_theme_color_override("font_color", color)
+	title_lbl.add_theme_font_override("font", title_font)
+	title_lbl.add_theme_font_size_override("font_size", 14)
+	title_lbl.add_theme_color_override("font_color", Color.WHITE)
 	title_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 	title_lbl.add_theme_constant_override("outline_size", 3)
-	vbox.add_child(title_lbl)
+	text_col.add_child(title_lbl)
 	
+	# 3. Description Callout -> Uses BODY typeface
 	var desc_lbl = Label.new()
+	desc_lbl.name = "DescLabel"
 	desc_lbl.text = description
-	desc_lbl.add_theme_font_override("font", font)
-	desc_lbl.add_theme_font_size_override("font_size", 18 if is_kr else 14)
-	desc_lbl.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9, 1.0))
+	desc_lbl.add_theme_font_override("font", body_font)
+	desc_lbl.add_theme_font_size_override("font_size", 12)
+	desc_lbl.add_theme_color_override("font_color", Color(0.85, 0.88, 0.92))
 	desc_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 	desc_lbl.add_theme_constant_override("outline_size", 2)
-	vbox.add_child(desc_lbl)
+	text_col.add_child(desc_lbl)
 	
-	toast_container.add_child(panel)
+	# 4. Auto-Dismiss Depletion Bar (1.5px Hairline across full bottom edge)
+	var depletion_bar = ColorRect.new()
+	depletion_bar.name = "DepletionBar"
+	depletion_bar.color = color
+	depletion_bar.layout_mode = 1
+	depletion_bar.anchors_preset = Control.PRESET_BOTTOM_WIDE
+	depletion_bar.offset_left = 0.0
+	depletion_bar.offset_top = -2.0
+	depletion_bar.offset_right = 0.0
+	depletion_bar.offset_bottom = 0.0
+	depletion_bar.pivot_offset = Vector2.ZERO
+	toast.add_child(depletion_bar)
 	
-	# Play a little sound if we have one
+	toast_container.add_child(toast)
+	
+	# Audio feedback
 	var audio = AudioStreamPlayer.new()
-	audio.stream = load("res://assets/sfx/ui_tick.wav")
-	audio.volume_db = -5.0
+	audio.stream = load("res://assets/audio/sfx/perk_hover.wav")
+	audio.volume_db = -8.0
 	audio.bus = "SFX"
 	add_child(audio)
 	audio.play()
 	
-	# Calculate target right-aligned position and stacking Y position
-	var target_size = panel.get_minimum_size()
-	var target_x = toast_container.size.x - target_size.x
-	var target_y = (toast_container.get_child_count() - 1) * (target_size.y + 12)
-	
-	# Slide in animation
-	panel.position = Vector2(target_x + 400, target_y)
+	# Initial entrance state
+	panel.position.x = 400.0
 	panel.modulate.a = 0.0
-	var tween = create_tween()
+	icon_plate.scale = Vector2(0.6, 0.6)
 	
-	# 1. Slide in
-	tween.set_parallel(true)
-	tween.tween_property(panel, "position:x", target_x, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tween.tween_property(panel, "modulate:a", 1.0, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	# Entrance Animation
+	var tw = create_tween().set_parallel(true)
+	tw.tween_property(panel, "position:x", 0.0, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.tween_property(panel, "modulate:a", 1.0, 0.25).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tw.tween_property(icon_plate, "scale", Vector2.ONE, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT).set_delay(0.08)
 	
-	# 2. Wait
-	tween.set_parallel(false)
-	tween.tween_interval(3.5)
+	# Auto-dismiss Depletion Bar (3.5s countdown)
+	var tw_bar = create_tween()
+	tw_bar.tween_property(depletion_bar, "scale:x", 0.0, 3.5).set_trans(Tween.TRANS_LINEAR)
 	
-	# 3. Slide out
-	tween.tween_property(panel, "position:x", target_x + 400.0, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-	tween.set_parallel(true)
-	tween.tween_property(panel, "modulate:a", 0.0, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	# Wait 3.5s then slide out and trigger reflow
+	await get_tree().create_timer(3.5).timeout
 	
-	# 4. Cleanup
-	tween.set_parallel(false)
-	tween.tween_callback(func():
-		panel.queue_free()
-		audio.queue_free()
+	if not is_instance_valid(toast): return
+	
+	# Slide-out and Collapse Animation
+	var tw_out = create_tween().set_parallel(true)
+	if is_instance_valid(panel):
+		tw_out.tween_property(panel, "position:x", 420.0, 0.28).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+		tw_out.tween_property(panel, "modulate:a", 0.0, 0.25)
+	tw_out.tween_property(toast, "custom_minimum_size:y", 0.0, 0.28).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	
+	tw_out.chain().tween_callback(func():
+		if is_instance_valid(toast):
+			toast.queue_free()
+		if is_instance_valid(audio):
+			audio.queue_free()
 	)
 
 func show_ice_unlock() -> void:
 	var is_kr = GameState.language == "KR"
 	var title = "아이스 버스트 해금" if is_kr else "ICE BURST UNLOCKED"
 	var desc = "태양을 얼려라 [RMB / R]" if is_kr else "FREEZE THE SUN [RMB / R]"
-	show_toast(title, desc, "res://assets/ui/hud_elements/meter_ice.svg", Color(0.5, 0.85, 1.0, 1.0))
+	var kicker = "[ SKILL UNLOCK ]" if not is_kr else "[ 스킬 해금 ]"
+	show_toast(title, desc, "res://assets/ui/hud_elements/meter_ice.svg", Color(0.5, 0.85, 1.0, 1.0), null, kicker)
 
 func show_weapon_unlock() -> void:
 	var is_kr = GameState.language == "KR"
 	var title = "무기 해금됨" if is_kr else "WEAPON UNLOCKED"
 	var desc = "[TAB] 을 길게 눌러 장착" if is_kr else "HOLD [TAB] TO EQUIP"
-	show_toast(title, desc, "res://assets/ui/icons/padlock-open.svg", Color(1.0, 0.85, 0.20, 1.0))
+	var kicker = "[ WEAPON UNLOCK ]" if not is_kr else "[ 무기 해금 ]"
+	show_toast(title, desc, "res://assets/ui/icons/padlock-open.svg", Color(1.0, 0.85, 0.20, 1.0), null, kicker)
 
 func show_catastrom_unlock() -> void:
 	var is_kr = GameState.language == "KR"
 	var title = "카타스트롬 해금됨" if is_kr else "CATASTROM UNLOCKED"
 	var desc = "태양을 바다로 덩크하라 [F]" if is_kr else "DUNK THE SUN INTO THE OCEAN [F]"
 	var icon_path = "res://assets/ui/achievements/ball-glow.png" if OS.has_feature("safe_audio") else "res://assets/ui/Catastrom.png"
-	show_toast(title, desc, icon_path, Color(0.8, 0.4, 1.0, 1.0))
+	var kicker = "[ DUNK READY ]" if not is_kr else "[ 덩크 준비 ]"
+	show_toast(title, desc, icon_path, Color(0.8, 0.4, 1.0, 1.0), null, kicker)
 
 func show_shield_shatter_hint() -> void:
 	var is_kr = GameState.language == "KR"
 	var title = "실드 파괴 필요!" if is_kr else "SHATTER THE SHIELD!"
 	var desc = "아이스 버스트로 실드를 파괴하세요 [RMB / R]" if is_kr else "SHATTER SHIELD WITH ICE BURST [RMB / R]"
-	show_toast(title, desc, "res://assets/ui/hud_elements/meter_ice.svg", Color(0.4, 0.9, 1.0, 1.0))
+	var kicker = "[ TACTICAL ALERT ]" if not is_kr else "[ 전술 경고 ]"
+	show_toast(title, desc, "res://assets/ui/hud_elements/meter_ice.svg", Color(0.4, 0.9, 1.0, 1.0), null, kicker)
 	flash_ice_hint()
 
 func show_drones_shield_hint() -> void:
 	var is_kr = GameState.language == "KR"
 	var title = "드론 방어막 활성!" if is_kr else "DRONE SHIELD ACTIVE!"
 	var desc = "먼저 궤도 드론을 파괴하세요!" if is_kr else "SHOOT THE DRONES FIRST!"
-	show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_yellow.png", Color(1.0, 0.85, 0.20, 1.0))
+	var kicker = "[ TACTICAL ALERT ]" if not is_kr else "[ 전술 경고 ]"
+	show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_yellow.png", Color(1.0, 0.85, 0.20, 1.0), null, kicker)
 
 func flash_ice_hint() -> void:
 	if not ice_row or not ice_row.visible:

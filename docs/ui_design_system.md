@@ -36,6 +36,16 @@ Design tokens, color palettes, typography, and component specifications for *Sum
   * *Ice Burst:* Cyan-frost fill with notch dividers and numeric counter (`charges / max`). Unlocks Wave 2 / Level 3.
   * *Catastrom / Celestial Awakening (Power Up):* Shared pool gauge. Standard weapons render purple Catastrom; Kitsune Buster IX renders cyan Celestial Awakening with active countdown. Dedicated toast alerts at 100%.
 
+### HUD Popup Notifications (Toasts)
+* **Dimensions:** 380x72px Cyberpunk Arcade Plates (0px corner radius, 1px accent border `Color(color.r, color.g, color.b, 0.35)`). Symmetrical 16px horizontal margins.
+* **Icon Plate:** 40x40px recessed plate (`Color(0.02, 0.02, 0.04, 0.95)`, 1px border `0.45` alpha) with 26x26px centered vector icon.
+* **Typography (Even-Number System):**
+  * *Kicker Tag (10px):* Category badge (`[ UNLOCK ]`, `[ TRANSCEND ]`, `[ WEATHER EVENT ]`) using body typeface (`Inter-Medium.ttf` EN / `Galmuri11.ttf` KR).
+  * *Headline (14px):* Crisp white title with 3px black outline using header typeface (`Kenney Future.ttf` EN / `Galmuri11.ttf` KR).
+  * *Action Instruction (12px):* Off-white `Color(0.85, 0.88, 0.92)` label with 2px black outline using body typeface (`Inter-Medium.ttf` EN / `Galmuri11.ttf` KR).
+* **Auto-Dismiss Depletion Bar:** 1.5px hairline across the full bottom edge (`offset_left = 0.0`) depleting over 3.5s duration.
+* **Stacking Reflow:** Stacked inside a 24px right-aligned `VBoxContainer` (8px separation) with animated height collapse (`custom_minimum_size:y` to 0.0) upon dismissal for physics-grade upward reflow.
+
 ### Buttons (StyleBoxFlat)
 * **Size:** Minimum `280x52`, font size `22px`, `0px` radius.
 * **States:** Normal (40% black bg, 2px gold border), Hover (20% gold bg), Pressed (40% gold bg, bright gold border).
