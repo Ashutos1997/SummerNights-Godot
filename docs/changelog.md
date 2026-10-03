@@ -12,6 +12,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * HUD Overtime Visuals & Bankruptcy Feedback: Added a pulsing `[ OVERTIME ]` / `[ 연장전 ]` crimson timer badge, warning red score burn feedback, and a dedicated bankruptcy defeat subtitle (`"BANKRUPT: ALL SCORE DEPLETED"` / `"파산: 점수를 모두 소진했습니다"`).
 
 ### Improved
+* Title Screen Split Layout Symmetry & Centering Polish: Eliminated the off-center left-shift in English mode by removing hardcoded 50/50 column expansion flags, allowing the container's center alignment to symmetrically center the combined title, 280px vertical hairline divider, and 240px buttons block across the screen. Harmonized English title typography to 64px to balance with the 78px Korean title, maintaining clean 28px symmetric divider margins in both languages.
 * Atmospheric Horizon Bloom & Seamless Sea Blending: Replaced the sharp exponential horizon glow cusp in the sky shader with a smooth Gaussian bloom softly biased toward the sun, aligned the lower hemisphere with deep oceanic blue, and tapered the glow along the sea waterline, completely eliminating the rigid "tube" seam artifact without altering gameplay, camera framing, or island geometry.
 * Fullscreen Window Mode by Default: Configured the engine display mode to fullscreen and ensured default fullscreen state applies across all boots and platforms.
 * Settings Menu Legibility & Even-Number System: Standardized all setting rows and controls under the 3 categories (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`) to use the body typeface (`Inter-Medium.ttf` for EN, `Galmuri11.ttf` for KR), scaled row labels to 16px, scaled toggle/language buttons to 14px, and set category badges to 14px, strictly adhering to an even-number pixel sizing system for clean readability.
@@ -308,6 +309,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * HUD 연장전 UI 및 파산 피드백: 타이머 플레이트에 펄스 애니메이션이 적용된 진홍색 `[ 연장전 ]` / `[ OVERTIME ]` 배지, 경고성 붉은 점수 소모 연출, 게임 오버 화면 전용 파산 자막(`"파산: 점수를 모두 소진했습니다"` / `"BANKRUPT: ALL SCORE DEPLETED"`) 구현.
 
 ### 개선됨 (Improved)
+* 타이틀 화면 분할 레이아웃 대칭 중앙 정렬 개선: 영문 모드에서 발생하던 좌측 치우침 현상을 해소하기 위해 50/50 고정 확장 플래그를 제거하고, 컨테이너의 중앙 정렬(`ALIGNMENT_CENTER`)을 통해 타이틀·280px 헤어라인 구분선·240px 버튼 스택 전체가 화면 정중앙에 대칭 정렬되도록 개선. 영문 타이틀 서체 크기를 64px로 최적화하여 78px 한국어 타이틀과 시각적 비중을 통일하고, 양 언어 모두 구분선 좌우 28px 대칭 간격 유지.
 * 대기 지평선 블룸 및 자연스러운 해수면 블렌딩: 하늘 셰이더의 날카로운 지평선 발광 첨점을 태양 방향으로 부드럽게 퍼지는 가우시안 대기 블룸으로 개편하고, 하부 반구 색상을 심해 네이비 톤으로 일치시켜 수평선 이음새와 인위적인 "발광 튜브" 현상을 게임플레이, 카메라 구도 및 섬 지형 변형 없이 완벽히 해소.
 * 기본 전체화면 실행 모드 설정: 엔진 디스플레이 초기화 설정을 전체화면 모드로 구성하고, 첫 실행 및 모든 플랫폼에서 기본 전체화면 상태가 안정적으로 적용되도록 개선.
 * 설정 화면 가독성 및 짝수 폰트 크기 체계 개편: 3개 카테고리(`오디오`, `조작 및 편의`, `화면 및 시스템`) 하위의 모든 설정 항목 및 컨트롤 텍스트를 가독성이 뛰어난 본문 서체(`Inter-Medium.ttf` 영문 / `Galmuri11.ttf` 한국어)로 통일하고, 항목 라벨을 16px, 토글/언어 버튼을 14px, 카테고리 배지를 14px로 조정하여 완벽한 짝수 픽셀 스케일 체계 적용.

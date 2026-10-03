@@ -1,17 +1,17 @@
 extends Control
 
 @onready var color_rect = $ColorRect
-@onready var title_lbl = $ColorRect/VBoxContainer/Title
-@onready var title2_lbl = $ColorRect/VBoxContainer/Title2
-@onready var subtitle_lbl = $ColorRect/VBoxContainer/Subtitle
-@onready var normal_btn = $ColorRect/VBoxContainer/ButtonsBox/NormalBtn
-@onready var survival_btn = $ColorRect/VBoxContainer/ButtonsBox/SurvivalBtn
-@onready var dev_btn = $ColorRect/VBoxContainer/ButtonsBox/DevBtn
+@onready var title_lbl = $ColorRect/HBoxContainer/LeftColumn/Title
+@onready var title2_lbl = $ColorRect/HBoxContainer/LeftColumn/Title2
+@onready var subtitle_lbl = $ColorRect/HBoxContainer/LeftColumn/Subtitle
+@onready var normal_btn = $ColorRect/HBoxContainer/RightColumn/ButtonsBox/NormalBtn
+@onready var survival_btn = $ColorRect/HBoxContainer/RightColumn/ButtonsBox/SurvivalBtn
+@onready var dev_btn = $ColorRect/HBoxContainer/RightColumn/ButtonsBox/DevBtn
 @onready var lang_btn = $LangBtn
 @onready var lang_highlight = $LangBtn/ToggleHighlight
 @onready var en_label = $LangBtn/Labels/ENLabel
 @onready var kr_label = $LangBtn/Labels/KRLabel
-@onready var high_score_lbl = $ColorRect/VBoxContainer/HighScoreLabel
+@onready var high_score_lbl = $ColorRect/HBoxContainer/LeftColumn/HighScoreLabel
 @onready var credit_lbl = $CreditLine
 @onready var splash_container = get_node_or_null("SplashContainer")
 @onready var splash_center = get_node_or_null("SplashContainer/SplashCenter")
@@ -169,7 +169,7 @@ func _ready() -> void:
 	# Add subtle hairline divider between Game Modes and Meta Menus
 	mode_divider = CenterContainer.new()
 	mode_divider.name = "ModeDivider"
-	mode_divider.custom_minimum_size = Vector2(220, 1)
+	mode_divider.custom_minimum_size = Vector2(240, 1)
 	var div_line = ColorRect.new()
 	div_line.custom_minimum_size = Vector2(60, 1)
 	div_line.color = Color(1.0, 0.75, 0.15, 0.25)
@@ -179,7 +179,7 @@ func _ready() -> void:
 	# Dynamically add Achievements button
 	ach_btn = dev_btn.duplicate()
 	ach_btn.name = "AchievementsBtn"
-	ach_btn.custom_minimum_size = Vector2(220, 44)
+	ach_btn.custom_minimum_size = Vector2(240, 44)
 	ach_btn.visible = true
 	dev_btn.get_parent().add_child(ach_btn)
 	ach_btn.pressed.connect(_show_achievements)
@@ -187,7 +187,7 @@ func _ready() -> void:
 	# Dynamically add Stats button
 	stats_btn = dev_btn.duplicate()
 	stats_btn.name = "StatsBtn"
-	stats_btn.custom_minimum_size = Vector2(220, 44)
+	stats_btn.custom_minimum_size = Vector2(240, 44)
 	stats_btn.visible = true
 	dev_btn.get_parent().add_child(stats_btn)
 	stats_btn.pressed.connect(_show_stats)
@@ -195,7 +195,7 @@ func _ready() -> void:
 	# Dynamically add Settings button
 	settings_btn = dev_btn.duplicate()
 	settings_btn.name = "SettingsBtn"
-	settings_btn.custom_minimum_size = Vector2(220, 44)
+	settings_btn.custom_minimum_size = Vector2(240, 44)
 	settings_btn.visible = true
 	dev_btn.get_parent().add_child(settings_btn)
 	settings_btn.pressed.connect(_show_settings)
@@ -241,8 +241,9 @@ func _update_language() -> void:
 	
 	if font:
 		var title_color = Color(1.0, 0.75, 0.15, 1.0)
-		_style_label(title_lbl, 72, title_color, font)
-		_style_label(title2_lbl, 72, title_color, font)
+		var title_size = 78 if is_kr else 64
+		_style_label(title_lbl, title_size, title_color, font)
+		_style_label(title2_lbl, title_size, title_color, font)
 		
 		# Add title shadow overrides — applied identically for EN and KR
 		for lbl in [title_lbl, title2_lbl]:
@@ -253,6 +254,7 @@ func _update_language() -> void:
 				lbl.add_theme_constant_override("shadow_offset_y", 4)
 				lbl.add_theme_constant_override("shadow_outline_size", 12)
 				lbl.add_theme_constant_override("outline_size", 8)
+				lbl.add_theme_constant_override("letter_spacing", 4 if is_kr else 0)
 				lbl.scale = Vector2.ONE
 				lbl.modulate = Color.WHITE
 				
@@ -291,11 +293,18 @@ func _update_language() -> void:
 				tw.tween_property(kr_label, "theme_override_colors/font_color", Color(1.0, 0.85, 0.2, 1.0), 0.25)
 		
 		# Best Time & Wave Display
+		var left_col = $ColorRect/HBoxContainer/LeftColumn
+		var spacer_stats = left_col.get_node_or_null("SpacerStats")
+		var has_stats = (GameState.high_score > 0) or (GameState.best_survival_time > 0.0 or GameState.best_wave > 0)
+		if spacer_stats:
+			spacer_stats.visible = has_stats
+			
 		if GameState.best_survival_time > 0.0 or GameState.best_wave > 0:
 			if not best_time_lbl:
 				best_time_lbl = Label.new()
-				$ColorRect/VBoxContainer.add_child(best_time_lbl)
-				$ColorRect/VBoxContainer.move_child(best_time_lbl, subtitle_lbl.get_index() + 1)
+				left_col.add_child(best_time_lbl)
+				var insert_pos = (spacer_stats.get_index() + 1) if spacer_stats else (subtitle_lbl.get_index() + 1)
+				left_col.move_child(best_time_lbl, insert_pos)
 				
 			var m = int(GameState.best_survival_time) / 60
 			var s = int(GameState.best_survival_time) % 60
@@ -306,7 +315,7 @@ func _update_language() -> void:
 				best_time_lbl.text = "최고 웨이브: %d" % GameState.best_wave if is_kr else "BEST ENDLESS: WAVE %d" % GameState.best_wave
 			else:
 				best_time_lbl.text = "최고 기록: %s" % time_str if is_kr else "BEST ENDLESS TIME: %s" % time_str
-			best_time_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			best_time_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 			_style_label(best_time_lbl, 16 if is_kr else 14, Color(0.4, 0.9, 0.4, 1.0), font)
 			best_time_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
 			best_time_lbl.add_theme_constant_override("outline_size", 4)
@@ -341,6 +350,8 @@ func _update_language() -> void:
 		if normal_btn and survival_btn and dev_btn:
 			for btn in [normal_btn, survival_btn, dev_btn, lang_btn, ach_btn, stats_btn, settings_btn]:
 				if not btn: continue
+				if btn != lang_btn and btn != dev_btn:
+					btn.custom_minimum_size = Vector2(240, 44)
 				btn.add_theme_font_override("font", font)
 				btn.add_theme_font_size_override("font_size", 20 if is_kr else 18)
 				btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
@@ -405,7 +416,7 @@ func _update_language() -> void:
 	tw.tween_property(color_rect, "modulate:a", 1.0, 0.5)
 
 	# --- STARTUP ANIMATION / MADE WITH GODOT SPLASH ---
-	var vbox = $ColorRect/VBoxContainer
+	var vbox = $ColorRect/HBoxContainer
 	
 	if not GameState.has_shown_splash:
 		GameState.has_shown_splash = true
