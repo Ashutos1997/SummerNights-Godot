@@ -1276,6 +1276,9 @@ func _apply_language(lang: String) -> void:
 	if timer_label:
 		if font: timer_label.add_theme_font_override("font", font)
 		timer_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
+	if is_instance_valid(flying_timer_label) and flying_timer_label:
+		if font: flying_timer_label.add_theme_font_override("font", font)
+		flying_timer_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
 	if score_label:
 		if font: score_label.add_theme_font_override("font", font)
 		score_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
@@ -2975,6 +2978,9 @@ func hide_win_screen() -> void:
 var timer_pulse_active: bool = false
 var timer_pulse_tween: Tween = null
 var _last_urgency_sec: int = -1
+var flying_timer_label: Label = null
+var timer_intro_active: bool = false
+var timer_intro_tween: Tween = null
 
 func start_overtime() -> void:
 	is_overtime = true
@@ -3015,12 +3021,121 @@ func update_overtime_score_burn(current_score: int, _burn_amount: int) -> void:
 			score_label.scale = Vector2(1.08, 1.08)
 			tw.tween_property(score_label, "scale", Vector2.ONE, 0.15)
 
+func present_wave_timer(initial_seconds: float) -> void:
+	if not timer_label or initial_seconds <= 0.0: return
+	
+	if is_instance_valid(timer_intro_tween):
+		timer_intro_tween.kill()
+		timer_intro_tween = null
+	
+	var is_kr = (GameState.language == "KR")
+	var font_path = "res://assets/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
+	var font = load(font_path)
+	var font_sz = 26 if is_kr else 22
+	
+	var mins = int(initial_seconds) / 60
+	var secs = int(initial_seconds) % 60
+	var time_formatted = "%d:%02d" % [mins, secs]
+	var prefix = "시간: " if is_kr else "TIME: "
+	var full_text = prefix + time_formatted
+	
+	timer_label.text = full_text
+	timer_label.modulate.a = 0.0
+	
+	if not is_instance_valid(flying_timer_label):
+		flying_timer_label = Label.new()
+		flying_timer_label.name = "FlyingWaveTimer"
+		flying_timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		flying_timer_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		flying_timer_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		$HUD.add_child(flying_timer_label)
+	
+	_style_lbl(flying_timer_label, font_sz, Color(1.0, 0.8, 0.2, 1.0), 3, Color.BLACK, font)
+	flying_timer_label.text = full_text
+	
+	var text_sz = font.get_string_size(full_text, HORIZONTAL_ALIGNMENT_RIGHT, -1, font_sz)
+	var label_width = max(text_sz.x + 8.0, 160.0)
+	var label_height = max(text_sz.y + 6.0, 32.0)
+	flying_timer_label.custom_minimum_size = Vector2(label_width, label_height)
+	flying_timer_label.size = Vector2(label_width, label_height)
+	flying_timer_label.pivot_offset = Vector2(label_width * 0.5, label_height * 0.5)
+	
+	var screen_size = get_viewport().get_visible_rect().size
+	var center_start = Vector2(
+		(screen_size.x * 0.5) - (label_width * 0.5),
+		(screen_size.y * 0.5) - (label_height * 0.5) - 25.0
+	)
+	var target_pos = Vector2(
+		screen_size.x - 24.0 - label_width,
+		24.0
+	)
+	
+	flying_timer_label.visible = true
+	flying_timer_label.position = center_start
+	flying_timer_label.scale = Vector2.ONE
+	
+	if reduce_motion:
+		flying_timer_label.scale = Vector2(1.5, 1.5)
+		flying_timer_label.modulate.a = 0.0
+		timer_intro_tween = create_tween()
+		timer_intro_tween.tween_property(flying_timer_label, "modulate:a", 1.0, 0.25)
+		timer_intro_tween.tween_interval(0.5)
+		timer_intro_tween.tween_property(flying_timer_label, "modulate:a", 0.0, 0.2)
+		timer_intro_tween.tween_callback(func():
+			if is_instance_valid(flying_timer_label): flying_timer_label.visible = false
+			if is_instance_valid(timer_label): timer_label.modulate.a = 1.0
+			timer_intro_active = false
+		)
+		timer_intro_active = true
+		return
+	
+	timer_intro_active = true
+	flying_timer_label.scale = Vector2(0.3, 0.3)
+	flying_timer_label.modulate = Color(1.4, 1.25, 0.6, 0.0)
+	_play_ui_tick()
+	
+	timer_intro_tween = create_tween()
+	# Stage 1: Smooth punch-in (0.32s)
+	timer_intro_tween.set_parallel(true)
+	timer_intro_tween.tween_property(flying_timer_label, "scale", Vector2(1.7, 1.7), 0.32).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	timer_intro_tween.tween_property(flying_timer_label, "modulate", Color(1.0, 0.85, 0.2, 1.0), 0.32).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	
+	# Stage 2: Floating breath (0.50s)
+	timer_intro_tween.chain().set_parallel(true)
+	timer_intro_tween.tween_property(flying_timer_label, "position:y", center_start.y - 6.0, 0.50).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	timer_intro_tween.tween_property(flying_timer_label, "scale", Vector2(1.75, 1.75), 0.50).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	
+	# Stage 3: Smooth Glide Arc (0.85s, gentle sine easing)
+	timer_intro_tween.chain().set_parallel(true)
+	timer_intro_tween.tween_property(flying_timer_label, "position:x", target_pos.x, 0.85).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	timer_intro_tween.tween_property(flying_timer_label, "position:y", target_pos.y, 0.85).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+	timer_intro_tween.tween_property(flying_timer_label, "scale", Vector2.ONE, 0.85).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	
+	# Stage 4: Seamless Merge on Destination
+	timer_intro_tween.chain().tween_callback(func():
+		if is_instance_valid(flying_timer_label): flying_timer_label.visible = false
+		if is_instance_valid(timer_label):
+			timer_label.modulate.a = 1.0
+			timer_label.pivot_offset = Vector2(timer_label.size.x, timer_label.size.y * 0.5)
+			timer_label.scale = Vector2(1.15, 1.15)
+			
+			var settle_tw = create_tween()
+			settle_tw.tween_property(timer_label, "scale", Vector2.ONE, 0.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		timer_intro_active = false
+	)
+
 func _stop_timer_pulse() -> void:
 	timer_pulse_active = false
 	_last_urgency_sec = -1
 	if is_instance_valid(timer_pulse_tween):
 		timer_pulse_tween.kill()
 		timer_pulse_tween = null
+	if is_instance_valid(timer_intro_tween):
+		timer_intro_tween.kill()
+		timer_intro_tween = null
+	if is_instance_valid(flying_timer_label):
+		flying_timer_label.visible = false
+	timer_intro_active = false
 	if timer_label:
 		timer_label.modulate.a = 1.0
 		timer_label.scale = Vector2.ONE
@@ -3032,6 +3147,8 @@ func _on_timer_tick(seconds: float) -> void:
 		var ot_text = "[ 연장전 ]" if GameState.language == "KR" else "[ OVERTIME ]"
 		timer_label.text = ot_text
 		timer_label.add_theme_color_override("font_color", Color(1.0, 0.22, 0.22, 1.0))
+		if timer_intro_active and is_instance_valid(flying_timer_label) and flying_timer_label.visible:
+			flying_timer_label.text = ot_text
 		return
 	var total_secs = max(0, int(ceil(seconds))) if seconds > 0.0 else 0
 	var mins = total_secs / 60
@@ -3039,6 +3156,8 @@ func _on_timer_tick(seconds: float) -> void:
 	
 	var prefix = "시간: " if GameState.language == "KR" else "TIME: "
 	timer_label.text = prefix + ("%d:%02d" % [mins, secs])
+	if timer_intro_active and is_instance_valid(flying_timer_label) and flying_timer_label.visible:
+		flying_timer_label.text = timer_label.text
 
 	if seconds <= 10.0 and seconds > 0.0:
 		timer_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.2, 1.0))

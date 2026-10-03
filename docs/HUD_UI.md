@@ -17,7 +17,7 @@ Architectural map and layout reference for `HUD.tscn`.
 
 ### Top-Right
 * **TopRightInfo (VBoxContainer):** Strict 24px right-aligned container.
-  * **TimerLabel:** Wave time remaining. Pulses red and bounces when <10s. In Boss Overtime ("Paid in Full"), displays pulsing crimson `[ OVERTIME ]` / `[ 연장전 ]` badge.
+  * **TimerLabel:** Wave time remaining. At wave/level start, punches into screen center (`scale 1.7x`, luminous solar flash), floats/breathes for `0.50s`, and glides over a `0.85s` curved arc (`TRANS_SINE` / `TRANS_QUAD`) directly into its top-right HUD anchor with a `1.15x` landing pulse. Pulses red and bounces when <10s. In Boss Overtime ("Paid in Full"), displays pulsing crimson `[ OVERTIME ]` / `[ 연장전 ]` badge.
   * **ScoreLabel:** Live arcade score. Scales up on score events; flashes warning red during Overtime score drain.
 * **WeatherIconContainer:** Persistent icon showing active weather (Normal sun with solar gold modulate, Rain, Eclipse).
 * **WeatherTimerLabel:** Precise eclipse countdown (requires "Shadow Walker" achievement).
@@ -55,7 +55,7 @@ Architectural map and layout reference for `HUD.tscn`.
 * **ControllerScreen:** Keyboard/Xbox layout toggle with unified "Power Up" labels for `[F]` and `[RB]`, and Mode Change (`[X]` Keyboard / `[Y]` Xbox, magenta highlight).
 * **SettingsScreen:** 3 categorized sections (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM` with Fullscreen, conditional Gold Weapon Skin toggle unlocked at 50k points, and Language) using 14px retro badges, 16px body font row labels (`Inter-Medium.ttf` / `Galmuri11.ttf`), 14px toggle buttons (even number system), and real-time numeric/percentage readouts (`100%`, `1.0x`).
 * **WeaponWheel (`TAB`):** Slows time to 0.2x. 6-slice procedural wedge with 3D previews, stat bars, and crit multipliers.
-* **TitleScreen:** Main menu with custom Godot boot splash, semantic stat coloring (Cyber Gold High Score, Neon Mint Wave Record), crisp stationary typography, direct access to full dedicated Settings modal, 24px stats breathing space, hairline mode divider, uniform button styling, desktop `[ESC]` quit guidance, and version-stamped footer.
+* **TitleScreen:** Main menu with custom Godot boot splash, clarified subtitle ("COOL DOWN THE SUN BEFORE TIME RUNS OUT" / "제한 시간 내에 태양을 식혀라"), semantic stat coloring (Cyber Gold High Score, Neon Mint Wave Record), crisp stationary typography, direct access to full dedicated Settings modal, 24px stats breathing space, hairline mode divider, uniform button styling, desktop `[ESC]` quit guidance, and version-stamped footer.
 * **End State Screens:** Frameless stats flow for Wave Reached, Survival Time, and Score; displays dedicated bankruptcy subtitle if defeated in Overtime.
 
 ---

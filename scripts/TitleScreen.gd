@@ -224,7 +224,7 @@ func _update_language() -> void:
 	
 	if title_lbl: title_lbl.text = "썸머" if is_kr else "SUMMER"
 	if title2_lbl: title2_lbl.text = "나이츠" if is_kr else "NIGHTS"
-	if subtitle_lbl: subtitle_lbl.text = "태양을 식혀라" if is_kr else "COOL DOWN THE SUN"
+	if subtitle_lbl: subtitle_lbl.text = "제한 시간 내에 태양을 식혀라" if is_kr else "COOL DOWN THE SUN BEFORE TIME RUNS OUT"
 	if normal_btn: normal_btn.text = "일반 모드" if is_kr else "NORMAL MODE"
 	if survival_btn:
 		var has_dawn_breaks = "dawn_breaks" in GameState.unlocked_achievements
@@ -258,7 +258,7 @@ func _update_language() -> void:
 				lbl.scale = Vector2.ONE
 				lbl.modulate = Color.WHITE
 				
-		_style_label(subtitle_lbl, 20 if is_kr else 18, Color(1.0, 0.75, 0.15, 1.0), font)
+		_style_label(subtitle_lbl, 18 if is_kr else 14, Color(1.0, 0.75, 0.15, 1.0), font)
 		# Subtitle also gets a subtle outline for legibility against the 3D background
 		if subtitle_lbl:
 			subtitle_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
@@ -1533,7 +1533,7 @@ func _apply_settings_language() -> void:
 	
 	if title_lbl: title_lbl.text = "썸머" if is_kr else "SUMMER"
 	if title2_lbl: title2_lbl.text = "나이츠" if is_kr else "NIGHTS"
-	if subtitle_lbl: subtitle_lbl.text = "태양을 식혀라" if is_kr else "COOL DOWN THE SUN"
+	if subtitle_lbl: subtitle_lbl.text = "제한 시간 내에 태양을 식혀라" if is_kr else "COOL DOWN THE SUN BEFORE TIME RUNS OUT"
 	if normal_btn: normal_btn.text = "일반 모드" if is_kr else "NORMAL MODE"
 	if survival_btn:
 		var has_dawn_breaks = "dawn_breaks" in GameState.unlocked_achievements
@@ -1560,7 +1560,7 @@ func _apply_settings_language() -> void:
 				lbl.modulate = Color.WHITE
 
 		if subtitle_lbl:
-			_style_label(subtitle_lbl, 20 if is_kr else 18, Color(1.0, 0.75, 0.15, 1.0), font)
+			_style_label(subtitle_lbl, 18 if is_kr else 14, Color(1.0, 0.75, 0.15, 1.0), font)
 		if credit_lbl:
 			credit_lbl.text = "SUMMER NIGHTS v1.7 · GODOT 4 · GDSCRIPT · FORWARD+"
 			_style_label(credit_lbl, 14 if is_kr else 12, Color(1.0, 1.0, 1.0, 0.7), font)

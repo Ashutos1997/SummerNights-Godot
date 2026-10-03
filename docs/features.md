@@ -68,6 +68,7 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 * **Filters Screen Polish:** Standardized 16px body typography (`Inter-Medium.ttf` / `Galmuri11.ttf`) and 110x34px toggle buttons matching the Settings design system.
 * **Boot Splash:** PS1-inspired intro with progressive golden border tracing and monochrome Godot logo.
 * **HUD Notification (Toast) Redesign:** Right-side transient alerts (380x72px) and top-center Achievement & Buff popups (500x72px, dynamic 88px multi-line height) redesigned into Cyberpunk Arcade Plates (4px plate corner radius, 1px accent border, softened shadow, 40x40 recessed icon plates). Adheres to an even-number typography system with body font for category kickers (10px) and descriptions (12px), header font for titles (14px), 1.5px bottom auto-dismiss depletion bars, clean depletion clearance, and staggered individual dismissals.
+* **Wave Timer Glide Intro & Title Clarification:** Initial wave timer punches into screen center at wave start with a luminous solar flash (`0.32s`), floats/breathes over the crosshair for `0.50s`, and glides across a `0.85s` curved parabolic arc into the top-right HUD timer anchor with a `1.15x` landing pulse and real-time countdown during flight. Title screen subtitle updated to `"COOL DOWN THE SUN BEFORE TIME RUNS OUT"` / `"제한 시간 내에 태양을 식혀라"` for explicit win/loss condition clarity.
 * **Accessibility:** Full Xbox controller support with haptics/aim-assist, "Reduce Motion" toggle, and EN/KR localization.
 
 ## 8. Audio

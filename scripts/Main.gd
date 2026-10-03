@@ -1211,6 +1211,7 @@ func _on_title_start_game(is_survival: bool) -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	hud._apply_language(GameState.language)
 	hud.visible = true
+	hud.present_wave_timer(level_timer)
 	
 	gun.visible = true
 	gun.position.y = gun_base_pos.y - 1.0
@@ -4662,6 +4663,8 @@ func _check_sun_defeat() -> void:
 		level_timer = min(max_time, base_time + (level_timer * 0.5)) # Bank 50% of remaining time, extra breathing room on apex boss waves
 		wave_timer = 0.0
 		is_catastrom_active = false
+		if hud:
+			hud.present_wave_timer(level_timer)
 		_end_mirage()
 		active_mirages.clear()
 		var viewport_size = get_viewport().get_visible_rect().size
@@ -4848,6 +4851,8 @@ func _win() -> void:
 		can_shoot = true
 		is_shooting = false
 		if ocean_wave_timer: ocean_wave_timer.paused = false
+		if hud:
+			hud.present_wave_timer(level_timer)
 		
 		# 9. Trigger unlock popups NOW that the level has fully started
 		if hud:

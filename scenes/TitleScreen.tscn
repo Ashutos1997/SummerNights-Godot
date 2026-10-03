@@ -92,7 +92,7 @@ layout_mode = 2
 
 [node name="Subtitle" type="Label" parent="ColorRect/HBoxContainer/LeftColumn"]
 layout_mode = 2
-text = "COOL DOWN THE SUN"
+text = "COOL DOWN THE SUN BEFORE TIME RUNS OUT"
 horizontal_alignment = 0
 
 [node name="SpacerStats" type="Control" parent="ColorRect/HBoxContainer/LeftColumn"]
