@@ -43,6 +43,7 @@ var _prev_weapon_id_for_meter: String = ""
 @onready var grab_icon = $HUD/GrabIcon
 
 @onready var toast_container = $HUD/ToastContainer
+var last_toast_exit_time: float = 0.0
 var achievement_toast_container: Control
 var buff_toast_container: Control
 @onready var crosshair = $HUD/Crosshair
@@ -3500,28 +3501,42 @@ func show_toast(title: String, description: String, icon_input = "", color: Colo
 	tw.tween_property(panel, "modulate:a", 1.0, 0.25).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tw.tween_property(icon_plate, "scale", Vector2.ONE, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT).set_delay(0.08)
 	
-	# Auto-dismiss Depletion Bar (3.5s countdown)
-	var tw_bar = create_tween()
-	tw_bar.tween_property(depletion_bar, "scale:x", 0.0, 3.5).set_trans(Tween.TRANS_LINEAR)
+	# Stagger dismissal so multiple toasts dismiss one by one without merging
+	var current_time = Time.get_ticks_msec() / 1000.0
+	var base_duration = 3.5
+	var min_exit_time = current_time + base_duration
+	if last_toast_exit_time > current_time:
+		min_exit_time = max(min_exit_time, last_toast_exit_time + 1.2)
+	last_toast_exit_time = min_exit_time
+	var toast_duration = min_exit_time - current_time
 	
-	# Wait 3.5s then slide out and trigger reflow
-	await get_tree().create_timer(3.5).timeout
+	# Auto-dismiss Depletion Bar synced to this toast's specific lifespan
+	var tw_bar = create_tween()
+	tw_bar.tween_property(depletion_bar, "scale:x", 0.0, toast_duration).set_trans(Tween.TRANS_LINEAR)
+	
+	# Wait for display duration
+	await get_tree().create_timer(toast_duration).timeout
 	
 	if not is_instance_valid(toast): return
 	
-	# Slide-out and Collapse Animation
+	# Step 1: Slowly and smoothly fade to the right (keeping height intact so no overlap occurs)
 	var tw_out = create_tween().set_parallel(true)
 	if is_instance_valid(panel):
-		tw_out.tween_property(panel, "position:x", 420.0, 0.28).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-		tw_out.tween_property(panel, "modulate:a", 0.0, 0.25)
-	tw_out.tween_property(toast, "custom_minimum_size:y", 0.0, 0.28).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+		tw_out.tween_property(panel, "position:x", 380.0, 0.45).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		tw_out.tween_property(panel, "modulate:a", 0.0, 0.40).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	
-	tw_out.chain().tween_callback(func():
-		if is_instance_valid(toast):
-			toast.queue_free()
-		if is_instance_valid(audio):
-			audio.queue_free()
-	)
+	await tw_out.finished
+	if not is_instance_valid(toast): return
+	
+	# Step 2: Now that this toast is completely invisible, collapse its slot so the next toast gently slides up
+	var tw_collapse = create_tween()
+	tw_collapse.tween_property(toast, "custom_minimum_size:y", 0.0, 0.25).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	
+	await tw_collapse.finished
+	if is_instance_valid(toast):
+		toast.queue_free()
+	if is_instance_valid(audio):
+		audio.queue_free()
 
 func show_ice_unlock() -> void:
 	var is_kr = GameState.language == "KR"
