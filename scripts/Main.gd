@@ -2759,32 +2759,9 @@ func _process(delta: float) -> void:
 		var overtime_throttle = 0.0 if is_overtime else 1.0
 		temperature += (heat_regen_base * overtime_throttle * drone_shield_throttle * mirage_throttle * (1.0 - GameState.heat_resistance)) * delta # Sun gets hotter over time
 		
-	# ─── Reactive Solar Heat Surge Logic (Endless Wave 25+) ───────────────────
-	if GameState.is_survival_mode and GameState.current_wave >= 25 and timer_running and not defeat_triggered and not is_title_screen:
-		if heat_surge_cooldown > 0.0:
-			heat_surge_cooldown -= delta
-		
-		var heat_pct = temperature / current_max_temp
-		if is_heat_surge_warning:
-			heat_surge_warning_timer -= delta
-			# Rapid thermal vibration & coronal pulsing during warning
-			if not reduce_motion:
-				sun_face_shake = max(sun_face_shake, 0.14)
-			if sun_corona_mesh:
-				sun_corona_mesh.scale = Vector3.ONE * (1.2 + randf_range(0.0, 0.25))
-			
-			if heat_surge_warning_timer <= 0.0:
-				is_heat_surge_warning = false
-				_trigger_solar_heat_surge()
-		else:
-			# Track continuous suppression below 20% heat capacity
-			if heat_pct <= 0.20 and not is_sun_frozen and not is_catastrom_active:
-				heat_suppression_timer += delta
-				if heat_suppression_timer >= 6.0 and heat_surge_cooldown <= 0.0:
-					_start_heat_surge_warning()
-			else:
-				heat_suppression_timer = max(0.0, heat_suppression_timer - delta * 1.5)
-		
+	# ─── Reactive Solar Heat Surge Logic (Disabled — rethinking mechanic) ────
+	# TODO: Reimplement when new design is ready.
+	
 	_update_sky(false)
 	
 	if hud and hud.grab_icon:
@@ -5460,8 +5437,7 @@ func _perform_kitsune_blade_slash() -> void:
 	
 	for flare in flares_to_sever:
 		sever_flare_by_blade(flare)
-	if flares_to_sever.size() > 0 and is_heat_surge_warning:
-		_disrupt_heat_surge("blade")
+
 	
 	# Check Solar Convergence Drone Interception
 	var hit_solar_drone: bool = false
@@ -5580,8 +5556,7 @@ func _perform_kitsune_blade_slash() -> void:
 				
 				GameState.add_score(int(total_dmg * 10.0))
 			elif aim_dist < 4.8: # Matches gun hit detection radius for the Sun
-				if is_heat_surge_warning:
-					_disrupt_heat_surge("blade")
+
 				if is_sun_shielded:
 					_on_shield_deflect(crosshair_target)
 					if is_drone_shield_active:
@@ -6071,8 +6046,7 @@ func shatter_drone_shield() -> void:
 		get_tree().create_timer(1.2).timeout.connect(burst.queue_free)
 
 func freeze_sun() -> void:
-	if is_heat_surge_warning:
-		_disrupt_heat_surge("ice")
+
 	if is_sun_shielded:
 		if is_drone_shield_active:
 			# Golden Drone Shield is powered by active orbital drones! Direct Ice Blast is deflected.
@@ -6459,8 +6433,8 @@ func _trigger_solar_heat_surge() -> void:
 	if defeat_triggered or game_over:
 		return
 	
-	# 1. Solar Heat Recovery (+15% of current max temp capacity)
-	var surge_recovery = current_max_temp * 0.15
+	# 1. Solar Heat Recovery (+25% of current max temp capacity)
+	var surge_recovery = current_max_temp * 0.25
 	temperature = min(current_max_temp, temperature + surge_recovery)
 	heat_changed.emit(temperature, current_max_temp)
 	heat_suppression_timer = 0.0
