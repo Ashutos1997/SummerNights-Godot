@@ -7,8 +7,9 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 ## 1. Color Palette
 * **Primary Accents:** Deep Gold `Color(1.0, 0.75, 0.15, 1.0)`, Bright Yellow `Color(1.0, 0.85, 0.2, 1.0)`.
 * **Secondary Accents:** Cyan `Color(0.2, 0.8, 1.0, 1.0)`, Water Blue `Color(0.1, 0.65, 0.95, 1.0)`.
-* **Hazard & Alert Accents:** Amber Stack & Surge Warning `Color(1.0, 0.75, 0.2, 0.95)`, Disruption Cyan `Color(0.2, 0.85, 1.0, 1.0)`.
+* **Hazard & Alert Accents:** Amber Stack Warning `Color(1.0, 0.75, 0.2, 0.95)`, Overtime Crimson `Color(1.0, 0.22, 0.22)`.
 * **Energy Shields:** Cyan Boss Shield `Color(0.2, 0.8, 1.0, 0.9)`, Golden Drone Shield `Color(1.0, 0.82, 0.18, 0.95)`.
+* **Atmospheric Events:** Rainstorm Cyan `Color(0.4, 0.85, 1.0)`, Solar Eclipse Lunar Silver `Color(0.85, 0.95, 1.0)`, Coronal Eclipse Ultraviolet `Color(0.95, 0.35, 1.0)` / Prominence Magenta `Color(1.0, 0.20, 0.90)`.
 * **Backgrounds:** Global Menu `Color(0.02, 0.01, 0.05, 0.96)`, Dark Panel `Color(0.05, 0.02, 0.1, 0.85)`.
 * **Controller Highlights:** Gold (Pause), Lime (Weapons), Cyan (Ice Blast), Orange (Power Up), Magenta (Mode Change).
 
@@ -87,5 +88,4 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 * **Layering:** `retro_postprocess.gdshader` on Layer 0 (behind HUD Layer 10) to preserve UI sharpness.
 * **Dynamic Overlays:** Heat Warning (pulsing red border at 85% heat) and Frost Border (icy tint on Ice Burst).
 * **Energy Shield FX:** Fresnel glow with ripple rings and impact sparks, relying on dedicated bilingual HUD banner notifications for tactical feedback.
-* **Multi-Layered Solar Heat Surge Shockwave:** Cinematic explosion triggered if late-wave thermal warning is uncountered. Synthesizes a radial post-process lens distortion ripple (`celestial_shockwave` 0.0 to 1.5), 3D dual concentric expanding TorusMesh rings (fiery primary crest and white-hot secondary plasma wavefront) billboarded to the player camera, a warm amber screen flash (`Color(1.0, 0.45, 0.1, 0.35)`), heavy camera shake, and deep bass boom SFX.
 * **Retro Filters:** Mutually exclusive post-processing (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).

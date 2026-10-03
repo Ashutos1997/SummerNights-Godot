@@ -34,13 +34,13 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 * **Diminishing Returns & Stacking UI:** Stacking 3 or more copies of the same perk incurs diminishing returns (1st & 2nd = 100%, 3rd = 75%, 4th+ = 55%). Drafting Screen cards display amber stack badges (`[ 3RD STACK · 75% ]` / `[ 3중첩 · 효율 75% ]`) and real-time recalculated effective stats.
 * **HUD Tracker:** Top-left active buff icons with stack badges.
 * **Stat Caps:** Cooling Power capped at 2.0x, Water Drain bounded 40%–150%, Crit at 3.0x, Heat Resist at 60%, Sun Sway floored at 40%, Tank bounded 50%–250%, Ult floored at 40%.
-* **Available Perks:** High Capacity, Precision Optics, Thermal Insulator, Catastrom Flow, Heat Shield, Gravity Anchor, Glass Cannon, Heavy Water, Reckless Haste, Wind Breaker, Sub-Zero Reserve, Blade Cadence.
-* **Perk Rarities:** Common (weight 70–100), Uncommon (weight 60), and Rare (Cyan/Blue badge & border, weight 20: Gravity Anchor, Thermal Insulator, Heavy Water).
+* **Available Perks:** High Capacity, Precision Optics, Thermal Insulator, Catastrom Flow, Heat Shield, Gravity Anchor, Glass Cannon, Heavy Water, Reckless Haste, Wind Breaker, Sub-Zero Reserve, Blade Cadence, Solar Overclock.
+* **Perk Rarities:** Common (weight 70–100), Uncommon (weight 60), and Rare (Cyan/Blue badge & border, weight 20: Gravity Anchor, Thermal Insulator, Heavy Water, Solar Overclock).
 
 ## 4. Sun Mechanics & Threats
 * **Dynamic Movement:** Sun sways horizontally, scaling up to complex Figure-8 patterns on high waves (sway speed capped at 1.3–1.5 for trackable combat).
 * **Endgame Durability Scaling:** Post-Wave 20 in Endless Mode, Sun heat capacity scales by $+2.2\%$/wave (`MAX_TEMP * (1.0 + (wave - 20) * 0.022)`), maintaining engaging 20–32s TTK combat against stacked player perks.
-* **Reactive Solar Heat Surge (Wave 25+):** Suppressing the Sun below 20% heat for $>6.0$s triggers a 1.2s Thermal Flash warning. Can be disrupted via Ice Blast (`[R]`) or Kitsune Blade, awarding +1,500 pts, a 3.5s Sun freeze stun, and a cyan shockwave ring. If uncountered, the Sun unleashes a multi-layered shockwave (+15% heat recovery, 3 spread flares, 10% water tank evaporation, radial lens distortion ripple, and 3D expanding dual TorusMesh rings).
+* **Continuous Spray Thermal Falloff:** Holding water spray on the exact same coordinate without moving for >3.0s gradually degrades cooling efficiency down to 70% (over 3.0s–6.0s). Moving reticle aim across the Sun (distance >= 1.0), swapping weapons, or releasing fire for >= 0.4s immediately resets efficiency to 100%, encouraging active tracking over static reticle parking.
 * **Sunspots:** Glowing critical weakpoints that award bonus cooling and points.
 * **Solar Flare Shield:** Endless Boss Waves (15–25). Emissive cyan energy barrier blocking water until shattered with Ice Blast (`[R]`). On Wave 30+, replaced by the Equatorial Solar Driver & Golden Drone Shield.
 * **Solar Wind:** Physical crosswind pushing player crosshair (drift intensity capped at 1.75x).
@@ -51,7 +51,8 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 
 ## 5. Dynamic Weather & Encounters
 * **Rainstorms:** Downpour grants infinite water and passive sun cooling.
-* **Solar Eclipses:** Sky darkens; sun fires rapid Shadow Flares (occurrence chance balanced in late waves to maintain weather variety).
+* **Solar Eclipses:** Classic lunar eclipse. Deep midnight indigo sky, brilliant twinkling stars, and a pitch-black moon disc crowned by a pearlescent silver-white Diamond-Ring Corona. Triggers **Cold Stasis**: sun heat regen halts and temperature passively cools down by -2.0°/s under the lunar shadow while obsidian shadow flares challenge player defense.
+* **Coronal Eclipses (Wave 45+):** Apex Endless combat event. Deep velvet violet twilight and violent neon magenta prominence loops. Sun heat continues rising. Features cloaked sunspots hidden in the void until illuminated (water spray within 4.5m, Kitsune Blade parries, water flare intercepts, or Ice Blasts), high-speed ultraviolet coronal flares, and **+50% bonus cooling damage** on exposed weakpoints while illuminated. Dedicated HUD weather icon (`eclipse-flare.svg`).
 * **Solar Convergence:** Apex Boss encounter (Wave 30+). Equatorial Solar Driver attaches to the Sun's waist (16-ray Sunburst Corona crest, glowing incandescent core, conduits, and drone bays) while orbiting Solar Eye Drones project an invulnerable Golden Shield (throttling Sun heat regen by 50%). Drones show progressive crack damage and award water (+15%/+20%) plus ultimate charge (+5%/+8%) on destruction. Destroying all drones overloads the Driver and shatters the shield. In Phase 2, the Driver enters Overdrive, deploying a lean, fast-paced escort swarm with reactivated Golden Shield.
 
 ## 6. Environment & Visuals

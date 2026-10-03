@@ -33,6 +33,12 @@ var can_shoot: bool       = true
 var game_over: bool       = false
 var defeat_triggered: bool = false
 var round_start_time: float = 0.0
+
+# Continuous Spray Thermal Falloff (Lever 4)
+var continuous_spray_timer: float = 0.0
+var last_spray_hit_pos: Vector3 = Vector3.ZERO
+var spray_idle_timer: float = 0.0
+var current_spray_efficiency: float = 1.0
 signal heat_changed(value: float, max_value: float)
 signal water_changed(value: float, max_value: float)
 signal sun_defeated(level: int)
@@ -187,6 +193,9 @@ func _do_weapon_swap(w_id: String) -> void:
 	if is_celestial_awakened and w_id != "kitsune":
 		end_celestial_awakening()
 	GameState.current_weapon_id = w_id
+	continuous_spray_timer = 0.0
+	current_spray_efficiency = 1.0
+	last_spray_hit_pos = Vector3.ZERO
 	if not w_id in GameState.weapons_used_this_run:
 		GameState.weapons_used_this_run.append(w_id)
 		if GameState.weapons_used_this_run.size() >= 5:
@@ -671,9 +680,10 @@ var catastrom_buff: float = 1.0
 var was_catastrom_charged: bool = false
 var has_shown_celestial_ready_toast: bool = false
 var catastrom_sfx: AudioStreamPlayer
-var active_weather: String = "none" # "none", "rain", "eclipse"
+var active_weather: String = "none" # "none", "rain", "eclipse", "coronal_eclipse"
 var weather_timer: float = 0.0
 var weather_duration: float = 0.0
+var sunspot_illumination_timer: float = 0.0
 var weather_rain_particles: GPUParticles3D
 var fireflies_particles: GPUParticles3D
 var ambient_motes_particles: GPUParticles3D = null
@@ -1244,6 +1254,8 @@ func _on_title_start_game(is_survival: bool) -> void:
 		sun_figure8 = GameState.current_wave >= 3
 		solar_wind_enabled = GameState.current_wave >= 4
 		flare_spawn_timer = min(flare_spawn_timer, max(4.0, 8.0 - (GameState.current_wave * 0.25)))
+		if GameState.flare_rate_mult > 1.0:
+			flare_spawn_timer = max(1.2, flare_spawn_timer / GameState.flare_rate_mult)
 		sun_sway_amplitude = min(8.0, 3.0 + (GameState.current_wave * 0.6))
 		sun_sway_speed = min(1.3, 0.5 + (GameState.current_wave * 0.05))
 		wind_level_mult = min(1.75, 1.0 + (GameState.current_wave - 4) * 0.08)
@@ -1265,6 +1277,8 @@ func _on_title_start_game(is_survival: bool) -> void:
 	timer_running = true
 	virtual_mouse_pos = get_viewport().get_visible_rect().size / 2.0
 	prev_virtual_mouse_pos = virtual_mouse_pos
+	if is_survival:
+		_reset_weather()
 	
 	if GameState.level == 1 and not GameState.is_survival_mode and not GameState.has_completed_tutorial:
 		if hud and hud.has_method("show_tutorial_prompt"):
@@ -2129,13 +2143,18 @@ func _relocate_sunspot() -> void:
 
 func _spawn_solar_flare() -> void:
 	var lvl = float(GameState.level)
-	if active_weather == "eclipse":
-		flare_spawn_timer = randf_range(1.5, 3.0) # Spam shadow flares
+	if active_weather == "coronal_eclipse":
+		flare_spawn_timer = randf_range(1.2, 2.2) # High-intensity coronal barrage
+	elif active_weather == "eclipse":
+		flare_spawn_timer = randf_range(2.0, 3.2) # Measured shadow flare pacing
 	elif GameState.is_survival_mode:
 		var floor_t = max(4.0, 8.0 - (GameState.current_wave * 0.25))
 		flare_spawn_timer = randf_range(floor_t, floor_t + 2.0)
 	else:
 		flare_spawn_timer = randf_range(12.0 - lvl, 15.0 - lvl)
+		
+	if GameState.flare_rate_mult > 1.0:
+		flare_spawn_timer = max(1.2, flare_spawn_timer / GameState.flare_rate_mult)
 		
 	var flare_count = 1
 	if GameState.is_survival_mode and GameState.current_wave >= 10:
@@ -2144,8 +2163,10 @@ func _spawn_solar_flare() -> void:
 	for i in range(flare_count):
 		var target_pos = Vector3(randf_range(-8.0, 8.0), -1.0, randf_range(1.0, 5.0))
 		var duration = randf_range(3.8, 4.4) # Comfortable 4-second readable flight duration
-		if active_weather == "eclipse":
-			duration = randf_range(1.8, 2.4) # Shadow flares move significantly faster!
+		if active_weather == "coronal_eclipse":
+			duration = randf_range(1.4, 2.0) # Ultra-fast coronal prominence ejections!
+		elif active_weather == "eclipse":
+			duration = randf_range(2.0, 2.6) # Swift shadow flares
 		_create_flare_node(target_pos, duration)
 		
 	if sizzle_sfx and not sizzle_sfx.playing:
@@ -2171,12 +2192,19 @@ func _create_flare_node(target_pos: Vector3, duration: float) -> void:
 		sphere.radial_segments = 8
 		sphere.rings = 6
 		mesh_inst.mesh = sphere
-		if active_weather == "eclipse":
+		if active_weather == "coronal_eclipse":
+			var coronal_mat = StandardMaterial3D.new()
+			coronal_mat.albedo_color = Color(0.12, 0.0, 0.18)
+			coronal_mat.emission_enabled = true
+			coronal_mat.emission = Color(1.0, 0.20, 0.95) # Intense neon magenta
+			coronal_mat.emission_energy_multiplier = 5.0
+			mesh_inst.material_override = coronal_mat
+		elif active_weather == "eclipse":
 			var shadow_mat = StandardMaterial3D.new()
-			shadow_mat.albedo_color = Color(0.1, 0.0, 0.2)
+			shadow_mat.albedo_color = Color(0.06, 0.08, 0.14) # Obsidian / midnight navy
 			shadow_mat.emission_enabled = true
-			shadow_mat.emission = Color(0.4, 0.0, 0.8)
-			shadow_mat.emission_energy_multiplier = 3.0
+			shadow_mat.emission = Color(0.25, 0.42, 0.72) # Lunar shadow glow
+			shadow_mat.emission_energy_multiplier = 2.8
 			mesh_inst.material_override = shadow_mat
 		else:
 			mesh_inst.material_override = flare_mat
@@ -2189,11 +2217,15 @@ func _create_flare_node(target_pos: Vector3, duration: float) -> void:
 
 	# Fiery OmniLight Aura
 	var f_light = OmniLight3D.new()
-	if active_weather == "eclipse":
-		f_light.light_color = Color(0.5, 0.1, 1.0)
+	if active_weather == "coronal_eclipse":
+		f_light.light_color = Color(1.0, 0.20, 0.90)
+		f_light.light_energy = 5.0
+	elif active_weather == "eclipse":
+		f_light.light_color = Color(0.35, 0.50, 0.85)
+		f_light.light_energy = 2.8
 	else:
 		f_light.light_color = Color(1.0, 0.55, 0.1)
-	f_light.light_energy = 3.5
+		f_light.light_energy = 3.5
 	f_light.omni_range = 8.0
 	flare_root.add_child(f_light)
 
@@ -2210,15 +2242,21 @@ func _create_flare_node(target_pos: Vector3, duration: float) -> void:
 	t_mesh.radius = 0.3
 	t_mesh.height = 0.6
 	var t_mesh_mat = StandardMaterial3D.new()
-	if active_weather == "eclipse":
-		t_mesh_mat.albedo_color = Color(0.3, 0.0, 0.6)
+	if active_weather == "coronal_eclipse":
+		t_mesh_mat.albedo_color = Color(0.5, 0.05, 0.8)
 		t_mesh_mat.emission_enabled = true
-		t_mesh_mat.emission = Color(0.5, 0.1, 0.9)
+		t_mesh_mat.emission = Color(1.0, 0.25, 0.95)
+		t_mesh_mat.emission_energy_multiplier = 5.0
+	elif active_weather == "eclipse":
+		t_mesh_mat.albedo_color = Color(0.1, 0.15, 0.3)
+		t_mesh_mat.emission_enabled = true
+		t_mesh_mat.emission = Color(0.30, 0.45, 0.80)
+		t_mesh_mat.emission_energy_multiplier = 3.2
 	else:
 		t_mesh_mat.albedo_color = Color(1.0, 0.5, 0.1)
 		t_mesh_mat.emission_enabled = true
 		t_mesh_mat.emission = Color(1.0, 0.6, 0.1)
-	t_mesh_mat.emission_energy_multiplier = 4.0
+		t_mesh_mat.emission_energy_multiplier = 4.0
 	t_mesh.material = t_mesh_mat
 	trail.process_material = t_mat
 	trail.draw_pass_1 = t_mesh
@@ -2566,6 +2604,39 @@ func _process(delta: float) -> void:
 				sunspot_timer -= delta
 				if sunspot_timer <= 0.0:
 					_relocate_sunspot()
+				
+				# Coronal Eclipse Sunspot Cloaking & Illumination
+				var s_mat = sunspot_node.material_override as StandardMaterial3D if is_instance_valid(sunspot_node) else null
+				if active_weather == "coronal_eclipse":
+					if s_mat: s_mat.emission = Color(0.95, 0.35, 1.0) # Violet weakpoint
+					if sunspot_illumination_timer > 0.0:
+						sunspot_illumination_timer -= delta
+						var ill_ratio = clamp(sunspot_illumination_timer / 1.0, 0.0, 1.0)
+						sunspot_node.visible = true
+						if s_mat: s_mat.emission_energy_multiplier = lerpf(0.0, 6.0, ill_ratio)
+						var sl = sunspot_node.get_node_or_null("OmniLight3D")
+						if sl:
+							sl.light_color = Color(0.95, 0.35, 1.0)
+							sl.light_energy = lerpf(0.0, 6.0, ill_ratio)
+					else:
+						sunspot_node.visible = false
+						if s_mat: s_mat.emission_energy_multiplier = 0.0
+						var sl = sunspot_node.get_node_or_null("OmniLight3D")
+						if sl: sl.light_energy = 0.0
+				else:
+					if not sunspot_node.visible:
+						sunspot_node.visible = true
+					if s_mat:
+						if active_weather == "eclipse":
+							s_mat.emission = Color(0.85, 0.95, 1.0) # Cold lunar diamond-ring weakpoint
+							s_mat.emission_energy_multiplier = 5.5
+						else:
+							s_mat.emission = Color(1.0, 0.95, 0.7) # Normal golden-white glow
+							s_mat.emission_energy_multiplier = 5.0
+					var sl = sunspot_node.get_node_or_null("OmniLight3D")
+					if sl:
+						sl.light_color = Color(0.85, 0.95, 1.0) if active_weather == "eclipse" else Color(1.0, 0.95, 0.7)
+						sl.light_energy = 5.0
 		
 			# Solar flare spawn & movement
 			flare_spawn_timer -= delta
@@ -2578,7 +2649,7 @@ func _process(delta: float) -> void:
 				weather_blend = max(0.0, weather_blend - delta * 1.5)
 				if weather_timer > 0.0 and timer_running:
 					weather_timer -= delta
-					if active_weather == "eclipse" and hud and hud.has_method("update_eclipse_timer"):
+					if (active_weather == "eclipse" or active_weather == "coronal_eclipse") and hud and hud.has_method("update_eclipse_timer"):
 						hud.update_eclipse_timer(weather_timer)
 					if weather_timer <= 0.0:
 						_start_weather_event()
@@ -2593,6 +2664,9 @@ func _process(delta: float) -> void:
 	if active_weather == "rain":
 		temperature = max(0.0, temperature - 5.0 * delta)
 		water_tank = min(MAX_WATER, water_tank + 25.0 * delta)
+	elif active_weather == "eclipse":
+		# Cold Stasis: Sun actively cools down by 2.0°/s under the moon's shadow
+		temperature = max(0.0, temperature - 2.0 * delta)
 		
 	# Dynamic Wind Sway on tropical foliage
 	var wind_t = Time.get_ticks_msec() * 0.001
@@ -2627,7 +2701,7 @@ func _process(delta: float) -> void:
 		
 		# 2. Eclipse (Glow Brighter)
 		var target_energy = 3.0
-		if active_weather == "eclipse":
+		if active_weather == "eclipse" or active_weather == "coronal_eclipse":
 			target_energy = 8.0
 		var mesh = fireflies_particles.draw_pass_1 as ArrayMesh
 		if mesh:
@@ -2752,7 +2826,7 @@ func _process(delta: float) -> void:
 		else:
 			if high_heat_steam.emitting: high_heat_steam.emitting = false
 	
-	# Heat Regeneration (halved while Golden Drone Shield is active; throttled by 60% during Heat Mirage to prevent instant Supernova; halted during Overtime)
+	# Heat Regeneration (halved while Golden Drone Shield is active; throttled by 60% during Heat Mirage to prevent instant Supernova; halted during Overtime and Normal Eclipse)
 	if temperature < current_max_temp and not is_sun_frozen and active_weather != "eclipse":
 		var drone_shield_throttle = 0.5 if is_drone_shield_active else 1.0
 		var mirage_throttle = 0.4 if active_mirages.size() > 0 else 1.0
@@ -3099,6 +3173,8 @@ func _process(delta: float) -> void:
 					water_changed.emit(water_tank, MAX_WATER)
 				
 					GameState.flares_intercepted += 1
+					if active_weather == "coronal_eclipse":
+						sunspot_illumination_timer = 2.5
 					if GameState.flares_intercepted >= 10 and not "flare_catcher" in GameState.unlocked_achievements:
 						GameState.unlock_achievement("flare_catcher")
 					else:
@@ -3295,6 +3371,13 @@ func _process(delta: float) -> void:
 			is_firing = false
 			if hud and hud.has_method("notify_firing"): hud.notify_firing(false)
 			shoot_loop_sfx.stop()
+	else:
+		# Continuous Spray Thermal Falloff Idle Recovery
+		spray_idle_timer += delta
+		if spray_idle_timer >= 0.4:
+			continuous_spray_timer = 0.0
+			current_spray_efficiency = 1.0
+			last_spray_hit_pos = Vector3.ZERO
 		
 	
 	# Update UI progress bars
@@ -4122,6 +4205,22 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 			var spot_dist = target_pos.distance_to(sunspot_node.global_position)
 			if spot_dist < 2.5:
 				is_critical = true
+			if active_weather == "coronal_eclipse" and spot_dist < 4.5:
+				sunspot_illumination_timer = 2.5
+				
+		# Continuous Spray Thermal Falloff (Lever 4)
+		if last_spray_hit_pos != Vector3.ZERO and target_pos.distance_to(last_spray_hit_pos) < 1.0:
+			continuous_spray_timer += delta
+		else:
+			continuous_spray_timer = max(0.0, continuous_spray_timer - delta * 3.0)
+		last_spray_hit_pos = target_pos
+		spray_idle_timer = 0.0
+		
+		if continuous_spray_timer <= 3.0:
+			current_spray_efficiency = 1.0
+		else:
+			var falloff_t = clamp((continuous_spray_timer - 3.0) / 3.0, 0.0, 1.0)
+			current_spray_efficiency = lerpf(1.0, 0.70, falloff_t)
 				
 		var damage_mult: float = 1.0
 		if is_celestial_awakened:
@@ -4136,7 +4235,9 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				damage_mult *= resist
 				
 		if is_critical:
-			var dmg = current_weapon_power * (current_weapon_crit * GameState.crit_damage_mult) * damage_mult * delta
+			var dmg = current_weapon_power * (current_weapon_crit * GameState.crit_damage_mult) * damage_mult * current_spray_efficiency * delta
+			if active_weather == "coronal_eclipse":
+				dmg *= 1.5 # Coronal Weakpoint Exposure: +50% cooling damage on illuminated sunspot!
 			if is_sun_shielded:
 				dmg = 0.0 # Shield completely nullifies water damage
 				_on_shield_deflect(target_pos)
@@ -4186,7 +4287,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 					steam_particles.restart()
 				critical_hit.emit()
 		else:
-			var dmg = current_weapon_power * damage_mult * delta
+			var dmg = current_weapon_power * damage_mult * current_spray_efficiency * delta
 			if is_sun_shielded:
 				dmg = 0.0 # Shield completely nullifies water damage
 				_on_shield_deflect(target_pos)
@@ -4287,6 +4388,7 @@ func _update_sky(instant: bool) -> void:
 	if _sky_shader_mat:
 		_sky_shader_mat.set_shader_parameter("sun_heat", ratio)
 		_sky_shader_mat.set_shader_parameter("eclipse_mix", weather_blend if active_weather == "eclipse" else 0.0)
+		_sky_shader_mat.set_shader_parameter("coronal_mix", weather_blend if active_weather == "coronal_eclipse" else 0.0)
 		
 	if seagull_layer and "current_weather" in seagull_layer:
 		seagull_layer.current_weather = active_weather
@@ -4321,10 +4423,15 @@ func _update_sky(instant: bool) -> void:
 		target_sand_color = Color(0.5, 0.55, 0.65) # Cool blue/grey sand
 		target_sand_emission = 0.08
 	elif active_weather == "eclipse":
-		target_amb = Color(0.3, 0.1, 0.4)
-		target_dir = Color(0.4, 0.1, 0.3)
-		target_sand_color = Color(0.4, 0.2, 0.5) # Deep purple sand
-		target_sand_emission = 0.08
+		target_amb = Color(0.16, 0.22, 0.38) # Cold lunar indigo
+		target_dir = Color(0.42, 0.54, 0.78) # Silvery moonlight
+		target_sand_color = Color(0.32, 0.38, 0.50) # Moonlit silver-indigo sand
+		target_sand_emission = 0.04
+	elif active_weather == "coronal_eclipse":
+		target_amb = Color(0.24, 0.05, 0.32) # Deep velvet violet
+		target_dir = Color(0.50, 0.10, 0.60) # Searing neon magenta-violet prominence light
+		target_sand_color = Color(0.30, 0.15, 0.40) # Dark velvet purple sand
+		target_sand_emission = 0.07
 		
 	if world_env and world_env.environment:
 		var env = world_env.environment
@@ -4332,7 +4439,12 @@ func _update_sky(instant: bool) -> void:
 		var sunset_fog = Color(0.95, 0.68, 0.35)
 		var twilight_fog = Color(0.48, 0.68, 0.92) # Luminous ethereal twilight azure (retains soft silver-blue god rays)
 		var base_fog = sunset_fog.lerp(twilight_fog, cool_ratio * 0.85)
-		env.volumetric_fog_albedo = base_fog.lerp(target_amb, weather_blend)
+		if active_weather == "eclipse":
+			env.volumetric_fog_albedo = base_fog.lerp(Color(0.14, 0.20, 0.34), weather_blend) # Eerie silver-blue mist
+		elif active_weather == "coronal_eclipse":
+			env.volumetric_fog_albedo = base_fog.lerp(Color(0.24, 0.05, 0.32), weather_blend) # Heavy magenta-violet ion haze
+		else:
+			env.volumetric_fog_albedo = base_fog.lerp(target_amb, weather_blend)
 		env.volumetric_fog_density = lerpf(0.0075, 0.0055, cool_ratio) # Serene lower fog level in twilight so night sky remains crisp
 		
 	if ambient_motes_mat:
@@ -4340,7 +4452,9 @@ func _update_sky(instant: bool) -> void:
 		var twilight_firefly_col = Color(0.35, 0.95, 0.70, 0.75) # Cool twilight firefly mote
 		var target_col = ember_col.lerp(twilight_firefly_col, cool_ratio)
 		if active_weather == "eclipse":
-			target_col = Color(0.85, 0.35, 1.0, 0.75) # Void violet mote
+			target_col = Color(0.70, 0.88, 1.0, 0.85) # Crisp silver-blue starlight embers
+		elif active_weather == "coronal_eclipse":
+			target_col = Color(1.0, 0.25, 0.90, 0.90) # Electric neon magenta coronal spark embers
 		elif active_weather == "rain":
 			target_col = Color(0.60, 0.75, 0.90, 0.35) # Dim raindrop mist
 		ambient_motes_mat.albedo_color = target_col
@@ -4401,12 +4515,19 @@ func _update_sky(instant: bool) -> void:
 			t_bob_amp = 0.5
 			
 	if active_weather == "eclipse":
-		sun_base_albedo = sun_base_albedo.lerp(Color(0.01, 0.01, 0.02), weather_blend)
+		sun_base_albedo = sun_base_albedo.lerp(Color(0.01, 0.015, 0.025), weather_blend)
 		emission_mult = lerpf(1.8, 0.0, weather_blend) # Kill the sun's internal emission completely
-		ray_base_emission = ray_base_emission.lerp(Color(0.8, 0.3, 1.0), weather_blend) # Bright purple corona
-		ray_base_albedo = ray_base_albedo.lerp(Color(0.5, 0.1, 0.8), weather_blend)
-		t_bob_spd = lerpf(t_bob_spd, 0.2, weather_blend)
-		t_bob_amp = lerpf(t_bob_amp, 0.2, weather_blend)
+		ray_base_emission = ray_base_emission.lerp(Color(0.88, 0.96, 1.0), weather_blend) # Radiant pearlescent silver-white diamond ring corona!
+		ray_base_albedo = ray_base_albedo.lerp(Color(0.72, 0.85, 1.0), weather_blend) # Silvery-blue lunar halo
+		t_bob_spd = lerpf(t_bob_spd, 0.15, weather_blend)
+		t_bob_amp = lerpf(t_bob_amp, 0.15, weather_blend)
+	elif active_weather == "coronal_eclipse":
+		sun_base_albedo = sun_base_albedo.lerp(Color(0.005, 0.002, 0.01), weather_blend) # Pitch black silhouette
+		emission_mult = lerpf(1.8, 0.0, weather_blend)
+		ray_base_emission = ray_base_emission.lerp(Color(1.0, 0.15, 0.85), weather_blend) # Searing neon magenta coronal prominence
+		ray_base_albedo = ray_base_albedo.lerp(Color(0.85, 0.10, 0.95), weather_blend) # Deep electric violet
+		t_bob_spd = lerpf(t_bob_spd, 0.35, weather_blend)
+		t_bob_amp = lerpf(t_bob_amp, 0.35, weather_blend)
 		
 	sun_mat.albedo_color = sun_base_albedo
 	sun_mat.emission = sun_base_emission
@@ -4417,7 +4538,7 @@ func _update_sky(instant: bool) -> void:
 		sun_ray_mat.albedo_color = Color(ray_base_albedo.r, ray_base_albedo.g, ray_base_albedo.b, cool_ray_alpha)
 		var base_mult = 1.5 if temperature > 75.0 else (1.1 if temperature > 40.0 else 0.6)
 		var ray_mult = lerpf(0.35, 1.0, ratio)
-		sun_ray_mat.emission_energy_multiplier = base_mult * ray_mult * lerpf(1.0, 2.5, weather_blend if active_weather == "eclipse" else 0.0)
+		sun_ray_mat.emission_energy_multiplier = base_mult * ray_mult * lerpf(1.0, 2.5, weather_blend if (active_weather == "eclipse" or active_weather == "coronal_eclipse") else 0.0)
 		
 	if sky_god_rays_mat:
 		var god_ray_heat = ratio
@@ -4428,8 +4549,11 @@ func _update_sky(instant: bool) -> void:
 		var ray_col = Color(1.0, 0.86, 0.45, 0.38) # Luminous soft golden sunlight
 		var wave_spd = 2.2
 		if active_weather == "eclipse":
-			ray_col = Color(0.75, 0.25, 1.0, 0.42) # Ultraviolet coronal flare
-			wave_spd = 3.2 # Fast pulsing solar prominence
+			ray_col = Color(0.75, 0.88, 1.0, 0.32) # Soft ethereal silver-white moonbeams
+			wave_spd = 1.2 # Calm, serene lunar drift
+		elif active_weather == "coronal_eclipse":
+			ray_col = Color(0.95, 0.18, 0.85, 0.55) # Turbulent neon magenta prominence beams
+			wave_spd = 3.8 # Violent, fast pulsating prominence waves
 		elif active_weather == "rain":
 			ray_col = Color(0.82, 0.88, 0.96, 0.18) # Muted pale mist
 			wave_spd = 1.4 # Sluggish humid waves
@@ -4723,7 +4847,7 @@ func _win() -> void:
 		_end_overtime()
 	if is_celestial_awakened:
 		end_celestial_awakening()
-	if active_weather == "eclipse":
+	if active_weather == "eclipse" or active_weather == "coronal_eclipse":
 		GameState.unlock_achievement("shadow_walker")
 	_end_mirage()
 	active_mirages.clear()
@@ -5359,6 +5483,8 @@ func sever_flare_by_blade(flare: Dictionary) -> void:
 	water_changed.emit(water_tank, MAX_WATER)
 	
 	GameState.flares_intercepted += 1
+	if active_weather == "coronal_eclipse":
+		sunspot_illumination_timer = 3.5
 	if not is_celestial_awakened:
 		GameState.celestial_charge = min(1.0, GameState.celestial_charge + 0.10)
 	
@@ -5625,6 +5751,8 @@ func _shoot_ice() -> void:
 	total += GameState.bonus_ice_charges
 	hud.update_ice_charges(GameState.ice_charges_remaining, total)
 	
+	if active_weather == "coronal_eclipse":
+		sunspot_illumination_timer = 4.0
 	ice_shoot_sfx.play()
 	_vibrate(0.4, 0.4, 0.25)
 	
@@ -5797,6 +5925,8 @@ func _process_creation_aura(_delta: float) -> void:
 			var c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2)) if combo_active else 1.0
 			GameState.add_score(int(1000.0 * c_mult))
 			GameState.flares_intercepted += 1
+			if active_weather == "coronal_eclipse":
+				sunspot_illumination_timer = 2.5
 			f_node.queue_free()
 			active_flares.erase(flare)
 			
@@ -6268,39 +6398,42 @@ func _reset_weather() -> void:
 func _start_weather_event(force_type: String = "") -> void:
 	if active_weather != "none": return
 	
-	var is_rain = true
+	var chosen_type = ""
 	
-	if force_type == "rain":
-		is_rain = true
-	elif force_type == "eclipse":
-		is_rain = false
+	if force_type != "":
+		chosen_type = force_type
 	else:
 		var weights = GameState.LEVEL_CONFIG[GameState.level].get("weather_weights", {"none": 50, "rain": 50, "eclipse": 0})
 		
 		# Survival Mode dynamic scaling
 		if GameState.is_survival_mode:
 			var minutes_survived = GameState.survival_time / 60.0
-			# Eclipse chance increases with survival time, capped to maintain rain & clear weather variety
 			weights = weights.duplicate()
 			weights["eclipse"] = min(90, weights["eclipse"] + int(minutes_survived * 5))
 			weights["none"] = max(25, weights["none"] - int(minutes_survived * 4))
+			if GameState.current_wave >= 45:
+				weights["coronal_eclipse"] = min(80, 40 + int(minutes_survived * 3))
 			
-		var total_weight = weights["none"] + weights["rain"] + weights["eclipse"]
+		var total_weight = 0
+		for k in weights.keys():
+			total_weight += int(weights[k])
 		if total_weight <= 0:
 			return # Failsafe
 			
 		var roll = randi() % total_weight
-		
-		if roll < weights["none"]:
-			return # No weather event this time!
-		elif roll < weights["none"] + weights["rain"]:
-			is_rain = true
-		else:
-			is_rain = false
+		var cumulative = 0
+		for k in weights.keys():
+			cumulative += int(weights[k])
+			if roll < cumulative:
+				chosen_type = k
+				break
+
+	if chosen_type == "none" or chosen_type == "":
+		return
 
 	var is_kr = GameState.language == "KR"
 	
-	if is_rain:
+	if chosen_type == "rain":
 		active_weather = "rain"
 		weather_duration = 10.0
 		hud.update_weather_icon("rain")
@@ -6309,14 +6442,23 @@ func _start_weather_event(force_type: String = "") -> void:
 			hud.show_toast("기상 이변", "폭우! 물이 무한입니다.", "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_white.png", Color(0.4, 0.8, 1.0))
 		else:
 			hud.show_toast("Weather Event", "Rainstorm! Water is endless.", "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_white.png", Color(0.4, 0.8, 1.0))
+	elif chosen_type == "coronal_eclipse":
+		active_weather = "coronal_eclipse"
+		weather_duration = 12.0
+		sunspot_illumination_timer = 0.0
+		hud.update_weather_icon("coronal_eclipse")
+		if is_kr:
+			hud.show_toast("기상 이변", "코로나 일식! 흑점 은폐 & 플레어 폭주! (조명 시 취약)", "res://assets/ui/icons_weather/eclipse-flare.svg", Color(0.95, 0.35, 1.0))
+		else:
+			hud.show_toast("Weather Event", "Coronal Eclipse! Weakpoint cloaked, heat rising. (+50% dmg when lit)", "res://assets/ui/icons_weather/eclipse-flare.svg", Color(0.95, 0.35, 1.0))
 	else:
 		active_weather = "eclipse"
 		weather_duration = 10.0
 		hud.update_weather_icon("eclipse")
 		if is_kr:
-			hud.show_toast("기상 이변", "일식!", "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_red.png", Color(0.8, 0.2, 0.2))
+			hud.show_toast("기상 이변", "개기일식! 한랭 정지 — 태양이 서서히 냉각됩니다.", "res://assets/ui/achievements/eclipse.png", Color(0.70, 0.88, 1.0))
 		else:
-			hud.show_toast("Weather Event", "Solar Eclipse!", "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_red.png", Color(0.8, 0.2, 0.2))
+			hud.show_toast("Weather Event", "Solar Eclipse! Cold Stasis — Sun passively cools.", "res://assets/ui/achievements/eclipse.png", Color(0.70, 0.88, 1.0))
 	
 	_update_sky(false)
 
@@ -6325,8 +6467,15 @@ func _end_weather_event() -> void:
 	
 	if active_weather == "rain":
 		weather_rain_particles.emitting = false
-	elif active_weather == "eclipse":
+	elif active_weather == "eclipse" or active_weather == "coronal_eclipse":
 		GameState.unlock_achievement("shadow_walker")
+		sunspot_illumination_timer = 0.0
+		if is_instance_valid(sunspot_node):
+			sunspot_node.visible = true
+			var s_mat = sunspot_node.material_override as StandardMaterial3D
+			if s_mat: s_mat.emission_energy_multiplier = 5.0
+			var sl = sunspot_node.get_node_or_null("OmniLight3D")
+			if sl: sl.light_energy = 5.0
 		
 	active_weather = "none"
 	hud.update_weather_icon("none")

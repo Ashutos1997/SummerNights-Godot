@@ -526,6 +526,19 @@ const WAVE_PERKS: Dictionary = {
 		"max_val_2": 25,
 		"step": 1,
 		"weight": 70
+	},
+	"solar_overclock": {
+		"icon": "res://assets/ui/icons/sun.svg",
+		"title_en": "Solar Overclock",
+		"title_kr": "태양 오버클럭",
+		"desc_en": "+%d%% Cooling Power, +%d%% Sun Flare Fire Rate (Rare).",
+		"desc_kr": "냉각력 +%d%%, 태양 플레어 발사 빈도 +%d%% (희귀).",
+		"min_val": 30,
+		"max_val": 40,
+		"min_val_2": 25,
+		"max_val_2": 35,
+		"step": 1,
+		"weight": 20
 	}
 }
 
@@ -614,6 +627,7 @@ var weapons_used_this_run: Array[String] = []
 var crit_damage_mult: float = 1.0
 var catastrom_charge_mult: float = 1.0
 var sun_sway_mult: float = 1.0
+var flare_rate_mult: float = 1.0
 
 func reset() -> void:
 	level = 1
@@ -637,6 +651,7 @@ func reset() -> void:
 	crit_damage_mult = 1.0
 	catastrom_charge_mult = 1.0
 	sun_sway_mult = 1.0
+	flare_rate_mult = 1.0
 	active_wave_perks.clear()
 	active_wave_perk_instances.clear()
 	weapons_used_this_run.clear()
@@ -818,6 +833,9 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 				"blade_cadence":
 					blade_arc_bonus += float(perk_inst.get("val_1", 20)) * eff
 					blade_parry_bonus += float(perk_inst.get("val_2", 25)) * eff
+				"solar_overclock":
+					cooling_power_mult += v1
+					flare_rate_mult += v2
 	else:
 		# Fallback if perks were added without instances (backwards compatibility)
 		for perk_id in active_wave_perks:
@@ -846,6 +864,9 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 				"blade_cadence":
 					blade_arc_bonus += 20.0
 					blade_parry_bonus += 25.0
+				"solar_overclock":
+					cooling_power_mult += 0.35
+					flare_rate_mult += 0.30
 				
 	# Balanced caps and floors to prevent infinite power scaling or game-breaking penalties in late waves
 	cooling_power_mult = clamp(cooling_power_mult, 0.5, 2.0)
@@ -855,6 +876,7 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 	sun_sway_mult = max(0.40, sun_sway_mult) # Sun sway never drops below 40% speed
 	max_water_mult = clamp(max_water_mult, 0.50, 2.5) # Tank never drops below 50% or exceeds 250%
 	catastrom_charge_mult = clamp(catastrom_charge_mult, 0.40, 2.5) # Ult charge never stalls below 40%
+	flare_rate_mult = clamp(flare_rate_mult, 1.0, 3.0)
 
 func unlock_achievement(id: String) -> void:
 	if id in unlocked_achievements: return

@@ -7,6 +7,12 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### Added
 * Dynamic Endgame Sun Durability Scaling: Post-Wave 20 in Endless Mode, Sun heat capacity scales by $+2.2\%$/wave (`MAX_TEMP * (1.0 + (wave - 20) * 0.022)`), maintaining 20–32s TTK combat against stacked player perks.
+* Solar Overclock Perk: Added a high-risk, high-reward rare trade-off perk (+30% to +40% Cooling Power, but Sun fires solar flares 25% to 35% faster), designed to dramatically accelerate DPS while demanding sharper evasion and parrying reflexes.
+* Coronal Eclipse Weather Event (Wave 45+): Added an apex atmospheric hazard in deep Endless runs featuring deep velvet-violet twilight, pitch-black solar silhouette with violent neon magenta prominence loops, dedicated HUD weather icon (using custom `eclipse-flare.svg` vector asset), cloaked sunspots that remain invisible in the dark void until illuminated by player water spray, flare parries, or Ice Blasts, and +50% amplified cooling damage when striking illuminated weakpoints.
+* Solar & Coronal Eclipse Weather Differentiation: Strikingly distinguished Normal Solar Eclipse from Wave 45+ Coronal Eclipse across both 3D environmental aesthetics and gameplay:
+  - Normal Eclipse (Cold Stasis): Deep cosmic midnight-indigo sky with brilliant twinkling stars, a pitch-black moon disc crowned by a pearlescent silver-white Diamond-Ring Corona, moonlit silver sand, and ethereal silver-blue god rays. Sun heat regeneration halts and passively cools down by -2.0°/s under the lunar shadow while obsidian shadow flares challenge player defense.
+  - Coronal Eclipse (Apex Combat): Deep velvet-violet twilight with violent neon magenta prominence loops, electric violet god rays, and high-velocity coronal mass ejection flares. Sun heat continues rising; sunspots are cloaked in the void until illuminated, and striking illuminated weakpoints deals +50% amplified cooling damage.
+* Continuous Spray Thermal Falloff: Added dynamic cooling falloff for continuous stationary firing. Holding water spray on the exact same coordinate without moving for >3.0s gradually degrades cooling efficiency down to 70% (over 3.0s–6.0s). Moving the reticle across the Sun (distance >= 1.0), swapping weapons, or releasing fire for >= 0.4s immediately resets efficiency to 100%, rewarding rhythmic tracking and target acquisition over stationary reticle parking.
 * ~~Reactive Solar Heat Surge & Disruption Mechanic~~ *(Removed — mechanic is being redesigned)*
 * ~~Multi-Layered Cinematic Shockwave Animation~~ *(Removed with Heat Surge)*
 * Perk Diminishing Returns & Drafting Stacking UI: Added soft diminishing returns when stacking 3 or more copies of the same perk (1st & 2nd copies = 100% full effect; 3rd copy = 75%; 4th+ copies = 55%). Drafting Screen cards now clearly alert players when stacking $\ge 2$ copies with an amber stack badge (`[ 3RD STACK · 75% ]` / `[ 3중첩 · 효율 75% ]`) and real-time recalculated effective perk descriptions.
@@ -315,8 +321,14 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### 추가됨 (Added)
 * 후반 엔드리스 태양 체력 스케일링: 엔드리스 20웨이브 이후 태양의 최대 열기 용량이 웨이브당 $+2.2\%$씩 점진적으로 확장되어(`MAX_TEMP * (1.0 + (wave - 20) * 0.022)`), 후반부 강력한 퍽 빌드에서도 처치 시간(TTK)이 20~32초대로 건강하게 유지되도록 밸런스 조정.
+* "태양 오버클럭 (Solar Overclock)" 퍽: 높은 위험과 보상을 동시에 제공하는 희귀 트레이드오프 퍽 추가 (냉각력 +30%~+40% 증가, 대신 태양의 플레어 발사 빈도 +25%~+35% 가속). 폭발적인 딜링을 제공하는 대신 정밀한 회피와 패링 반사신경을 요구하도록 설계.
+* 코로나 일식 (Coronal Eclipse, 45웨이브 이상) 기상 이변: 심층 무한 모드 전용 최고위 대기 기상 이변 추가. 깊은 벨벳 보라빛 황혼, 격렬한 네온 마젠타 홍염 코로나 루프를 두른 칠흑 같은 태양 실루엣, 전용 HUD 기상 아이콘(`eclipse-flare.svg` 벡터 적용), 어둠 속에 숨겨져 조명(물 분사, 플레어 패링, 얼음 폭발) 전까지 가려지는 은폐 흑점, 조명된 약점 타격 시 +50% 증폭 냉각 피해 기믹 구현.
+* 일반 일식 및 코로나 일식 시각·메커니즘 차별화: 일반 개기일식과 45웨이브 이상 코로나 일식의 3D 환경 비주얼 및 전투 메커니즘을 뚜렷하게 분리하여 완성:
+  - 일반 개기일식 (한랭 정지): 반짝이는 별이 가득한 심우주 미드나이트 네이비 하늘, 진주빛 은백색 다이아몬드 링 코로나를 두른 흑요석 달 실루엣, 달빛 은빛 모래, 은청색 광선 연출. 태양의 자연 열기 회복이 멈추고 달의 그림자 아래에서 태양이 매초 -2.0°씩 자연 냉각되는 방어적 휴식 시간 제공 (흑요석 그림자 플레어 방어 요구).
+  - 코로나 일식 (최고위 전투): 깊은 벨벳 보라빛 황혼과 격렬한 네온 마젠타 홍염 코로나 루프, 자외선 광선, 초고속 코로나 질량 방출 플레어. 태양 열기 회복이 계속 유지되며, 흑점이 암흑 속에 은폐되어 조명 시에만 노출되고, 조명된 약점을 타격할 시 +50% 증폭 냉각 피해(1.5배) 적용.
+* 지속 분사 열 감쇠 (Continuous Spray Falloff): 동일 좌표에 고정 사격을 유지할 때 발생하는 역동적 냉각 감쇠 메커니즘 추가. 조준선을 움직이지 않고 한 지점에 3.0초 이상 연속 사격 시 냉각 효율이 3.0~6.0초에 걸쳐 점진적으로 70%까지 감소합니다. 조준선을 다른 부위나 흑점으로 이동(거리 1.0 이상), 무기 전환, 또는 사격을 0.4초 이상 중단하면 효율이 즉시 100%로 회복되어 고정 말뚝 사격 대신 리드미컬한 조준과 추적 플레이를 장려.
 * ~~반응형 열기 폭주 (Heat Surge) 및 저지 메커니즘~~ *(제거됨 — 메커니즘 재설계 중)*
-* 다층 시네마틱 충격파 애니메이션: 태양 열기 폭주 시 화면 공간 렌즈 굴절 왜곡(`celestial_shockwave`), 카메라 시선에 직교 정렬되는 3D 듀얼 동심원 확장 토러스 메쉬(타오르는 1차 화염 링 및 초고열 2차 플라즈마 파면), 호박색 화면 플래시, 강렬한 화면 진동, 컨트롤러 햅틱, 중저음 솔라 로어 SFX가 결합된 고품질 충격파 연출 구현.
+* ~~다층 시네마틱 충격파 애니메이션~~ *(열기 폭주와 함께 제거됨)*
 * 퍽 중첩 감쇠 시스템 및 선택 화면 UI 피드백: 동일 퍽을 3개 이상 중첩 시 점진적 효율 감쇠 적용 (1·2번째 중첩 = 100% 온전한 수치, 3번째 중첩 = 75%, 4번째 이상 중첩 = 55%). 퍽 선택 화면에서 이미 2개 이상 보유한 퍽 카드에 호박색 중첩 배지(`[ 3중첩 · 효율 75% ]` / `[ 3RD STACK · 75% ]`)를 표시하고 실시간 계산된 실제 유효 수치를 안내하여 전략적 선택 유도.
 * 웨이브 타이머 글라이드 인트로: 라운드 및 웨이브 시작 시 제한 시간을 강조하는 역동적인 타이머 연출 추가. 웨이브 시작 시 제한 시간 텍스트가 화면 중앙에 사이버 골드 컬러(`scale 1.6x`, `0.25초` 페이드인)로 나타난 후 `2.5초`간 정위치에서 유지되어 플레이어가 실시간 카운트다운을 명확히 읽을 수 있는 충분한 가독 시간을 제공한 뒤, `0.85초` 동안 부드럽게 우측 상단 HUD 슬롯으로 글라이드 이동하여 완벽하게 안착합니다. 진행 중에도 타이머가 실시간으로 카운트다운되며 0픽셀 오차로 매끄럽게 인계되어, 중앙 조준선에서 시선을 떼지 않고도 제한 시간을 즉각 인지할 수 있습니다.
 * 타이틀 화면 부제목 명확화: 메인 메뉴 부제목을 `"COOL DOWN THE SUN BEFORE TIME RUNS OUT"` / `"제한 시간 내에 태양을 식혀라"` (`14px` 영문 / `18px` 한국어)로 개편하여 게임의 핵심 승패 조건인 제한 시간의 중요성을 시작 화면에서부터 명확히 전달.

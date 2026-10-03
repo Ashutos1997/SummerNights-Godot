@@ -33,6 +33,7 @@ uniform float cloud_scale       : hint_range(0.5, 8.0, 0.1) = 3.5;
 // 0.0 = cool dusk blue, 1.0 = scorching orange sunset
 uniform float sun_heat : hint_range(0.0, 1.0, 0.01) = 1.0;
 uniform float eclipse_mix : hint_range(0.0, 1.0, 0.01) = 0.0;
+uniform float coronal_mix : hint_range(0.0, 1.0, 0.01) = 0.0;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Hash / value noise helpers (no texture needed)
@@ -125,12 +126,19 @@ void sky() {
 	vec3 cool_sky = mix(cool_bottom, cool_upper, smoothstep(-0.05, 0.10, h));
 	sky_col = mix(sky_col, cool_sky, cool_factor * 0.88);
 		
-	// ── Eclipse override ─────────────────────────────────────────────────
-	vec3 eclipse_zenith = vec3(0.02, 0.0, 0.05);
-	vec3 eclipse_horizon = vec3(0.15, 0.02, 0.2);
+	// ── Eclipse override: Normal Eclipse (Cold Lunar Silver-Indigo) ─────
+	vec3 eclipse_zenith = vec3(0.01, 0.015, 0.04); // Deep cosmic midnight navy
+	vec3 eclipse_horizon = vec3(0.04, 0.10, 0.20); // Pale silvery moonlit horizon rim
 	sky_col = mix(sky_col,
 		mix(eclipse_horizon, eclipse_zenith, smoothstep(-0.1, 0.8, h)),
 		eclipse_mix);
+
+	// ── Coronal Eclipse override: Wave 45+ Solar Maximum (Neon Violet / Magenta) ──
+	vec3 coronal_zenith = vec3(0.035, 0.0, 0.07); // Dark obsidian violet
+	vec3 coronal_horizon = vec3(0.26, 0.03, 0.30); // Violent electric neon magenta-violet
+	sky_col = mix(sky_col,
+		mix(coronal_horizon, coronal_zenith, smoothstep(-0.1, 0.8, h)),
+		coronal_mix);
 
 	// ── Atmospheric Horizon Glow (Replaces sharp "tube" with natural sunset bloom) ──
 	float h_norm = (h - horizon_glow_offset) / horizon_glow_size;
@@ -144,7 +152,8 @@ void sky() {
 	vec3 sunset_glow = horizon_glow_color.rgb * 0.45;
 	vec3 twilight_glow = vec3(0.10, 0.68, 0.82) * 0.32; // Luminous seafoam waterline glow
 	vec3 active_glow = mix(sunset_glow, twilight_glow, cool_factor);
-	sky_col += active_glow * glow_mask * (1.0 - eclipse_mix);
+	float weather_occlusion = 1.0 - clamp(eclipse_mix + coronal_mix, 0.0, 1.0);
+	sky_col += active_glow * glow_mask * weather_occlusion;
 
 	// ── Cosmic Nebula / Milky Way Ribbon ─────────────────────────────────
 	if (h > 0.06 && cool_factor > 0.25) {
@@ -161,7 +170,7 @@ void sky() {
 			vec3 nebula_cyan    = vec3(0.06, 0.24, 0.38);
 			vec3 nebula_col = mix(nebula_magenta, nebula_cyan, sin(galaxy_uv.x * 2.2 + TIME * 0.03) * 0.5 + 0.5);
 			
-			float nebula_vis = smoothstep(0.25, 0.80, cool_factor) * (1.0 - eclipse_mix);
+			float nebula_vis = smoothstep(0.25, 0.80, cool_factor) * weather_occlusion;
 			sky_col += nebula_col * nebula_intensity * nebula_vis * 0.7;
 		}
 	}
@@ -194,7 +203,8 @@ void sky() {
 		float twinkle = sin(TIME * (2.0 + star_noise * 5.0) + star_noise * 100.0) * 0.5 + 0.5;
 		
 		// Map cool_factor (0.0 = hot, 1.0 = cool) so stars are fully visible earlier
-		float star_visibility = clamp(smoothstep(0.15, 0.55, cool_factor) + eclipse_mix, 0.0, 1.0);
+		// Normal eclipse reveals brilliant starry sky; coronal eclipse is partially hazed by ultraviolet flare ions
+		float star_visibility = clamp(smoothstep(0.15, 0.55, cool_factor) + eclipse_mix + coronal_mix * 0.35, 0.0, 1.0);
 		
 		float star_horizon_fade = smoothstep(0.08, 0.35, h);
 		
@@ -296,8 +306,12 @@ void sky() {
 		vec3 bg_cool_col    = mix(bg_cool_shadow, bg_cool_lit, bg_lit);
 		bg_cloud_col = mix(bg_cloud_col, bg_cool_col, cool_factor * 0.82);
 
-		vec3 bg_eclipse_cloud = mix(vec3(0.005, 0.0, 0.02), vec3(0.05, 0.01, 0.1), bg_lit);
+		// Normal Eclipse clouds (cold indigo with silver moonlit rim)
+		vec3 bg_eclipse_cloud = mix(vec3(0.015, 0.02, 0.05), vec3(0.25, 0.38, 0.55), bg_lit);
+		// Coronal Eclipse clouds (dark violet with neon magenta prominence rim)
+		vec3 bg_coronal_cloud = mix(vec3(0.02, 0.0, 0.04), vec3(0.40, 0.06, 0.45), bg_lit);
 		bg_cloud_col = mix(bg_cloud_col, bg_eclipse_cloud, eclipse_mix);
+		bg_cloud_col = mix(bg_cloud_col, bg_coronal_cloud, coronal_mix);
 		
 		sky_col = mix(sky_col, bg_cloud_col, bg_cloud_mask * 0.5);
 
@@ -311,8 +325,12 @@ void sky() {
 		vec3 fg_cool_col    = mix(fg_cool_shadow, fg_cool_lit, fg_lit);
 		fg_cloud_col = mix(fg_cloud_col, fg_cool_col, cool_factor * 0.85);
 
-		vec3 fg_eclipse_cloud = mix(vec3(0.01, 0.0, 0.05), vec3(0.1, 0.02, 0.2), fg_lit);
+		// Normal Eclipse foreground clouds
+		vec3 fg_eclipse_cloud = mix(vec3(0.02, 0.03, 0.07), vec3(0.42, 0.58, 0.78), fg_lit);
+		// Coronal Eclipse foreground clouds
+		vec3 fg_coronal_cloud = mix(vec3(0.03, 0.0, 0.06), vec3(0.60, 0.12, 0.65), fg_lit);
 		fg_cloud_col = mix(fg_cloud_col, fg_eclipse_cloud, eclipse_mix);
+		fg_cloud_col = mix(fg_cloud_col, fg_coronal_cloud, coronal_mix);
 
 		sky_col = mix(sky_col, fg_cloud_col, fg_cloud_mask * 0.88);
 	}

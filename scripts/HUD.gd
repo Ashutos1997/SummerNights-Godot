@@ -294,8 +294,11 @@ func update_weather_icon(weather_type: String) -> void:
 		weather_icon.texture = load("res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_white.png")
 		weather_icon.modulate = Color(0.4, 0.85, 1.0, 1.0)
 	elif weather_type == "eclipse":
-		weather_icon.texture = load("res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_red.png")
-		weather_icon.modulate = Color.WHITE
+		weather_icon.texture = load("res://assets/ui/achievements/eclipse.png")
+		weather_icon.modulate = Color(0.85, 0.95, 1.0, 1.0)
+	elif weather_type == "coronal_eclipse":
+		weather_icon.texture = load("res://assets/ui/icons_weather/eclipse-flare.svg")
+		weather_icon.modulate = Color(0.95, 0.45, 1.0, 1.0)
 		
 	if _weather_pulse_tween:
 		_weather_pulse_tween.kill()
