@@ -3359,13 +3359,10 @@ func show_toast(title: String, description: String, icon_input = "", color: Colo
 	style.border_width_right = 1
 	style.border_width_bottom = 1
 	style.border_color = Color(color.r, color.g, color.b, 0.35)
-	style.corner_radius_top_left = 0
-	style.corner_radius_top_right = 0
-	style.corner_radius_bottom_right = 0
-	style.corner_radius_bottom_left = 0
-	style.shadow_color = Color(0, 0, 0, 0.7)
-	style.shadow_size = 12
-	style.shadow_offset = Vector2(0, 4)
+	style.set_corner_radius_all(4)
+	style.shadow_color = Color(0, 0, 0, 0.35)
+	style.shadow_size = 4
+	style.shadow_offset = Vector2(0, 2)
 	panel.add_theme_stylebox_override("panel", style)
 	toast.add_child(panel)
 	
@@ -3387,7 +3384,7 @@ func show_toast(title: String, description: String, icon_input = "", color: Colo
 	content_row.alignment = BoxContainer.ALIGNMENT_BEGIN
 	margin.add_child(content_row)
 	
-	# Recessed Icon Plate (40x40 even number dimensions)
+	# Recessed Icon Plate (40x40 even number dimensions, 4px corner radius)
 	var icon_plate = PanelContainer.new()
 	icon_plate.name = "IconPlate"
 	icon_plate.custom_minimum_size = Vector2(40, 40)
@@ -3401,10 +3398,7 @@ func show_toast(title: String, description: String, icon_input = "", color: Colo
 	plate_style.border_width_right = 1
 	plate_style.border_width_bottom = 1
 	plate_style.border_color = Color(color.r, color.g, color.b, 0.45)
-	plate_style.corner_radius_top_left = 2
-	plate_style.corner_radius_top_right = 2
-	plate_style.corner_radius_bottom_right = 2
-	plate_style.corner_radius_bottom_left = 2
+	plate_style.set_corner_radius_all(4)
 	icon_plate.add_theme_stylebox_override("panel", plate_style)
 	
 	# Resolve icon texture
@@ -3472,15 +3466,15 @@ func show_toast(title: String, description: String, icon_input = "", color: Colo
 	desc_lbl.add_theme_constant_override("outline_size", 2)
 	text_col.add_child(desc_lbl)
 	
-	# 4. Auto-Dismiss Depletion Bar (1.5px Hairline across full bottom edge)
+	# 4. Auto-Dismiss Depletion Bar (1.5px Hairline nested within 4px corner curves)
 	var depletion_bar = ColorRect.new()
 	depletion_bar.name = "DepletionBar"
 	depletion_bar.color = color
 	depletion_bar.layout_mode = 1
 	depletion_bar.anchors_preset = Control.PRESET_BOTTOM_WIDE
-	depletion_bar.offset_left = 0.0
+	depletion_bar.offset_left = 4.0
 	depletion_bar.offset_top = -2.0
-	depletion_bar.offset_right = 0.0
+	depletion_bar.offset_right = -4.0
 	depletion_bar.offset_bottom = 0.0
 	depletion_bar.pivot_offset = Vector2.ZERO
 	toast.add_child(depletion_bar)

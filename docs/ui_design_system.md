@@ -13,7 +13,7 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 
 ## 2. Corner Radii
 * **0px:** Standard buttons (Main Menu, dialog popups).
-* **4px:** Retro Flat Plates and Badges (Resource meters, Perks, Stat rows).
+* **4px:** Retro Flat Plates and Badges (Resource meters, Perks, Stat rows, Toast notifications).
 * **16px:** Large panels and overlays (Weapon Wheel, Cards).
 
 ## 3. Typography
@@ -37,13 +37,14 @@ Design tokens, color palettes, typography, and component specifications for *Sum
   * *Catastrom / Celestial Awakening (Power Up):* Shared pool gauge. Standard weapons render purple Catastrom; Kitsune Buster IX renders cyan Celestial Awakening with active countdown. Dedicated toast alerts at 100%.
 
 ### HUD Popup Notifications (Toasts)
-* **Dimensions:** 380x72px Cyberpunk Arcade Plates (0px corner radius, 1px accent border `Color(color.r, color.g, color.b, 0.35)`). Symmetrical 16px horizontal margins.
-* **Icon Plate:** 40x40px recessed plate (`Color(0.02, 0.02, 0.04, 0.95)`, 1px border `0.45` alpha) with 26x26px centered vector icon.
+* **Dimensions:** 380x72px Cyberpunk Arcade Plates strictly adhering to the **4px corner radius rule** for Retro Flat Plates (1px accent border `Color(color.r, color.g, color.b, 0.35)`). Symmetrical 16px horizontal margins.
+* **Subtle Shadow:** Softened background shadow (`Color(0, 0, 0, 0.35)`, 4px size, Vector2(0, 2) offset).
+* **Icon Plate:** 40x40px recessed plate (`Color(0.02, 0.02, 0.04, 0.95)`, 4px corner radius, 1px border `0.45` alpha) with 26x26px centered vector icon.
 * **Typography (Even-Number System):**
   * *Kicker Tag (10px):* Category badge (`[ UNLOCK ]`, `[ TRANSCEND ]`, `[ WEATHER EVENT ]`) using body typeface (`Inter-Medium.ttf` EN / `Galmuri11.ttf` KR).
   * *Headline (14px):* Crisp white title with 3px black outline using header typeface (`Kenney Future.ttf` EN / `Galmuri11.ttf` KR).
   * *Action Instruction (12px):* Off-white `Color(0.85, 0.88, 0.92)` label with 2px black outline using body typeface (`Inter-Medium.ttf` EN / `Galmuri11.ttf` KR).
-* **Auto-Dismiss Depletion Bar:** 1.5px hairline across the full bottom edge (`offset_left = 0.0`) depleting over 3.5s duration.
+* **Auto-Dismiss Depletion Bar:** 1.5px hairline across the bottom edge (`offset_left = 4.0`, `offset_right = -4.0`) depleting over 3.5s duration.
 * **Stacking Reflow:** Stacked inside a 24px right-aligned `VBoxContainer` (8px separation) with animated height collapse (`custom_minimum_size:y` to 0.0) upon dismissal for physics-grade upward reflow.
 
 ### Buttons (StyleBoxFlat)
