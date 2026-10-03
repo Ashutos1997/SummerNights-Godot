@@ -37,15 +37,15 @@ Design tokens, color palettes, typography, and component specifications for *Sum
   * *Catastrom / Celestial Awakening (Power Up):* Shared pool gauge. Standard weapons render purple Catastrom; Kitsune Buster IX renders cyan Celestial Awakening with active countdown. Dedicated toast alerts at 100%.
 
 ### HUD Popup Notifications (Toasts)
-* **Dimensions:** 380x72px Cyberpunk Arcade Plates strictly adhering to the **4px corner radius rule** for Retro Flat Plates (1px accent border `Color(color.r, color.g, color.b, 0.35)`). Symmetrical 16px horizontal margins.
-* **Subtle Shadow:** Softened background shadow (`Color(0, 0, 0, 0.35)`, 4px size, Vector2(0, 2) offset).
-* **Icon Plate:** 40x40px recessed plate (`Color(0.02, 0.02, 0.04, 0.95)`, 4px corner radius, 1px border `0.45` alpha) with 26x26px centered vector icon.
+* **Form Factor & Plate Rule:** Cyberpunk Arcade Plates strictly adhering to the **4px corner radius rule** for Retro Flat Plates (1px accent border `Color(color.r, color.g, color.b, 0.45)`, softened shadow `Color(0, 0, 0, 0.35)`, 4px blur, `Vector2(0, 2)` offset). Symmetrical 16px horizontal margins.
+* **Right-Docked Alerts (380x72px):** Renders unlocks, power-up ready, and weather alerts inside a right-aligned VBoxContainer (8px separation) with 3.5s depletion bar, 0.45s slow rightward fade, and animated height collapse.
+* **Top-Center Popups (500px, 72–88px):** Centered popups for Achievements (`Color(1.0, 0.85, 0.2)`) and Buffs (`Color(0.2, 0.8, 1.0)`) sliding down from `y = -100` to `y = 24.0` (or `y = 106.0` when stacked). Automatically allocates 88px height for 2-line descriptions with 12px bottom clearance.
+* **Recessed Icon Plate:** 40x40px plate (`Color(0.02, 0.02, 0.04, 0.95)`, 4px corner radius, 1px border) housing a 26x26px centered vector icon.
 * **Typography (Even-Number System):**
-  * *Kicker Tag (10px):* Category badge (`[ UNLOCK ]`, `[ TRANSCEND ]`, `[ WEATHER EVENT ]`) using body typeface (`Inter-Medium.ttf` EN / `Galmuri11.ttf` KR).
+  * *Kicker Tag (10px):* Category badge (`[ ACHIEVEMENT UNLOCKED ]`, `[ BUFF UNLOCKED ]`, `[ UNLOCK ]`) using body typeface (`Inter-Medium.ttf` EN / `Galmuri11.ttf` KR) with 1px letter spacing.
   * *Headline (14px):* Crisp white title with 3px black outline using header typeface (`Kenney Future.ttf` EN / `Galmuri11.ttf` KR).
-  * *Action Instruction (12px):* Off-white `Color(0.85, 0.88, 0.92)` label with 2px black outline using body typeface (`Inter-Medium.ttf` EN / `Galmuri11.ttf` KR).
-* **Auto-Dismiss Depletion Bar:** 1.5px hairline across the bottom edge (`offset_left = 4.0`, `offset_right = -4.0`) depleting over 3.5s duration.
-* **Stacking Reflow:** Stacked inside a 24px right-aligned `VBoxContainer` (8px separation) with animated height collapse (`custom_minimum_size:y` to 0.0) upon dismissal for physics-grade upward reflow.
+  * *Action / Description (12px):* Off-white `Color(0.85, 0.88, 0.92)` label with 2px black outline using body typeface (`Inter-Medium.ttf` EN / `Galmuri11.ttf` KR) with smart word wrap.
+* **Auto-Dismiss Depletion Bar:** 1.5px hairline across the bottom edge (`offset_left = 4.0`, `offset_right = -4.0`) depleting across toast lifespan.
 
 ### Buttons (StyleBoxFlat)
 * **Size:** Minimum `280x52`, font size `22px`, `0px` radius.

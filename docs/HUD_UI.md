@@ -13,6 +13,7 @@ Architectural map and layout reference for `HUD.tscn`.
 ### Top-Center
 * **SunHeatBar:** Celsius readout (`HEAT | X°C`). Fills up to 100% (Supernova Game Over).
 * **Phase2Label:** Warning text for boss transitions.
+* **Achievement & Buff Toasts:** 500px Cyberpunk Arcade Plates (4px radius, 1px cyber hairline, softened shadow) sliding down to `y = 24.0` (or `y = 106.0` when stacked) with recessed 40x40 icon plates, bilingual 3-tier typography (10px kicker, 14px title, 12px description with dynamic 88px multi-line height), and 1.5px auto-dismiss depletion countdown bars with upward float dismissal.
 
 ### Top-Right
 * **TopRightInfo (VBoxContainer):** Strict 24px right-aligned container.

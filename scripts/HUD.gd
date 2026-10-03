@@ -2750,87 +2750,221 @@ func _close_credits() -> void:
 
 
 
-func _show_toast(header_kr: String, header_en: String, title_kr: String, title_en: String, icon_path: String, target_y: float, container: Control) -> void:
+func _show_toast(kicker_kr: String, kicker_en: String, title_kr: String, title_en: String, desc_kr: String, desc_en: String, icon_path: String, color: Color, default_target_y: float, container: Control) -> void:
 	if not container: return
 	
 	var is_kr = GameState.language == "KR"
+	var body_font = galmuri_font if is_kr else inter_font
+	var title_font = galmuri_font if is_kr else kenney_font
 	
-	var panel = Panel.new()
-	panel.custom_minimum_size = Vector2(440, 80)
-	panel.position = Vector2(-220, -100)
+	var kicker_text = kicker_kr if is_kr else kicker_en
+	var title_text = title_kr if is_kr else title_en
+	var desc_text = desc_kr if is_kr else desc_en
+	
+	var custom_w = 500.0
+	var available_text_w = custom_w - 86.0 # 16 left + 40 icon + 14 separation + 16 right
+	var text_w = body_font.get_string_size(desc_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x if body_font else 0.0
+	var is_multiline = text_w > available_text_w
+	var plate_h = 88.0 if is_multiline else 72.0
+	
+	# Root Toast Plate
+	var toast = Control.new()
+	toast.name = "ToastPlate"
+	toast.custom_minimum_size = Vector2(custom_w, plate_h)
+	toast.size = Vector2(custom_w, plate_h)
+	toast.process_mode = Node.PROCESS_MODE_PAUSABLE
+	
+	# Main Panel (Cyberpunk Arcade Plate)
+	var panel = PanelContainer.new()
+	panel.name = "Panel"
+	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	
 	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.12, 0.12, 0.15, 0.95)
-	style.border_width_left = 2
-	style.border_width_right = 2
-	style.border_width_top = 2
-	style.border_width_bottom = 2
-	style.border_color = Color(1.0, 0.85, 0.2, 0.9)
-	style.corner_radius_top_left = 12
-	style.corner_radius_top_right = 12
-	style.corner_radius_bottom_left = 12
-	style.corner_radius_bottom_right = 12
-	style.shadow_size = 10
-	style.shadow_color = Color(0, 0, 0, 0.6)
-	style.shadow_offset = Vector2(0, 4)
+	style.bg_color = Color(0.04, 0.04, 0.08, 0.94)
+	style.border_width_left = 1
+	style.border_width_top = 1
+	style.border_width_right = 1
+	style.border_width_bottom = 1
+	style.border_color = Color(color.r, color.g, color.b, 0.45)
+	style.set_corner_radius_all(4) # Strict 4px plate rule
+	style.shadow_color = Color(0, 0, 0, 0.35) # Softened shadow
+	style.shadow_size = 4
+	style.shadow_offset = Vector2(0, 2)
 	panel.add_theme_stylebox_override("panel", style)
+	toast.add_child(panel)
 	
-	var icon_rect = TextureRect.new()
-	icon_rect.texture = load(icon_path)
-	icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon_rect.custom_minimum_size = Vector2(56, 56)
-	icon_rect.position = Vector2(16, 12)
-	icon_rect.pivot_offset = icon_rect.custom_minimum_size / 2.0
-	icon_rect.scale = Vector2.ZERO
-	panel.add_child(icon_rect)
+	# Content Margin Container (Symmetrical 16px horizontal; 10px top, 12px bottom)
+	var margin = MarginContainer.new()
+	margin.name = "ContentMargin"
+	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	margin.add_theme_constant_override("margin_left", 16)
+	margin.add_theme_constant_override("margin_right", 16)
+	margin.add_theme_constant_override("margin_top", 10)
+	margin.add_theme_constant_override("margin_bottom", 12 if is_multiline else 10)
+	panel.add_child(margin)
 	
-	var header_lbl = Label.new()
-	header_lbl.text = header_kr if is_kr else header_en
-	header_lbl.position = Vector2(84, 14)
-	_style_lbl(header_lbl, 16, Color(1.0, 1.0, 1.0, 0.9), 2, Color.BLACK, galmuri_font if is_kr else kenney_font)
-	panel.add_child(header_lbl)
+	# Content Row
+	var content_row = HBoxContainer.new()
+	content_row.name = "ContentRow"
+	content_row.add_theme_constant_override("separation", 14)
+	content_row.alignment = BoxContainer.ALIGNMENT_BEGIN
+	margin.add_child(content_row)
 	
+	# Recessed Icon Plate (40x40, 4px corner radius, 1px border)
+	var icon_plate = PanelContainer.new()
+	icon_plate.name = "IconPlate"
+	icon_plate.custom_minimum_size = Vector2(40, 40)
+	icon_plate.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	icon_plate.pivot_offset = Vector2(20, 20)
+	
+	var plate_style = StyleBoxFlat.new()
+	plate_style.bg_color = Color(0.02, 0.02, 0.04, 0.95)
+	plate_style.border_width_left = 1
+	plate_style.border_width_top = 1
+	plate_style.border_width_right = 1
+	plate_style.border_width_bottom = 1
+	plate_style.border_color = Color(color.r, color.g, color.b, 0.45)
+	plate_style.set_corner_radius_all(4)
+	icon_plate.add_theme_stylebox_override("panel", plate_style)
+	
+	var icon_tex = TextureRect.new()
+	if icon_path != "" and ResourceLoader.exists(icon_path):
+		icon_tex.texture = load(icon_path)
+	icon_tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon_tex.custom_minimum_size = Vector2(26, 26)
+	icon_tex.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	icon_tex.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	icon_tex.modulate = Color.WHITE
+	icon_plate.add_child(icon_tex)
+	content_row.add_child(icon_plate)
+	
+	# Text Column
+	var text_col = VBoxContainer.new()
+	text_col.name = "TextCol"
+	text_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	text_col.alignment = BoxContainer.ALIGNMENT_CENTER
+	text_col.add_theme_constant_override("separation", 2)
+	content_row.add_child(text_col)
+	
+	# 1. Kicker Label (10px, Body Typeface, Accent Color, 1px Letter Spacing)
+	var kicker_lbl = Label.new()
+	kicker_lbl.name = "KickerLabel"
+	kicker_lbl.text = kicker_text
+	if body_font: kicker_lbl.add_theme_font_override("font", body_font)
+	kicker_lbl.add_theme_font_size_override("font_size", 10)
+	kicker_lbl.add_theme_color_override("font_color", color)
+	kicker_lbl.add_theme_constant_override("letter_spacing", 1)
+	text_col.add_child(kicker_lbl)
+	
+	# 2. Main Title Label (14px, Title Typeface, Crisp White with 3px Black Outline)
 	var title_lbl = Label.new()
-	title_lbl.text = title_kr if is_kr else title_en
-	title_lbl.position = Vector2(84, 38)
-	_style_lbl(title_lbl, 24, Color(1.0, 0.85, 0.2, 1.0), 3, Color.BLACK, galmuri_font if is_kr else kenney_font)
-	panel.add_child(title_lbl)
+	title_lbl.name = "TitleLabel"
+	title_lbl.text = title_text
+	if title_font: title_lbl.add_theme_font_override("font", title_font)
+	title_lbl.add_theme_font_size_override("font_size", 14)
+	title_lbl.add_theme_color_override("font_color", Color.WHITE)
+	title_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+	title_lbl.add_theme_constant_override("outline_size", 3)
+	text_col.add_child(title_lbl)
 	
-	panel.process_mode = Node.PROCESS_MODE_PAUSABLE
-	container.add_child(panel)
+	# 3. Description Label (12px, Body Typeface, Off-White with 2px Black Outline)
+	var desc_lbl = Label.new()
+	desc_lbl.name = "DescLabel"
+	desc_lbl.text = desc_text
+	desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	if body_font: desc_lbl.add_theme_font_override("font", body_font)
+	desc_lbl.add_theme_font_size_override("font_size", 12)
+	desc_lbl.add_theme_color_override("font_color", Color(0.85, 0.88, 0.92))
+	desc_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+	desc_lbl.add_theme_constant_override("outline_size", 2)
+	text_col.add_child(desc_lbl)
+	
+	# 4. Auto-Dismiss Depletion Bar (1.5px Hairline nested within 4px corner curves)
+	var depletion_bar = ColorRect.new()
+	depletion_bar.name = "DepletionBar"
+	depletion_bar.color = color
+	depletion_bar.layout_mode = 1
+	depletion_bar.anchors_preset = Control.PRESET_BOTTOM_WIDE
+	depletion_bar.offset_left = 4.0
+	depletion_bar.offset_top = -2.0
+	depletion_bar.offset_right = -4.0
+	depletion_bar.offset_bottom = 0.0
+	depletion_bar.pivot_offset = Vector2.ZERO
+	toast.add_child(depletion_bar)
+	
+	# Dynamic target Y positioning
+	var target_y = default_target_y
+	if container == buff_toast_container and achievement_toast_container and achievement_toast_container.get_child_count() > 0:
+		var ach_child = achievement_toast_container.get_child(0) as Control
+		if is_instance_valid(ach_child):
+			target_y = ach_child.position.y + ach_child.size.y + 12.0
+	elif container == buff_toast_container and achievement_toast_container and achievement_toast_container.get_child_count() == 0:
+		target_y = 24.0
+		
+	# Center horizontally relative to center-top container
+	toast.position = Vector2(-custom_w / 2.0, -100.0)
+	panel.modulate.a = 0.0
+	icon_plate.scale = Vector2(0.6, 0.6)
+	container.add_child(toast)
 	
 	# SFX
 	var sfx = AudioStreamPlayer.new()
-	sfx.stream = load("res://assets/sounds/ui/ui_tick.wav")
-	sfx.volume_db = linear_to_db(GameState.sfx_volume)
-	panel.add_child(sfx)
+	sfx.stream = load("res://assets/audio/sfx/perk_hover.wav")
+	sfx.volume_db = linear_to_db(GameState.sfx_volume) - 2.0
+	sfx.bus = "SFX"
+	toast.add_child(sfx)
 	sfx.play()
 	
-	# Animate Panel
-	var tw = create_tween().bind_node(panel)
-	tw.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-	tw.tween_property(panel, "position:y", target_y, 0.6)
-	tw.tween_interval(4.0)
-	tw.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_BACK)
-	tw.tween_property(panel, "position:y", -120.0, 0.5)
-	tw.tween_callback(panel.queue_free)
+	# Entrance Animation
+	var tw = create_tween().set_parallel(true).bind_node(toast)
+	tw.tween_property(toast, "position:y", target_y, 0.38).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.tween_property(panel, "modulate:a", 1.0, 0.25).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tw.tween_property(icon_plate, "scale", Vector2.ONE, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT).set_delay(0.08)
 	
-	# Animate Icon Pop
-	var icon_tw = create_tween().bind_node(panel)
-	icon_tw.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-	icon_tw.tween_interval(0.3)
-	icon_tw.tween_property(icon_rect, "scale", Vector2.ONE, 0.5)
+	# Depletion Countdown Bar (4.0s duration)
+	var lifespan = 4.0
+	var tw_bar = create_tween().bind_node(toast)
+	tw_bar.tween_property(depletion_bar, "scale:x", 0.0, lifespan).set_trans(Tween.TRANS_LINEAR)
+	
+	await get_tree().create_timer(lifespan).timeout
+	if not is_instance_valid(toast): return
+	
+	# Exit Animation: Float upward and fade out smoothly
+	var tw_out = create_tween().set_parallel(true).bind_node(toast)
+	tw_out.tween_property(toast, "position:y", target_y - 24.0, 0.40).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw_out.tween_property(panel, "modulate:a", 0.0, 0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	
+	await tw_out.finished
+	if is_instance_valid(toast):
+		toast.queue_free()
 
 func show_achievement_toast(id: String) -> void:
 	if not GameState.ACHIEVEMENTS.has(id): return
 	var ach = GameState.ACHIEVEMENTS[id]
-	_show_toast("업적 달성!", "ACHIEVEMENT UNLOCKED!", ach["title_kr"], ach["title_en"], ach["icon"], 20.0, achievement_toast_container)
+	_show_toast(
+		"[ 업적 달성 ]", "[ ACHIEVEMENT UNLOCKED ]",
+		ach.get("title_kr", ""), ach.get("title_en", ""),
+		ach.get("desc_kr", ""), ach.get("desc_en", ""),
+		ach.get("icon", ""),
+		Color(1.0, 0.85, 0.2, 1.0),
+		24.0,
+		achievement_toast_container
+	)
 
 func show_buff_toast(id: String) -> void:
 	if not GameState.BUFFS.has(id): return
 	var buff = GameState.BUFFS[id]
-	_show_toast("버프 활성화!", "BUFF UNLOCKED!", buff["title_kr"], buff["title_en"], buff["icon"], 110.0, buff_toast_container)
+	_show_toast(
+		"[ 버프 활성화 ]", "[ BUFF UNLOCKED ]",
+		buff.get("title_kr", ""), buff.get("title_en", ""),
+		buff.get("desc_kr", ""), buff.get("desc_en", ""),
+		buff.get("icon", ""),
+		Color(0.2, 0.8, 1.0, 1.0),
+		106.0,
+		buff_toast_container
+	)
 
 func hide_win_screen() -> void:
 	end_overtime()
