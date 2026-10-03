@@ -466,6 +466,7 @@ func _ready() -> void:
 	phase2_label.visible = false
 	combo_label.visible = false
 	timer_label.text = ""
+	timer_label.modulate.a = 0.0
 	_stop_timer_pulse()
 	
 	if is_instance_valid(ice_notch_overlay):
@@ -3027,6 +3028,9 @@ func present_wave_timer(initial_seconds: float) -> void:
 	if is_instance_valid(timer_intro_tween):
 		timer_intro_tween.kill()
 		timer_intro_tween = null
+	if is_instance_valid(flying_timer_label):
+		flying_timer_label.queue_free()
+		flying_timer_label = null
 	
 	var is_kr = (GameState.language == "KR")
 	var font_path = "res://assets/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
@@ -3042,37 +3046,44 @@ func present_wave_timer(initial_seconds: float) -> void:
 	timer_label.text = full_text
 	timer_label.modulate.a = 0.0
 	
-	if not is_instance_valid(flying_timer_label):
-		flying_timer_label = Label.new()
-		flying_timer_label.name = "FlyingWaveTimer"
-		flying_timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		flying_timer_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		flying_timer_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		$HUD.add_child(flying_timer_label)
+	# Determine virtual canvas 2D dimensions (avoiding raw Retina/fullscreen window pixel scaling)
+	var canvas_size = Vector2(1280, 720)
+	if is_instance_valid($HUD) and $HUD.size.x > 0 and $HUD.size.y > 0:
+		canvas_size = $HUD.size
+	
+	var text_sz = font.get_string_size(full_text, HORIZONTAL_ALIGNMENT_CENTER, -1, font_sz)
+	var label_width = max(text_sz.x + 16.0, 180.0)
+	var label_height = max(text_sz.y + 8.0, 36.0)
+	
+	# Strict center coordinates within canvas space
+	var center_start = Vector2(
+		(canvas_size.x * 0.5) - (label_width * 0.5),
+		(canvas_size.y * 0.5) - (label_height * 0.5) - 20.0
+	)
+	var target_pos = Vector2(
+		canvas_size.x - 24.0 - label_width,
+		24.0
+	)
+	
+	flying_timer_label = Label.new()
+	flying_timer_label.name = "FlyingWaveTimer"
+	flying_timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	flying_timer_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	flying_timer_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	$HUD.add_child(flying_timer_label)
 	
 	_style_lbl(flying_timer_label, font_sz, Color(1.0, 0.8, 0.2, 1.0), 3, Color.BLACK, font)
 	flying_timer_label.text = full_text
-	
-	var text_sz = font.get_string_size(full_text, HORIZONTAL_ALIGNMENT_RIGHT, -1, font_sz)
-	var label_width = max(text_sz.x + 8.0, 160.0)
-	var label_height = max(text_sz.y + 6.0, 32.0)
 	flying_timer_label.custom_minimum_size = Vector2(label_width, label_height)
 	flying_timer_label.size = Vector2(label_width, label_height)
 	flying_timer_label.pivot_offset = Vector2(label_width * 0.5, label_height * 0.5)
 	
-	var screen_size = get_viewport().get_visible_rect().size
-	var center_start = Vector2(
-		(screen_size.x * 0.5) - (label_width * 0.5),
-		(screen_size.y * 0.5) - (label_height * 0.5) - 25.0
-	)
-	var target_pos = Vector2(
-		screen_size.x - 24.0 - label_width,
-		24.0
-	)
-	
-	flying_timer_label.visible = true
+	# Place DEAD CENTER before becoming visible
 	flying_timer_label.position = center_start
-	flying_timer_label.scale = Vector2.ONE
+	flying_timer_label.scale = Vector2(0.3, 0.3)
+	flying_timer_label.modulate = Color(1.4, 1.25, 0.6, 0.0)
+	flying_timer_label.visible = true
+	timer_intro_active = true
 	
 	if reduce_motion:
 		flying_timer_label.scale = Vector2(1.5, 1.5)
@@ -3082,30 +3093,30 @@ func present_wave_timer(initial_seconds: float) -> void:
 		timer_intro_tween.tween_interval(2.0)
 		timer_intro_tween.tween_property(flying_timer_label, "modulate:a", 0.0, 0.2)
 		timer_intro_tween.tween_callback(func():
-			if is_instance_valid(flying_timer_label): flying_timer_label.visible = false
+			if is_instance_valid(flying_timer_label):
+				flying_timer_label.queue_free()
+				flying_timer_label = null
 			if is_instance_valid(timer_label): timer_label.modulate.a = 1.0
 			timer_intro_active = false
 		)
-		timer_intro_active = true
 		return
 	
-	timer_intro_active = true
-	flying_timer_label.scale = Vector2(0.3, 0.3)
-	flying_timer_label.modulate = Color(1.4, 1.25, 0.6, 0.0)
 	_play_ui_tick()
 	
 	timer_intro_tween = create_tween()
-	# Stage 1: Smooth punch-in (0.32s)
+	# Stage 1: Smooth punch-in strictly locked at center (0.32s)
 	timer_intro_tween.set_parallel(true)
+	timer_intro_tween.tween_property(flying_timer_label, "position", center_start, 0.0)
 	timer_intro_tween.tween_property(flying_timer_label, "scale", Vector2(1.7, 1.7), 0.32).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	timer_intro_tween.tween_property(flying_timer_label, "modulate", Color(1.0, 0.85, 0.2, 1.0), 0.32).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	
-	# Stage 2: Center Hold & Floating Breath (2.2s: clear, unhurried, readable)
+	# Stage 2: Center Hold & Floating Breath (2.2s: strictly locked on horizontal center)
 	timer_intro_tween.chain().set_parallel(true)
+	timer_intro_tween.tween_property(flying_timer_label, "position:x", center_start.x, 2.2)
 	timer_intro_tween.tween_property(flying_timer_label, "position:y", center_start.y - 8.0, 2.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	timer_intro_tween.tween_property(flying_timer_label, "scale", Vector2(1.78, 1.78), 2.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	
-	# Stage 3: Smooth Glide Arc (0.85s, gentle sine easing)
+	# Stage 3: Smooth Glide Arc to top-right corner (0.85s)
 	timer_intro_tween.chain().set_parallel(true)
 	timer_intro_tween.tween_property(flying_timer_label, "position:x", target_pos.x, 0.85).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	timer_intro_tween.tween_property(flying_timer_label, "position:y", target_pos.y, 0.85).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
@@ -3113,7 +3124,9 @@ func present_wave_timer(initial_seconds: float) -> void:
 	
 	# Stage 4: Seamless Merge on Destination
 	timer_intro_tween.chain().tween_callback(func():
-		if is_instance_valid(flying_timer_label): flying_timer_label.visible = false
+		if is_instance_valid(flying_timer_label):
+			flying_timer_label.queue_free()
+			flying_timer_label = null
 		if is_instance_valid(timer_label):
 			timer_label.modulate.a = 1.0
 			timer_label.pivot_offset = Vector2(timer_label.size.x, timer_label.size.y * 0.5)
@@ -3134,7 +3147,8 @@ func _stop_timer_pulse() -> void:
 		timer_intro_tween.kill()
 		timer_intro_tween = null
 	if is_instance_valid(flying_timer_label):
-		flying_timer_label.visible = false
+		flying_timer_label.queue_free()
+		flying_timer_label = null
 	timer_intro_active = false
 	if timer_label:
 		timer_label.modulate.a = 1.0
