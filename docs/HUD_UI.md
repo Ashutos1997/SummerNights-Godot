@@ -21,7 +21,7 @@ Architectural map and layout reference for `HUD.tscn`.
   * **ScoreLabel:** Live arcade score. Scales up on score events; flashes warning red during Overtime score drain.
 * **WeatherIconContainer:** Persistent icon showing active weather (Normal sun with solar gold modulate, Rain, Eclipse with silver-blue crescent, Coronal Eclipse with custom `eclipse-flare.svg` in ultraviolet).
 * **WeatherTimerLabel:** Precise eclipse countdown (requires "Shadow Walker" achievement).
-* **ToastContainer (VBoxContainer):** 380px right-docked notification column (24px screen margin, 8px separation). Renders Cyberpunk Arcade Plate alerts (weapon unlocks, Catastrom/Celestial ready, weather events, shield prompts, drone caches) with recessed 40x40 icon plates, 3-tier bilingual typography (`Kenney Future` headers / `Inter-Medium` & `Galmuri11` body), 1.5px bottom depletion countdown bars, and automatic upward reflow.
+* **ToastContainer (VBoxContainer):** 380px right-docked notification column (24px screen margin, 8px separation). Renders Cyberpunk Arcade Plate alerts (weapon unlocks, Catastrom/Celestial ready, weather events, Solar Convergence Infinity Lattice, shield prompts, drone caches) with recessed 40x40 icon plates, 3-tier bilingual typography (`Kenney Future` headers / `Inter-Medium` & `Galmuri11` body), 1.5px bottom depletion countdown bars, and automatic upward reflow.
 
 ### Center
 * **Crosshair:** Dynamic reticle scaling on hits. Inner ring tracks water capacity. Flashes red when empty, green on crits.

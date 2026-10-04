@@ -3654,6 +3654,8 @@ func show_toast(title: String, description: String, icon_input = "", color: Colo
 			kicker = "[ SUPPLY DROP ]" if not is_kr else "[ 보급 전달 ]"
 		elif "SHIELD" in t_upper or "실드" in title:
 			kicker = "[ TACTICAL ALERT ]" if not is_kr else "[ 전술 경고 ]"
+		elif "CONVERGENCE" in t_upper or "수렴" in title or "DRIVER" in t_upper or "드라이버" in title or "LATTICE" in t_upper or "격자" in title:
+			kicker = "[ SOLAR CONVERGENCE ]" if not is_kr else "[ 태양 수렴 ]"
 		else:
 			kicker = "[ NOTICE ]" if not is_kr else "[ 알림 ]"
 			
@@ -3767,6 +3769,7 @@ func show_toast(title: String, description: String, icon_input = "", color: Colo
 	title_lbl.add_theme_color_override("font_color", Color.WHITE)
 	title_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 	title_lbl.add_theme_constant_override("outline_size", 3)
+	title_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	text_col.add_child(title_lbl)
 	
 	# 3. Description Callout -> Uses BODY typeface
@@ -3778,6 +3781,7 @@ func show_toast(title: String, description: String, icon_input = "", color: Colo
 	desc_lbl.add_theme_color_override("font_color", Color(0.85, 0.88, 0.92))
 	desc_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 	desc_lbl.add_theme_constant_override("outline_size", 2)
+	desc_lbl.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	text_col.add_child(desc_lbl)
 	
 	# 4. Auto-Dismiss Depletion Bar (1.5px Hairline nested within 4px corner curves)

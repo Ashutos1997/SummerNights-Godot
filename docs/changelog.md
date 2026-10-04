@@ -6,6 +6,7 @@ All notable changes to the Summer Nights project will be documented in this file
 *(Note: Releases are now unified to v1.7 across both GitHub and itch.io)*
 
 ### Added
+* Solar Convergence "Infinity Lattice" Drone Formation (Wave 40+): Upgraded late-game boss encounters past Wave 30. While Waves 30–35 feature the classic single flat equatorial ring (6 drones), Wave 40+ deploys 8 drones in counter-rotating dual tilted planes ($\pm 33^\circ$) that weave an interlocking 3D double helix. Ring A (Ascending Solar Gold, clockwise) and Ring B (Descending Coronal Violet, counter-clockwise) sweep across both upper and lower solar hemispheres, breaking stationary equatorial aim parking. Drones cross at central intersection nodes, allowing skilled players to shatter or cleave multiple drones simultaneously with timed Ice Blasts or Kitsune Blade slashes. Phase 2 deploys 6 high-speed Overdrive escorts.
 * Dynamic Endgame Sun Durability Scaling: Post-Wave 20 in Endless Mode, Sun heat capacity scales by $+2.2\%$/wave (`MAX_TEMP * (1.0 + (wave - 20) * 0.022)`), maintaining 20–32s TTK combat against stacked player perks.
 * Solar Overclock Perk: Added a high-risk, high-reward rare trade-off perk (+30% to +40% Cooling Power, but Sun fires solar flares 25% to 35% faster), designed to dramatically accelerate DPS while demanding sharper evasion and parrying reflexes.
 * Coronal Eclipse Weather Event (Wave 45+): Added an apex atmospheric hazard in deep Endless runs featuring deep velvet-violet twilight, pitch-black solar silhouette with violent neon magenta prominence loops, dedicated HUD weather icon (using custom `eclipse-flare.svg` vector asset), cloaked sunspots that remain invisible in the dark void until illuminated by player water spray, flare parries, or Ice Blasts, and +50% amplified cooling damage when striking illuminated weakpoints.
@@ -46,6 +47,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Atmospheric Drifting Embers & Motes: Added a lightweight ambient particle system (`ambient_motes_particles`) producing floating golden solar heat embers during daylight and high heat that drift with convection currents and solar winds, seamlessly transitioning into bioluminescent fireflies as dusk falls.
 * Viewmodel Weapon & Arm Visual Polish: Upgraded first-person blasters and arms with semi-gloss toon shading, specular highlights, and warm horizon sunset rim lighting. Added an illuminated translucent glass water reservoir canister to standard blaster weapons that dynamically tracks water tank levels, glows vibrant cyan, and pulses amber during low-water emergencies.
 * Scatter Nozzle Viewmodel Orientation: Corrected the 180° reversed model rotation on the Scatter Nozzle so its dual barrels face forward toward targets instead of facing backward.
+* Toast Plate Typography & Overrun Protection: Streamlined toast titles and descriptions across boss encounters and combat events (including Solar Convergence Infinity Lattice, Phase 2 Overdrive, and Ice Shatter), established context-aware `[ SOLAR CONVERGENCE ]` category kickers, and applied `TextServer.OVERRUN_TRIM_ELLIPSIS` to both title and description labels to guarantee text never clips or overflows the 380px toast plate.
 * Version Synchronization: Unified release numbering to v1.7 across both GitHub and itch.io export presets and project configuration.
 
 ---
@@ -320,6 +322,7 @@ All notable changes to the Summer Nights project will be documented in this file
 *(참고: 이번 릴리스부터 GitHub 및 itch.io 배포 버전 번호가 v1.7로 통일 동기화됩니다)*
 
 ### 추가됨 (Added)
+* 태양 수렴 "무한 격자 (Infinity Lattice)" 드론 편대 (40웨이브 이상): 30웨이브 이후 후반부 보스전의 단조로움을 해소하기 위한 궤도 편대 메커니즘 추가. 30~35웨이브는 기존의 단일 수평 적도 궤도(6기)를 유지하지만, 40웨이브 이상에서는 8기의 드론이 상호 반대 방향으로 회전하는 이중 경사 궤도($\pm 33^\circ$)로 분할 전개되어 입체적인 3D 이중 나선("무한 격자")을 형성합니다. 링 A(상승 솔라 골드, 시계 방향)와 링 B(하강 코로나 바이올렛, 반시계 방향)가 태양의 상하 반구를 지속적으로 교차 순환하여 수평 고정 사격을 방지합니다. 두 궤도가 중앙 교차 노드에서 만나는 순간 타이밍에 맞춰 얼음 폭발(Ice Blast)이나 키츠네 블레이드 검기를 적중시키면 복수의 드론을 일격에 동시 격파할 수 있습니다. 2페이즈에서는 6기의 고속 폭주 호위대가 재기동됩니다.
 * 후반 엔드리스 태양 체력 스케일링: 엔드리스 20웨이브 이후 태양의 최대 열기 용량이 웨이브당 $+2.2\%$씩 점진적으로 확장되어(`MAX_TEMP * (1.0 + (wave - 20) * 0.022)`), 후반부 강력한 퍽 빌드에서도 처치 시간(TTK)이 20~32초대로 건강하게 유지되도록 밸런스 조정.
 * "태양 오버클럭 (Solar Overclock)" 퍽: 높은 위험과 보상을 동시에 제공하는 희귀 트레이드오프 퍽 추가 (냉각력 +30%~+40% 증가, 대신 태양의 플레어 발사 빈도 +25%~+35% 가속). 폭발적인 딜링을 제공하는 대신 정밀한 회피와 패링 반사신경을 요구하도록 설계.
 * 코로나 일식 (Coronal Eclipse, 45웨이브 이상) 기상 이변: 심층 무한 모드 전용 최고위 대기 기상 이변 추가. 깊은 벨벳 보라빛 황혼, 격렬한 네온 마젠타 홍염 코로나 루프를 두른 칠흑 같은 태양 실루엣, 전용 HUD 기상 아이콘(`eclipse-flare.svg` 벡터 적용), 어둠 속에 숨겨져 조명(물 분사, 플레어 패링, 얼음 폭발) 전까지 가려지는 은폐 흑점, 조명된 약점 타격 시 +50% 증폭 냉각 피해 기믹 구현.
@@ -360,6 +363,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 대기 부유 태양 불씨 및 모트 입자: 가벼운 앰비언트 파티클 시스템(`ambient_motes_particles`)을 신설하여 낮 시간대 및 고열 상태에서 대류 기류와 태양풍을 타고 부유하는 황금빛 태양 열기 불씨를 연출하고, 황혼이 되면 자연스럽게 생체발광 반딧불이 모트로 전환되도록 구현.
 * 1인칭 무기 및 팔 시각 폴리시: 1인칭 블래스터 및 플레이어 팔 메시에 반광 툰 셰이딩, 스펙큘러 하이라이트 및 따뜻한 수평선 노을 림 라이팅을 적용하여 배경과의 시각적 분리감 강화. 스탠다드 계열 블래스터에 수냉 탱크 잔량을 실시간 추적하고 저수분 경고 펄스를 발산하는 투명 유리 수액 용기 캐니스터 탑재.
 * 산탄 노즐 1인칭 무기 방향 보정: 산탄 노즐(Scatter Nozzle) 모델이 180도 반대로 뒤집혀 있던 회전 각도를 보정하여 듀얼 총열이 플레이어 전방을 똑바로 향하도록 수정.
+* 토스트 알림 타이포그래피 정돈 및 텍스트 넘침 방지: 태양 수렴(Solar Convergence) 무한 격자, 2페이즈 오버드라이브, 냉기 분쇄(Ice Shatter) 등 보스전 및 전투 알림의 제목과 설명을 간결하고 직관적으로 다듬고, `[ SOLAR CONVERGENCE ]` / `[ 태양 수렴 ]` 상황별 키커 태그를 신설. 제목 및 설명 라벨 모두에 `TextServer.OVERRUN_TRIM_ELLIPSIS`를 적용하여 380px 토스트 패널 밖으로 텍스트가 잘리거나 넘치지 않도록 안정성 확보.
 * 버전 번호 통일 동기화: GitHub 및 itch.io의 모든 내보내기 프리셋과 프로젝트 설정 버전 번호를 v1.7로 일치 동기화.
 
 ---

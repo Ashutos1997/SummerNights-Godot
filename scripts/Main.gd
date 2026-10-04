@@ -4785,7 +4785,7 @@ func _check_sun_defeat() -> void:
 			sun_shield_cooldown = 2.5 # Initial delay before shield deploys on boss wave
 			mirage_cooldown = 1.5 # Fast initial mirage readiness on boss waves!
 			if GameState.current_wave >= 30 and solar_convergence_mgr:
-				var d_count = 6 if GameState.current_wave < 40 else 7
+				var d_count = 6 if GameState.current_wave < 40 else 8 # 8 drones for Wave 40+ Infinity Lattice (4 per ring)
 				solar_convergence_mgr.start_orbital_swarm(d_count, GameState.current_wave)
 		else:
 			is_two_phase = false
@@ -5282,13 +5282,18 @@ func _trigger_phase2() -> void:
 	
 	# Wave 30+ Solar Convergence Phase 2 Swarm Re-engagement
 	if GameState.current_wave >= 30 and solar_convergence_mgr:
-		var d_count = 4 if GameState.current_wave < 40 else 5 # Leaner, punchier Phase 2 Overdrive escort
+		var d_count = 4 if GameState.current_wave < 40 else 6 # Leaner, punchier Phase 2 Overdrive escort (3 per ring)
 		solar_convergence_mgr.start_orbital_swarm(d_count, GameState.current_wave, true)
 		if hud and hud.has_method("show_toast"):
 			var is_kr = GameState.language == "KR"
-			var title = "태양 수렴: 2페이즈 각성!" if is_kr else "SOLAR CONVERGENCE: PHASE 2"
-			var desc = "폭주 드론 군체 및 황금 방어막 재기동!" if is_kr else "Overdrive Drone Swarm & Golden Shield Re-engaged!"
-			hud.show_toast(title, desc, "res://assets/ui/icons/driver_fury.png", Color(1.0, 0.45, 0.15))
+			if GameState.current_wave >= 40:
+				var title = "무한 과부하!" if is_kr else "INFINITY OVERDRIVE!"
+				var desc = "고속 교차 드론 호위대 및 방어막 재기동!" if is_kr else "Fast escort swarm & Golden Shield re-engaged!"
+				hud.show_toast(title, desc, "res://assets/ui/icons/driver_fury.png", Color(1.0, 0.35, 0.65))
+			else:
+				var title = "2페이즈 각성!" if is_kr else "PHASE 2 OVERDRIVE!"
+				var desc = "폭주 드론 군체 및 황금 방어막 재기동!" if is_kr else "Overdrive Drone Swarm & Golden Shield Re-engaged!"
+				hud.show_toast(title, desc, "res://assets/ui/icons/driver_fury.png", Color(1.0, 0.45, 0.15))
 	
 	mirage_cooldown = 1.5 # Fast mirage readiness in Phase 2
 	await get_tree().create_timer(0.6).timeout
@@ -5306,15 +5311,21 @@ func toggle_solar_drones() -> void:
 			var desc = "적도 벨트 및 드론 군체 회수" if is_kr else "Planetary Belt & Drone Swarm Retracted"
 			hud.show_toast(title, desc, "", Color(1.0, 0.5, 0.2))
 	else:
-		var test_wave = GameState.current_wave if GameState.is_survival_mode else 30
-		solar_convergence_mgr.start_orbital_swarm(6, test_wave)
+		var test_wave = GameState.current_wave if GameState.is_survival_mode else 40
+		var d_count = 6 if test_wave < 40 else 8
+		solar_convergence_mgr.start_orbital_swarm(d_count, test_wave)
 
 func _on_solar_driver_equipped(_pos: Vector3) -> void:
 	if hud and hud.has_method("show_toast"):
 		var is_kr = GameState.language == "KR"
-		var title = "솔라 드라이버 장착!" if is_kr else "SOLAR DRIVER EQUIPPED!"
-		var desc = "적도 행성 벨트 및 드론 군체 전개" if is_kr else "Planetary Belt & Drone Swarm Deployed"
-		hud.show_toast(title, desc, "res://assets/ui/icons/driver_smirk.png", Color(1.0, 0.80, 0.20))
+		if GameState.current_wave >= 40:
+			var title = "무한 격자 전개!" if is_kr else "INFINITY LATTICE!"
+			var desc = "이중 교차 궤도 드론 군체 전개" if is_kr else "Dual-ring counter-rotating swarm deployed"
+			hud.show_toast(title, desc, "res://assets/ui/icons/driver_fury.png", Color(0.95, 0.40, 1.0))
+		else:
+			var title = "드라이버 장착!" if is_kr else "SOLAR DRIVER EQUIPPED!"
+			var desc = "적도 행성 벨트 및 드론 군체 전개" if is_kr else "Planetary Belt & Drone Swarm Deployed"
+			hud.show_toast(title, desc, "res://assets/ui/icons/driver_smirk.png", Color(1.0, 0.80, 0.20))
 
 func toggle_solar_driver() -> void:
 	toggle_solar_drones()
@@ -5383,7 +5394,7 @@ func _on_solar_drone_ice_shattered(pos: Vector3) -> void:
 	if hud and hud.has_method("show_toast"):
 		var is_kr = GameState.language == "KR"
 		var title = "냉기 분쇄!" if is_kr else "ICE SHATTER!"
-		var desc = "+500점 · 궤도 드론 결빙 파괴 (+20% 물, +8% 필살기)" if is_kr else "+500 PTS · DRONE SHATTERED (+20% WATER, +8% ULT)"
+		var desc = "+500점 · +20% 물 · +8% 필살기" if is_kr else "+500 PTS · +20% WATER · +8% ULT"
 		hud.show_toast(title, desc, "res://assets/ui/icons/shatter.svg", Color(0.35, 0.95, 1.0))
 
 func start_celestial_awakening(duration: float = 15.0) -> void:

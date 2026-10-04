@@ -260,20 +260,18 @@ func _create_drone(index: int, total: int, wave: int = 1, is_phase2: bool = fals
 						if not pupil_mat:
 							pupil_mat = dup_mat
 
-	if is_phase2 and pupil_mat:
-		pupil_mat.emission = Color(1.0, 0.25, 0.10)
-		pupil_mat.emission_energy_multiplier = 4.0
-
-	# Dynamic Coronal Orbit Geometry: Smooth, stately circular rotation around the Sun's perimeter
-	# Orbit radius (14.6m - 16.0m) revolving cleanly outside the Sun's 10m Golden Shield sphere
-	var angle_fraction = float(index) / float(total)
-	var orbit_speed = (0.85 + (index * 0.06)) * (1.0 if index % 2 == 0 else -1.0)
-	var phase_offset = angle_fraction * TAU
-
-	var base_r = 14.6 + (index % 3) * 0.7
-	var rx = base_r
-	var ry = base_r * 0.90 # Subtle celestial inclination framing the Sun cleanly above beach horizon
-	var rz = 4.4 + (index % 3) * 0.6 # Positioned cleanly in front of the shield along Z
+	# Dynamic Coronal Orbit Geometry:
+	# Wave 30-39: Smooth circular rotation around the Sun's perimeter
+	# Wave 40+: "Infinity Lattice" (Counter-rotating double tilted planes +/-33 deg)
+	var is_infinity_lattice: bool = (wave >= 40)
+	var ring_id: int = 0
+	var tilt_angle: float = 0.0
+	var orbit_speed: float = 0.0
+	var phase_offset: float = 0.0
+	var rx: float = 0.0
+	var ry: float = 0.0
+	var rz: float = 0.0
+	var base_pupil_col: Color = Color(1.0, 0.78, 0.18)
 
 	# Ensure sun_node is resolved before positioning
 	if not sun_node or not is_instance_valid(sun_node):
@@ -282,14 +280,62 @@ func _create_drone(index: int, total: int, wave: int = 1, is_phase2: bool = fals
 			sun_node = main.sun
 
 	var sun_pos = sun_node.global_position if (sun_node and is_instance_valid(sun_node)) else Vector3(0, 13.5, -42)
-	var init_t = phase_offset
-	drone_root.global_position = sun_pos + Vector3(
-		cos(init_t) * rx,
-		sin(init_t) * ry,
-		rz + sin(init_t * 1.6 + index) * 0.4
-	)
 
-	# Dynamic wave-scaled HP (Wave 1: 26.3 HP | Wave 20: 51 HP | Wave 30: 64 HP | Wave 30 P2: 44.8 HP)
+	if is_infinity_lattice:
+		ring_id = index % 2 # 0: Ring A (Ascending Gold), 1: Ring B (Descending Violet)
+		var ring_total: int = int(ceil(float(total) / 2.0)) if ring_id == 0 else int(floor(float(total) / 2.0))
+		var ring_idx: int = int(index / 2)
+		phase_offset = (float(ring_idx) / maxf(1.0, float(ring_total))) * TAU
+
+		# Ring A tilts +38 deg, Ring B tilts -38 deg
+		tilt_angle = deg_to_rad(38.0) if ring_id == 0 else deg_to_rad(-38.0)
+
+		# Counter-rotating speeds: Ring A clockwise (+), Ring B counter-clockwise (-)
+		var speed_mult = 1.35 if is_phase2 else 1.0
+		orbit_speed = (0.88 * speed_mult) if ring_id == 0 else (-0.88 * speed_mult)
+
+		# Pronounced elliptical aspect ratio (~2.3:1) so tilted rings form a clear 3D "X" / Infinity Lattice
+		rx = 16.6 + (ring_idx % 2) * 0.5
+		ry = 7.2 + (ring_idx % 2) * 0.4
+		# Ring A orbits slightly ahead along Z to avoid z-fighting at intersection nodes
+		rz = 5.2 if ring_id == 0 else 3.8
+
+		if is_phase2:
+			base_pupil_col = Color(1.0, 0.35, 0.10) if ring_id == 0 else Color(1.0, 0.18, 0.48)
+		else:
+			base_pupil_col = Color(1.0, 0.82, 0.25) if ring_id == 0 else Color(0.95, 0.38, 1.0)
+
+		# Initial position on tilted plane with guaranteed shield clearance
+		var unrot_x = cos(phase_offset) * rx
+		var unrot_y = sin(phase_offset) * ry
+		var px = unrot_x * cos(tilt_angle) - unrot_y * sin(tilt_angle)
+		var py = unrot_x * sin(tilt_angle) + unrot_y * cos(tilt_angle)
+		var dist_sq = px * px + py * py
+		var shield_front_z = sqrt(maxf(0.0, 10.6 * 10.6 - dist_sq))
+		var pz = maxf(4.5, shield_front_z + 2.5) + (1.4 if ring_id == 0 else 0.0)
+		drone_root.global_position = sun_pos + Vector3(px, py, pz)
+	else:
+		var angle_fraction = float(index) / float(total)
+		orbit_speed = (0.85 + (index * 0.06)) * (1.0 if index % 2 == 0 else -1.0)
+		phase_offset = angle_fraction * TAU
+		var base_r = 14.6 + (index % 3) * 0.7
+		rx = base_r
+		ry = base_r * 0.90
+		rz = 4.4 + (index % 3) * 0.6
+		base_pupil_col = Color(1.0, 0.25, 0.10) if is_phase2 else Color(1.0, 0.78, 0.18)
+
+		var init_t = phase_offset
+		drone_root.global_position = sun_pos + Vector3(
+			cos(init_t) * rx,
+			sin(init_t) * ry,
+			rz + sin(init_t * 1.6 + index) * 0.4
+		)
+
+	if pupil_mat:
+		pupil_mat.emission = base_pupil_col
+		pupil_mat.emission_energy_multiplier = 4.5 if is_infinity_lattice else (4.0 if is_phase2 else 3.2)
+
+	# Dynamic wave-scaled HP (Wave 1: 26.3 HP | Wave 20: 51 HP | Wave 30: 64 HP | Wave 40: 77 HP | Phase 2 discount)
 	var calculated_hp = 25.0 + (wave * 1.3)
 	if is_phase2:
 		calculated_hp *= 0.70 # Fast, brittle Overdrive escort
@@ -366,7 +412,11 @@ func _create_drone(index: int, total: int, wave: int = 1, is_phase2: bool = fals
 		"hp": calculated_hp,
 		"max_hp": calculated_hp,
 		"hit_flash": 0.0,
-		"index": index
+		"index": index,
+		"is_infinity_lattice": is_infinity_lattice,
+		"ring_id": ring_id,
+		"tilt_angle": tilt_angle,
+		"base_pupil_color": base_pupil_col
 	}
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -504,13 +554,27 @@ func _process(delta: float) -> void:
 			drone["radius_y"] = lerpf(drone["radius_y"], drone.get("target_radius_y", 1.0), delta * 4.5)
 			drone["radius_z"] = lerpf(drone["radius_z"], drone.get("target_radius_z", 5.0), delta * 4.5)
 
-		# 1. Smooth Sweeping Coronal Orbit around Sun's perimeter
-		var t = (orbit_time * drone["orbit_speed"]) + drone["phase_offset"]
-		var local_p = Vector3(
-			cos(t) * drone["radius_x"],
-			sin(t) * drone["radius_y"],
-			drone["radius_z"] + sin(t * 1.6 + drone["index"]) * 0.4
-		)
+		# 1. Coronal Orbit Calculation
+		var local_p: Vector3
+		if drone.get("is_infinity_lattice", false) and not drone.get("vortex_active", false):
+			var t = (orbit_time * drone["orbit_speed"]) + drone["phase_offset"]
+			var unrot_x = cos(t) * drone["radius_x"]
+			var unrot_y = sin(t) * drone["radius_y"]
+			var tilt = drone["tilt_angle"]
+			var px = unrot_x * cos(tilt) - unrot_y * sin(tilt)
+			var py = unrot_x * sin(tilt) + unrot_y * cos(tilt)
+			var dist_sq = px * px + py * py
+			var shield_front_z = sqrt(maxf(0.0, 10.6 * 10.6 - dist_sq))
+			var pz = maxf(4.5, shield_front_z + 2.5) + (1.4 if drone.get("ring_id", 0) == 0 else 0.0)
+			local_p = Vector3(px, py, pz)
+		else:
+			# Standard equatorial orbit
+			var t = (orbit_time * drone["orbit_speed"]) + drone["phase_offset"]
+			local_p = Vector3(
+				cos(t) * drone["radius_x"],
+				sin(t) * drone["radius_y"],
+				drone["radius_z"] + sin(t * 1.6 + drone["index"]) * 0.4
+			)
 
 		var world_pos = sun_pos + local_p
 		node.global_position = world_pos
@@ -574,46 +638,67 @@ func _process(delta: float) -> void:
 		if drone["hit_flash"] > 0.0:
 			drone["hit_flash"] -= delta * 6.0
 			var f = clampf(drone["hit_flash"], 0.0, 1.0)
-			# Electric cyan hit flash
+			var hit_tint = Color(0.5, 0.95, 1.0) if drone.get("ring_id", 0) == 0 else Color(0.85, 0.70, 1.0)
 			for c_mat in casing_mats:
 				if is_instance_valid(c_mat):
-					c_mat.albedo_color = Color(1.0, 0.86, 0.22).lerp(Color(0.5, 0.95, 1.0), f)
+					c_mat.albedo_color = Color(1.0, 0.86, 0.22).lerp(hit_tint, f)
 			for p_mat in pearl_mats:
 				if is_instance_valid(p_mat):
-					p_mat.albedo_color = Color(0.97, 0.96, 0.93).lerp(Color(0.5, 0.95, 1.0), f)
+					p_mat.albedo_color = Color(0.97, 0.96, 0.93).lerp(hit_tint, f)
 			if pupil_mat and is_instance_valid(pupil_mat):
-				pupil_mat.emission = Color(1.0, 0.78, 0.18).lerp(Color(0.3, 1.0, 1.0), f)
+				var base_col = drone.get("base_pupil_color", Color(1.0, 0.78, 0.18))
+				pupil_mat.emission = base_col.lerp(hit_tint, f)
 				pupil_mat.emission_energy_multiplier = 3.5 + (f * 5.0)
 			if mat_minor and is_instance_valid(mat_minor):
-				mat_minor.emission = Color(1.0, 0.84, 0.35).lerp(Color(0.4, 1.0, 1.0), f)
+				mat_minor.emission = Color(1.0, 0.84, 0.35).lerp(hit_tint, f)
 			if mat_major and is_instance_valid(mat_major):
-				mat_major.emission = Color(1.0, 0.68, 0.22).lerp(Color(0.4, 1.0, 1.0), f)
+				mat_major.emission = Color(1.0, 0.68, 0.22).lerp(hit_tint, f)
 		else:
-			# Visual damage states: Preserves dignified Sun-Gold & Pearl Ivory armor; pupil heats up with warm solar amber
 			var base_casing_col: Color
 			var base_pearl_col: Color
-			var base_pupil_col: Color
+			var base_pupil_col: Color = drone.get("base_pupil_color", Color(1.0, 0.78, 0.18))
 			var pulse_speed = 3.2
 			var base_energy = 3.2
 
-			if hp_pct > 0.60:
-				base_casing_col = Color(1.0, 0.86, 0.22)
-				base_pearl_col = Color(0.97, 0.96, 0.93)
-				base_pupil_col = Color(1.0, 0.78, 0.18)
-				pulse_speed = 3.2
-				base_energy = 3.2
-			elif hp_pct > 0.30:
-				base_casing_col = Color(1.0, 0.80, 0.20)
-				base_pearl_col = Color(0.96, 0.95, 0.92)
-				base_pupil_col = Color(1.0, 0.62, 0.15)
-				pulse_speed = 5.0
-				base_energy = 4.0
+			if drone.get("is_infinity_lattice", false):
+				var is_ring_b = (drone.get("ring_id", 0) == 1)
+				if hp_pct > 0.60:
+					base_casing_col = Color(1.0, 0.86, 0.22) if not is_ring_b else Color(0.92, 0.80, 0.95)
+					base_pearl_col = Color(0.97, 0.96, 0.93) if not is_ring_b else Color(0.95, 0.92, 0.98)
+					base_pupil_col = drone.get("base_pupil_color", Color(1.0, 0.82, 0.25))
+					pulse_speed = 3.2
+					base_energy = 4.2
+				elif hp_pct > 0.30:
+					base_casing_col = Color(1.0, 0.80, 0.20) if not is_ring_b else Color(0.88, 0.72, 0.92)
+					base_pearl_col = Color(0.96, 0.95, 0.92) if not is_ring_b else Color(0.93, 0.88, 0.96)
+					base_pupil_col = drone.get("base_pupil_color", Color(1.0, 0.62, 0.15)).lerp(Color(1.0, 0.25, 0.15), 0.35)
+					pulse_speed = 5.0
+					base_energy = 5.0
+				else:
+					base_casing_col = Color(0.96, 0.70, 0.18) if not is_ring_b else Color(0.82, 0.62, 0.88)
+					base_pearl_col = Color(0.94, 0.93, 0.90) if not is_ring_b else Color(0.90, 0.84, 0.94)
+					base_pupil_col = Color(1.0, 0.25, 0.15) if not is_ring_b else Color(1.0, 0.15, 0.60)
+					pulse_speed = 8.0
+					base_energy = 5.8
 			else:
-				base_casing_col = Color(0.96, 0.70, 0.18)
-				base_pearl_col = Color(0.94, 0.93, 0.90)
-				base_pupil_col = Color(1.0, 0.48, 0.12)
-				pulse_speed = 8.0
-				base_energy = 4.8
+				if hp_pct > 0.60:
+					base_casing_col = Color(1.0, 0.86, 0.22)
+					base_pearl_col = Color(0.97, 0.96, 0.93)
+					base_pupil_col = Color(1.0, 0.78, 0.18)
+					pulse_speed = 3.2
+					base_energy = 3.2
+				elif hp_pct > 0.30:
+					base_casing_col = Color(1.0, 0.80, 0.20)
+					base_pearl_col = Color(0.96, 0.95, 0.92)
+					base_pupil_col = Color(1.0, 0.62, 0.15)
+					pulse_speed = 5.0
+					base_energy = 4.0
+				else:
+					base_casing_col = Color(0.96, 0.70, 0.18)
+					base_pearl_col = Color(0.94, 0.93, 0.90)
+					base_pupil_col = Color(1.0, 0.48, 0.12)
+					pulse_speed = 8.0
+					base_energy = 4.8
 
 			for c_mat in casing_mats:
 				if is_instance_valid(c_mat):
