@@ -58,6 +58,9 @@ All notable changes to the Summer Nights project will be documented in this file
 * Toast Plate Typography & Overrun Protection: Streamlined toast titles and descriptions across boss encounters and combat events (including Solar Convergence Infinity Lattice, Phase 2 Overdrive, and Ice Shatter), established context-aware `[ SOLAR CONVERGENCE ]` category kickers, and applied `TextServer.OVERRUN_TRIM_ELLIPSIS` to both title and description labels to guarantee text never clips or overflows the 380px toast plate.
 * Version Synchronization: Unified release numbering to v1.7 across both GitHub and itch.io export presets and project configuration.
 
+### Fixed
+* Win and Lose Recap Screen Fullscreen Dimming: Resolved critical bug where both the Cool Down (Win) and The Sun Won (Lose) recap screens rendered unexpectedly dim/darkened (~30%–60% brightness). Fixed root causes: (1) reparented `VBoxContainer` directly to `WinScreen`, `EndScreen`, and `LoseScreen` above `BorderPanel` to eliminate drop shadow occlusion; (2) added all modal overlay screens to `skip_names` in `_apply_unified_drop_shadows` to prevent injecting 45% black panel shadows; (3) removed redundant runtime creation of duplicate border panels; and (4) replaced low-alpha font overrides (0.5–0.7 alpha) and excessive 12px shadow outlines on small text with crisp off-white (`Color(0.92, 0.92, 0.92, 0.95)` / `Color(1.0, 1.0, 1.0, 0.95)`) and 2px outlines, restoring full 100% luminance and crisp cyber gold typography.
+
 ---
 
 ## [v1.5.6] - 2026-09-30
@@ -381,6 +384,9 @@ All notable changes to the Summer Nights project will be documented in this file
 * 산탄 노즐 1인칭 무기 방향 보정: 산탄 노즐(Scatter Nozzle) 모델이 180도 반대로 뒤집혀 있던 회전 각도를 보정하여 듀얼 총열이 플레이어 전방을 똑바로 향하도록 수정.
 * 토스트 알림 타이포그래피 정돈 및 텍스트 넘침 방지: 태양 수렴(Solar Convergence) 무한 격자, 2페이즈 오버드라이브, 냉기 분쇄(Ice Shatter) 등 보스전 및 전투 알림의 제목과 설명을 간결하고 직관적으로 다듬고, `[ SOLAR CONVERGENCE ]` / `[ 태양 수렴 ]` 상황별 키커 태그를 신설. 제목 및 설명 라벨 모두에 `TextServer.OVERRUN_TRIM_ELLIPSIS`를 적용하여 380px 토스트 패널 밖으로 텍스트가 잘리거나 넘치지 않도록 안정성 확보.
 * 버전 번호 통일 동기화: GitHub 및 itch.io의 모든 내보내기 프리셋과 프로젝트 설정 버전 번호를 v1.7로 일치 동기화.
+
+### 수정됨 (Fixed)
+* 승리 및 패배 결과 화면 전체화면 어두워짐 버그 수정: 일반 및 무한 모드에서 냉각 완료(승리) 및 태양이 이겼습니다(패배) 결과 화면이 비정상적으로 어둡게 렌더링되던(~30%~60% 밝기) 치명적 그래픽 버그 해결. 근본 원인 해결: (1) 씬 트리에서 `VBoxContainer`를 `ColorRect` 내부에서 화면 컨트롤 직속으로 재배치하여 `BorderPanel` 상단에 렌더링되도록 함으로써 패널 드롭 섀도우가 텍스트를 덮어 차광하던 현상 제거; (2) 재귀적 `_apply_unified_drop_shadows` 처리 대상에서 모든 모달 오버레이 화면을 예외(`skip_names`) 처리하여 45% 검정 패널 그림자 중첩 차단; (3) 런타임에 불필요하게 중복 생성되던 추가 테두리 패널 제거; (4) 소형 폰트 라벨의 과도한 12px 그림자 외곽선 및 낮은 알파값(0.5~0.7)을 선명한 오프화이트(`Color(0.92, 0.92, 0.92, 0.95)` / `Color(1.0, 1.0, 1.0, 0.95)`)와 2px 외곽선으로 교체하여 100% 본래 광도와 사이버 골드 타이포그래피 완벽 복원.
 
 ---
 

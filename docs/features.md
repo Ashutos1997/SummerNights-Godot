@@ -11,7 +11,7 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 * **Combo System:** Continuous hits build a combo multiplier (up to 3.0x), boosting ultimate charge and shifting audio pitch.
 * **Scoring:** Points awarded for hits, flare intercepts, and magma evaporation. Multiplied by combo. High scores save locally.
 * **Progression:** 6 Normal Mode levels; Endless Mode unlocks afterward. Boss waves occur every 5th wave. Continuous water resistance scales past Wave 100.
-* **Transitions:** Cinematic "Dying Ember" fade out, score recap, and seamless reset between waves.
+* **Transitions:** Cinematic "Dying Ember" fade out, full-luminance score recap, and seamless reset between waves.
 
 ## 2. Weapons & Tools
 * **Weapon Wheel (`TAB`):** Slows time to 0.2x. Displays centered 3D weapon previews, archetype tags, responsive cooling/capacity bars, and crit multipliers.
@@ -49,7 +49,7 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 * **Solar Wind:** Physical crosswind pushing player crosshair (drift intensity capped at 1.75x).
 * **Heat Mirage (Boss):** Spawns two decoy suns and a collective overshield across all boss waves with snappy 0.3s elastic pop-in and fast horizontal split lerp. Heat regeneration is throttled by 60% during mirages, and striking the true Sun deals 1.5x bonus damage directly to the mirage overshield.
 * **High Heat Warnings:** Steam boils at 75% heat; screen pulses red and heartbeat audio plays at 85%.
-* **Supernova:** Reaching 100% heat triggers a supernova cinematic and frameless stats recap.
+* **Supernova:** Reaching 100% heat triggers a supernova cinematic and full-luminance stats recap.
 * **"Paid in Full" Boss Overtime:** On Boss Waves (Levels 5–6, Endless every 5th wave), hitting `0:00` with banked score initiates Overtime instead of instant defeat. Score burns on an accelerating curve as emergency time, score inflow freezes, and Sun heat regen halts. Defeating the boss clears Overtime and unlocks the "Paid in Full" achievement if $\ge 5,000$ score was burned; score hitting 0 causes bankruptcy defeat.
 
 ## 5. Dynamic Weather & Encounters

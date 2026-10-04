@@ -50,17 +50,17 @@ var buff_toast_container: Control
 @onready var win_screen = $HUD/WinScreen
 var transition_overlay: ColorRect
 @onready var level_label = $HUD/LevelLabel
-@onready var win_title_lbl = $HUD/WinScreen/ColorRect/VBoxContainer/Title
-@onready var win_level_lbl = $HUD/WinScreen/ColorRect/VBoxContainer/LevelLbl
-@onready var win_loading_lbl = $HUD/WinScreen/ColorRect/VBoxContainer/LoadingLbl
+@onready var win_title_lbl = $HUD/WinScreen/VBoxContainer/Title
+@onready var win_level_lbl = $HUD/WinScreen/VBoxContainer/LevelLbl
+@onready var win_loading_lbl = $HUD/WinScreen/VBoxContainer/LoadingLbl
 
 @onready var end_screen        = $HUD/EndScreen
-@onready var end_title_lbl     = $HUD/EndScreen/ColorRect/VBoxContainer/Title
-@onready var end_title2_lbl    = $HUD/EndScreen/ColorRect/VBoxContainer/Title2
-@onready var end_subtitle_lbl  = $HUD/EndScreen/ColorRect/VBoxContainer/Subtitle
-@onready var end_level_lbl     = $HUD/EndScreen/ColorRect/VBoxContainer/LevelCount
-@onready var end_unlock_lbl    = $HUD/EndScreen/ColorRect/VBoxContainer/UnlockPrompt
-@onready var end_prompt_lbl    = $HUD/EndScreen/ColorRect/VBoxContainer/RestartPrompt
+@onready var end_title_lbl     = $HUD/EndScreen/VBoxContainer/Title
+@onready var end_title2_lbl    = $HUD/EndScreen/VBoxContainer/Title2
+@onready var end_subtitle_lbl  = $HUD/EndScreen/VBoxContainer/Subtitle
+@onready var end_level_lbl     = $HUD/EndScreen/VBoxContainer/LevelCount
+@onready var end_unlock_lbl    = $HUD/EndScreen/VBoxContainer/UnlockPrompt
+@onready var end_prompt_lbl    = $HUD/EndScreen/VBoxContainer/RestartPrompt
 
 @onready var timer_label       = $HUD/TopRightInfo/TimerLabel
 @onready var weather_icon_container = $HUD/WeatherIconContainer
@@ -73,13 +73,13 @@ var _ignore_focus_out_until: int = 0
 var last_callout_tier: int = 0
 @onready var phase2_label      = $HUD/Phase2Label
 @onready var lose_screen       = $HUD/LoseScreen
-@onready var lose_title_lbl    = $HUD/LoseScreen/ColorRect/VBoxContainer/Title
-@onready var lose_title2_lbl   = $HUD/LoseScreen/ColorRect/VBoxContainer/Title2
-@onready var lose_subtitle_lbl = $HUD/LoseScreen/ColorRect/VBoxContainer/Subtitle
-@onready var lose_level_lbl    = $HUD/LoseScreen/ColorRect/VBoxContainer/LevelLbl
-@onready var lose_wave_time_lbl= $HUD/LoseScreen/ColorRect/VBoxContainer/WaveTimeLbl
-@onready var retry_btn         = $HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer/RetryBtn
-@onready var menu_btn          = $HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer/MenuBtn
+@onready var lose_title_lbl    = $HUD/LoseScreen/VBoxContainer/Title
+@onready var lose_title2_lbl   = $HUD/LoseScreen/VBoxContainer/Title2
+@onready var lose_subtitle_lbl = $HUD/LoseScreen/VBoxContainer/Subtitle
+@onready var lose_level_lbl    = $HUD/LoseScreen/VBoxContainer/LevelLbl
+@onready var lose_wave_time_lbl= $HUD/LoseScreen/VBoxContainer/WaveTimeLbl
+@onready var retry_btn         = $HUD/LoseScreen/VBoxContainer/HBoxContainer/RetryBtn
+@onready var menu_btn          = $HUD/LoseScreen/VBoxContainer/HBoxContainer/MenuBtn
 
 var is_overtime: bool = false
 var overtime_tween: Tween = null
@@ -707,10 +707,10 @@ func _ready() -> void:
 	for lbl in [win_title_lbl, end_title_lbl, end_title2_lbl, lose_title_lbl, lose_title2_lbl]:
 		if lbl:
 			_style_lbl(lbl, 72, title_color, 8, Color(0, 0, 0, 1.0), font)
-			lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
-			lbl.add_theme_constant_override("shadow_offset_x", 4)
+			lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.6))
+			lbl.add_theme_constant_override("shadow_offset_x", 0)
 			lbl.add_theme_constant_override("shadow_offset_y", 4)
-			lbl.add_theme_constant_override("shadow_outline_size", 12)
+			lbl.add_theme_constant_override("shadow_outline_size", 0)
 			
 	# Subtitles and Level Labels
 	for lbl in [win_level_lbl, lose_subtitle_lbl, end_level_lbl, lose_level_lbl, lose_wave_time_lbl]:
@@ -1368,8 +1368,11 @@ func _apply_language(lang: String) -> void:
 			# Fully opaque to block Supernova HDR bleed-through
 			lose_bg.color = Color(0.02, 0.01, 0.05, 1.0)
 			
-		if not lose_screen.has_node("LoseBorder"):
-			var lose_border = Panel.new()
+		var lose_border = lose_screen.get_node_or_null("BorderPanel")
+		if not lose_border:
+			lose_border = lose_screen.get_node_or_null("LoseBorder")
+		if not lose_border:
+			lose_border = Panel.new()
 			lose_border.name = "LoseBorder"
 			lose_border.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			lose_border.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -1377,22 +1380,24 @@ func _apply_language(lang: String) -> void:
 			lose_border.offset_top = 24
 			lose_border.offset_right = -24
 			lose_border.offset_bottom = -24
-			
-			var b_style = StyleBoxFlat.new()
-			b_style.bg_color = Color(0, 0, 0, 0)
-			b_style.border_width_left = 2
-			b_style.border_width_top = 2
-			b_style.border_width_right = 2
-			b_style.border_width_bottom = 2
-			b_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
-			b_style.corner_radius_top_left = 8
-			b_style.corner_radius_top_right = 8
-			b_style.corner_radius_bottom_left = 8
-			b_style.corner_radius_bottom_right = 8
-			lose_border.add_theme_stylebox_override("panel", b_style)
 			lose_screen.add_child(lose_border)
+			
+		var b_style = StyleBoxFlat.new()
+		b_style.bg_color = Color(0, 0, 0, 0)
+		b_style.border_width_left = 2
+		b_style.border_width_top = 2
+		b_style.border_width_right = 2
+		b_style.border_width_bottom = 2
+		b_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
+		b_style.corner_radius_top_left = 8
+		b_style.corner_radius_top_right = 8
+		b_style.corner_radius_bottom_left = 8
+		b_style.corner_radius_bottom_right = 8
+		lose_border.add_theme_stylebox_override("panel", b_style)
 		
-		var lose_vbox = lose_screen.get_node_or_null("ColorRect/VBoxContainer")
+		var lose_vbox = lose_screen.get_node_or_null("VBoxContainer")
+		if not lose_vbox:
+			lose_vbox = lose_screen.get_node_or_null("ColorRect/VBoxContainer")
 		if lose_vbox:
 			lose_vbox.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 			lose_vbox.add_theme_constant_override("separation", 24)
@@ -1433,8 +1438,11 @@ func _apply_language(lang: String) -> void:
 		if win_bg:
 			win_bg.color = Color(0.02, 0.01, 0.05, 1.0)
 			
-		if not win_screen.has_node("WinBorder"):
-			var win_border = Panel.new()
+		var win_border = win_screen.get_node_or_null("BorderPanel")
+		if not win_border:
+			win_border = win_screen.get_node_or_null("WinBorder")
+		if not win_border:
+			win_border = Panel.new()
 			win_border.name = "WinBorder"
 			win_border.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			win_border.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -1442,22 +1450,24 @@ func _apply_language(lang: String) -> void:
 			win_border.offset_top = 24
 			win_border.offset_right = -24
 			win_border.offset_bottom = -24
-			
-			var b_style = StyleBoxFlat.new()
-			b_style.bg_color = Color(0, 0, 0, 0)
-			b_style.border_width_left = 2
-			b_style.border_width_top = 2
-			b_style.border_width_right = 2
-			b_style.border_width_bottom = 2
-			b_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
-			b_style.corner_radius_top_left = 8
-			b_style.corner_radius_top_right = 8
-			b_style.corner_radius_bottom_left = 8
-			b_style.corner_radius_bottom_right = 8
-			win_border.add_theme_stylebox_override("panel", b_style)
 			win_screen.add_child(win_border)
+			
+		var b_style = StyleBoxFlat.new()
+		b_style.bg_color = Color(0, 0, 0, 0)
+		b_style.border_width_left = 2
+		b_style.border_width_top = 2
+		b_style.border_width_right = 2
+		b_style.border_width_bottom = 2
+		b_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
+		b_style.corner_radius_top_left = 8
+		b_style.corner_radius_top_right = 8
+		b_style.corner_radius_bottom_left = 8
+		b_style.corner_radius_bottom_right = 8
+		win_border.add_theme_stylebox_override("panel", b_style)
 		
-		var win_vbox = win_screen.get_node_or_null("ColorRect/VBoxContainer")
+		var win_vbox = win_screen.get_node_or_null("VBoxContainer")
+		if not win_vbox:
+			win_vbox = win_screen.get_node_or_null("ColorRect/VBoxContainer")
 		if win_vbox:
 			win_vbox.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 			win_vbox.add_theme_constant_override("separation", 24)
@@ -1853,15 +1863,15 @@ func _apply_language(lang: String) -> void:
 		# Note: The level text itself is usually updated at runtime, but we set font styles here.
 		if font: win_level_lbl.add_theme_font_override("font", font)
 		win_level_lbl.add_theme_font_size_override("font_size", 20 if is_kr else 18)
-		win_level_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.7))
-		win_level_lbl.add_theme_constant_override("outline_size", 4)
+		win_level_lbl.add_theme_color_override("font_color", Color(0.92, 0.92, 0.92, 0.95))
+		win_level_lbl.add_theme_constant_override("outline_size", 2)
 		win_level_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 	if win_loading_lbl:
 		win_loading_lbl.text = "다음 단계 로딩 중..." if is_kr else "NEXT LEVEL LOADING..."
 		if font: win_loading_lbl.add_theme_font_override("font", font)
 		win_loading_lbl.add_theme_font_size_override("font_size", 16 if is_kr else 14)
-		win_loading_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.5))
-		win_loading_lbl.add_theme_constant_override("outline_size", 4)
+		win_loading_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.95))
+		win_loading_lbl.add_theme_constant_override("outline_size", 2)
 		win_loading_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 
 	# ── Lose screen & Phase 2 ─────────────────────────────────────────────────
@@ -1878,8 +1888,8 @@ func _apply_language(lang: String) -> void:
 		lose_subtitle_lbl.text = "너무 뜨겁습니다" if is_kr else "TOO HOT TO HANDLE"
 		if font: lose_subtitle_lbl.add_theme_font_override("font", font)
 		lose_subtitle_lbl.add_theme_font_size_override("font_size", 20 if is_kr else 18)
-		lose_subtitle_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.7))
-		lose_subtitle_lbl.add_theme_constant_override("outline_size", 4)
+		lose_subtitle_lbl.add_theme_color_override("font_color", Color(0.92, 0.92, 0.92, 0.95))
+		lose_subtitle_lbl.add_theme_constant_override("outline_size", 2)
 		lose_subtitle_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 	if lose_level_lbl:
 		lose_level_lbl.hide()
@@ -2272,7 +2282,12 @@ func _apply_unified_drop_shadows(node: Node) -> void:
 	if not node: return
 	
 	# Skip overlay menus so they don't get messy shadows
-	var skip_names = ["SettingsScreen", "FiltersScreen", "PauseScreen", "GameOverScreen", "LevelClearScreen", "DraftingScreen"]
+	var skip_names = [
+		"SettingsScreen", "FiltersScreen", "PauseScreen", "pause_screen",
+		"GameOverScreen", "LoseScreen", "LevelClearScreen", "WinScreen",
+		"EndScreen", "CreditsScreen", "AchievementsScreen", "BuffsScreen",
+		"ControllerScreen", "DraftingScreen"
+	]
 	if node.name in skip_names:
 		return
 		
@@ -3443,7 +3458,9 @@ func show_lose_screen() -> void:
 			res = num_str[num_str.length() - 1 - i] + res
 		return res
 		
-	var lose_vbox = lose_screen.get_node_or_null("ColorRect/VBoxContainer")
+	var lose_vbox = lose_screen.get_node_or_null("VBoxContainer")
+	if not lose_vbox:
+		lose_vbox = lose_screen.get_node_or_null("ColorRect/VBoxContainer")
 	if lose_vbox:
 		var stats_container = lose_vbox.get_node_or_null("LoseStatsContainer")
 		if not stats_container:

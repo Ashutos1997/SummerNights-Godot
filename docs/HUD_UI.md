@@ -56,8 +56,7 @@ Architectural map and layout reference for `HUD.tscn`.
 * **ControllerScreen:** Keyboard/Xbox layout toggle with unified "Power Up" labels for `[F]` and `[RB]`, and Mode Change (`[X]` Keyboard / `[Y]` Xbox, magenta highlight).
 * **SettingsScreen:** 3 categorized sections (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM` with Fullscreen, conditional Gold Weapon Skin toggle unlocked at 50k points, and Language) using 14px retro badges, 16px body font row labels (`Inter-Medium.ttf` / `Galmuri11.ttf`), 14px toggle buttons (even number system), and real-time numeric/percentage readouts (`100%`, `1.0x`).
 * **WeaponWheel (`TAB`):** Slows time to 0.2x. 6-slice procedural wedge with 3D previews, stat bars, and crit multipliers.
-* **TitleScreen:** Main menu with custom Godot boot splash, clarified subtitle ("COOL DOWN THE SUN BEFORE TIME RUNS OUT" / "제한 시간 내에 태양을 식혀라"), semantic stat coloring (Cyber Gold High Score, Neon Mint Wave Record), crisp stationary typography, direct access to full dedicated Settings modal, 24px stats breathing space, hairline mode divider, uniform button styling, desktop `[ESC]` quit guidance, and version-stamped footer.
-* **End State Screens:** Frameless stats flow for Wave Reached, Survival Time, and Score; displays dedicated bankruptcy subtitle if defeated in Overtime.
+* **End State Screens:** Fullscreen modal overlays (`WinScreen`, `EndScreen`, `LoseScreen`) with content container rendered strictly above `ColorRect` and `BorderPanel`, eliminating drop shadow occlusion and restoring 100% cyber gold and off-white luminance. Frameless stats flow for Wave Reached, Survival Time, and Score; displays dedicated bankruptcy subtitle if defeated in Overtime.
 
 ---
 

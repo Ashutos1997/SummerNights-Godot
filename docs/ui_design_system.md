@@ -29,8 +29,8 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 
 ### Global Menus
 * **Z-Index Layering:** All modal menu overlays (`PauseScreen`, `DraftingScreen`, `SettingsScreen`, `FiltersScreen`, `ControllerScreen`, `CreditsScreen`, `AchievementsScreen`, `BuffsScreen`, `WeaponWheel`, `WinScreen`, `EndScreen`, `LoseScreen`) are rendered at `z_index = 50`, strictly prioritizing them above all HUD gameplay elements (`z_index = 0`). Screen transition fades use `z_index = 100`.
-* **Borders:** 2px gold border `Color(1.0, 0.85, 0.2, 0.4)` with 8px radius and 24px screen margin.
-* **Layout:** Strict left-aligned content with a 96px margin (except centered Lose Screen). 24px vertical separation.
+* **Borders:** 2px gold border `Color(1.0, 0.85, 0.2, 0.4)` with 8px radius and 24px screen margin. Modal frames are excluded from global Z-depth drop shadow injection to prevent shadow occlusion over content.
+* **Layout:** Strict left-aligned content with a 96px margin (except centered Win, End, and Lose Screens). 24px vertical separation.
 * **Titles:** 40x40 gold icons paired with a 2px horizontal separator rule.
 
 ### HUD Alignment & Resource Meters

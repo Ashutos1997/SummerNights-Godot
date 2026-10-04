@@ -1654,7 +1654,7 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_border")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HUD/WinScreen/ColorRect"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/WinScreen"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -1671,7 +1671,7 @@ mouse_filter = 2
 alignment = 1
 theme_override_constants/separation = 16
 
-[node name="Title" type="Label" parent="HUD/WinScreen/ColorRect/VBoxContainer"]
+[node name="Title" type="Label" parent="HUD/WinScreen/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.2, 1)
@@ -1679,7 +1679,7 @@ theme_override_font_sizes/font_size = 26
 text = "☀ SUN COOLED DOWN"
 horizontal_alignment = 1
 
-[node name="LevelLbl" type="Label" parent="HUD/WinScreen/ColorRect/VBoxContainer"]
+[node name="LevelLbl" type="Label" parent="HUD/WinScreen/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
@@ -1687,7 +1687,7 @@ theme_override_font_sizes/font_size = 13
 text = "LEVEL 01 COMPLETE"
 horizontal_alignment = 1
 
-[node name="LoadingLbl" type="Label" parent="HUD/WinScreen/ColorRect/VBoxContainer"]
+[node name="LoadingLbl" type="Label" parent="HUD/WinScreen/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
@@ -1730,7 +1730,7 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_border")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HUD/EndScreen/ColorRect"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/EndScreen"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -1747,7 +1747,7 @@ mouse_filter = 2
 alignment = 1
 theme_override_constants/separation = 0
 
-[node name="Title" type="Label" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+[node name="Title" type="Label" parent="HUD/EndScreen/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.75, 0.15, 1)
@@ -1757,7 +1757,7 @@ theme_override_font_sizes/font_size = 72
 text = "SUMMER'S"
 horizontal_alignment = 1
 
-[node name="Title2" type="Label" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+[node name="Title2" type="Label" parent="HUD/EndScreen/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.75, 0.15, 1)
@@ -1767,23 +1767,23 @@ theme_override_font_sizes/font_size = 72
 text = "OVER"
 horizontal_alignment = 1
 
-[node name="Spacer0" type="Control" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+[node name="Spacer0" type="Control" parent="HUD/EndScreen/VBoxContainer"]
 custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 
-[node name="DividerContainer" type="CenterContainer" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+[node name="DividerContainer" type="CenterContainer" parent="HUD/EndScreen/VBoxContainer"]
 layout_mode = 2
 
-[node name="Divider" type="ColorRect" parent="HUD/EndScreen/ColorRect/VBoxContainer/DividerContainer"]
+[node name="Divider" type="ColorRect" parent="HUD/EndScreen/VBoxContainer/DividerContainer"]
 custom_minimum_size = Vector2(80, 1)
 layout_mode = 2
 color = Color(1, 0.75, 0.15, 0.3)
 
-[node name="Spacer1" type="Control" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+[node name="Spacer1" type="Control" parent="HUD/EndScreen/VBoxContainer"]
 custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 
-[node name="Subtitle" type="Label" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+[node name="Subtitle" type="Label" parent="HUD/EndScreen/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.75, 0.15, 0.55)
@@ -1791,11 +1791,11 @@ theme_override_font_sizes/font_size = 18
 text = "THE SUN HAS BEEN TAMED"
 horizontal_alignment = 1
 
-[node name="Spacer2" type="Control" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+[node name="Spacer2" type="Control" parent="HUD/EndScreen/VBoxContainer"]
 custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 
-[node name="LevelCount" type="Label" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+[node name="LevelCount" type="Label" parent="HUD/EndScreen/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.75, 0.15, 0.35)
@@ -1803,11 +1803,11 @@ theme_override_font_sizes/font_size = 16
 text = "5 LEVELS COMPLETED"
 horizontal_alignment = 1
 
-[node name="Spacer3" type="Control" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+[node name="Spacer3" type="Control" parent="HUD/EndScreen/VBoxContainer"]
 custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
 
-[node name="UnlockPrompt" type="Label" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+[node name="UnlockPrompt" type="Label" parent="HUD/EndScreen/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.4, 0.8, 1, 0.75)
@@ -1815,11 +1815,11 @@ theme_override_font_sizes/font_size = 14
 text = "ENDLESS MODE UNLOCKED!"
 horizontal_alignment = 1
 
-[node name="Spacer4" type="Control" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+[node name="Spacer4" type="Control" parent="HUD/EndScreen/VBoxContainer"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 
-[node name="RestartPrompt" type="Label" parent="HUD/EndScreen/ColorRect/VBoxContainer"]
+[node name="RestartPrompt" type="Label" parent="HUD/EndScreen/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.75, 0.15, 0.3)
@@ -1861,7 +1861,7 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_border")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HUD/LoseScreen/ColorRect"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/LoseScreen"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -1878,69 +1878,69 @@ mouse_filter = 2
 alignment = 1
 theme_override_constants/separation = 0
 
-[node name="Title" type="Label" parent="HUD/LoseScreen/ColorRect/VBoxContainer"]
+[node name="Title" type="Label" parent="HUD/LoseScreen/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 text = "THE SUN"
 horizontal_alignment = 1
 
-[node name="Title2" type="Label" parent="HUD/LoseScreen/ColorRect/VBoxContainer"]
+[node name="Title2" type="Label" parent="HUD/LoseScreen/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 text = "WON"
 horizontal_alignment = 1
 
-[node name="SpacerDivider" type="Control" parent="HUD/LoseScreen/ColorRect/VBoxContainer"]
+[node name="SpacerDivider" type="Control" parent="HUD/LoseScreen/VBoxContainer"]
 custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="CenterContainer" type="CenterContainer" parent="HUD/LoseScreen/ColorRect/VBoxContainer"]
+[node name="CenterContainer" type="CenterContainer" parent="HUD/LoseScreen/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Divider" type="ColorRect" parent="HUD/LoseScreen/ColorRect/VBoxContainer/CenterContainer"]
+[node name="Divider" type="ColorRect" parent="HUD/LoseScreen/VBoxContainer/CenterContainer"]
 custom_minimum_size = Vector2(80, 1)
 layout_mode = 2
 mouse_filter = 2
 color = Color(1, 0.75, 0.15, 1)
 
-[node name="Spacer2" type="Control" parent="HUD/LoseScreen/ColorRect/VBoxContainer"]
+[node name="Spacer2" type="Control" parent="HUD/LoseScreen/VBoxContainer"]
 custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Subtitle" type="Label" parent="HUD/LoseScreen/ColorRect/VBoxContainer"]
+[node name="Subtitle" type="Label" parent="HUD/LoseScreen/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 text = "TOO HOT TO HANDLE"
 horizontal_alignment = 1
 
-[node name="LevelLbl" type="Label" parent="HUD/LoseScreen/ColorRect/VBoxContainer"]
+[node name="LevelLbl" type="Label" parent="HUD/LoseScreen/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 text = "LEVEL 01 FAILED"
 horizontal_alignment = 1
 
-[node name="WaveTimeLbl" type="Label" parent="HUD/LoseScreen/ColorRect/VBoxContainer"]
+[node name="WaveTimeLbl" type="Label" parent="HUD/LoseScreen/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 text = "SURVIVED: 00:00"
 horizontal_alignment = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="HUD/LoseScreen/ColorRect/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="HUD/LoseScreen/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 24
 alignment = 1
 
-[node name="RetryBtn" type="Button" parent="HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer"]
+[node name="RetryBtn" type="Button" parent="HUD/LoseScreen/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(160, 44)
 layout_mode = 2
 mouse_filter = 0
 text = "RETRY"
 
-[node name="MenuBtn" type="Button" parent="HUD/LoseScreen/ColorRect/VBoxContainer/HBoxContainer"]
+[node name="MenuBtn" type="Button" parent="HUD/LoseScreen/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(160, 44)
 layout_mode = 2
 mouse_filter = 0
