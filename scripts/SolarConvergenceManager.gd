@@ -14,6 +14,7 @@ signal convergence_completed()
 signal solar_driver_equipped(pos: Vector3)
 signal harmonic_tether_severed(pair_idx: int, pos: Vector3)
 signal harmonic_matrix_collapsed()
+signal interceptor_destroyed(pos: Vector3)
 
 enum State {
 	IDLE,
@@ -30,6 +31,11 @@ var camera_node: Camera3D
 
 var active_drones: Array[Dictionary] = []
 var orbit_time: float = 0.0
+
+# ── Wave 55+ Interceptor Escorts (Active Stream Interception) ───────────────
+var last_water_ray_origin: Vector3 = Vector3(0, 0, 5)
+var last_water_ray_normal: Vector3 = Vector3(0, 0, -1)
+var water_active_timer: float = 0.0
 
 # ── Wave 50+ Harmonic Resonance Matrix (Milestone 3) ───────────────────────
 var is_harmonic_matrix: bool = false
@@ -90,7 +96,7 @@ func _init_audio() -> void:
 	for i in range(4):
 		var hp = AudioStreamPlayer.new()
 		hp.bus = "Master"
-		hp.volume_db = 2.0
+		hp.volume_db = -8.0
 		add_child(hp)
 		hit_players.append(hp)
 
@@ -98,53 +104,53 @@ func _init_audio() -> void:
 	sfx_shatter_metal = AudioStreamPlayer.new()
 	sfx_shatter_metal.stream = load("res://assets/audio/sfx/drone_shatter_metal.ogg")
 	sfx_shatter_metal.bus = "Master"
-	sfx_shatter_metal.volume_db = 3.0
+	sfx_shatter_metal.volume_db = -2.0
 	add_child(sfx_shatter_metal)
 
 	sfx_shatter_glass = AudioStreamPlayer.new()
 	sfx_shatter_glass.stream = load("res://assets/audio/sfx/drone_shatter_glass.ogg")
 	sfx_shatter_glass.bus = "Master"
-	sfx_shatter_glass.volume_db = 2.5
+	sfx_shatter_glass.volume_db = -3.0
 	add_child(sfx_shatter_glass)
 
 	sfx_shatter_core = AudioStreamPlayer.new()
 	sfx_shatter_core.stream = load("res://assets/audio/sfx/shield_break.ogg")
 	sfx_shatter_core.bus = "Master"
-	sfx_shatter_core.volume_db = 1.0
+	sfx_shatter_core.volume_db = -2.0
 	add_child(sfx_shatter_core)
 
 	# Ice Blast Shatter (Cryo-Frost Glacial Shatter + Glass Cascade)
 	sfx_ice_shatter_glass = AudioStreamPlayer.new()
 	sfx_ice_shatter_glass.stream = load("res://assets/audio/sfx/drone_ice_shatter_glass.ogg")
 	sfx_ice_shatter_glass.bus = "Master"
-	sfx_ice_shatter_glass.volume_db = 3.5
+	sfx_ice_shatter_glass.volume_db = 1.0
 	add_child(sfx_ice_shatter_glass)
 
 	sfx_ice_blast = AudioStreamPlayer.new()
 	sfx_ice_blast.stream = load("res://assets/audio/sfx/ice_hit.ogg")
 	sfx_ice_blast.bus = "Master"
-	sfx_ice_blast.volume_db = 2.5
+	sfx_ice_blast.volume_db = 0.0
 	add_child(sfx_ice_blast)
 
 	# Driver Belt Clamping & Lock SFX
 	sfx_driver_lock = AudioStreamPlayer.new()
 	sfx_driver_lock.stream = load("res://assets/audio/sfx/driver_lock.ogg")
 	sfx_driver_lock.bus = "Master"
-	sfx_driver_lock.volume_db = 3.0
+	sfx_driver_lock.volume_db = 0.5
 	add_child(sfx_driver_lock)
 
 	# Phase 2 Overdrive Surge SFX
 	sfx_driver_overdrive = AudioStreamPlayer.new()
 	sfx_driver_overdrive.stream = load("res://assets/audio/sfx/driver_overdrive.ogg")
 	sfx_driver_overdrive.bus = "Master"
-	sfx_driver_overdrive.volume_db = 4.0
+	sfx_driver_overdrive.volume_db = 1.5
 	add_child(sfx_driver_overdrive)
 
 	# Golden Drone Shield Ambient Hum (Looping with dynamic entrance & volume ducking)
 	sfx_drone_shield_hum = AudioStreamPlayer.new()
 	sfx_drone_shield_hum.stream = load("res://assets/audio/sfx/drone_shield_hum.ogg")
 	sfx_drone_shield_hum.bus = "Master"
-	sfx_drone_shield_hum.volume_db = -6.0
+	sfx_drone_shield_hum.volume_db = -18.0
 	add_child(sfx_drone_shield_hum)
 
 func _start_drone_hum() -> void:
@@ -153,14 +159,14 @@ func _start_drone_hum() -> void:
 	if drone_hum_tween and drone_hum_tween.is_valid():
 		drone_hum_tween.kill()
 
-	sfx_drone_shield_hum.volume_db = -6.0
+	sfx_drone_shield_hum.volume_db = -18.0
 	if not sfx_drone_shield_hum.playing:
 		sfx_drone_shield_hum.play()
 
-	# Start audible for entrance feedback, then gracefully duck down to a subtle background level so it never fatigues the ears
+	# Start soft and gracefully duck down to a very subtle ambient background level
 	drone_hum_tween = create_tween()
-	drone_hum_tween.tween_interval(2.5)
-	drone_hum_tween.tween_property(sfx_drone_shield_hum, "volume_db", -22.0, 3.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	drone_hum_tween.tween_interval(1.5)
+	drone_hum_tween.tween_property(sfx_drone_shield_hum, "volume_db", -28.0, 3.0).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 func _stop_drone_hum() -> void:
 	if drone_hum_tween and drone_hum_tween.is_valid():
@@ -171,7 +177,7 @@ func _stop_drone_hum() -> void:
 		drone_hum_tween.tween_callback(func():
 			if sfx_drone_shield_hum:
 				sfx_drone_shield_hum.stop()
-				sfx_drone_shield_hum.volume_db = -6.0
+				sfx_drone_shield_hum.volume_db = -18.0
 		)
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -231,6 +237,196 @@ func start_orbital_swarm(count: int = 6, wave: int = 1, is_phase2: bool = false)
 		_setup_harmonic_matrix()
 	else:
 		_clear_harmonic_matrix()
+
+	# Deploy Interceptor Escorts on Wave 55+ (1 on Wave 55, 2 on Wave 60+)
+	var num_interceptors = 0
+	if wave >= 60:
+		num_interceptors = 2
+	elif wave >= 55:
+		num_interceptors = 1
+
+	for j in range(num_interceptors):
+		var interceptor_data = _create_interceptor_drone(j, num_interceptors, wave)
+		active_drones.append(interceptor_data)
+		add_child(interceptor_data["node"])
+
+		var d_node = interceptor_data["node"] as Node3D
+		d_node.scale = Vector3.ZERO
+		var tw = create_tween()
+		tw.tween_interval(0.35 + j * 0.15)
+		tw.tween_property(d_node, "scale", Vector3(1.7, 1.7, 1.7), 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+func _create_interceptor_drone(index: int, total: int, wave: int) -> Dictionary:
+	var drone_root = Node3D.new()
+	drone_root.name = "InterceptorDrone_%d" % index
+	drone_root.scale = Vector3(1.7, 1.7, 1.7)
+
+	var model_inst = DRONE_SCENE.instantiate() as Node3D
+	drone_root.add_child(model_inst)
+
+	var casing_mats: Array[StandardMaterial3D] = []
+	var pearl_mats: Array[StandardMaterial3D] = []
+	var pupil_mat: StandardMaterial3D = null
+
+	var mesh_instances = model_inst.find_children("", "MeshInstance3D", true)
+	for mi in mesh_instances:
+		var mesh_node = mi as MeshInstance3D
+		if mesh_node and mesh_node.mesh:
+			for s_idx in range(mesh_node.mesh.get_surface_count()):
+				var orig_mat = mesh_node.get_active_material(s_idx)
+				if orig_mat:
+					var dup_mat = orig_mat.duplicate() as StandardMaterial3D
+					dup_mat.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
+					dup_mat.specular_mode = BaseMaterial3D.SPECULAR_TOON
+					dup_mat.rim_enabled = true
+					dup_mat.rim = 0.90
+					dup_mat.rim_tint = 0.60
+					dup_mat.backlight_enabled = true
+					dup_mat.backlight = Color(0.15, 0.45, 0.65)
+					mesh_node.set_surface_override_material(s_idx, dup_mat)
+
+					var m_name = dup_mat.resource_name if dup_mat.resource_name != "" else orig_mat.resource_name
+					if "Gold" in m_name:
+						casing_mats.append(dup_mat)
+					elif "Pearl" in m_name:
+						pearl_mats.append(dup_mat)
+					elif "Solar" in m_name or "Pupil" in m_name or "Core" in m_name or dup_mat.emission_enabled:
+						if not pupil_mat:
+							pupil_mat = dup_mat
+
+	# Plasma thrusters on the back of the interceptor
+	var thrusters = CPUParticles3D.new()
+	thrusters.name = "ThrusterExhaust"
+	thrusters.amount = 16
+	thrusters.lifetime = 0.22
+	thrusters.explosiveness = 0.05
+	thrusters.direction = Vector3(0, 0, 1)
+	thrusters.spread = 15.0
+	thrusters.initial_velocity_min = 4.0
+	thrusters.initial_velocity_max = 8.0
+	thrusters.gravity = Vector3.ZERO
+	thrusters.color = Color(0.2, 0.90, 1.0, 0.85)
+
+	var p_mesh = BoxMesh.new()
+	p_mesh.size = Vector3(0.06, 0.06, 0.12)
+	var p_mat = StandardMaterial3D.new()
+	p_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	p_mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	p_mat.albedo_color = Color(0.3, 0.95, 1.0)
+	p_mat.emission_enabled = true
+	p_mat.emission = Color(0.2, 0.9, 1.0)
+	p_mat.emission_energy_multiplier = 6.0
+	p_mesh.material = p_mat
+	thrusters.mesh = p_mesh
+	thrusters.position = Vector3(0, 0, 0.20)
+	drone_root.add_child(thrusters)
+
+	# Radiant camera-facing cyan lens flare on the eye
+	var eye_flare = MeshInstance3D.new()
+	eye_flare.name = "InterceptorEyeFlare"
+	var sphere = SphereMesh.new()
+	sphere.radius = 0.32
+	sphere.height = 0.64
+	eye_flare.mesh = sphere
+	var mat_ef = StandardMaterial3D.new()
+	mat_ef.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat_ef.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat_ef.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	mat_ef.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	mat_ef.albedo_color = Color(0.25, 0.92, 1.0, 0.95)
+	mat_ef.emission_enabled = true
+	mat_ef.emission = Color(0.2, 0.90, 1.0)
+	mat_ef.emission_energy_multiplier = 9.0
+	eye_flare.material_override = mat_ef
+	drone_root.add_child(eye_flare)
+
+	# Dynamic Crack Fracture Overlay Meshes
+	var mesh_minor = _build_crack_mesh(index + 20, false)
+	var crack_minor = MeshInstance3D.new()
+	crack_minor.name = "CrackMinor"
+	crack_minor.mesh = mesh_minor
+	crack_minor.visible = false
+	var mat_minor = StandardMaterial3D.new()
+	mat_minor.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat_minor.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat_minor.render_priority = 2
+	mat_minor.albedo_color = Color(0.4, 0.95, 1.0, 0.95)
+	mat_minor.emission_enabled = true
+	mat_minor.emission = Color(0.2, 0.9, 1.0)
+	mat_minor.emission_energy_multiplier = 3.5
+	crack_minor.material_override = mat_minor
+	drone_root.add_child(crack_minor)
+
+	var mesh_major = _build_crack_mesh(index + 20, true)
+	var crack_major = MeshInstance3D.new()
+	crack_major.name = "CrackMajor"
+	crack_major.mesh = mesh_major
+	crack_major.visible = false
+	var mat_major = StandardMaterial3D.new()
+	mat_major.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat_major.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat_major.render_priority = 3
+	mat_major.albedo_color = Color(0.6, 0.95, 1.0, 0.95)
+	mat_major.emission_enabled = true
+	mat_major.emission = Color(0.3, 0.95, 1.0)
+	mat_major.emission_energy_multiplier = 4.5
+	crack_major.material_override = mat_major
+	drone_root.add_child(crack_major)
+
+	# Coolant steam vent
+	var vent_fx = CPUParticles3D.new()
+	vent_fx.name = "VentFX"
+	vent_fx.emitting = false
+	vent_fx.amount = 6
+	vent_fx.lifetime = 0.5
+	vent_fx.direction = Vector3(0, 1, -0.3)
+	vent_fx.spread = 35.0
+	vent_fx.initial_velocity_min = 1.0
+	vent_fx.initial_velocity_max = 2.2
+	vent_fx.gravity = Vector3(0, 3.5, 0)
+	var v_mat = StandardMaterial3D.new()
+	v_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	v_mat.albedo_color = Color(0.4, 0.9, 1.0, 0.7)
+	var v_mesh = BoxMesh.new()
+	v_mesh.size = Vector3(0.05, 0.05, 0.05)
+	v_mesh.material = v_mat
+	vent_fx.mesh = v_mesh
+	vent_fx.position = Vector3(0, 0, -0.36)
+	drone_root.add_child(vent_fx)
+
+	var sun_pos = sun_node.global_position if (sun_node and is_instance_valid(sun_node)) else Vector3(0, 13.5, -42)
+	var start_pos = sun_pos + Vector3(-6.0 if index == 0 else 6.0, 8.0, 20.0)
+	drone_root.global_position = start_pos
+
+	var max_hp = 120.0 + minf(60.0, (wave - 55) * 2.5)
+
+	return {
+		"node": drone_root,
+		"index": 100 + index,
+		"hp": max_hp,
+		"max_hp": max_hp,
+		"hit_flash": 0.0,
+		"casing_mats": casing_mats,
+		"pearl_mats": pearl_mats,
+		"pupil_mat": pupil_mat,
+		"crack_minor": crack_minor,
+		"crack_major": crack_major,
+		"crack_mat_minor": mat_minor,
+		"crack_mat_major": mat_major,
+		"vent_fx": vent_fx,
+		"thrusters": thrusters,
+		"is_interceptor": true,
+		"interceptor_idx": index,
+		"total_interceptors": total,
+		"patrol_offset": index * PI,
+		"phase_offset": index * PI,
+		"orbit_speed": 1.0,
+		"radius_x": 0.0,
+		"radius_y": 0.0,
+		"radius_z": 0.0,
+		"tilt_angle": 0.0,
+		"prev_x": start_pos.x
+	}
 
 func _create_drone(index: int, total: int, wave: int = 1, is_phase2: bool = false) -> Dictionary:
 	var drone_root = Node3D.new()
@@ -554,6 +750,7 @@ func _process(delta: float) -> void:
 		camera_node = get_viewport().get_camera_3d()
 
 	hit_sfx_cooldown = max(0.0, hit_sfx_cooldown - delta)
+	water_active_timer = maxf(0.0, water_active_timer - delta)
 	if stun_timer > 0.0:
 		stun_timer -= delta
 	var delta_orbit = delta * (0.20 if stun_timer > 0.0 else 1.0)
@@ -566,41 +763,113 @@ func _process(delta: float) -> void:
 		if not is_instance_valid(node):
 			continue
 
-		# If convergence vortex is active, smoothly pull into high-speed equatorial ring
-		if drone.get("vortex_active", false):
-			drone["radius_x"] = lerpf(drone["radius_x"], drone.get("target_radius_x", 14.0), delta * 4.5)
-			drone["radius_y"] = lerpf(drone["radius_y"], drone.get("target_radius_y", 1.0), delta * 4.5)
-			drone["radius_z"] = lerpf(drone["radius_z"], drone.get("target_radius_z", 5.0), delta * 4.5)
+		var is_interceptor = drone.get("is_interceptor", false)
+		var world_pos: Vector3
 
-		# 1. Coronal Orbit Calculation
-		var local_p: Vector3
-		if drone.get("is_infinity_lattice", false) and not drone.get("vortex_active", false):
-			var t = (orbit_time * drone["orbit_speed"]) + drone["phase_offset"]
-			var unrot_x = cos(t) * drone["radius_x"]
-			var unrot_y = sin(t) * drone["radius_y"]
-			var tilt = drone["tilt_angle"]
-			var px = unrot_x * cos(tilt) - unrot_y * sin(tilt)
-			var py = unrot_x * sin(tilt) + unrot_y * cos(tilt)
-			var dist_sq = px * px + py * py
-			var shield_front_z = sqrt(maxf(0.0, 10.6 * 10.6 - dist_sq))
-			var pz = maxf(4.5, shield_front_z + 2.5) + (1.4 if drone.get("ring_id", 0) == 0 else 0.0)
-			local_p = Vector3(px, py, pz)
+		if is_interceptor:
+			var idx = drone.get("interceptor_idx", 0)
+			var total_i = drone.get("total_interceptors", 1)
+			var spread_x = 0.0
+			var spread_y = 0.0
+			if total_i > 1:
+				spread_x = -1.2 if idx == 0 else 1.2
+				spread_y = 0.4 if idx == 0 else -0.4
+
+			var target_pos: Vector3
+			if water_active_timer > 0.0 and abs(last_water_ray_normal.z) > 0.001:
+				# 1. Bodyguard Priority: Check if player is aiming towards any other drone!
+				var targeted_drone_pos = Vector3.ZERO
+				var min_ray_dist = 5.5
+				for other_drone in active_drones:
+					if other_drone.get("is_interceptor", false):
+						continue
+					var o_node = other_drone.get("node") as Node3D
+					if is_instance_valid(o_node):
+						var d_pos = o_node.global_position
+						var to_d = d_pos - last_water_ray_origin
+						var proj_t = to_d.dot(last_water_ray_normal)
+						if proj_t > 0.0:
+							var ray_pt = last_water_ray_origin + last_water_ray_normal * proj_t
+							var dist = d_pos.distance_to(ray_pt)
+							if dist < min_ray_dist:
+								min_ray_dist = dist
+								targeted_drone_pos = d_pos
+
+				if targeted_drone_pos != Vector3.ZERO:
+					# Player is firing at an orbital drone! Rapidly surge forward between player camera and the drone
+					var dir_to_cam = (cam_pos - targeted_drone_pos).normalized()
+					var forward_dist = 6.5
+					target_pos = targeted_drone_pos + (dir_to_cam * forward_dist) + Vector3(spread_x, spread_y, 0.0)
+				else:
+					# Player is firing at the Sun! Intercept along forward defensive plane Z = -22.0
+					var t_ray = (-22.0 - last_water_ray_origin.z) / last_water_ray_normal.z
+					if t_ray > 0.0:
+						var hit_pt = last_water_ray_origin + last_water_ray_normal * t_ray
+						var clamped_x = clampf(hit_pt.x + spread_x, -18.0, 18.0)
+						var clamped_y = clampf(hit_pt.y + spread_y, 3.0, 24.0)
+						target_pos = Vector3(clamped_x, clamped_y, -22.0)
+					else:
+						target_pos = sun_pos + Vector3(spread_x * 4.0, 2.0, 20.0)
+			else:
+				# Evasive defensive hover in front of Sun
+				var t_hov = (orbit_time * 2.5) + drone.get("patrol_offset", 0.0)
+				var h_x = sin(t_hov) * 7.5 + spread_x * 3.0
+				var h_y = (sun_pos.y - 1.0) + cos(t_hov * 1.5) * 3.5
+				target_pos = Vector3(h_x, h_y, -22.0)
+
+			var cur_p = node.global_position
+			var move_speed = 12.0 if water_active_timer > 0.0 else 3.5
+			if stun_timer > 0.0:
+				move_speed = 1.0
+			world_pos = cur_p.lerp(target_pos, delta * move_speed)
+			if stun_timer > 0.0:
+				world_pos += Vector3(randf_range(-0.16, 0.16), randf_range(-0.16, 0.16), 0.0)
+			node.global_position = world_pos
+
+			var thrusters = drone.get("thrusters") as CPUParticles3D
+			if thrusters and is_instance_valid(thrusters):
+				thrusters.initial_velocity_max = 14.0 if water_active_timer > 0.0 else 8.0
+
+			node.look_at(cam_pos, Vector3.UP)
+			var vel_x = (world_pos.x - drone.get("prev_x", world_pos.x)) / maxf(0.001, delta)
+			drone["prev_x"] = world_pos.x
+			node.rotate_z(clampf(-vel_x * 0.035, -0.65, 0.65))
 		else:
-			# Standard equatorial orbit
-			var t = (orbit_time * drone["orbit_speed"]) + drone["phase_offset"]
-			local_p = Vector3(
-				cos(t) * drone["radius_x"],
-				sin(t) * drone["radius_y"],
-				drone["radius_z"] + sin(t * 1.6 + drone["index"]) * 0.4
-			)
+			# If convergence vortex is active, smoothly pull into high-speed equatorial ring
+			if drone.get("vortex_active", false):
+				drone["radius_x"] = lerpf(drone["radius_x"], drone.get("target_radius_x", 14.0), delta * 4.5)
+				drone["radius_y"] = lerpf(drone["radius_y"], drone.get("target_radius_y", 1.0), delta * 4.5)
+				drone["radius_z"] = lerpf(drone["radius_z"], drone.get("target_radius_z", 5.0), delta * 4.5)
 
-		var world_pos = sun_pos + local_p
-		if stun_timer > 0.0:
-			world_pos += Vector3(randf_range(-0.16, 0.16), randf_range(-0.16, 0.16), 0.0)
-		node.global_position = world_pos
+			# 1. Coronal Orbit Calculation
+			var local_p: Vector3
+			if drone.get("is_infinity_lattice", false) and not drone.get("vortex_active", false):
+				var t = (orbit_time * drone["orbit_speed"]) + drone["phase_offset"]
+				var unrot_x = cos(t) * drone["radius_x"]
+				var unrot_y = sin(t) * drone["radius_y"]
+				var tilt = drone["tilt_angle"]
+				var px = unrot_x * cos(tilt) - unrot_y * sin(tilt)
+				var py = unrot_x * sin(tilt) + unrot_y * cos(tilt)
+				var dist_sq = px * px + py * py
+				var shield_front_z = sqrt(maxf(0.0, 10.6 * 10.6 - dist_sq))
+				var pz = maxf(4.5, shield_front_z + 2.5) + (1.4 if drone.get("ring_id", 0) == 0 else 0.0)
+				local_p = Vector3(px, py, pz)
+			else:
+				# Standard equatorial orbit
+				var t = (orbit_time * drone["orbit_speed"]) + drone["phase_offset"]
+				local_p = Vector3(
+					cos(t) * drone["radius_x"],
+					sin(t) * drone["radius_y"],
+					drone["radius_z"] + sin(t * 1.6 + drone["index"]) * 0.4
+				)
 
-		# 2. Ocular Focus: Eye drone stares directly down the player's sightline
-		node.look_at(cam_pos, Vector3.UP)
+			world_pos = sun_pos + local_p
+			if stun_timer > 0.0:
+				world_pos += Vector3(randf_range(-0.16, 0.16), randf_range(-0.16, 0.16), 0.0)
+			node.global_position = world_pos
+
+			# 2. Ocular Focus: Eye drone stares directly down the player's sightline
+			node.look_at(cam_pos, Vector3.UP)
 
 		# 3. Dynamic Health Color Progression & Crack Damage Progression
 		var cur_hp = drone["hp"] as float
@@ -616,9 +885,10 @@ func _process(delta: float) -> void:
 		var mat_major = drone.get("crack_mat_major") as StandardMaterial3D
 		var vent_fx = drone.get("vent_fx") as CPUParticles3D
 
-		# Hit impact recoil recovery back to 2.3
-		if node.scale.x < 2.3:
-			node.scale = node.scale.lerp(Vector3(2.3, 2.3, 2.3), 10.0 * delta)
+		# Hit impact recoil recovery back to base scale
+		var target_scale = 1.7 if is_interceptor else 2.3
+		if node.scale.x < target_scale:
+			node.scale = node.scale.lerp(Vector3(target_scale, target_scale, target_scale), 10.0 * delta)
 
 		# Crack stage updates
 		if hp_pct > 0.65:
@@ -632,7 +902,7 @@ func _process(delta: float) -> void:
 			if crack_major and crack_major.visible: crack_major.visible = false
 			if vent_fx and vent_fx.emitting: vent_fx.emitting = false
 			if mat_minor and is_instance_valid(mat_minor):
-				var pulse = 0.5 + 0.5 * sin(orbit_time * 5.0 + drone["phase_offset"])
+				var pulse = 0.5 + 0.5 * sin(orbit_time * 5.0 + drone.get("phase_offset", 0.0))
 				mat_minor.emission_energy_multiplier = 2.8 + (pulse * 1.4)
 		else:
 			# Stage 2: Critical hairline fissures across lens and aperture & imminent shatter
@@ -649,7 +919,7 @@ func _process(delta: float) -> void:
 					var strobe = 1.0 if sin(orbit_time * 20.0) > 0.0 else 0.4
 					mat_major.emission_energy_multiplier = 3.8 + (strobe * 2.2)
 			else:
-				var pulse = 0.5 + 0.5 * sin(orbit_time * 10.0 + drone["phase_offset"])
+				var pulse = 0.5 + 0.5 * sin(orbit_time * 10.0 + drone.get("phase_offset", 0.0))
 				if mat_major and is_instance_valid(mat_major):
 					mat_major.emission_energy_multiplier = 3.2 + (pulse * 1.8)
 				# Subtle instability tremor
@@ -680,7 +950,14 @@ func _process(delta: float) -> void:
 			var pulse_speed = 3.2
 			var base_energy = 3.2
 
-			if is_harmonic_matrix and drone.get("is_harmonic_anchor", false):
+			if drone.get("is_interceptor", false):
+				# Sleek Arc Cyan / Electric Plasma palette
+				base_casing_col = Color(0.78, 0.92, 1.0)
+				base_pearl_col = Color(0.92, 0.96, 1.0)
+				base_pupil_col = Color(0.15, 0.92, 1.0) # Electric Plasma Cyan
+				base_energy = 8.5
+				pulse_speed = 6.0
+			elif is_harmonic_matrix and drone.get("is_harmonic_anchor", false):
 				var p_idx = drone.get("harmonic_pair_idx", 0)
 				var pair_active = false
 				if p_idx >= 0 and p_idx < harmonic_pairs.size():
@@ -758,13 +1035,13 @@ func _process(delta: float) -> void:
 
 			if pupil_mat and is_instance_valid(pupil_mat):
 				pupil_mat.emission = base_pupil_col
-				var pulse = 0.5 + 0.5 * sin(orbit_time * pulse_speed + drone["phase_offset"])
+				var pulse = 0.5 + 0.5 * sin(orbit_time * pulse_speed + drone.get("phase_offset", 0.0))
 				pupil_mat.emission_energy_multiplier = base_energy + (pulse * 2.0)
 
 			if mat_minor and is_instance_valid(mat_minor):
-				mat_minor.emission = Color(1.0, 0.84, 0.35)
+				mat_minor.emission = Color(0.2, 0.9, 1.0) if is_interceptor else Color(1.0, 0.84, 0.35)
 			if mat_major and is_instance_valid(mat_major):
-				mat_major.emission = Color(1.0, 0.68, 0.22)
+				mat_major.emission = Color(0.3, 0.95, 1.0) if is_interceptor else Color(1.0, 0.68, 0.22)
 
 	_update_harmonic_tethers(delta)
 
@@ -774,6 +1051,10 @@ func _process(delta: float) -> void:
 func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weapon_damage: float, intercept_radius: float = 2.4) -> Dictionary:
 	if current_state != State.ORBITAL_SWARM or active_drones.is_empty():
 		return { "hit": false }
+
+	last_water_ray_origin = ray_origin
+	last_water_ray_normal = ray_normal
+	water_active_timer = 0.35
 
 	var closest_drone: Dictionary = {}
 	var min_dist_to_ray = 999.0
@@ -842,6 +1123,8 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 		active_drones.erase(closest_drone)
 		d_node.queue_free()
 		drone_destroyed.emit(pos)
+		if closest_drone.get("is_interceptor", false):
+			interceptor_destroyed.emit(pos)
 		_check_harmonic_pair_sever(closest_drone, pos)
 
 		if active_drones.is_empty():
@@ -885,6 +1168,8 @@ func check_ice_blast_intercept(blast_pos: Vector3, radius: float = 6.5) -> bool:
 		active_drones.erase(drone)
 		d_node.queue_free()
 		drone_shattered_by_ice.emit(pos)
+		if drone.get("is_interceptor", false):
+			interceptor_destroyed.emit(pos)
 		_check_harmonic_pair_sever(drone, pos)
 
 	if active_drones.is_empty():
@@ -1513,4 +1798,3 @@ func trigger_driver_overload() -> void:
 		var title = "드론 군체 무력화 완료!" if is_kr else "DRONE SWARM NEUTRALIZED!"
 		var desc = "솔라 드라이버 과열 — 태양 직접 냉각 가능!" if is_kr else "Solar Driver Overheated — Sun Vulnerable!"
 		main.hud.show_toast(title, desc, "res://assets/ui/icons/delivery-drone.svg", Color(1.0, 0.80, 0.20))
-

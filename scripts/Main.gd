@@ -1434,6 +1434,7 @@ func _build_scene() -> void:
 	solar_convergence_mgr.solar_driver_equipped.connect(_on_solar_driver_equipped)
 	solar_convergence_mgr.harmonic_tether_severed.connect(_on_harmonic_tether_severed)
 	solar_convergence_mgr.harmonic_matrix_collapsed.connect(_on_harmonic_matrix_collapsed)
+	solar_convergence_mgr.interceptor_destroyed.connect(_on_interceptor_destroyed)
 	
 	# ── Weather Rain Particles ───────────────────────────────────────────────
 	weather_rain_particles = GPUParticles3D.new()
@@ -5338,7 +5339,15 @@ func toggle_solar_drones() -> void:
 func _on_solar_driver_equipped(_pos: Vector3) -> void:
 	if hud and hud.has_method("show_toast"):
 		var is_kr = GameState.language == "KR"
-		if GameState.current_wave >= 50:
+		if GameState.current_wave >= 60:
+			var title = "이중 요격기 전개!" if is_kr else "TWIN INTERCEPTORS!"
+			var desc = "2기의 고속 요격 호위 드론 전개" if is_kr else "Dual high-speed interceptor escorts deployed"
+			hud.show_toast(title, desc, "res://assets/ui/icons/driver_fury.png", Color(0.2, 0.90, 1.0))
+		elif GameState.current_wave >= 55:
+			var title = "요격 드론 전개!" if is_kr else "INTERCEPTOR ESCORT!"
+			var desc = "물줄기 차단 고속 요격 드론 전개" if is_kr else "Water stream interceptor escort deployed"
+			hud.show_toast(title, desc, "res://assets/ui/icons/driver_fury.png", Color(0.2, 0.90, 1.0))
+		elif GameState.current_wave >= 50:
 			var title = "조화 매트릭스!" if is_kr else "HARMONIC MATRIX!"
 			var desc = "이중 공명 테더가 태양 방어막을 전개합니다" if is_kr else "Twin tethered pairs projecting harmonic barrier"
 			hud.show_toast(title, desc, "res://assets/ui/icons/driver_fury.png", Color(1.0, 0.85, 0.25))
@@ -5403,6 +5412,26 @@ func _on_harmonic_matrix_collapsed() -> void:
 		var title = "조화 방어막 파괴!" if is_kr else "HARMONIC SHIELD SHATTERED!"
 		var desc = "공명 붕괴! 태양 핵 노출 (+1500점)" if is_kr else "Resonance broken! Sun core exposed (+1500 PTS)"
 		hud.show_toast(title, desc, "res://assets/ui/icons/driver_fury.png", Color(0.35, 0.95, 1.0), null, "[ BARRIER COLLAPSE ]" if not is_kr else "[ 방어막 붕괴 ]")
+
+func _on_interceptor_destroyed(_pos: Vector3) -> void:
+	shake(0.35, 0.05)
+	GameState.add_score(1000)
+	water_tank = min(MAX_WATER, water_tank + (MAX_WATER * 0.25))
+	water_changed.emit(water_tank, MAX_WATER)
+
+	if GameState.current_weapon_id == "kitsune":
+		if not is_celestial_awakened:
+			GameState.celestial_charge = min(1.0, GameState.celestial_charge + (0.10 * catastrom_buff * GameState.catastrom_charge_mult))
+	else:
+		var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
+		if can_catastrom:
+			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (0.10 * catastrom_buff * GameState.catastrom_charge_mult))
+
+	if hud and hud.has_method("show_toast"):
+		var is_kr = GameState.language == "KR"
+		var title = "요격 드론 격추!" if is_kr else "INTERCEPTOR DOWN!"
+		var desc = "물줄기 차단 호위 드론 격파 (+1,000점, +25% 물)" if is_kr else "Bodyguard Interceptor Destroyed! (+1,000 PTS, +25% Water)"
+		hud.show_toast(title, desc, "res://assets/ui/icons/driver_fury.png", Color(0.2, 0.90, 1.0), null, "[ INTERCEPTOR SHATTERED ]" if not is_kr else "[ 요격기 격파 ]")
 
 func toggle_solar_driver() -> void:
 	toggle_solar_drones()
