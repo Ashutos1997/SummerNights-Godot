@@ -73,6 +73,9 @@ Design tokens, color palettes, typography, and component specifications for *Sum
   * *Timer Badge:* Pulsing crimson `[ OVERTIME ]` / `[ 연장전 ]` badge (`Color(1.0, 0.22, 0.22)`) with 0.3s sine pulse loop.
   * *Score Drain:* Warning red font color (`Color(1.0, 0.25, 0.25)`) with subtle 1.08x scale twitches per burn pulse.
   * *Bankruptcy Recap:* Dedicated subtitle (`Color(1.0, 0.35, 0.35)`) on defeat screen: `"BANKRUPT: ALL SCORE DEPLETED"` / `"파산: 점수를 모두 소진했습니다"`.
+* **Solar Disruption Toast Alerts:**
+  * *Thermal Barrier:* Cyan `Color(0.2, 0.8, 1.0)` with `meter_ice.svg` icon and `[ SOLAR DISRUPTION ]` / `[ 태양 교란 ]` kicker. Shatter success uses `shatter.svg` with `Color(0.35, 0.95, 1.0)`.
+  * *Flare Barrage:* Solar orange `Color(1.0, 0.45, 0.1)` with `eclipse-flare.svg` icon and `[ SOLAR DISRUPTION ]` / `[ 태양 교란 ]` kicker.
 
 ### Boot Splash & Startup Continuity
 * **Window Initialization:** Launches directly in Fullscreen mode with dark background `Color(0.02, 0.01, 0.05, 1)` with stock splash disabled.

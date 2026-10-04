@@ -73,6 +73,15 @@ var shield_spray_duration: float = 0.0
 var is_drone_shield_active: bool = false
 var drone_shield_spray_duration: float = 0.0
 var master_lp_idx: int = -1
+
+# Solar Disruption State (Normal Wave Micro-Events)
+var disruption_event_type: String = "none" # "none", "thermal_barrier", "flare_barrage"
+var disruption_trigger_time: float = -1.0
+var disruption_has_triggered: bool = false
+var is_thermal_barrier_active: bool = false
+var thermal_barrier_timer: float = 0.0
+var flare_barrage_remaining: int = 0
+var flare_barrage_spawn_interval: float = 0.0
 var heat_vignette_color: Color = Color(0, 0, 0, 0):
 	set(value):
 		heat_vignette_color = value
@@ -1266,6 +1275,8 @@ func _on_title_start_game(is_survival: bool) -> void:
 		hud.update_ice_charges(GameState.ice_charges_remaining, max_survival_ice_charges + GameState.bonus_ice_charges)
 		if GameState.current_wave < 2 and GameState.ice_charges_remaining <= 0:
 			hud.ice_row.visible = false
+	if GameState.is_survival_mode:
+		_roll_wave_disruption()
 	
 	current_max_temp = _get_current_max_temp()
 	temperature = current_max_temp
@@ -2354,6 +2365,150 @@ func _update_flares(delta: float) -> void:
 	for f in to_remove:
 		active_flares.erase(f)
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Solar Disruptions (Normal Wave Micro-Events)
+# ─────────────────────────────────────────────────────────────────────────────
+func _roll_wave_disruption() -> void:
+	disruption_event_type = "none"
+	disruption_trigger_time = -1.0
+	disruption_has_triggered = false
+	is_thermal_barrier_active = false
+	flare_barrage_remaining = 0
+	
+	if not GameState.is_survival_mode:
+		return
+	if GameState.current_wave < 6:
+		return
+	if GameState.current_wave % 5 == 0:
+		return # Boss waves feature dedicated shield & drone matrix mechanics
+		
+	# Normal wave disruption chance: starts at 40%, scales up to 60% by wave 40
+	var chance = clampf(0.40 + (GameState.current_wave - 6) * 0.008, 0.40, 0.60)
+	if randf() < chance:
+		var events = ["thermal_barrier", "flare_barrage"]
+		disruption_event_type = events[randi() % events.size()]
+		# Trigger between 4.5 and 8.0 seconds into the wave
+		disruption_trigger_time = randf_range(4.5, 8.0)
+
+func _process_solar_disruptions(delta: float) -> void:
+	if not GameState.is_survival_mode or GameState.current_wave < 6:
+		return
+	if GameState.current_wave % 5 == 0:
+		return
+	if not timer_running or defeat_triggered or game_over or is_title_screen:
+		return
+	if is_catastrom_active:
+		return
+
+	# Handle countdown to trigger disruption
+	if not disruption_has_triggered and disruption_trigger_time > 0.0:
+		if not is_sun_frozen:
+			disruption_trigger_time -= delta
+			if disruption_trigger_time <= 0.0:
+				disruption_has_triggered = true
+				if disruption_event_type == "thermal_barrier":
+					_trigger_thermal_barrier()
+				elif disruption_event_type == "flare_barrage":
+					_trigger_flare_barrage()
+				disruption_event_type = "none"
+
+	# Handle active Thermal Barrier countdown
+	if is_thermal_barrier_active:
+		thermal_barrier_timer -= delta
+		if thermal_barrier_timer <= 0.0:
+			_end_thermal_barrier(false)
+
+	# Handle active Flare Barrage spawning sequence
+	if flare_barrage_remaining > 0:
+		flare_barrage_spawn_interval -= delta
+		if flare_barrage_spawn_interval <= 0.0:
+			_spawn_barrage_flare()
+
+func _trigger_thermal_barrier() -> void:
+	if is_sun_shielded or is_drone_shield_active:
+		return
+	is_thermal_barrier_active = true
+	is_sun_shielded = true
+	thermal_barrier_timer = randf_range(6.5, 8.0)
+	
+	if sun_shield_mesh:
+		var mat = sun_shield_mesh.material_override as ShaderMaterial
+		if mat:
+			mat.set_shader_parameter("shield_color", Color(0.2, 0.8, 1.0, 0.9))
+			mat.set_shader_parameter("ripple_color_tint", Vector3(0.6, 0.95, 1.0))
+			mat.set_shader_parameter("shield_opacity", 0.0)
+		sun_shield_mesh.scale = Vector3.ZERO
+		sun_shield_mesh.visible = true
+		var tw = create_tween().set_parallel()
+		tw.tween_property(sun_shield_mesh, "scale", Vector3.ONE, 0.55).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_ELASTIC)
+		if mat:
+			tw.tween_method(func(v): mat.set_shader_parameter("shield_opacity", v), 0.0, 1.0, 0.35).set_ease(Tween.EASE_IN)
+	
+	if is_instance_valid(shield_spawn_sfx):
+		shield_spawn_sfx.pitch_scale = randf_range(1.05, 1.15)
+		shield_spawn_sfx.play()
+		
+	if hud and hud.has_method("show_thermal_barrier_alert"):
+		hud.show_thermal_barrier_alert()
+
+func _end_thermal_barrier(silent: bool = false) -> void:
+	if not is_thermal_barrier_active and not (is_sun_shielded and not is_drone_shield_active and (GameState.current_wave % 5 != 0)):
+		return
+	is_thermal_barrier_active = false
+	is_sun_shielded = false
+	
+	if sun_shield_mesh:
+		if silent or not sun_shield_mesh.visible:
+			sun_shield_mesh.visible = false
+			sun_shield_mesh.scale = Vector3.ONE
+		else:
+			# Gentle dissolve animation when barrier naturally times out
+			var mat = sun_shield_mesh.material_override as ShaderMaterial
+			var tw = create_tween().set_parallel()
+			tw.tween_property(sun_shield_mesh, "scale", Vector3.ONE * 0.85, 0.4).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
+			if mat:
+				tw.tween_method(func(v): mat.set_shader_parameter("shield_opacity", v), 1.0, 0.0, 0.4).set_ease(Tween.EASE_OUT)
+			tw.chain().tween_callback(func():
+				if is_instance_valid(sun_shield_mesh):
+					sun_shield_mesh.visible = false
+					sun_shield_mesh.scale = Vector3.ONE
+					if mat:
+						mat.set_shader_parameter("shield_opacity", 1.0)
+			)
+			if is_instance_valid(sizzle_sfx):
+				sizzle_sfx.pitch_scale = 0.8
+				sizzle_sfx.play()
+
+func _trigger_flare_barrage() -> void:
+	var count = 5
+	if GameState.current_wave >= 40:
+		count = 7
+	elif GameState.current_wave >= 20:
+		count = 6
+	flare_barrage_remaining = count
+	flare_barrage_spawn_interval = 0.1
+	
+	# Visual cue: brief sun expansion pulse
+	if sun:
+		var pulse_tw = create_tween()
+		pulse_tw.tween_property(sun, "scale", Vector3.ONE * 1.15, 0.18).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
+		pulse_tw.tween_property(sun, "scale", Vector3.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	
+	if hud and hud.has_method("show_flare_barrage_alert"):
+		hud.show_flare_barrage_alert()
+
+func _spawn_barrage_flare() -> void:
+	flare_barrage_remaining -= 1
+	flare_barrage_spawn_interval = randf_range(0.35, 0.45)
+	
+	var target_pos = Vector3(randf_range(-8.5, 8.5), -1.0, randf_range(1.0, 5.0))
+	var duration = randf_range(3.6, 4.2)
+	_create_flare_node(target_pos, duration)
+	
+	if sizzle_sfx:
+		sizzle_sfx.pitch_scale = randf_range(1.15, 1.45)
+		sizzle_sfx.play()
+
 func _process_heat_warning(_delta: float) -> void:
 	if is_title_screen or game_over or temperature < 85.0:
 		if is_heat_critical:
@@ -2516,7 +2671,7 @@ func _process(delta: float) -> void:
 					if is_instance_valid(shield_spawn_sfx):
 						shield_spawn_sfx.pitch_scale = randf_range(0.98, 1.02)
 						shield_spawn_sfx.play()
-		else:
+		elif not is_thermal_barrier_active:
 			if is_sun_shielded:
 				is_sun_shielded = false
 				if sun_shield_mesh:
@@ -2664,6 +2819,7 @@ func _process(delta: float) -> void:
 			if flare_spawn_timer <= 0.0:
 				_spawn_solar_flare()
 			_update_flares(delta)
+			_process_solar_disruptions(delta)
 			
 			# Weather system logic
 			if active_weather == "none":
@@ -4630,6 +4786,9 @@ func _trigger_catastrom_dunk() -> void:
 			hud.show_toast("Weather Cleared" if GameState.language != "KR" else "날씨 정화됨", "Catastrom dispelled the anomaly!" if GameState.language != "KR" else "카타스트롬이 이상 기후를 소멸시켰습니다!", "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_jewel.png", Color(0.8, 0.4, 1.0))
 	_end_mirage()
 	active_mirages.clear()
+	if is_thermal_barrier_active:
+		_end_thermal_barrier(true)
+	flare_barrage_remaining = 0
 	if hud and hud.grab_icon:
 		hud.grab_icon.texture = preload("res://assets/ui/grab_open.png")
 		hud.grab_icon.visible = false
@@ -4798,6 +4957,10 @@ func _check_sun_defeat() -> void:
 		sun_sway_amplitude = min(8.0, GameState.current_wave * 1.5)
 		sun_sway_speed = min(1.3, 0.5 + GameState.current_wave * 0.05)
 		
+		# Reset Solar Disruption state
+		_end_thermal_barrier(true)
+		flare_barrage_remaining = 0
+
 		# Prepare next boss wave
 		if GameState.current_wave % 5 == 0:
 			is_two_phase = true
@@ -4818,6 +4981,7 @@ func _check_sun_defeat() -> void:
 			if solar_convergence_mgr:
 				solar_convergence_mgr.clear_drones()
 				solar_convergence_mgr.remove_solar_driver(true)
+			_roll_wave_disruption()
 		
 		wind_level_mult = min(1.75, 1.0 + (GameState.current_wave - 4) * 0.08)
 		if solar_wind_enabled and not prev_solar_wind:
@@ -6301,6 +6465,8 @@ func freeze_sun() -> void:
 			if hud and hud.has_method("show_drones_shield_hint"):
 				hud.show_drones_shield_hint()
 			return
+		var was_thermal_barrier = is_thermal_barrier_active
+		is_thermal_barrier_active = false
 		is_sun_shielded = false
 		sun_shield_cooldown = randf_range(20.0, 30.0)
 		if shield_break_sfx:
@@ -6363,6 +6529,10 @@ func freeze_sun() -> void:
 			Engine.time_scale = 1.0
 			shake(0.6, 0.1)
 		)
+		if was_thermal_barrier:
+			GameState.add_score(1000)
+			if hud and hud.has_method("show_thermal_barrier_shattered"):
+				hud.show_thermal_barrier_shattered()
 		return # Shield absorbs the freeze, sun doesn't get frozen
 		
 	is_sun_frozen = true
@@ -6603,6 +6773,13 @@ func _end_weather_event() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if GameState.is_dev_mode and event is InputEventKey and event.pressed and not event.echo:
 		match event.keycode:
+			KEY_B:
+				if is_thermal_barrier_active:
+					_end_thermal_barrier(false)
+				else:
+					_trigger_thermal_barrier()
+			KEY_V:
+				_trigger_flare_barrage()
 			KEY_R:
 				_end_weather_event()
 				_start_weather_event("rain")

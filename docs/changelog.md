@@ -14,6 +14,9 @@ All notable changes to the Summer Nights project will be documented in this file
 * High-Pressure Bore Perk: Trade-off perk (+18% to +30% Cooling Power, +12% to +20% Water Drain). Massive burst cooling at the cost of faster tank depletion, forcing disciplined tap-firing.
 * Hyper-Focus Perk: Trade-off perk (+20% to +35% Crit Damage, -12% to -20% Base Cooling). Rewards precision sunspot tracking while penalizing body-shot spray; pure skill check.
 * Deep Reservoir Perk: Trade-off perk (+25% to +45% Water Tank Size, -15% to -25% Refill Rate). Longer sustained bursts at the cost of sluggish recovery between engagements.
+* Solar Disruptions (Normal Waves 6+): Added randomized micro-events (40%–60% chance) triggering 4.5s–8.0s into non-boss waves to inject tactical variety:
+  * Thermal Barrier: Temporary cyan energy shield (6.5s–8.0s) deflecting water spray; naturally dissolves or shatters instantly via Ice Blast (`[R] / [RMB]`) for +1,000 bonus score.
+  * Flare Barrage: Sun pulses and unleashes a rapid volley of 5–7 solar flares (0.35s–0.45s intervals) across wide angles, demanding agile lateral dodging.
 * Coronal Eclipse Weather Event (Wave 45+): Added an apex atmospheric hazard in deep Endless runs featuring deep velvet-violet twilight, pitch-black solar silhouette with violent neon magenta prominence loops, dedicated HUD weather icon (using custom `eclipse-flare.svg` vector asset), cloaked sunspots that remain invisible in the dark void until illuminated by player water spray, flare parries, or Ice Blasts, and +50% amplified cooling damage when striking illuminated weakpoints.
 * Solar & Coronal Eclipse Weather Differentiation: Strikingly distinguished Normal Solar Eclipse from Wave 45+ Coronal Eclipse across both 3D environmental aesthetics and gameplay:
   - Normal Eclipse (Cold Stasis): Deep cosmic midnight-indigo sky with brilliant twinkling stars, a pitch-black moon disc crowned by a pearlescent silver-white Diamond-Ring Corona, moonlit silver sand, and ethereal silver-blue god rays. Sun heat regeneration halts and passively cools down by -2.0°/s under the lunar shadow while obsidian shadow flares challenge player defense.
@@ -335,6 +338,9 @@ All notable changes to the Summer Nights project will be documented in this file
 * "고압 보어 (High-Pressure Bore)" 퍽: 트레이드오프 퍽 (냉각력 +18%~+30%, 물 소모량 +12%~+20%). 폭발적인 버스트 냉각력을 제공하나 탱크가 빠르게 소진되므로 절제된 조준 사격 필요.
 * "극초점 (Hyper-Focus)" 퍽: 트레이드오프 퍽 (치명타 피해 +20%~+35%, 기본 냉각력 -12%~-20%). 흑점 정밀 조준을 보상하고 몸통 스프레이를 처벌하는 순수 실력 체크 퍽.
 * "심층 저수조 (Deep Reservoir)" 퍽: 트레이드오프 퍽 (물탱크 용량 +25%~+45%, 충전 속도 -15%~-25%). 장시간 지속 사격이 가능하나 교전 사이 회복이 느려짐.
+* "태양 교란 (Solar Disruptions)" 마이크로 이벤트 (6웨이브 이상 일반 웨이브): 보스전 사이 일반 웨이브의 단조로움을 해소하기 위해 웨이브 시작 4.5~8.0초 후 40%~60% 확률로 발생하는 돌발 미니 이벤트 시스템 추가:
+  * 열기 방벽 (Thermal Barrier): 6.5~8.0초간 유지되는 일시적 시안 에너지 보호막. 물줄기 분사를 도탄시키며, 유지 시간 종료 시 자연 소멸하거나 얼음 폭발(`[R] / [우클릭]`)로 즉시 결빙 분쇄하여 +1,000점 보너스 획득 가능.
+  * 플레어 폭격 (Flare Barrage): 태양이 박동하며 0.35~0.45초 간격으로 5~7발의 솔라 플레어를 넓은 각도로 연속 발사하는 고밀도 탄막 급습 이벤트.
 * 코로나 일식 (Coronal Eclipse, 45웨이브 이상) 기상 이변: 심층 무한 모드 전용 최고위 대기 기상 이변 추가. 깊은 벨벳 보라빛 황혼, 격렬한 네온 마젠타 홍염 코로나 루프를 두른 칠흑 같은 태양 실루엣, 전용 HUD 기상 아이콘(`eclipse-flare.svg` 벡터 적용), 어둠 속에 숨겨져 조명(물 분사, 플레어 패링, 얼음 폭발) 전까지 가려지는 은폐 흑점, 조명된 약점 타격 시 +50% 증폭 냉각 피해 기믹 구현.
 * 일반 일식 및 코로나 일식 시각·메커니즘 차별화: 일반 개기일식과 45웨이브 이상 코로나 일식의 3D 환경 비주얼 및 전투 메커니즘을 뚜렷하게 분리하여 완성:
   - 일반 개기일식 (한랭 정지): 반짝이는 별이 가득한 심우주 미드나이트 네이비 하늘, 진주빛 은백색 다이아몬드 링 코로나를 두른 흑요석 달 실루엣, 달빛 은빛 모래, 은청색 광선 연출. 태양의 자연 열기 회복이 멈추고 달의 그림자 아래에서 태양이 매초 -2.0°씩 자연 냉각되는 방어적 휴식 시간 제공 (흑요석 그림자 플레어 방어 요구).

@@ -3907,6 +3907,28 @@ func show_thermal_surge_disrupted() -> void:
 	var kicker = "[ TACTICAL SUCCESS ]" if not is_kr else "[ 전술 성공 ]"
 	show_toast(title, desc, "res://assets/ui/hud_elements/meter_ice.svg", Color(0.2, 0.85, 1.0, 1.0), null, kicker)
 
+func show_thermal_barrier_alert() -> void:
+	var is_kr = GameState.language == "KR"
+	var title = "열기 방벽 전개!" if is_kr else "THERMAL BARRIER"
+	var desc = "아이스 버스트로 파괴하라! [R / 우클릭]" if is_kr else "Shatter with Ice Burst! [R / RMB]"
+	var kicker = "[ 태양 교란 ]" if is_kr else "[ SOLAR DISRUPTION ]"
+	show_toast(title, desc, "res://assets/ui/hud_elements/meter_ice.svg", Color(0.2, 0.8, 1.0, 1.0), null, kicker)
+	flash_ice_hint()
+
+func show_thermal_barrier_shattered() -> void:
+	var is_kr = GameState.language == "KR"
+	var title = "방벽 파괴 성공!" if is_kr else "BARRIER SHATTERED!"
+	var desc = "태양 열기 방벽 분쇄! (+1,000 PTS)" if is_kr else "Thermal Barrier shattered! (+1,000 PTS)"
+	var kicker = "[ 전술 성공 ]" if is_kr else "[ TACTICAL SUCCESS ]"
+	show_toast(title, desc, "res://assets/ui/icons/shatter.svg", Color(0.35, 0.95, 1.0, 1.0), null, kicker)
+
+func show_flare_barrage_alert() -> void:
+	var is_kr = GameState.language == "KR"
+	var title = "솔라 플레어 연속 폭격!" if is_kr else "SOLAR FLARE BARRAGE!"
+	var desc = "고밀도 플레어 급습! 좌우로 회피하라!" if is_kr else "Rapid solar flare volley incoming! Prepare to dodge!"
+	var kicker = "[ 태양 교란 ]" if is_kr else "[ SOLAR DISRUPTION ]"
+	show_toast(title, desc, "res://assets/ui/icons/eclipse-flare.svg", Color(1.0, 0.45, 0.1, 1.0), null, kicker)
+
 func flash_ice_hint() -> void:
 	if not ice_row or not ice_row.visible:
 		return
