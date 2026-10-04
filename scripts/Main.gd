@@ -3376,7 +3376,7 @@ func _process(delta: float) -> void:
 			var c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
 			if c_mult >= 2.0:
 				combo_regen_bonus = 6.0
-		water_tank = min(MAX_WATER, water_tank + (current_weapon_recharge + combo_regen_bonus) * delta)
+		water_tank = min(MAX_WATER, water_tank + (current_weapon_recharge + combo_regen_bonus) * GameState.water_refill_mult * delta)
 			
 	# Update Audio Pitch based on Combo
 	if is_instance_valid(shoot_loop_sfx):
@@ -4308,7 +4308,7 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 					steam_particles.restart()
 				critical_hit.emit()
 		else:
-			var dmg = current_weapon_power * damage_mult * current_spray_efficiency * delta
+			var dmg = current_weapon_power * GameState.base_cooling_mult * damage_mult * current_spray_efficiency * delta
 			if is_sun_shielded:
 				dmg = 0.0 # Shield completely nullifies water damage
 				_on_shield_deflect(target_pos)

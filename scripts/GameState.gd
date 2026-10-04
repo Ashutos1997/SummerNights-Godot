@@ -539,6 +539,45 @@ const WAVE_PERKS: Dictionary = {
 		"max_val_2": 35,
 		"step": 1,
 		"weight": 20
+	},
+	"high_pressure_bore": {
+		"icon": "res://assets/ui/achievements/water-splash.png",
+		"title_en": "High-Pressure Bore",
+		"title_kr": "고압 보어",
+		"desc_en": "+%d%% Cooling Power, +%d%% Water Drain.",
+		"desc_kr": "냉각력 +%d%%, 물 소모량 +%d%%.",
+		"min_val": 18,
+		"max_val": 30,
+		"min_val_2": 12,
+		"max_val_2": 20,
+		"step": 1,
+		"weight": 60
+	},
+	"hyper_focus": {
+		"icon": "res://assets/ui/achievements/ball-glow.png",
+		"title_en": "Hyper-Focus",
+		"title_kr": "극초점",
+		"desc_en": "+%d%% Crit Damage, -%d%% Base Cooling.",
+		"desc_kr": "치명타 피해 +%d%%, 기본 냉각력 -%d%%.",
+		"min_val": 20,
+		"max_val": 35,
+		"min_val_2": 12,
+		"max_val_2": 20,
+		"step": 1,
+		"weight": 60
+	},
+	"deep_reservoir": {
+		"icon": "res://assets/ui/achievements/water-recycling.png",
+		"title_en": "Deep Reservoir",
+		"title_kr": "심층 저수조",
+		"desc_en": "+%d%% Water Tank, -%d%% Refill Rate.",
+		"desc_kr": "물탱크 용량 +%d%%, 충전 속도 -%d%%.",
+		"min_val": 25,
+		"max_val": 45,
+		"min_val_2": 15,
+		"max_val_2": 25,
+		"step": 5,
+		"weight": 80
 	}
 }
 
@@ -628,6 +667,8 @@ var crit_damage_mult: float = 1.0
 var catastrom_charge_mult: float = 1.0
 var sun_sway_mult: float = 1.0
 var flare_rate_mult: float = 1.0
+var water_refill_mult: float = 1.0
+var base_cooling_mult: float = 1.0
 
 func reset() -> void:
 	level = 1
@@ -652,6 +693,8 @@ func reset() -> void:
 	catastrom_charge_mult = 1.0
 	sun_sway_mult = 1.0
 	flare_rate_mult = 1.0
+	water_refill_mult = 1.0
+	base_cooling_mult = 1.0
 	active_wave_perks.clear()
 	active_wave_perk_instances.clear()
 	weapons_used_this_run.clear()
@@ -836,6 +879,15 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 				"solar_overclock":
 					cooling_power_mult += v1
 					flare_rate_mult += v2
+				"high_pressure_bore":
+					cooling_power_mult += v1
+					water_drain_mult += v2
+				"hyper_focus":
+					crit_damage_mult += v1
+					base_cooling_mult -= v2
+				"deep_reservoir":
+					max_water_mult += v1
+					water_refill_mult -= v2
 	else:
 		# Fallback if perks were added without instances (backwards compatibility)
 		for perk_id in active_wave_perks:
@@ -867,6 +919,15 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 				"solar_overclock":
 					cooling_power_mult += 0.35
 					flare_rate_mult += 0.30
+				"high_pressure_bore":
+					cooling_power_mult += 0.24
+					water_drain_mult += 0.16
+				"hyper_focus":
+					crit_damage_mult += 0.28
+					base_cooling_mult -= 0.16
+				"deep_reservoir":
+					max_water_mult += 0.35
+					water_refill_mult -= 0.20
 				
 	# Balanced caps and floors to prevent infinite power scaling or game-breaking penalties in late waves
 	cooling_power_mult = clamp(cooling_power_mult, 0.5, 2.0)
@@ -877,6 +938,8 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 	max_water_mult = clamp(max_water_mult, 0.50, 2.5) # Tank never drops below 50% or exceeds 250%
 	catastrom_charge_mult = clamp(catastrom_charge_mult, 0.40, 2.5) # Ult charge never stalls below 40%
 	flare_rate_mult = clamp(flare_rate_mult, 1.0, 3.0)
+	water_refill_mult = clamp(water_refill_mult, 0.40, 1.5) # Refill never drops below 40% or exceeds 150%
+	base_cooling_mult = clamp(base_cooling_mult, 0.50, 1.0) # Non-crit body shots never drop below 50%
 
 func unlock_achievement(id: String) -> void:
 	if id in unlocked_achievements: return

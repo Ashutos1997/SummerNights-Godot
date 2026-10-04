@@ -33,9 +33,9 @@ Master record of all implemented features, mechanics, and systems in *Summer Nig
 * **Randomized Roll Ranges:** Perks roll within bounded ranges `[min ~ max]` with proportional trade-off scaling on dual-stat perks. Maximum stat rolls display a glowing gold border and `[ MAX ROLL! ]` / `[ 최고 수치! ]` badge.
 * **Diminishing Returns & Stacking UI:** Stacking 3 or more copies of the same perk incurs diminishing returns (1st & 2nd = 100%, 3rd = 75%, 4th+ = 55%). Drafting Screen cards display amber stack badges (`[ 3RD STACK · 75% ]` / `[ 3중첩 · 효율 75% ]`) and real-time recalculated effective stats.
 * **HUD Tracker:** Top-left active buff icons with stack badges.
-* **Stat Caps:** Cooling Power capped at 2.0x, Water Drain bounded 40%–150%, Crit at 3.0x, Heat Resist at 60%, Sun Sway floored at 40%, Tank bounded 50%–250%, Ult floored at 40%.
-* **Available Perks:** High Capacity, Precision Optics, Thermal Insulator, Catastrom Flow, Heat Shield, Gravity Anchor, Glass Cannon, Heavy Water, Reckless Haste, Wind Breaker, Sub-Zero Reserve, Blade Cadence, Solar Overclock.
-* **Perk Rarities:** Common (weight 70–100), Uncommon (weight 60), and Rare (Cyan/Blue badge & border, weight 20: Gravity Anchor, Thermal Insulator, Heavy Water, Solar Overclock).
+* **Stat Caps:** Cooling Power capped at 2.0x, Water Drain bounded 40%–150%, Crit at 3.0x, Heat Resist at 60%, Sun Sway floored at 40%, Tank bounded 50%–250%, Ult floored at 40%, Water Refill bounded 40%–150%, Base Cooling floored at 50%.
+* **Available Perks:** High Capacity, Precision Optics, Thermal Insulator, Catastrom Flow, Heat Shield, Gravity Anchor, Glass Cannon, Heavy Water, Reckless Haste, Wind Breaker, Sub-Zero Reserve, Blade Cadence, Solar Overclock, High-Pressure Bore, Hyper-Focus, Deep Reservoir.
+* **Perk Rarities:** Common (weight 70–100), Uncommon (weight 60: Glass Cannon, Reckless Haste, High-Pressure Bore, Hyper-Focus), and Rare (Cyan/Blue badge & border, weight 20: Gravity Anchor, Thermal Insulator, Heavy Water, Solar Overclock).
 
 ## 4. Sun Mechanics & Threats
 * **Dynamic Movement:** Sun sways horizontally, scaling up to complex Figure-8 patterns on high waves (sway speed capped at 1.3–1.5 for trackable combat).
