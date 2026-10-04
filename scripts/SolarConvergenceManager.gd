@@ -12,6 +12,8 @@ signal convergence_triggered()
 signal convergence_drone_docked(drone_index: int, pos: Vector3)
 signal convergence_completed()
 signal solar_driver_equipped(pos: Vector3)
+signal harmonic_tether_severed(pair_idx: int, pos: Vector3)
+signal harmonic_matrix_collapsed()
 
 enum State {
 	IDLE,
@@ -28,6 +30,12 @@ var camera_node: Camera3D
 
 var active_drones: Array[Dictionary] = []
 var orbit_time: float = 0.0
+
+# ── Wave 50+ Harmonic Resonance Matrix (Milestone 3) ───────────────────────
+var is_harmonic_matrix: bool = false
+var harmonic_pairs: Array[Dictionary] = []
+var active_tethers_count: int = 0
+var stun_timer: float = 0.0
 
 # ── Solar Driver & Equatorial Belt (Milestone 2) ───────────────────────────
 var driver_root: Node3D = null
@@ -218,6 +226,11 @@ func start_orbital_swarm(count: int = 6, wave: int = 1, is_phase2: bool = false)
 		var tw = create_tween()
 		tw.tween_interval(0.20 + i * 0.05)
 		tw.tween_property(d_node, "scale", Vector3(2.3, 2.3, 2.3), 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+	if wave >= 50 and not is_phase2:
+		_setup_harmonic_matrix()
+	else:
+		_clear_harmonic_matrix()
 
 func _create_drone(index: int, total: int, wave: int = 1, is_phase2: bool = false) -> Dictionary:
 	var drone_root = Node3D.new()
@@ -416,7 +429,9 @@ func _create_drone(index: int, total: int, wave: int = 1, is_phase2: bool = fals
 		"is_infinity_lattice": is_infinity_lattice,
 		"ring_id": ring_id,
 		"tilt_angle": tilt_angle,
-		"base_pupil_color": base_pupil_col
+		"base_pupil_color": base_pupil_col,
+		"is_harmonic_anchor": false,
+		"harmonic_pair_idx": -1
 	}
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -539,7 +554,10 @@ func _process(delta: float) -> void:
 		camera_node = get_viewport().get_camera_3d()
 
 	hit_sfx_cooldown = max(0.0, hit_sfx_cooldown - delta)
-	orbit_time += delta
+	if stun_timer > 0.0:
+		stun_timer -= delta
+	var delta_orbit = delta * (0.20 if stun_timer > 0.0 else 1.0)
+	orbit_time += delta_orbit
 	var sun_pos = sun_node.global_position
 	var cam_pos = camera_node.global_position if (camera_node and is_instance_valid(camera_node)) else Vector3(0, 0, 5)
 
@@ -577,6 +595,8 @@ func _process(delta: float) -> void:
 			)
 
 		var world_pos = sun_pos + local_p
+		if stun_timer > 0.0:
+			world_pos += Vector3(randf_range(-0.16, 0.16), randf_range(-0.16, 0.16), 0.0)
 		node.global_position = world_pos
 
 		# 2. Ocular Focus: Eye drone stares directly down the player's sightline
@@ -660,7 +680,35 @@ func _process(delta: float) -> void:
 			var pulse_speed = 3.2
 			var base_energy = 3.2
 
-			if drone.get("is_infinity_lattice", false):
+			if is_harmonic_matrix and drone.get("is_harmonic_anchor", false):
+				var p_idx = drone.get("harmonic_pair_idx", 0)
+				var pair_active = false
+				if p_idx >= 0 and p_idx < harmonic_pairs.size():
+					pair_active = harmonic_pairs[p_idx].get("active", false)
+
+				if pair_active:
+					if p_idx == 0:
+						# Solar Gold Anchor Drone (Pair 0: Drones 0 & 4)
+						base_pupil_col = Color(1.0, 0.95, 0.15)
+						base_casing_col = Color(1.0, 0.88, 0.22)
+						base_pearl_col = Color(1.0, 0.96, 0.88)
+						base_energy = 8.0
+						pulse_speed = 5.0
+					else:
+						# Coronal Violet Anchor Drone (Pair 1: Drones 1 & 5)
+						base_pupil_col = Color(0.96, 0.20, 1.0)
+						base_casing_col = Color(0.88, 0.35, 1.0)
+						base_pearl_col = Color(0.96, 0.88, 1.0)
+						base_energy = 8.5
+						pulse_speed = 5.0
+				else:
+					# Severed Anchor circuit: dimmed down
+					base_pupil_col = Color(0.45, 0.40, 0.35)
+					base_casing_col = Color(0.60, 0.58, 0.55)
+					base_pearl_col = Color(0.70, 0.68, 0.65)
+					base_energy = 1.2
+					pulse_speed = 1.0
+			elif drone.get("is_infinity_lattice", false):
 				var is_ring_b = (drone.get("ring_id", 0) == 1)
 				if hp_pct > 0.60:
 					base_casing_col = Color(1.0, 0.86, 0.22) if not is_ring_b else Color(0.92, 0.80, 0.95)
@@ -717,6 +765,8 @@ func _process(delta: float) -> void:
 				mat_minor.emission = Color(1.0, 0.84, 0.35)
 			if mat_major and is_instance_valid(mat_major):
 				mat_major.emission = Color(1.0, 0.68, 0.22)
+
+	_update_harmonic_tethers(delta)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Water Stream Interception (Absorbs damage, shields Sun behind it)
@@ -792,6 +842,7 @@ func check_water_stream_intercept(ray_origin: Vector3, ray_normal: Vector3, weap
 		active_drones.erase(closest_drone)
 		d_node.queue_free()
 		drone_destroyed.emit(pos)
+		_check_harmonic_pair_sever(closest_drone, pos)
 
 		if active_drones.is_empty():
 			trigger_driver_overload()
@@ -834,6 +885,7 @@ func check_ice_blast_intercept(blast_pos: Vector3, radius: float = 6.5) -> bool:
 		active_drones.erase(drone)
 		d_node.queue_free()
 		drone_shattered_by_ice.emit(pos)
+		_check_harmonic_pair_sever(drone, pos)
 
 	if active_drones.is_empty():
 		trigger_driver_overload()
@@ -899,12 +951,254 @@ func get_active_drone_count() -> int:
 
 func clear_drones() -> void:
 	_stop_drone_hum()
+	_clear_harmonic_matrix()
 	for d in active_drones:
 		var node = d.get("node") as Node3D
 		if is_instance_valid(node):
 			node.queue_free()
 	active_drones.clear()
 	current_state = State.IDLE
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Wave 50+ Harmonic Resonance Matrix Mechanics (Shield-Surface Frequency Resonance)
+# ─────────────────────────────────────────────────────────────────────────────
+func is_harmonic_shield_active() -> bool:
+	if not is_harmonic_matrix:
+		return active_drones.size() > 0
+	return active_tethers_count > 0
+
+func get_harmonic_shield_tint() -> Color:
+	if not is_harmonic_matrix or active_tethers_count <= 0:
+		return Color(1.0, 0.82, 0.18, 0.95)
+
+	var p0_active: bool = false
+	var p1_active: bool = false
+	for p in harmonic_pairs:
+		if p.get("active", false):
+			if p.get("pair_idx") == 0: p0_active = true
+			elif p.get("pair_idx") == 1: p1_active = true
+
+	if p0_active and p1_active:
+		# Both frequencies locked: dual-tone rhythmic harmonic wave
+		var t = 0.5 + 0.5 * sin(orbit_time * 4.5)
+		return Color(1.0, 0.82, 0.18, 0.95).lerp(Color(0.95, 0.35, 1.0, 0.95), t)
+	elif p0_active:
+		return Color(1.0, 0.82, 0.18, 0.95) # Pure Solar Gold
+	elif p1_active:
+		return Color(0.95, 0.35, 1.0, 0.95) # Pure Coronal Violet
+
+	return Color(1.0, 0.82, 0.18, 0.95)
+
+func _setup_harmonic_matrix() -> void:
+	_clear_harmonic_matrix()
+	is_harmonic_matrix = true
+	active_tethers_count = 0
+	if active_drones.size() < 6:
+		return
+
+	# Pair 0: Drone 0 and Drone 4 (Ring A, Solar Gold)
+	# Pair 1: Drone 1 and Drone 5 (Ring B, Coronal Violet)
+	var pair_configs = [
+		{ "idx_a": 0, "idx_b": 4, "color": Color(1.0, 0.82, 0.15), "name": "Solar Gold" },
+		{ "idx_a": 1, "idx_b": 5, "color": Color(0.95, 0.30, 1.00), "name": "Coronal Violet" }
+	]
+
+	for p_idx in range(pair_configs.size()):
+		var cfg = pair_configs[p_idx]
+		var d_a: Dictionary = {}
+		var d_b: Dictionary = {}
+		for d in active_drones:
+			if d["index"] == cfg["idx_a"]: d_a = d
+			elif d["index"] == cfg["idx_b"]: d_b = d
+
+		if d_a.is_empty() or d_b.is_empty():
+			continue
+
+		d_a["is_harmonic_anchor"] = true
+		d_b["is_harmonic_anchor"] = true
+		d_a["harmonic_pair_idx"] = p_idx
+		d_b["harmonic_pair_idx"] = p_idx
+
+		_attach_harmonic_halo(d_a.get("node"), cfg["color"])
+		_attach_harmonic_halo(d_b.get("node"), cfg["color"])
+
+		harmonic_pairs.append({
+			"pair_idx": p_idx,
+			"drone_a": d_a,
+			"drone_b": d_b,
+			"color": cfg["color"],
+			"active": true
+		})
+		active_tethers_count += 1
+
+func _attach_harmonic_halo(drone_node: Node3D, color: Color) -> void:
+	if not is_instance_valid(drone_node): return
+	var halo_root = Node3D.new()
+	halo_root.name = "HarmonicHaloRoot"
+	drone_node.add_child(halo_root)
+
+	# Radiant, Camera-Facing Lens Flare Core (Directly at the drone pupil, always facing player)
+	var lens_flare = MeshInstance3D.new()
+	lens_flare.name = "AnchorLensGlow"
+	var sphere = SphereMesh.new()
+	sphere.radius = 0.36
+	sphere.height = 0.72
+	lens_flare.mesh = sphere
+	var mat_g = StandardMaterial3D.new()
+	mat_g.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat_g.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat_g.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	mat_g.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	mat_g.albedo_color = Color(color.r, color.g, color.b, 0.95)
+	mat_g.emission_enabled = true
+	mat_g.emission = color
+	mat_g.emission_energy_multiplier = 9.5
+	lens_flare.material_override = mat_g
+	halo_root.add_child(lens_flare)
+
+	# Subtle outer aura ring around the lens (facing player)
+	var reticle = MeshInstance3D.new()
+	reticle.name = "AnchorReticle"
+	var torus = TorusMesh.new()
+	torus.inner_radius = 0.48
+	torus.outer_radius = 0.56
+	reticle.mesh = torus
+	var mat_r = StandardMaterial3D.new()
+	mat_r.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat_r.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat_r.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	mat_r.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat_r.albedo_color = Color(color.r, color.g, color.b, 0.85)
+	mat_r.emission_enabled = true
+	mat_r.emission = color
+	mat_r.emission_energy_multiplier = 6.5
+	reticle.material_override = mat_r
+	halo_root.add_child(reticle)
+
+func _update_harmonic_tethers(delta: float) -> void:
+	if not is_harmonic_matrix:
+		return
+
+	for pair in harmonic_pairs:
+		if not pair.get("active", false):
+			continue
+		var d_a = pair.get("drone_a", {})
+		var d_b = pair.get("drone_b", {})
+		var node_a = d_a.get("node") as Node3D
+		var node_b = d_b.get("node") as Node3D
+
+		if not is_instance_valid(node_a) or not is_instance_valid(node_b) or not active_drones.has(d_a) or not active_drones.has(d_b):
+			_sever_harmonic_pair(pair, sun_node.global_position if is_instance_valid(sun_node) else global_position)
+			continue
+
+		# Gently spin the thin optic reticle on both anchor drones
+		for n in [node_a, node_b]:
+			var reticle = n.find_child("AnchorReticle", true, false) as MeshInstance3D
+			if is_instance_valid(reticle):
+				reticle.rotate_z(delta * 2.0)
+
+func _check_harmonic_pair_sever(drone: Dictionary, pos: Vector3) -> void:
+	if not is_harmonic_matrix:
+		return
+	var p_idx = drone.get("harmonic_pair_idx", -1)
+	if p_idx >= 0 and p_idx < harmonic_pairs.size():
+		var pair = harmonic_pairs[p_idx]
+		if pair.get("active", false):
+			_sever_harmonic_pair(pair, pos, false)
+
+func _sever_harmonic_pair(pair: Dictionary, burst_pos: Vector3, shatter_drones: bool = false) -> void:
+	if not pair.get("active", false):
+		return
+	pair["active"] = false
+	active_tethers_count = max(0, active_tethers_count - 1)
+
+	_spawn_tether_sever_fx(burst_pos, pair["color"])
+
+	# Hide the glowing eye flare on the surviving partner drone so it visually powers down
+	for d in [pair["drone_a"], pair["drone_b"]]:
+		var dn = d.get("node") as Node3D
+		if is_instance_valid(dn):
+			var hr = dn.find_child("HarmonicHaloRoot", false, false)
+			if is_instance_valid(hr):
+				hr.visible = false
+
+	if shatter_drones:
+		for d in [pair["drone_a"], pair["drone_b"]]:
+			var dn = d.get("node") as Node3D
+			if is_instance_valid(dn) and active_drones.has(d):
+				var pos = dn.global_position
+				_spawn_drone_destruction_fx(pos, true)
+				active_drones.erase(d)
+				dn.queue_free()
+				drone_shattered_by_ice.emit(pos)
+
+	harmonic_tether_severed.emit(pair["pair_idx"], burst_pos)
+
+	if active_tethers_count <= 0:
+		harmonic_matrix_collapsed.emit()
+		_trigger_matrix_collapse_fx()
+
+func _spawn_tether_sever_fx(pos: Vector3, color: Color) -> void:
+	var particles = CPUParticles3D.new()
+	particles.emitting = false
+	particles.one_shot = true
+	particles.explosiveness = 0.95
+	particles.amount = 32
+	particles.lifetime = 0.75
+	particles.global_position = pos
+	particles.direction = Vector3.UP
+	particles.spread = 180.0
+	particles.initial_velocity_min = 10.0
+	particles.initial_velocity_max = 22.0
+	particles.gravity = Vector3(0.0, -8.0, 0.0)
+
+	var mat = StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat.albedo_color = color
+	mat.emission_enabled = true
+	mat.emission = color
+	mat.emission_energy_multiplier = 5.0
+
+	var p_mesh = BoxMesh.new()
+	p_mesh.size = Vector3(0.18, 0.18, 0.18)
+	p_mesh.material = mat
+	particles.mesh = p_mesh
+
+	add_child(particles)
+	particles.emitting = true
+
+	var tw = create_tween()
+	tw.tween_interval(1.0)
+	tw.tween_callback(particles.queue_free)
+
+	if sfx_shatter_metal:
+		sfx_shatter_metal.pitch_scale = randf_range(1.2, 1.4)
+		sfx_shatter_metal.play()
+
+func _trigger_matrix_collapse_fx() -> void:
+	stun_timer = 3.5
+	if sfx_driver_overdrive:
+		sfx_driver_overdrive.pitch_scale = 1.3
+		sfx_driver_overdrive.play()
+	if sfx_ice_shatter_glass:
+		sfx_ice_shatter_glass.pitch_scale = 0.95
+		sfx_ice_shatter_glass.play()
+
+	for d in active_drones:
+		var vfx = d.get("vent_fx") as CPUParticles3D
+		if is_instance_valid(vfx):
+			vfx.emitting = true
+
+func _clear_harmonic_matrix() -> void:
+	is_harmonic_matrix = false
+	active_tethers_count = 0
+	stun_timer = 0.0
+	for p in harmonic_pairs:
+		var t = p.get("tether_node") as Node3D
+		if is_instance_valid(t):
+			t.queue_free()
+	harmonic_pairs.clear()
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Milestone 2: Equatorial Solar Driver & Planetary Belt

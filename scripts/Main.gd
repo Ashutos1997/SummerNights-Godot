@@ -1432,6 +1432,8 @@ func _build_scene() -> void:
 	solar_convergence_mgr.drone_shattered_by_ice.connect(_on_solar_drone_ice_shattered)
 	solar_convergence_mgr.convergence_completed.connect(shatter_drone_shield)
 	solar_convergence_mgr.solar_driver_equipped.connect(_on_solar_driver_equipped)
+	solar_convergence_mgr.harmonic_tether_severed.connect(_on_harmonic_tether_severed)
+	solar_convergence_mgr.harmonic_matrix_collapsed.connect(_on_harmonic_matrix_collapsed)
 	
 	# ── Weather Rain Particles ───────────────────────────────────────────────
 	weather_rain_particles = GPUParticles3D.new()
@@ -2445,16 +2447,25 @@ func _process(delta: float) -> void:
 			sun_shield_mesh.material_override.set_shader_parameter("hit_time", shield_ripple_time)
 	
 	var has_active_drones = (solar_convergence_mgr and solar_convergence_mgr.get_active_drone_count() > 0)
-	if has_active_drones:
-		# Golden Drone Shield is active while any orbital drones live!
+	var shield_needed = false
+	if solar_convergence_mgr and solar_convergence_mgr.has_method("is_harmonic_shield_active"):
+		shield_needed = solar_convergence_mgr.is_harmonic_shield_active()
+	else:
+		shield_needed = has_active_drones
+
+	if shield_needed:
+		# Golden Drone Shield is active while any orbital drones (or harmonic tethers) live!
 		if not is_sun_shielded or not is_drone_shield_active:
 			is_sun_shielded = true
 			is_drone_shield_active = true
 			if sun_shield_mesh:
 				var mat = sun_shield_mesh.material_override as ShaderMaterial
 				if mat:
-					mat.set_shader_parameter("shield_color", Color(1.0, 0.82, 0.18, 0.95))
-					mat.set_shader_parameter("ripple_color_tint", Vector3(1.0, 0.92, 0.45))
+					var init_col = Color(1.0, 0.82, 0.18, 0.95)
+					if solar_convergence_mgr and solar_convergence_mgr.has_method("get_harmonic_shield_tint"):
+						init_col = solar_convergence_mgr.get_harmonic_shield_tint()
+					mat.set_shader_parameter("shield_color", init_col)
+					mat.set_shader_parameter("ripple_color_tint", Vector3(init_col.r, init_col.g, init_col.b))
 					mat.set_shader_parameter("shield_opacity", 0.0)
 				sun_shield_mesh.scale = Vector3.ZERO
 				sun_shield_mesh.visible = true
@@ -2465,6 +2476,15 @@ func _process(delta: float) -> void:
 			if is_instance_valid(shield_spawn_sfx):
 				shield_spawn_sfx.pitch_scale = 1.15
 				shield_spawn_sfx.play()
+		else:
+			# Dynamic harmonic chromatic resonance tinting while shield is up
+			if is_drone_shield_active and sun_shield_mesh and sun_shield_mesh.visible:
+				if solar_convergence_mgr and solar_convergence_mgr.has_method("get_harmonic_shield_tint"):
+					var h_tint = solar_convergence_mgr.get_harmonic_shield_tint()
+					var mat = sun_shield_mesh.material_override as ShaderMaterial
+					if mat:
+						mat.set_shader_parameter("shield_color", h_tint)
+						mat.set_shader_parameter("ripple_color_tint", Vector3(h_tint.r, h_tint.g, h_tint.b))
 	else:
 		if is_drone_shield_active:
 			is_drone_shield_active = false
@@ -5318,7 +5338,11 @@ func toggle_solar_drones() -> void:
 func _on_solar_driver_equipped(_pos: Vector3) -> void:
 	if hud and hud.has_method("show_toast"):
 		var is_kr = GameState.language == "KR"
-		if GameState.current_wave >= 40:
+		if GameState.current_wave >= 50:
+			var title = "조화 매트릭스!" if is_kr else "HARMONIC MATRIX!"
+			var desc = "이중 공명 테더가 태양 방어막을 전개합니다" if is_kr else "Twin tethered pairs projecting harmonic barrier"
+			hud.show_toast(title, desc, "res://assets/ui/icons/driver_fury.png", Color(1.0, 0.85, 0.25))
+		elif GameState.current_wave >= 40:
 			var title = "무한 격자 전개!" if is_kr else "INFINITY LATTICE!"
 			var desc = "이중 교차 궤도 드론 군체 전개" if is_kr else "Dual-ring counter-rotating swarm deployed"
 			hud.show_toast(title, desc, "res://assets/ui/icons/driver_fury.png", Color(0.95, 0.40, 1.0))
@@ -5326,6 +5350,59 @@ func _on_solar_driver_equipped(_pos: Vector3) -> void:
 			var title = "드라이버 장착!" if is_kr else "SOLAR DRIVER EQUIPPED!"
 			var desc = "적도 행성 벨트 및 드론 군체 전개" if is_kr else "Planetary Belt & Drone Swarm Deployed"
 			hud.show_toast(title, desc, "res://assets/ui/icons/driver_smirk.png", Color(1.0, 0.80, 0.20))
+
+func _on_harmonic_tether_severed(pair_idx: int, _pos: Vector3) -> void:
+	shake(0.35, 0.05)
+	water_tank = min(MAX_WATER, water_tank + (MAX_WATER * 0.25))
+	water_changed.emit(water_tank, MAX_WATER)
+	if hud and hud.has_method("show_toast"):
+		var is_kr = GameState.language == "KR"
+		var title = ""
+		var desc = ""
+		var col = Color(1.0, 0.85, 0.25)
+		if pair_idx == 0:
+			title = "태양 공명 주파수 단절!" if is_kr else "SOLAR HARMONIC SEVERED!"
+			desc = "솔라 주파수 파괴! 코로나 바이올렛만 남음 (+25% 물)" if is_kr else "Solar Frequency Broken! Coronal Violet remaining (+25% Water)"
+			col = Color(1.0, 0.82, 0.15)
+		else:
+			title = "코로나 공명 주파수 단절!" if is_kr else "CORONAL HARMONIC SEVERED!"
+			desc = "코로나 주파수 파괴! 솔라 골드만 남음 (+25% 물)" if is_kr else "Coronal Frequency Broken! Solar Gold remaining (+25% Water)"
+			col = Color(0.95, 0.35, 1.0)
+		hud.show_toast(title, desc, "res://assets/ui/icons/driver_fury.png", col, null, "[ FREQUENCY COLLAPSED ]" if not is_kr else "[ 주파수 붕괴 ]")
+
+func _on_harmonic_matrix_collapsed() -> void:
+	shake(0.55, 0.08)
+	is_sun_shielded = false
+	is_drone_shield_active = false
+	if sun_shield_mesh and is_instance_valid(sun_shield_mesh):
+		var tw = create_tween().set_parallel()
+		tw.tween_property(sun_shield_mesh, "scale", Vector3(1.35, 1.35, 1.35), 0.35).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+		var mat = sun_shield_mesh.material_override as ShaderMaterial
+		if mat:
+			tw.tween_method(func(v): mat.set_shader_parameter("shield_opacity", v), 1.0, 0.0, 0.35)
+		tw.chain().tween_callback(func():
+			if is_instance_valid(sun_shield_mesh):
+				sun_shield_mesh.visible = false
+				sun_shield_mesh.scale = Vector3.ONE
+		)
+	
+	GameState.add_score(1500)
+	water_tank = min(MAX_WATER, water_tank + (MAX_WATER * 0.50))
+	water_changed.emit(water_tank, MAX_WATER)
+	
+	if GameState.current_weapon_id == "kitsune":
+		if not is_celestial_awakened:
+			GameState.celestial_charge = min(1.0, GameState.celestial_charge + (0.15 * catastrom_buff * GameState.catastrom_charge_mult))
+	else:
+		var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
+		if can_catastrom:
+			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (0.15 * catastrom_buff * GameState.catastrom_charge_mult))
+			
+	if hud and hud.has_method("show_toast"):
+		var is_kr = GameState.language == "KR"
+		var title = "조화 방어막 파괴!" if is_kr else "HARMONIC SHIELD SHATTERED!"
+		var desc = "공명 붕괴! 태양 핵 노출 (+1500점)" if is_kr else "Resonance broken! Sun core exposed (+1500 PTS)"
+		hud.show_toast(title, desc, "res://assets/ui/icons/driver_fury.png", Color(0.35, 0.95, 1.0), null, "[ BARRIER COLLAPSE ]" if not is_kr else "[ 방어막 붕괴 ]")
 
 func toggle_solar_driver() -> void:
 	toggle_solar_drones()
