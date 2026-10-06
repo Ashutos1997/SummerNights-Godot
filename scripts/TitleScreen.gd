@@ -11,7 +11,16 @@ extends Control
 @onready var lang_highlight = $LangBtn/ToggleHighlight
 @onready var en_label = $LangBtn/Labels/ENLabel
 @onready var kr_label = $LangBtn/Labels/KRLabel
-@onready var high_score_lbl = $ColorRect/HBoxContainer/LeftColumn/HighScoreLabel
+@onready var stats_cards_container = get_node_or_null("ColorRect/HBoxContainer/LeftColumn/StatsCards")
+@onready var score_card = get_node_or_null("ColorRect/HBoxContainer/LeftColumn/StatsCards/ScoreCard")
+@onready var score_card_title_lbl = get_node_or_null("ColorRect/HBoxContainer/LeftColumn/StatsCards/ScoreCard/VBox/HeaderRow/Title")
+@onready var score_card_val_lbl = get_node_or_null("ColorRect/HBoxContainer/LeftColumn/StatsCards/ScoreCard/VBox/Value")
+@onready var score_card_icon = get_node_or_null("ColorRect/HBoxContainer/LeftColumn/StatsCards/ScoreCard/VBox/HeaderRow/Icon")
+@onready var wave_card = get_node_or_null("ColorRect/HBoxContainer/LeftColumn/StatsCards/WaveCard")
+@onready var wave_card_title_lbl = get_node_or_null("ColorRect/HBoxContainer/LeftColumn/StatsCards/WaveCard/VBox/HeaderRow/Title")
+@onready var wave_card_val_lbl = get_node_or_null("ColorRect/HBoxContainer/LeftColumn/StatsCards/WaveCard/VBox/Value")
+@onready var wave_card_icon = get_node_or_null("ColorRect/HBoxContainer/LeftColumn/StatsCards/WaveCard/VBox/HeaderRow/Icon")
+@onready var high_score_lbl = score_card_val_lbl if score_card_val_lbl else get_node_or_null("ColorRect/HBoxContainer/LeftColumn/HighScoreLabel")
 @onready var credit_lbl = $CreditLine
 @onready var splash_container = get_node_or_null("SplashContainer")
 @onready var splash_center = get_node_or_null("SplashContainer/SplashCenter")
@@ -292,59 +301,8 @@ func _update_language() -> void:
 				tw.tween_property(en_label, "theme_override_colors/font_color", Color(0.0, 0.0, 0.0, 1.0), 0.25)
 				tw.tween_property(kr_label, "theme_override_colors/font_color", Color(1.0, 0.85, 0.2, 1.0), 0.25)
 		
-		# Best Time & Wave Display
-		var left_col = $ColorRect/HBoxContainer/LeftColumn
-		var spacer_stats = left_col.get_node_or_null("SpacerStats")
-		var has_stats = (GameState.high_score > 0) or (GameState.best_survival_time > 0.0 or GameState.best_wave > 0)
-		if spacer_stats:
-			spacer_stats.visible = has_stats
-			
-		if GameState.best_survival_time > 0.0 or GameState.best_wave > 0:
-			if not best_time_lbl:
-				best_time_lbl = Label.new()
-				left_col.add_child(best_time_lbl)
-				var insert_pos = (spacer_stats.get_index() + 1) if spacer_stats else (subtitle_lbl.get_index() + 1)
-				left_col.move_child(best_time_lbl, insert_pos)
-				
-			var m = int(GameState.best_survival_time) / 60
-			var s = int(GameState.best_survival_time) % 60
-			var time_str = "%02d:%02d" % [m, s]
-			if GameState.best_wave > 0 and GameState.best_survival_time > 0.0:
-				best_time_lbl.text = "최고 기록: %d 웨이브 (%s)" % [GameState.best_wave, time_str] if is_kr else "BEST ENDLESS: WAVE %d (%s)" % [GameState.best_wave, time_str]
-			elif GameState.best_wave > 0:
-				best_time_lbl.text = "최고 웨이브: %d" % GameState.best_wave if is_kr else "BEST ENDLESS: WAVE %d" % GameState.best_wave
-			else:
-				best_time_lbl.text = "최고 기록: %s" % time_str if is_kr else "BEST ENDLESS TIME: %s" % time_str
-			best_time_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-			_style_label(best_time_lbl, 16 if is_kr else 14, Color(0.4, 0.9, 0.4, 1.0), font)
-			best_time_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
-			best_time_lbl.add_theme_constant_override("outline_size", 4)
-			# Breathing room above best time line
-			var best_time_style = StyleBoxEmpty.new()
-			best_time_style.content_margin_top = 2
-			best_time_lbl.add_theme_stylebox_override("normal", best_time_style)
-			
-		# High Score Display
-		if high_score_lbl:
-			if GameState.high_score > 0:
-				# Format with commas (e.g., 1,500)
-				var score_str = str(GameState.high_score)
-				var formatted_score = ""
-				for i in range(score_str.length()):
-					if i > 0 and i % 3 == 0:
-						formatted_score = "," + formatted_score
-					formatted_score = score_str[score_str.length() - 1 - i] + formatted_score
-				
-				high_score_lbl.text = "최고 점수: %s" % formatted_score if is_kr else "HIGH SCORE: %s" % formatted_score
-				_style_label(high_score_lbl, 16 if is_kr else 14, Color(1.0, 0.85, 0.2, 1.0), font)
-				high_score_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
-				high_score_lbl.add_theme_constant_override("outline_size", 4)
-				# Breathing room above high score line
-				var hs_style = StyleBoxEmpty.new()
-				hs_style.content_margin_top = 2
-				high_score_lbl.add_theme_stylebox_override("normal", hs_style)
-			else:
-				high_score_lbl.visible = false
+		# Stats Cards Display (Score & Best Wave)
+		_update_stats_cards(is_kr, font)
 			
 		# Style buttons
 		if normal_btn and survival_btn and dev_btn:
@@ -517,6 +475,100 @@ func _style_label(lbl: Label, size: int, color: Color, font: Font) -> void:
 	lbl.add_theme_color_override("font_color", color)
 	lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
 	lbl.add_theme_constant_override("outline_size", 5)
+
+func _update_stats_cards(is_kr: bool, font: Font) -> void:
+	if not stats_cards_container: return
+	
+	var body_font = font if is_kr else load("res://assets/fonts/Inter-Medium.ttf")
+	var header_font = font if is_kr else load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+	
+	# Score Card (Retro Flat Plate: 4px radius, 1px subtle gold border)
+	if score_card:
+		var score_style = StyleBoxFlat.new()
+		score_style.bg_color = Color(0.04, 0.02, 0.08, 0.65)
+		score_style.border_color = Color(1.0, 0.85, 0.2, 0.28)
+		score_style.set_border_width_all(1)
+		score_style.set_corner_radius_all(4)
+		score_style.content_margin_left = 12
+		score_style.content_margin_right = 12
+		score_style.content_margin_top = 8
+		score_style.content_margin_bottom = 8
+		score_card.add_theme_stylebox_override("panel", score_style)
+		score_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		
+	if score_card_icon:
+		score_card_icon.modulate = Color(1.0, 0.85, 0.2, 0.85)
+		score_card_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		
+	if score_card_title_lbl:
+		score_card_title_lbl.text = "최고 점수" if is_kr else "SCORE"
+		score_card_title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		score_card_title_lbl.add_theme_font_override("font", body_font)
+		score_card_title_lbl.add_theme_font_size_override("font_size", 11)
+		score_card_title_lbl.add_theme_color_override("font_color", Color(0.82, 0.84, 0.90, 0.85))
+		score_card_title_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		score_card_title_lbl.add_theme_constant_override("outline_size", 1)
+		score_card_title_lbl.add_theme_constant_override("letter_spacing", 0 if is_kr else 1)
+		score_card_title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		
+	if score_card_val_lbl:
+		var score_str = str(GameState.high_score)
+		var formatted_score = ""
+		for i in range(score_str.length()):
+			if i > 0 and i % 3 == 0:
+				formatted_score = "," + formatted_score
+			formatted_score = score_str[score_str.length() - 1 - i] + formatted_score
+			
+		score_card_val_lbl.text = formatted_score
+		score_card_val_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		score_card_val_lbl.add_theme_font_override("font", header_font)
+		score_card_val_lbl.add_theme_font_size_override("font_size", 18 if is_kr else 20)
+		score_card_val_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+		score_card_val_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		score_card_val_lbl.add_theme_constant_override("outline_size", 2)
+		score_card_val_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	# Wave Card (Retro Flat Plate: 4px radius, 1px subtle mint border)
+	if wave_card:
+		var wave_style = StyleBoxFlat.new()
+		wave_style.bg_color = Color(0.02, 0.04, 0.08, 0.65)
+		wave_style.border_color = Color(0.25, 0.85, 0.65, 0.28)
+		wave_style.set_border_width_all(1)
+		wave_style.set_corner_radius_all(4)
+		wave_style.content_margin_left = 12
+		wave_style.content_margin_right = 12
+		wave_style.content_margin_top = 8
+		wave_style.content_margin_bottom = 8
+		wave_card.add_theme_stylebox_override("panel", wave_style)
+		wave_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		
+	if wave_card_icon:
+		wave_card_icon.modulate = Color(0.25, 0.85, 0.65, 0.85)
+		wave_card_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		
+	if wave_card_title_lbl:
+		wave_card_title_lbl.text = "최고 웨이브" if is_kr else "BEST WAVE"
+		wave_card_title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		wave_card_title_lbl.add_theme_font_override("font", body_font)
+		wave_card_title_lbl.add_theme_font_size_override("font_size", 11)
+		wave_card_title_lbl.add_theme_color_override("font_color", Color(0.82, 0.84, 0.90, 0.85))
+		wave_card_title_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		wave_card_title_lbl.add_theme_constant_override("outline_size", 1)
+		wave_card_title_lbl.add_theme_constant_override("letter_spacing", 0 if is_kr else 1)
+		wave_card_title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		
+	if wave_card_val_lbl:
+		var wave_text = "--"
+		if GameState.best_wave > 0:
+			wave_text = str(GameState.best_wave)
+		wave_card_val_lbl.text = wave_text
+		wave_card_val_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		wave_card_val_lbl.add_theme_font_override("font", header_font)
+		wave_card_val_lbl.add_theme_font_size_override("font_size", 18 if is_kr else 20)
+		wave_card_val_lbl.add_theme_color_override("font_color", Color(0.25, 0.85, 0.65, 1.0))
+		wave_card_val_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		wave_card_val_lbl.add_theme_constant_override("outline_size", 2)
+		wave_card_val_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 func _on_normal_pressed() -> void:
 	if is_starting: return
@@ -1565,27 +1617,7 @@ func _apply_settings_language() -> void:
 			credit_lbl.text = "SUMMER NIGHTS v1.7 · GODOT 4 · GDSCRIPT · FORWARD+"
 			_style_label(credit_lbl, 14 if is_kr else 12, Color(1.0, 1.0, 1.0, 0.7), font)
 
-		if best_time_lbl and (GameState.best_survival_time > 0.0 or GameState.best_wave > 0):
-			var m = int(GameState.best_survival_time) / 60
-			var s = int(GameState.best_survival_time) % 60
-			var time_str = "%02d:%02d" % [m, s]
-			if GameState.best_wave > 0 and GameState.best_survival_time > 0.0:
-				best_time_lbl.text = "최고 기록: %d 웨이브 (%s)" % [GameState.best_wave, time_str] if is_kr else "BEST ENDLESS: WAVE %d (%s)" % [GameState.best_wave, time_str]
-			elif GameState.best_wave > 0:
-				best_time_lbl.text = "최고 웨이브: %d" % GameState.best_wave if is_kr else "BEST ENDLESS: WAVE %d" % GameState.best_wave
-			else:
-				best_time_lbl.text = "최고 기록: %s" % time_str if is_kr else "BEST ENDLESS TIME: %s" % time_str
-			_style_label(best_time_lbl, 16 if is_kr else 14, Color(0.4, 0.9, 0.4, 1.0), font)
-
-		if high_score_lbl and GameState.high_score > 0:
-			var score_str = str(GameState.high_score)
-			var formatted_score = ""
-			for i in range(score_str.length()):
-				if i > 0 and i % 3 == 0:
-					formatted_score = "," + formatted_score
-				formatted_score = score_str[score_str.length() - 1 - i] + formatted_score
-			high_score_lbl.text = "최고 점수: %s" % formatted_score if is_kr else "HIGH SCORE: %s" % formatted_score
-			_style_label(high_score_lbl, 16 if is_kr else 14, Color(1.0, 0.85, 0.2, 1.0), font)
+		_update_stats_cards(is_kr, font)
 
 	# Update top-right LangBtn highlight
 	if lang_highlight and en_label and kr_label:
