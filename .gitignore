@@ -24,3 +24,7 @@ assets/ui/logo/
 
 # Local 3D Model Web Viewer
 viewer/
+
+# Local tools and asset generation scripts
+tools/
+
