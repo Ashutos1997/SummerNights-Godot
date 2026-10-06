@@ -6,61 +6,48 @@ All notable changes to the Summer Nights project will be documented in this file
 *(Note: Releases are now unified to v1.7 across both GitHub and itch.io)*
 
 ### Added
-* Solar Convergence "Interceptor Escorts" (Wave 55 & 60+): Added active escort fighters to late-game boss encounters. Equipped with dual plasma jet thrusters, Arc Cyan ocular cores, 120 HP reinforced armor with 2-stage cyan crack fracture progression and coolant venting, and agile flight physics, Interceptors actively detect the player's water spray vector. When the player targets the Sun, Interceptors dart into the central line of fire ($Z = -22.0\text{m}$); when the player targets any other orbital drone or Harmonic Anchor, Interceptors aggressively surge forward ($+6.5\text{m}$ in front of that drone) to body-block the shots. Wave 55 deploys 1 Interceptor; Wave 60+ deploys 2 coordinated Interceptors forming a dynamic defensive pincer. Interceptors can be shattered with sustained fire, one-shot cleaved by Kitsune Blade, or instantly frozen by Ice Blast (+1,000 pts, +25% water, +10% ult charge).
-* Solar Convergence "Harmonic Matrix" Resonance Shield (Wave 50+): Added an advanced boss mechanic to Endless Mode past Wave 40. The 8 Infinity Lattice drones feature twin Harmonic Anchor pairs (Pair 0: Solar Gold on Ring A; Pair 1: Coronal Violet on Ring B) that project an invincible dual-frequency chromatic harmonic resonance across the Sun's Golden Shield (rhythmically undulating between Solar Gold and Coronal Violet waves, with 0 lines cutting across the Sun's face). Anchor drones feature precision optic reticle rings and radiant eye lens flares. Destroying or ice-shattering an anchor drone severs that specific harmonic frequency (+25% water) and locks the shield into the remaining single frequency. Severing both pairs collapses the entire Harmonic Shield (+1,500 pts, +50% water, +15% ult charge), stunning remaining drones for 3.5s and exposing the Sun directly to critical hits.
-* Solar Convergence "Infinity Lattice" Drone Formation (Wave 40+): Upgraded late-game boss encounters past Wave 30. While Waves 30–35 feature the classic single flat equatorial ring (6 drones), Wave 40+ deploys 8 drones in counter-rotating dual tilted planes ($\pm 33^\circ$) that weave an interlocking 3D double helix. Ring A (Ascending Solar Gold, clockwise) and Ring B (Descending Coronal Violet, counter-clockwise) sweep across both upper and lower solar hemispheres, breaking stationary equatorial aim parking. Drones cross at central intersection nodes, allowing skilled players to shatter or cleave multiple drones simultaneously with timed Ice Blasts or Kitsune Blade slashes. Phase 2 deploys 6 high-speed Overdrive escorts.
-* Dynamic Endgame Sun Durability Scaling: Post-Wave 20 in Endless Mode, Sun heat capacity scales by $+2.2\%$/wave (`MAX_TEMP * (1.0 + (wave - 20) * 0.022)`), maintaining 20–32s TTK combat against stacked player perks.
-* Solar Overclock Perk: Added a high-risk, high-reward rare trade-off perk (+30% to +40% Cooling Power, but Sun fires solar flares 25% to 35% faster), designed to dramatically accelerate DPS while demanding sharper evasion and parrying reflexes.
-* High-Pressure Bore Perk: Trade-off perk (+18% to +30% Cooling Power, +12% to +20% Water Drain). Massive burst cooling at the cost of faster tank depletion, forcing disciplined tap-firing.
-* Hyper-Focus Perk: Trade-off perk (+20% to +35% Crit Damage, -12% to -20% Base Cooling). Rewards precision sunspot tracking while penalizing body-shot spray; pure skill check.
-* Deep Reservoir Perk: Trade-off perk (+25% to +45% Water Tank Size, -15% to -25% Refill Rate). Longer sustained bursts at the cost of sluggish recovery between engagements.
-* Solar Disruptions (Normal Waves 6+): Added randomized micro-events (40%–60% chance) triggering 4.5s–8.0s into non-boss waves to inject tactical variety:
-  * Thermal Barrier: Temporary cyan energy shield (6.5s–8.0s) deflecting water spray; naturally dissolves or shatters instantly via Ice Blast (`[R] / [RMB]`) for +1,000 bonus score.
-  * Flare Barrage: Sun pulses and unleashes a rapid volley of 5–7 solar flares (0.35s–0.45s intervals) across wide angles, demanding agile lateral dodging.
-* Coronal Eclipse Weather Event (Wave 45+): Added an apex atmospheric hazard in deep Endless runs featuring deep velvet-violet twilight, pitch-black solar silhouette with violent neon magenta prominence loops, dedicated HUD weather icon (using custom `eclipse-flare.svg` vector asset), cloaked sunspots that remain invisible in the dark void until illuminated by player water spray, flare parries, or Ice Blasts, and +50% amplified cooling damage when striking illuminated weakpoints.
-* Solar & Coronal Eclipse Weather Differentiation: Strikingly distinguished Normal Solar Eclipse from Wave 45+ Coronal Eclipse across both 3D environmental aesthetics and gameplay:
-  - Normal Eclipse (Cold Stasis): Deep cosmic midnight-indigo sky with brilliant twinkling stars, a pitch-black moon disc crowned by a pearlescent silver-white Diamond-Ring Corona, moonlit silver sand, and ethereal silver-blue god rays. Sun heat regeneration halts and passively cools down by -2.0°/s under the lunar shadow while obsidian shadow flares challenge player defense.
-  - Coronal Eclipse (Apex Combat): Deep velvet-violet twilight with violent neon magenta prominence loops, electric violet god rays, and high-velocity coronal mass ejection flares. Sun heat continues rising; sunspots are cloaked in the void until illuminated, and striking illuminated weakpoints deals +50% amplified cooling damage.
-* Continuous Spray Thermal Falloff: Added dynamic cooling falloff for continuous stationary firing. Holding water spray on the exact same coordinate without moving for >3.0s gradually degrades cooling efficiency down to 70% (over 3.0s–6.0s). Moving the reticle across the Sun (distance >= 1.0), swapping weapons, or releasing fire for >= 0.4s immediately resets efficiency to 100%, rewarding rhythmic tracking and target acquisition over stationary reticle parking.
-* ~~Reactive Solar Heat Surge & Disruption Mechanic~~ *(Removed — mechanic is being redesigned)*
-* ~~Multi-Layered Cinematic Shockwave Animation~~ *(Removed with Heat Surge)*
-* Perk Diminishing Returns & Drafting Stacking UI: Added soft diminishing returns when stacking 3 or more copies of the same perk (1st & 2nd copies = 100% full effect; 3rd copy = 75%; 4th+ copies = 55%). Drafting Screen cards now clearly alert players when stacking $\ge 2$ copies with an amber stack badge (`[ 3RD STACK · 75% ]` / `[ 3중첩 · 효율 75% ]`) and real-time recalculated effective perk descriptions.
-* Wave Timer Glide Intro: Added an animated wave timer presentation at round/wave start. The wave duration fades into the center crosshair in bold cyber gold (`scale 1.6x`, `0.25s`), holds strictly in place for `2.5s` (allowing clear reading of the live countdown), and glides smoothly across `0.85s` (`TRANS_QUAD` / `TRANS_SINE`) directly into the top-right HUD anchor with zero-pixel handoff. The timer counts down in real-time throughout the presentation, ensuring players immediately register the wave time limit without taking their eyes off the central combat reticle.
-* Title Screen Subtitle Clarification: Updated the main menu subtitle to `"COOL DOWN THE SUN BEFORE TIME RUNS OUT"` / `"제한 시간 내에 태양을 식혀라"` (`14px` EN / `18px` KR) to explicitly communicate the core time limit and loss condition from the very first screen.
-* "Paid in Full" Boss Overtime: Added an emergency overtime system scoped exclusively to Boss Waves (Levels 5–6, Endless every 5th wave). Hitting `0:00` with banked score initiates Overtime instead of instant Supernova defeat. Banked score drains on an accelerating curve as life-support time, score inflow freezes to prevent perk-stacking immortality loops, and Sun heat regen halts. Defeating the boss clears Overtime and restores normal score accumulation for the next wave, while score hitting 0 causes bankruptcy defeat.
-* Procedural "Overtime Shock" Sun Expression: Added a dedicated procedural Boss Sun expression for Overtime featuring contracted shock pill eyes, high arched startled eyebrows, a round open dropped jaw, and a procedural temple sweat droplet bead with radiant pale-amber shock modulate.
-* "Paid in Full" Achievement: Added a new achievement (`paid_in_full` / "완납") with custom `cash.svg` icon, unlocked by defeating a Boss during Overtime after burning at least 5,000 banked score.
-* HUD Overtime Visuals & Bankruptcy Feedback: Added a pulsing `[ OVERTIME ]` / `[ 연장전 ]` crimson timer badge, warning red score burn feedback, and a dedicated bankruptcy defeat subtitle (`"BANKRUPT: ALL SCORE DEPLETED"` / `"파산: 점수를 모두 소진했습니다"`).
+* Interceptor Escorts (Wave 55 & 60+): Armored fighter drones (120 HP) that body-block spray aimed at the Sun or orbital drones (1 on Wave 55, 2 on Wave 60+).
+* Harmonic Matrix Shield (Wave 50+): 2 Harmonic Anchor drone pairs projecting dual-frequency resonance. Breaking both collapses shield (+1,500 pts, +50% water, +15% ult) and stuns drones for 3.5s.
+* Infinity Lattice Formation (Wave 40+): 8 drones in counter-rotating dual tilted planes ($\pm 33^\circ$) weaving a 3D double helix across both hemispheres. Phase 2 deploys 6 Overdrive escorts.
+* Endgame Durability Scaling: Post-Wave 20 Endless scales Sun heat capacity by +2.2%/wave (`MAX_TEMP * (1.0 + (wave - 20) * 0.022)`).
+* New Trade-off Perks:
+  * *Solar Overclock:* +30%–40% cooling power, +25%–35% faster solar flares.
+  * *High-Pressure Bore:* +18%–30% cooling power, +12%–20% water drain.
+  * *Hyper-Focus:* +20%–35% crit damage, -12%–20% base cooling.
+  * *Deep Reservoir:* +25%–45% tank capacity, -15%–25% refill rate.
+* Solar Disruptions (Wave 6+): Random micro-events (40%–60% chance) in non-boss waves:
+  * *Thermal Barrier:* Cyan shield deflecting water; shatters via Ice Blast for +1,000 pts.
+  * *Flare Barrage:* Rapid volley of 5–7 solar flares across wide angles.
+* Coronal Eclipse Weather (Wave 45+): Deep twilight hazard with cloaked sunspots revealed by water/parries/ice, and +50% cooling on illuminated weakpoints.
+* Weather Differentiation: Distinct visual and combat identities for Normal Eclipse (Cold Stasis, -2.0°/s passive cooling) vs. Coronal Eclipse (apex combat, cloaked weakpoints).
+* Continuous Spray Thermal Falloff: Spraying one spot for >3.0s degrades cooling efficiency to 70%. Moving aim (distance >= 1.0) or releasing trigger resets to 100%.
+* Perk Diminishing Returns: Stacking 3+ copies scales efficiency (1st/2nd = 100%, 3rd = 75%, 4th+ = 55%) with amber stack badge alerts.
+* Wave Timer Glide Intro: Round-start timer displays in screen center (`scale 1.6x`, 2.5s hold), then glides (0.85s) into top-right HUD anchor.
+* Title Screen Subtitle Clarification: Subtitle updated to `"COOL DOWN THE SUN BEFORE TIME RUNS OUT"` / `"제한 시간 내에 태양을 식혀라"`.
+* "Paid in Full" Boss Overtime: Reaching `0:00` on Boss Waves burns banked score as life support. Defeating the boss clears Overtime; zero score triggers bankruptcy defeat.
+* Overtime Shock Sun Expression: Procedural expression featuring contracted pill eyes, arched brows, open jaw, and temple sweat bead.
+* "Paid in Full" Achievement: Unlocked by defeating a Boss during Overtime after burning $\ge 5,000$ score.
+* HUD Overtime Telemetry: Pulsing crimson `[ OVERTIME ]` badge, red score drain feedback, and bankruptcy defeat subtitle.
 
 ### Improved
-* Modal Menu Z-Ordering & Timer Intro Suppression: Elevated all modal menu screens (Pause, Perk Drafting, Settings, Filters, Controller, Credits, Achievements, Buffs, Weapon Wheel, Win, End, and Lose) to `z_index = 50` so they render strictly on top of all HUD gameplay elements (`z_index = 0`). Configured any menu opening or game pause to immediately dismiss and resolve active wave timer intro animations (`FlyingWaveTimer`), completely preventing floating timer text from lingering over or occluding menu interfaces.
-* Boss Encounter UI Clarity: Removed the top-center Solar Convergence announcement banner on Wave 30 and boss encounters to keep the upper screen clear and unobscured during combat.
-* Achievement & Buff Card Corner Radii Unification: Standardized the achievement and active buff card panels across both Pause and Title Screen modals from an arbitrary 6px to the 4px Retro Flat Plate rule, unifying their styling 1:1 with HUD toasts, resource meters, and perk cards. Applied the concentric nesting formula ($\text{outer} = \text{inner} + \text{padding}$) to the locked achievement progress bars by refining the fill radius to 3px inside the 1px-bordered 4px track ($4 - 1 = 3\text{px}$) for seamless curve alignment without bleed.
-* Top-Center Achievement & Buff Popup Redesign: Overhauled top-center notification popups into Cyberpunk Arcade Plates (500px width, 4px plate corner radius, 1px cyber hairline, softened shadow, recessed 40x40px icon plates). Implemented an even-number typography system with body font for category kickers (`[ ACHIEVEMENT UNLOCKED ]` / `[ BUFF UNLOCKED ]` at 10px) and descriptions (12px), title font for titles (14px with 3px black outline), dynamic 88px height allocation for multi-line descriptions with 12px bottom clearance, bottom 1.5px auto-dismiss depletion countdown bars, and upward floating fade dismissals that dynamically slot stacked popups.
-* HUD Notification (Toast) Redesign & Sequential Dismiss Reflow: Overhauled right-side popup toasts into clean Cyberpunk Arcade Plates (380x72px, 4px corner radius, 1px accent border, softened shadow). Standardized to an even-number typography system with body font for category kickers (10px) and descriptions (12px), downscaled titles to 14px for balanced spacing, and added recessed 40x40px icon plates with elastic bounce entrance. Resolved simultaneous toast merging by implementing sequential staggered exits (minimum 1.2s delay between consecutive dismissals), a gentle 0.45s slide-and-fade to the right while preserving slot height, and a secondary 0.25s height collapse once completely off-screen for smooth one-by-one upward reflow.
-* Title Screen Split Layout Symmetry & Centering Polish: Eliminated the off-center left-shift in English mode by removing hardcoded 50/50 column expansion flags, allowing the container's center alignment to symmetrically center the combined title, 340px vertical hairline divider, and 240px buttons block across the screen. Harmonized English title typography to 64px to balance with the 78px Korean title, maintaining clean 28px symmetric divider margins in both languages.
-* Atmospheric Horizon Bloom & Seamless Sea Blending: Replaced the sharp exponential horizon glow cusp in the sky shader with a smooth Gaussian bloom softly biased toward the sun, aligned the lower hemisphere with deep oceanic blue, and tapered the glow along the sea waterline, completely eliminating the rigid "tube" seam artifact without altering gameplay, camera framing, or island geometry.
-* Fullscreen Window Mode by Default: Configured the engine display mode to fullscreen and ensured default fullscreen state applies across all boots and platforms.
-* Settings Menu Legibility & Even-Number System: Standardized all setting rows and controls under the 3 categories (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`) to use the body typeface (`Inter-Medium.ttf` for EN, `Galmuri11.ttf` for KR), scaled row labels to 16px, scaled toggle/language buttons to 14px, and set category badges to 14px, strictly adhering to an even-number pixel sizing system for clean readability.
-* Settings Slider Real-Time Readouts: Added dedicated percentage and multiplier numeric readouts (`100%`, `1.0x`) in cyber gold beside Master Volume and Mouse Sensitivity sliders with instant value updates.
-* Filters Screen Polish: Standardized Filters Screen typography to match Settings (16px `Inter-Medium.ttf` / `Galmuri11.ttf` body font for row labels, 14px for toggle buttons, and compact 110x34px button dimensions).
-* Title Screen Settings Access: Added a dedicated `SETTINGS` button to the Title Screen with a categorized 3-section settings modal (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`), persistent setting saving, live bilingual switching, and seamless `[ESC]` close handling.
-* Title Screen Spacing Polish: Balanced vertical layout distribution by removing redundant spacer padding under the high score and subtitle lines (eliminating 44px dead space), reducing button separation to 12px, and normalizing button heights to 44px to ensure generous top and bottom breathing room.
-* Secondary Menus Close Prompt Consistency: Added localized "PRESS ESC TO CLOSE" / "닫으려면 ESC를 누르세요" guidance text under the Back button for Active Buffs, Achievements, and Stats menus with accessible 14px styling and subtle pulse animation matching Settings, Filters, and Credits screens.
-* Title Screen Modal Architecture Standardization: Aligned Title Screen Achievements and Stats modals 1:1 with the Pause Menu layout (standardizing scroll container dimensions to 700x380, container separation to 16px, adding bottom hairline Divider2, 32px title headers, and 280x44px Back buttons).
-* Title Screen Navigation Hierarchy & Button Layout: Expanded stats breathing space to 24px (Spacer2), introduced a 60px hairline divider cleanly grouping gameplay modes (Normal, Endless) from system menus (Achievements, Stats, Settings), maintained uniform flat button styling across all active options, styled locked Endless Mode with clear [LOCKED] indicator and dimmed borders, and added desktop [ESC] QUIT GAME guidance.
-* Title Screen Micro-Polish Suite: Applied semantic color tokens to player records (Cyber Gold for High Score, Neon Mint for Best Endless Wave), maintained crisp stationary arcade typography, and updated the bottom footer to include the release version stamp (SUMMER NIGHTS v1.7).
-* Title Screen Stat Cards Redesign: Replaced legacy floating text labels for High Score and Best Wave with twin Retro Flat Plate telemetry cards (144x52px, 4px corner radius, 1px subtle accent borders, `mouse_filter = MOUSE_FILTER_IGNORE` non-button readouts). Left card houses a gold trophy icon with 11px SCORE kicker on top and large Cyber Gold score value on bottom; right card houses a mint sunset icon with 11px BEST WAVE kicker on top and large Neon Mint wave number on bottom, providing balanced dashboard telemetry without button affordance confusion.
-* Volumetric God Rays & Mie Scattering: Configured forward Mie scattering (`volumetric_fog_anisotropy = 0.72`, density `0.0075`) with boosted directional light volumetric fog energy (`1.7`), casting radiant golden sunbeams in daylight that gracefully transition into serene, lower-opacity silver-blue crepuscular rays in cool twilight to prevent the blue sky from looking bland.
-* Ocean Sunset Reflection Glade: Added an anisotropic directional specular sun reflection corridor to the stylized ocean shader (`stylized_water.gdshader`) with dynamic wave-crest sparkles, concentrating a brilliant golden glint column directly under the setting Sun that transitions to moonlit silver-cyan in twilight.
-* Atmospheric Drifting Embers & Motes: Added a lightweight ambient particle system (`ambient_motes_particles`) producing floating golden solar heat embers during daylight and high heat that drift with convection currents and solar winds, seamlessly transitioning into bioluminescent fireflies as dusk falls.
-* Viewmodel Weapon & Arm Visual Polish: Upgraded first-person blasters and arms with semi-gloss toon shading, specular highlights, and warm horizon sunset rim lighting. Added an illuminated translucent glass water reservoir canister to standard blaster weapons that dynamically tracks water tank levels, glows vibrant cyan, and pulses amber during low-water emergencies.
-* Scatter Nozzle Viewmodel Orientation: Corrected the 180° reversed model rotation on the Scatter Nozzle so its dual barrels face forward toward targets instead of facing backward.
-* Toast Plate Typography & Overrun Protection: Streamlined toast titles and descriptions across boss encounters and combat events (including Solar Convergence Infinity Lattice, Phase 2 Overdrive, and Ice Shatter), established context-aware `[ SOLAR CONVERGENCE ]` category kickers, and applied `TextServer.OVERRUN_TRIM_ELLIPSIS` to both title and description labels to guarantee text never clips or overflows the 380px toast plate.
-* Version Synchronization: Unified release numbering to v1.7 across both GitHub and itch.io export presets and project configuration.
+* Modal Menu Z-Ordering: Elevated all modal overlays to `z_index = 50` above HUD gameplay elements (`z_index = 0`); opening any menu immediately dismisses active timer intros.
+* Boss UI Clarity: Removed top-center announcement banner on Wave 30 and boss waves to keep combat view clear.
+* Achievement & Buff Card Radii: Standardized card panels to 4px Retro Flat Plate rule with concentric 3px progress bar fills.
+* Toast & Notification Redesign: Overhauled right-side toasts (380x72px) and top-center popups (500x72–88px) into Cyberpunk Arcade Plates with even-number typography, recessed 40x40 icon plates, and staggered exits.
+* Title Screen Split Layout: Symmetrical horizontal layout (840x400) with 340px vertical divider, twin 144x52 stats cards, 64px EN / 78px KR titles, and mode button stack.
+* Atmospheric Horizon Bloom: Replaced sharp sky horizon line with smooth Gaussian bloom, eliminating the "tube" seam artifact.
+* Fullscreen Default: Configured default fullscreen display mode across boots and platforms.
+* Settings & Filters Polish: Standardized to 16px body font, 14px toggles, 110x34px buttons, and real-time numeric slider readouts (`100%`, `1.0x`).
+* Title Screen Settings Modal: Added direct access to 3-category settings with live language toggle and `[ESC]` close.
+* Secondary Menus Close Guidance: Added localized "PRESS ESC TO CLOSE" prompts across all secondary menus.
+* Visual Polish Suite: Volumetric god rays with Mie scattering, anisotropic sunset ocean reflection glade, drifting heat embers / fireflies, and toon-shaded viewmodels with fluid reservoir indicators.
+* Scatter Nozzle Orientation: Corrected 180° inverted viewmodel rotation.
+* Victory Recap Screen ("SUMMER'S OVER"): Redesigned Normal Mode victory completion screen with single-line Cyber Gold hero title, lore subtitle, diamond divider, milestone unlock tag, 344px telemetry grid (`LEVELS CLEARED 6 / 6`, `CLEAR TIME`, `FINAL SCORE`), and dual 160x44px buttons (`Play Again`, `Main Menu`).
+* Version Synchronization: Unified release numbering to v1.7 across GitHub and itch.io export presets.
 
 ### Fixed
-* Win and Lose Recap Screen Fullscreen Dimming: Resolved critical bug where both the Cool Down (Win) and The Sun Won (Lose) recap screens rendered unexpectedly dim/darkened (~30%–60% brightness). Fixed root causes: (1) reparented `VBoxContainer` directly to `WinScreen`, `EndScreen`, and `LoseScreen` above `BorderPanel` to eliminate drop shadow occlusion; (2) added all modal overlay screens to `skip_names` in `_apply_unified_drop_shadows` to prevent injecting 45% black panel shadows; (3) removed redundant runtime creation of duplicate border panels; and (4) replaced low-alpha font overrides (0.5–0.7 alpha) and excessive 12px shadow outlines on small text with crisp off-white (`Color(0.92, 0.92, 0.92, 0.95)` / `Color(1.0, 1.0, 1.0, 0.95)`) and 2px outlines, restoring full 100% luminance and crisp cyber gold typography.
+* Fullscreen End Screen Dimming: Fixed dark overlay bug by reparenting content containers above `BorderPanel`, exempting modal screens from global drop shadows, and restoring 100% luminance typography.
+
 
 ---
 
@@ -334,61 +321,48 @@ All notable changes to the Summer Nights project will be documented in this file
 *(참고: 이번 릴리스부터 GitHub 및 itch.io 배포 버전 번호가 v1.7로 통일 동기화됩니다)*
 
 ### 추가됨 (Added)
-* 태양 수렴 "요격 호위 드론 (Interceptor Escorts)" (55 및 60웨이브 이상): 후반 보스전에 능동형 전투 호위기 추가. 듀얼 플라즈마 제트 스러스터, 아크 시안 안구 코어, 120 HP 강화 장갑(2단계 시안 균열 파쇄 및 냉각제 분출)을 장착한 요격기는 플레이어의 물줄기 분사 궤적을 실시간 감지합니다. 태양 본체를 조준하면 전면 중앙($Z = -22.0\text{m}$)으로 급강하하여 차단하며, 다른 궤도 드론이나 조화 앵커를 조준하여 사격하면 해당 드론 전면($+6.5\text{m}$)으로 맹렬히 돌격하여 물줄기를 대신 받아내는 호위 방어 기동을 수행합니다. 55웨이브는 1기, 60웨이브 이상은 2기가 편대를 이루어 협동 방어망을 형성합니다. 지속 사격, 키츠네 블레이드 일격 검기, 또는 얼음 폭발(Ice Blast)로 즉시 결빙 분쇄할 수 있습니다 (+1,000점, +25% 물 환급, +10% 궁극기 충전).
-* 태양 수렴 "조화 매트릭스 (Harmonic Matrix)" 공명 방어막 (50웨이브 이상): 40웨이브 이후 심층 엔드리스 보스전을 위한 상위 메커니즘 추가. 8기의 무한 격자 드론 중 2쌍의 드론이 조화 앵커(Pair 0: 링 A 솔라 골드, Pair 1: 링 B 코로나 바이올렛)로 지정되어 태양 황금 방어막에 이중 주파수 색채 공명 파동(솔라 골드와 코로나 바이올렛의 리드미컬한 파동 교차, 태양 얼굴을 가로지르는 선형 이펙트 완전 배제)을 투사하여 무적 상태를 유지합니다. 앵커 드론은 슬림 광학 레티클과 렌즈 플레어 코어로 식별됩니다. 앵커 드론을 파괴/결빙 분쇄하면 해당 주파수가 단절(+25% 물 환급)되며 방어막이 잔여 단일 주파수 색상으로 고정됩니다. 2개의 주파수를 모두 단절시키면 조화 방어막 전체가 폭발적으로 붕괴(+1,500점, +50% 물 환급, +15% 궁극기 충전)하며 잔여 드론이 3.5초간 기절하고 태양이 치명타에 완전히 노출됩니다.
-* 태양 수렴 "무한 격자 (Infinity Lattice)" 드론 편대 (40웨이브 이상): 30웨이브 이후 후반부 보스전의 단조로움을 해소하기 위한 궤도 편대 메커니즘 추가. 30~35웨이브는 기존의 단일 수평 적도 궤도(6기)를 유지하지만, 40웨이브 이상에서는 8기의 드론이 상호 반대 방향으로 회전하는 이중 경사 궤도($\pm 33^\circ$)로 분할 전개되어 입체적인 3D 이중 나선("무한 격자")을 형성합니다. 링 A(상승 솔라 골드, 시계 방향)와 링 B(하강 코로나 바이올렛, 반시계 방향)가 태양의 상하 반구를 지속적으로 교차 순환하여 수평 고정 사격을 방지합니다. 두 궤도가 중앙 교차 노드에서 만나는 순간 타이밍에 맞춰 얼음 폭발(Ice Blast)이나 키츠네 블레이드 검기를 적중시키면 복수의 드론을 일격에 동시 격파할 수 있습니다. 2페이즈에서는 6기의 고속 폭주 호위대가 재기동됩니다.
-* 후반 엔드리스 태양 체력 스케일링: 엔드리스 20웨이브 이후 태양의 최대 열기 용량이 웨이브당 $+2.2\%$씩 점진적으로 확장되어(`MAX_TEMP * (1.0 + (wave - 20) * 0.022)`), 후반부 강력한 퍽 빌드에서도 처치 시간(TTK)이 20~32초대로 건강하게 유지되도록 밸런스 조정.
-* "태양 오버클럭 (Solar Overclock)" 퍽: 높은 위험과 보상을 동시에 제공하는 희귀 트레이드오프 퍽 추가 (냉각력 +30%~+40% 증가, 대신 태양의 플레어 발사 빈도 +25%~+35% 가속). 폭발적인 딜링을 제공하는 대신 정밀한 회피와 패링 반사신경을 요구하도록 설계.
-* "고압 보어 (High-Pressure Bore)" 퍽: 트레이드오프 퍽 (냉각력 +18%~+30%, 물 소모량 +12%~+20%). 폭발적인 버스트 냉각력을 제공하나 탱크가 빠르게 소진되므로 절제된 조준 사격 필요.
-* "극초점 (Hyper-Focus)" 퍽: 트레이드오프 퍽 (치명타 피해 +20%~+35%, 기본 냉각력 -12%~-20%). 흑점 정밀 조준을 보상하고 몸통 스프레이를 처벌하는 순수 실력 체크 퍽.
-* "심층 저수조 (Deep Reservoir)" 퍽: 트레이드오프 퍽 (물탱크 용량 +25%~+45%, 충전 속도 -15%~-25%). 장시간 지속 사격이 가능하나 교전 사이 회복이 느려짐.
-* "태양 교란 (Solar Disruptions)" 마이크로 이벤트 (6웨이브 이상 일반 웨이브): 보스전 사이 일반 웨이브의 단조로움을 해소하기 위해 웨이브 시작 4.5~8.0초 후 40%~60% 확률로 발생하는 돌발 미니 이벤트 시스템 추가:
-  * 열기 방벽 (Thermal Barrier): 6.5~8.0초간 유지되는 일시적 시안 에너지 보호막. 물줄기 분사를 도탄시키며, 유지 시간 종료 시 자연 소멸하거나 얼음 폭발(`[R] / [우클릭]`)로 즉시 결빙 분쇄하여 +1,000점 보너스 획득 가능.
-  * 플레어 폭격 (Flare Barrage): 태양이 박동하며 0.35~0.45초 간격으로 5~7발의 솔라 플레어를 넓은 각도로 연속 발사하는 고밀도 탄막 급습 이벤트.
-* 코로나 일식 (Coronal Eclipse, 45웨이브 이상) 기상 이변: 심층 무한 모드 전용 최고위 대기 기상 이변 추가. 깊은 벨벳 보라빛 황혼, 격렬한 네온 마젠타 홍염 코로나 루프를 두른 칠흑 같은 태양 실루엣, 전용 HUD 기상 아이콘(`eclipse-flare.svg` 벡터 적용), 어둠 속에 숨겨져 조명(물 분사, 플레어 패링, 얼음 폭발) 전까지 가려지는 은폐 흑점, 조명된 약점 타격 시 +50% 증폭 냉각 피해 기믹 구현.
-* 일반 일식 및 코로나 일식 시각·메커니즘 차별화: 일반 개기일식과 45웨이브 이상 코로나 일식의 3D 환경 비주얼 및 전투 메커니즘을 뚜렷하게 분리하여 완성:
-  - 일반 개기일식 (한랭 정지): 반짝이는 별이 가득한 심우주 미드나이트 네이비 하늘, 진주빛 은백색 다이아몬드 링 코로나를 두른 흑요석 달 실루엣, 달빛 은빛 모래, 은청색 광선 연출. 태양의 자연 열기 회복이 멈추고 달의 그림자 아래에서 태양이 매초 -2.0°씩 자연 냉각되는 방어적 휴식 시간 제공 (흑요석 그림자 플레어 방어 요구).
-  - 코로나 일식 (최고위 전투): 깊은 벨벳 보라빛 황혼과 격렬한 네온 마젠타 홍염 코로나 루프, 자외선 광선, 초고속 코로나 질량 방출 플레어. 태양 열기 회복이 계속 유지되며, 흑점이 암흑 속에 은폐되어 조명 시에만 노출되고, 조명된 약점을 타격할 시 +50% 증폭 냉각 피해(1.5배) 적용.
-* 지속 분사 열 감쇠 (Continuous Spray Falloff): 동일 좌표에 고정 사격을 유지할 때 발생하는 역동적 냉각 감쇠 메커니즘 추가. 조준선을 움직이지 않고 한 지점에 3.0초 이상 연속 사격 시 냉각 효율이 3.0~6.0초에 걸쳐 점진적으로 70%까지 감소합니다. 조준선을 다른 부위나 흑점으로 이동(거리 1.0 이상), 무기 전환, 또는 사격을 0.4초 이상 중단하면 효율이 즉시 100%로 회복되어 고정 말뚝 사격 대신 리드미컬한 조준과 추적 플레이를 장려.
-* ~~반응형 열기 폭주 (Heat Surge) 및 저지 메커니즘~~ *(제거됨 — 메커니즘 재설계 중)*
-* ~~다층 시네마틱 충격파 애니메이션~~ *(열기 폭주와 함께 제거됨)*
-* 퍽 중첩 감쇠 시스템 및 선택 화면 UI 피드백: 동일 퍽을 3개 이상 중첩 시 점진적 효율 감쇠 적용 (1·2번째 중첩 = 100% 온전한 수치, 3번째 중첩 = 75%, 4번째 이상 중첩 = 55%). 퍽 선택 화면에서 이미 2개 이상 보유한 퍽 카드에 호박색 중첩 배지(`[ 3중첩 · 효율 75% ]` / `[ 3RD STACK · 75% ]`)를 표시하고 실시간 계산된 실제 유효 수치를 안내하여 전략적 선택 유도.
-* 웨이브 타이머 글라이드 인트로: 라운드 및 웨이브 시작 시 제한 시간을 강조하는 역동적인 타이머 연출 추가. 웨이브 시작 시 제한 시간 텍스트가 화면 중앙에 사이버 골드 컬러(`scale 1.6x`, `0.25초` 페이드인)로 나타난 후 `2.5초`간 정위치에서 유지되어 플레이어가 실시간 카운트다운을 명확히 읽을 수 있는 충분한 가독 시간을 제공한 뒤, `0.85초` 동안 부드럽게 우측 상단 HUD 슬롯으로 글라이드 이동하여 완벽하게 안착합니다. 진행 중에도 타이머가 실시간으로 카운트다운되며 0픽셀 오차로 매끄럽게 인계되어, 중앙 조준선에서 시선을 떼지 않고도 제한 시간을 즉각 인지할 수 있습니다.
-* 타이틀 화면 부제목 명확화: 메인 메뉴 부제목을 `"COOL DOWN THE SUN BEFORE TIME RUNS OUT"` / `"제한 시간 내에 태양을 식혀라"` (`14px` 영문 / `18px` 한국어)로 개편하여 게임의 핵심 승패 조건인 제한 시간의 중요성을 시작 화면에서부터 명확히 전달.
-* "완납 (Paid in Full)" 보스전 연장전 메커니즘: 보스 웨이브(일반 모드 레벨 5·6, 무한 모드 매 5번째 웨이브) 전용 비상 연장전 시스템 추가. 타이머가 `0:00`에 도달했을 때 점수가 남아있다면 즉시 패배하지 않고 연장전에 돌입합니다. 누적 점수가 가속 소모 곡선에 따라 생명 연장 시간으로 소진되며, 무한 퍽 중첩을 통한 불사 악용을 방지하기 위해 점수 획득이 동결되고 태양의 자연 열기 회복이 정지됩니다. 점수가 0이 되기 전 보스를 격파하면 생존하여 다음 웨이브에서 점수를 정상 획득할 수 있으며, 점수가 바닥나면 파산 패배가 발생합니다.
-* 절차적 "연장전 경악 (Overtime Shock)" 태양 표정: 연장전 돌입 시 태양 보스의 전용 절차적 표정 추가—패배 타이머가 끝났음에도 쓰러지지 않는 플레이어를 보고 경악하여 작게 축소된 알약 형태의 동공, 높게 치켜뜬 아치형 눈썹, 벌어진 턱, 관자놀이에 맺힌 절차적 땀방울 및 은은한 호박색 충격 오라 연출.
-* 신규 업적 "완납 (Paid in Full)": 연장전에서 5,000점 이상의 점수를 소모하고 보스를 격파할 시 해금되는 신규 업적 및 전용 `cash.svg` 아이콘 추가.
-* HUD 연장전 UI 및 파산 피드백: 타이머 플레이트에 펄스 애니메이션이 적용된 진홍색 `[ 연장전 ]` / `[ OVERTIME ]` 배지, 경고성 붉은 점수 소모 연출, 게임 오버 화면 전용 파산 자막(`"파산: 점수를 모두 소진했습니다"` / `"BANKRUPT: ALL SCORE DEPLETED"`) 구현.
+* 요격 호위 드론 (Interceptor Escorts, 55 & 60웨이브 이상): 태양 본체나 궤도 드론으로 향하는 물줄기를 능동 차단하는 120 HP 고속 장갑 호위기 추가 (55웨이브 1기, 60웨이브 이상 2기).
+* 조화 매트릭스 방어막 (Harmonic Matrix, 50웨이브 이상): 2쌍의 조화 앵커 드론이 투사하는 이중 주파수 공명 무적 방어막. 두 앵커 파괴 시 방어막 붕괴(+1,500점, +50% 물, +15% 궁극기) 및 드론 3.5초 기절.
+* 무한 격자 드론 편대 (Infinity Lattice, 40웨이브 이상): 8기의 드론이 이중 경사 궤도($\pm 33^\circ$)를 돌며 3D 이중 나선 형성. 2페이즈에서는 6기의 고속 폭주 호위대 출격.
+* 후반 엔드리스 태양 체력 스케일링: 20웨이브 이후 태양 열기 용량이 웨이브당 +2.2%씩 확장(`MAX_TEMP * (1.0 + (wave - 20) * 0.022)`).
+* 신규 트레이드오프 퍽 4종:
+  * *태양 오버클럭:* 냉각력 +30%~40%, 플레어 발사 빈도 +25%~35% 가속.
+  * *고압 보어:* 냉각력 +18%~30%, 물 소모량 +12%~20%.
+  * *극초점:* 치명타 피해 +20%~35%, 기본 냉각력 -12%~20%.
+  * *심층 저수조:* 물탱크 용량 +25%~45%, 충전 속도 -15%~25%.
+* 태양 교란 마이크로 이벤트 (6웨이브 이상): 보스전 외 일반 웨이브에서 40%~60% 확률로 발생하는 돌발 이벤트:
+  * *열기 방벽:* 물줄기를 도탄시키는 시안 보호막. 얼음 폭발로 즉시 분쇄 가능 (+1,000점).
+  * *플레어 폭격:* 5~7발의 솔라 플레어를 연속 발사하는 고밀도 탄막 급습.
+* 코로나 일식 기상 이변 (45웨이브 이상): 심층 벨벳 보라빛 황혼 속 은폐 흑점을 조명(물 분사/패링/결빙) 시 노출시키며, 조명된 약점에 +50% 증폭 냉각 피해 적용.
+* 일식 환경 차별화: 일반 개기일식(한랭 정지, 매초 -2.0° 자연 냉각)과 45웨이브 코로나 일식(최고위 전투, 은폐 흑점)의 시각 및 전투 메커니즘 분리.
+* 지속 분사 열 감쇠: 한 지점에 3.0초 이상 연속 사격 시 냉각 효율이 70%까지 점진 감소. 조준 이동(거리 >= 1.0) 또는 사격 중단 시 100% 즉시 회복.
+* 퍽 중첩 효율 감쇠: 동일 퍽 3개 이상 중첩 시 감쇠 적용 (1·2번째 100%, 3번째 75%, 4번째 이상 55%) 및 호박색 중첩 배지 안내.
+* 웨이브 타이머 글라이드 인트로: 웨이브 시작 시 화면 중앙에 나타난 타이머(`scale 1.6x`, 2.5초 유지)가 우측 상단 HUD 슬롯으로 부드럽게 글라이드 안착(0.85초).
+* 타이틀 부제목 명확화: 메인 메뉴 부제목을 `"제한 시간 내에 태양을 식혀라"` / `"COOL DOWN THE SUN BEFORE TIME RUNS OUT"`으로 변경.
+* "완납 (Paid in Full)" 보스전 연장전: 보스 웨이브 `0:00` 도달 시 누적 점수를 소모하며 연장전 돌입. 보스 격파 시 생존, 점수 고갈 시 파산 패배.
+* 연장전 경악 태양 표정: 연장전 돌입 시 축소된 동공, 치켜뜬 눈썹, 벌어진 턱, 관자놀이 땀방울 연출.
+* "완납" 신규 업적: 연장전에서 5,000점 이상 소모 후 보스 격파 시 달성.
+* HUD 연장전 UI: 진홍색 `[ 연장전 ]` 타이머 배지, 붉은 점수 소모 연출, 전용 파산 패배 자막 구현.
 
 ### 개선됨 (Improved)
-* 모달 메뉴 Z-색인 계층화 및 타이머 인트로 즉시 정리: 모든 모달 메뉴 화면(일시정지, 퍽 선택, 설정, 필터, 조작 안내, 크레딧, 업적, 버프 목록, 무기 휠, 승리, 완료, 패배)의 레이어 우선순위를 `z_index = 50`으로 격상하여 모든 HUD 게임플레이 요소(`z_index = 0`) 상단에 완벽히 렌더링되도록 개선. 메뉴가 열리거나 일시정지 발생 시 진행 중이던 웨이브 타이머 비행 인트로(`FlyingWaveTimer`)를 즉시 정리 및 해제하도록 구현하여 메뉴 위로 타이머 텍스트가 침범하거나 겹쳐 보이는 현상을 원천 차단.
-* 보스전 상단 알림 UI 정리: 30웨이브 및 솔라 보스 등장 시 화면 상단에서 내려오던 태양 수렴 공지 배너를 제거하여 보스전 진입 시 화면 상단 시야와 가독성을 깔끔하게 확보.
-* 업적 및 버프 카드 모서리 반경 표준화 및 동심원 공식 적용: 일시정지 및 타이틀 화면의 업적/버프 카드 패널 모서리 반경을 임의의 6px에서 4px 레트로 플랫 플레이트 규격으로 전면 통일하여 인게임 HUD 토스트, 자원 게이지 및 퍽 카드와 1:1 시각적 일관성 완성. 미해금 업적 진행도 바에 동심원 중첩 공식($\text{외곽 반경} = \text{내부 반경} + \text{패딩}$)을 적용하여 1px 테두리를 가진 4px 트랙 내부의 게이지 채우기 반경을 3px($4 - 1 = 3\text{px}$)로 최적화함으로써 테두리 번짐 없는 완벽한 동심 곡률 구현.
-* 상단 중앙 업적 및 버프 알림 팝업 디자인 개편: 상단 중앙 팝업 알림을 사이버펑크 아케이드 플레이트(500px 너비, 4px 모서리 곡률, 1px 사이버 테두리선, 부드러운 그림자, 40x40px 오목형 아이콘 플레이트)로 전면 개편. 짝수 폰트 크기 체계를 적용하여 상단 마이크로 분류 태그(`[ 업적 달성 ]` / `[ 버프 활성화 ]`, 10px)와 설명문(12px)에 본문 서체(Inter-Medium / Galmuri11)를 배속하고, 타이틀을 14px(3px 외곽선)로 표준화. 2줄 설명문 발생 시 높이를 88px로 동적 확장하고 12px 하단 여백을 확보하여 소모 바와의 겹침을 원천 차단하였으며, 1.5px 자동 소모 타이머 바 및 상단 부유 페이드아웃 퇴장 연출 적용.
-* HUD 팝업 알림 (토스트) 디자인 개편 및 순차 퇴장 리플로우: 우측 상단 팝업 알림을 정갈한 사이버펑크 아케이드 플레이트(380x72px, 4px 모서리 곡률, 1px 강조선 테두리, 부드러운 그림자)로 전면 개편. 짝수 폰트 크기 체계를 적용하여 상단 마이크로 분류 태그(10px) 및 설명문(12px)에 본문 서체(Inter-Medium / Galmuri11)를 배속하고, 타이틀을 14px로 최적화하여 여백과 시각적 균형감 개선. 여러 알림이 겹쳐서 퇴장하는 병합 현상을 해소하기 위해 순차 시차 퇴장 시스템(알림 간 최소 1.2초 간격 보장)을 구축하고, 높이를 유지한 채 우측으로 부드럽게 페이드아웃(0.45초)된 후 완전히 사라진 뒤에만 슬롯 높이를 축소(0.25초)하여 하단 알림들이 차례대로 밀려 올라오는 1대1 순차 퇴장 리플로우 완성.
-* 타이틀 화면 분할 레이아웃 대칭 중앙 정렬 개선: 영문 모드에서 발생하던 좌측 치우침 현상을 해소하기 위해 50/50 고정 확장 플래그를 제거하고, 컨테이너의 중앙 정렬(`ALIGNMENT_CENTER`)을 통해 타이틀·340px 헤어라인 구분선·240px 버튼 스택 전체가 화면 정중앙에 대칭 정렬되도록 개선. 영문 타이틀 서체 크기를 64px로 최적화하여 78px 한국어 타이틀과 시각적 비중을 통일하고, 양 언어 모두 구분선 좌우 28px 대칭 간격 유지.
-* 대기 지평선 블룸 및 자연스러운 해수면 블렌딩: 하늘 셰이더의 날카로운 지평선 발광 첨점을 태양 방향으로 부드럽게 퍼지는 가우시안 대기 블룸으로 개편하고, 하부 반구 색상을 심해 네이비 톤으로 일치시켜 수평선 이음새와 인위적인 "발광 튜브" 현상을 게임플레이, 카메라 구도 및 섬 지형 변형 없이 완벽히 해소.
-* 기본 전체화면 실행 모드 설정: 엔진 디스플레이 초기화 설정을 전체화면 모드로 구성하고, 첫 실행 및 모든 플랫폼에서 기본 전체화면 상태가 안정적으로 적용되도록 개선.
-* 설정 화면 가독성 및 짝수 폰트 크기 체계 개편: 3개 카테고리(`오디오`, `조작 및 편의`, `화면 및 시스템`) 하위의 모든 설정 항목 및 컨트롤 텍스트를 가독성이 뛰어난 본문 서체(`Inter-Medium.ttf` 영문 / `Galmuri11.ttf` 한국어)로 통일하고, 항목 라벨을 16px, 토글/언어 버튼을 14px, 카테고리 배지를 14px로 조정하여 완벽한 짝수 픽셀 스케일 체계 적용.
-* 설정 슬라이더 실시간 수치 표시: 전체 볼륨 및 마우스 감도 슬라이더 우측에 사이버 골드 컬러의 퍼센트 및 배율 실시간 수치 라벨(`100%`, `1.0x`)을 추가하여 정확한 설정값 확인 지원.
-* 필터 화면 타이포그래피 통일: 설정 화면 규격에 맞춰 항목 라벨을 16px 본문 서체(`Inter-Medium.ttf` / `Galmuri11.ttf`), 토글 버튼을 14px 및 110x34px 규격으로 표준화.
-* 타이틀 화면 설정 모달 추가: 메인 타이틀 화면에 `SETTINGS` (설정) 버튼을 신설하고 인게임과 동일한 3대 카테고리(`오디오`, `조작 및 편의`, `화면 및 시스템`) 모달 창을 연동하여 영구 저장, 실시간 언어 전환 및 `[ESC]` 닫기 지원.
-* 타이틀 화면 세로 여백 및 레이아웃 최적화: 최고 점수 및 부제목 하단의 중복 여백을 제거(44px 빈 공간 해소)하고, 버튼 간격을 12px로 조정 및 버튼 높이를 44px로 표준화하여 화면 상하단 여백을 안정적으로 확보하고 시각적 균형감 개선.
-* 보조 메뉴 ESC 닫기 안내 일관성 확보: 활성화된 버프, 업적 및 기록 메뉴의 돌아가기 버튼 하단에 설정/필터/크레딧 화면과 동일한 규격의 "PRESS ESC TO CLOSE" / "닫으려면 ESC를 누르세요" 안내 텍스트(14px 폰트 및 미세 펄스 애니메이션)를 추가하여 조작 일관성 통일.
-* 타이틀 화면 모달 구조 표준화: 타이틀 화면의 업적 및 기록 모달 레이아웃을 인게임 일시정지 메뉴와 1:1로 일치 규격화 (스크롤 영역 700x380 표준화, 16px 간격, 하단 헤어라인 Divider2 구분선 추가, 32px 타이틀 및 280x44px 돌아가기 버튼 적용).
-* 타이틀 화면 조작 위계 및 버튼 레이아웃 개선: 커리어 기록 하단 여백을 24px(Spacer2)로 확장하여 시각적 여유를 확보하고, 게임플레이 모드(일반, 무한)와 시스템 메뉴(업적, 기록, 설정) 사이에 60px 헤어라인 구분선을 추가하여 메뉴 위계 정립. 모든 활성 버튼에 통일된 레트로 플랫 스타일을 유지하고, 잠긴 무한 모드에 명확한 [잠김] 표기 및 비활성화 톤을 적용하며, 하단에 데스크톱 [ESC] 게임 종료 안내 추가.
-* 타이틀 화면 디테일 및 시각적 폴리시: 커리어 기록에 시맨틱 컬러 토큰 적용(최고 점수는 사이버 골드, 무한 모드 기록은 네온 민트), 선명하고 정갈한 레트로 아케이드 고정 타이포그래피 유지, 하단 푸터 텍스트에 릴리스 버전 번호(SUMMER NIGHTS v1.7) 명기.
-* 타이틀 화면 기록 표시 카드형 개편: 기존에 텍스트 줄 형태로 단순 나열되던 최고 점수 및 최고 웨이브 표시를 쌍둥이 레트로 플랫 플레이트 텔레메트리 카드(144x52px, 4px 모서리 곡률, 1px 은은한 테두리선, `mouse_filter = MOUSE_FILTER_IGNORE` 비버튼형 데이터 표시)로 전면 개편. 좌측 카드는 상단 골드 트로피 아이콘과 11px 최고 점수 라벨, 하단 대형 사이버 골드 점수 수치를 배치하고, 우측 카드는 상단 민트 노을 아이콘과 11px 최고 웨이브 라벨, 하단 대형 네온 민트 웨이브 번호를 배치하여 버튼과의 혼동 없이 정갈한 대시보드 통계 카드 디자인 완성.
-* 황혼 대기 갓 레이(빛내림) 구현: 전방 미 산란(Mie Scattering, 비등방성 0.72, 안개 밀도 0.0075)과 지향성 광원 안개 에너지(1.7)를 구성하여 황금빛 빛줄기를 연출하고, 푸른 황혼 하늘로 전환될 때도 은은한 저투명도 은청색 빛줄기와 태양 코로나 오라가 자연스럽게 지속되도록 조율하여 화면의 깊이감 유지.
-* 바다 노을 수면 반사광(선 로드) 구현: 바다 셰이더(`stylized_water.gdshader`)에 비등방성 방향성 태양 반사광 회랑과 파도 능선 반짝임 스파클을 추가하여, 지는 태양 바로 아래로 뻗어 나가는 화려한 황금빛 수면 반사 기둥(황혼 시 은빛 청록색으로 전환) 연출.
-* 대기 부유 태양 불씨 및 모트 입자: 가벼운 앰비언트 파티클 시스템(`ambient_motes_particles`)을 신설하여 낮 시간대 및 고열 상태에서 대류 기류와 태양풍을 타고 부유하는 황금빛 태양 열기 불씨를 연출하고, 황혼이 되면 자연스럽게 생체발광 반딧불이 모트로 전환되도록 구현.
-* 1인칭 무기 및 팔 시각 폴리시: 1인칭 블래스터 및 플레이어 팔 메시에 반광 툰 셰이딩, 스펙큘러 하이라이트 및 따뜻한 수평선 노을 림 라이팅을 적용하여 배경과의 시각적 분리감 강화. 스탠다드 계열 블래스터에 수냉 탱크 잔량을 실시간 추적하고 저수분 경고 펄스를 발산하는 투명 유리 수액 용기 캐니스터 탑재.
-* 산탄 노즐 1인칭 무기 방향 보정: 산탄 노즐(Scatter Nozzle) 모델이 180도 반대로 뒤집혀 있던 회전 각도를 보정하여 듀얼 총열이 플레이어 전방을 똑바로 향하도록 수정.
-* 토스트 알림 타이포그래피 정돈 및 텍스트 넘침 방지: 태양 수렴(Solar Convergence) 무한 격자, 2페이즈 오버드라이브, 냉기 분쇄(Ice Shatter) 등 보스전 및 전투 알림의 제목과 설명을 간결하고 직관적으로 다듬고, `[ SOLAR CONVERGENCE ]` / `[ 태양 수렴 ]` 상황별 키커 태그를 신설. 제목 및 설명 라벨 모두에 `TextServer.OVERRUN_TRIM_ELLIPSIS`를 적용하여 380px 토스트 패널 밖으로 텍스트가 잘리거나 넘치지 않도록 안정성 확보.
-* 버전 번호 통일 동기화: GitHub 및 itch.io의 모든 내보내기 프리셋과 프로젝트 설정 버전 번호를 v1.7로 일치 동기화.
+* 모달 메뉴 Z-색인 계층화: 모든 모달 메뉴를 `z_index = 50`으로 격상하여 HUD 요소 상단 렌더링 보장. 메뉴 진입 시 진행 중인 타이머 비행 인트로 즉시 정리.
+* 보스전 UI 시야 정리: 30웨이브 및 보스전 화면 상단 공지 배너를 제거하여 교전 시야 확보.
+* 업적 및 버프 카드 곡률 표준화: 카드 모서리를 4px 레트로 플랫 플레이트 규격으로 통일하고, 진행도 바에 3px 동심원 채우기 반경 적용.
+* 토스트 알림 전면 개편: 우측 토스트(380x72px) 및 상단 팝업(500x72~88px)을 사이버 아케이드 플레이트로 개편 (짝수 타이포그래피, 40x40 오목 아이콘 플레이트, 순차 시차 퇴장).
+* 타이틀 화면 분할 레이아웃 대칭화: 840x400 대칭 분할 레이아웃 적용 (340px 수직 구분선, 쌍둥이 144x52 텔레메트리 카드, 한국어 78px / 영문 64px 타이틀, 모드 버튼 스택).
+* 지평선 대기 블룸: 하늘 셰이더 지평선을 가우시안 블룸으로 개편하여 인위적인 경계 이음새 제거.
+* 기본 전체화면 실행: 모든 플랫폼 첫 실행 및 부팅 시 기본 전체화면 적용.
+* 설정 및 필터 화면 폴리시: 16px 본문 서체, 14px 토글, 110x34px 버튼, 실시간 슬라이더 수치 표시(`100%`, `1.0x`) 통일.
+* 타이틀 설정 모달 연동: 메인 화면에서 3대 설정 카테고리 즉시 접근 및 실시간 언어 전환 지원.
+* 보조 메뉴 닫기 안내 통일: 모든 보조 메뉴에 "닫으려면 ESC를 누르세요" 14px 안내 문구 배치.
+* 시각 연출 강화: 전방 미 산란 갓 레이, 바다 노을 수면 반사광, 대기 부유 태양 불씨/반딧불이, 수냉 잔량 캐니스터가 장착된 툰 셰이딩 1인칭 무기 모델.
+* 산탄 노즐 방향 수정: 180도 반대로 뒤집혀 있던 모델 회전 보정.
+* 일반 모드 승리 완료 화면 ("여름은 끝났다"): 단일 라인 사이버 골드 히어로 타이틀, 로어 서브타이틀, 다이아몬드 구분선, 무한 모드 해금 배지, 344px 텔레메트리 그리드(`클리어 단계 6 / 6`, `클리어 시간`, `최종 점수`), 및 160x44px 듀얼 버튼(`다시 하기`, `메인 메뉴`)으로 전면 리뉴얼.
+* 버전 번호 통일: GitHub 및 itch.io 배포 번호를 v1.7로 일치 동기화.
 
 ### 수정됨 (Fixed)
-* 승리 및 패배 결과 화면 전체화면 어두워짐 버그 수정: 일반 및 무한 모드에서 냉각 완료(승리) 및 태양이 이겼습니다(패배) 결과 화면이 비정상적으로 어둡게 렌더링되던(~30%~60% 밝기) 치명적 그래픽 버그 해결. 근본 원인 해결: (1) 씬 트리에서 `VBoxContainer`를 `ColorRect` 내부에서 화면 컨트롤 직속으로 재배치하여 `BorderPanel` 상단에 렌더링되도록 함으로써 패널 드롭 섀도우가 텍스트를 덮어 차광하던 현상 제거; (2) 재귀적 `_apply_unified_drop_shadows` 처리 대상에서 모든 모달 오버레이 화면을 예외(`skip_names`) 처리하여 45% 검정 패널 그림자 중첩 차단; (3) 런타임에 불필요하게 중복 생성되던 추가 테두리 패널 제거; (4) 소형 폰트 라벨의 과도한 12px 그림자 외곽선 및 낮은 알파값(0.5~0.7)을 선명한 오프화이트(`Color(0.92, 0.92, 0.92, 0.95)` / `Color(1.0, 1.0, 1.0, 0.95)`)와 2px 외곽선으로 교체하여 100% 본래 광도와 사이버 골드 타이포그래피 완벽 복원.
+* 결과 화면 전체화면 어두워짐 수정: 컨테이너를 `BorderPanel` 상단으로 재배치하고, 전역 그림자 주입 예외 처리 및 100% 광도 타이포그래피 복원.
+
 
 ---
 

@@ -355,6 +355,7 @@ var is_dev_mode: bool = false
 var current_wave: int = 1
 var survival_time: float = 0.0
 var best_survival_time: float = 0.0
+var total_run_time: float = 0.0
 var best_wave: int = 0
 var current_score: int = 0
 var is_overtime_active: bool = false
@@ -675,6 +676,7 @@ func reset() -> void:
 	ice_charges_remaining = 0
 	current_wave = 1
 	survival_time = 0.0
+	total_run_time = 0.0
 	current_score = 0
 	is_overtime_active = false
 	

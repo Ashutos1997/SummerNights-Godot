@@ -54,13 +54,19 @@ var transition_overlay: ColorRect
 @onready var win_level_lbl = $HUD/WinScreen/VBoxContainer/LevelLbl
 @onready var win_loading_lbl = $HUD/WinScreen/VBoxContainer/LoadingLbl
 
-@onready var end_screen        = $HUD/EndScreen
-@onready var end_title_lbl     = $HUD/EndScreen/VBoxContainer/Title
-@onready var end_title2_lbl    = $HUD/EndScreen/VBoxContainer/Title2
-@onready var end_subtitle_lbl  = $HUD/EndScreen/VBoxContainer/Subtitle
-@onready var end_level_lbl     = $HUD/EndScreen/VBoxContainer/LevelCount
-@onready var end_unlock_lbl    = $HUD/EndScreen/VBoxContainer/UnlockPrompt
-@onready var end_prompt_lbl    = $HUD/EndScreen/VBoxContainer/RestartPrompt
+@onready var end_screen            = $HUD/EndScreen
+@onready var end_title_lbl         = $HUD/EndScreen/CenterContainer/VBoxContainer/Title
+@onready var end_subtitle_lbl      = $HUD/EndScreen/CenterContainer/VBoxContainer/Subtitle
+@onready var end_diamond_lbl       = $HUD/EndScreen/CenterContainer/VBoxContainer/DividerHBox/DiamondLbl
+@onready var end_unlock_lbl        = $HUD/EndScreen/CenterContainer/VBoxContainer/UnlockPrompt
+@onready var end_level_name_lbl    = $HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer/Row1/HBoxContainer/LevelNameLbl
+@onready var end_level_val_lbl     = $HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer/Row1/HBoxContainer/LevelValLbl
+@onready var end_time_name_lbl     = $HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer/Row2/HBoxContainer/TimeNameLbl
+@onready var end_time_val_lbl      = $HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer/Row2/HBoxContainer/TimeValLbl
+@onready var end_score_name_lbl    = $HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer/Row3/HBoxContainer/ScoreNameLbl
+@onready var end_score_val_lbl     = $HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer/Row3/HBoxContainer/ScoreValLbl
+@onready var end_play_again_btn    = $HUD/EndScreen/CenterContainer/VBoxContainer/ButtonContainer/PlayAgainBtn
+@onready var end_menu_btn          = $HUD/EndScreen/CenterContainer/VBoxContainer/ButtonContainer/MenuBtn
 
 @onready var timer_label       = $HUD/TopRightInfo/TimerLabel
 @onready var weather_icon_container = $HUD/WeatherIconContainer
@@ -704,7 +710,7 @@ func _ready() -> void:
 	var prompt_size = 16 if is_kr else 14
 	
 	# Common title style (matches Title Screen)
-	for lbl in [win_title_lbl, end_title_lbl, end_title2_lbl, lose_title_lbl, lose_title2_lbl]:
+	for lbl in [win_title_lbl, lose_title_lbl, lose_title2_lbl]:
 		if lbl:
 			_style_lbl(lbl, 72, title_color, 8, Color(0, 0, 0, 1.0), font)
 			lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.6))
@@ -713,32 +719,25 @@ func _ready() -> void:
 			lbl.add_theme_constant_override("shadow_outline_size", 0)
 			
 	# Subtitles and Level Labels
-	for lbl in [win_level_lbl, lose_subtitle_lbl, end_level_lbl, lose_level_lbl, lose_wave_time_lbl]:
+	for lbl in [win_level_lbl, lose_subtitle_lbl, lose_level_lbl, lose_wave_time_lbl]:
 		if lbl:
 			_style_lbl(lbl, subtitle_size, title_color, 5, Color(0, 0, 0, 1.0), font)
 			
-	if end_subtitle_lbl:
-		_style_lbl(end_subtitle_lbl, 28 if is_kr else 24, title_color, 5, Color(0, 0, 0, 1.0), font)
-			
-	if end_unlock_lbl:
-		_style_lbl(end_unlock_lbl, subtitle_size, Color(0.2, 0.8, 1.0, 1.0), 5, Color(0, 0, 0, 1.0), font)
-			
 	# Prompts & small text
-	for lbl in [win_loading_lbl, end_prompt_lbl]:
-		if lbl:
-			_style_lbl(lbl, prompt_size, Color.WHITE, 5, Color(0, 0, 0, 1.0), font)
+	if win_loading_lbl:
+		_style_lbl(win_loading_lbl, prompt_size, Color.WHITE, 5, Color(0, 0, 0, 1.0), font)
 
 	# Pulse animations for prompts
 	if not reduce_motion:
-		for lbl in [win_loading_lbl, end_prompt_lbl]:
-			if lbl:
-				var pulse_tw = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-				pulse_tw.tween_property(lbl, "modulate:a", 0.7, 1.2)
-				pulse_tw.tween_property(lbl, "modulate:a", 1.0, 1.2)
+		if win_loading_lbl:
+			var pulse_tw = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+			pulse_tw.tween_property(win_loading_lbl, "modulate:a", 0.7, 1.2)
+			pulse_tw.tween_property(win_loading_lbl, "modulate:a", 1.0, 1.2)
 	else:
-		for lbl in [win_loading_lbl, end_prompt_lbl]:
-			if lbl:
-				lbl.modulate.a = 1.0
+		if win_loading_lbl:
+			win_loading_lbl.modulate.a = 1.0
+
+	_apply_end_screen_styles(is_kr)
 	_style_lbl(settings_title, 28, Color(1.0, 0.88, 0.3, 1.0), 3, Color.BLACK, font)
 	if filters_title: _style_lbl(filters_title, 28, Color(1.0, 0.88, 0.3, 1.0), 3, Color.BLACK, font)
 	_style_lbl(credits_title, 28, Color(1.0, 0.88, 0.3, 1.0), 3, Color.BLACK, font)
@@ -902,6 +901,13 @@ func _ready() -> void:
 		retry_btn.pressed.connect(_on_retry_pressed)
 	if menu_btn:
 		menu_btn.pressed.connect(_on_menu_pressed)
+	if end_play_again_btn:
+		end_play_again_btn.pressed.connect(_on_end_play_again_pressed)
+	if end_menu_btn:
+		end_menu_btn.pressed.connect(_on_end_menu_pressed)
+	if end_play_again_btn and end_menu_btn:
+		end_play_again_btn.focus_neighbor_right = end_play_again_btn.get_path_to(end_menu_btn)
+		end_menu_btn.focus_neighbor_left = end_menu_btn.get_path_to(end_play_again_btn)
 
 	# Style Toggle Buttons (OFF / ON - High WCAG Contrast 11.7:1 OFF / 13.6:1 ON)
 	var style_btn_off = StyleBoxFlat.new()
@@ -2014,30 +2020,179 @@ func _apply_language(lang: String) -> void:
 		esc_hint_label.add_theme_font_override("font", kenney_font)
 
 	# ── End screen ────────────────────────────────────────────────────────────
-	if end_title_lbl:
-		end_title_lbl.text = "여름은" if is_kr else "SUMMER'S"
-		if font: end_title_lbl.add_theme_font_override("font", font)
-	if end_title2_lbl:
-		end_title2_lbl.text = "끝났다" if is_kr else "OVER"
-		if font: end_title2_lbl.add_theme_font_override("font", font)
-	if end_subtitle_lbl:
-		end_subtitle_lbl.text = "태양이 길들여졌다" if is_kr else "THE SUN HAS BEEN TAMED"
-		if font: end_subtitle_lbl.add_theme_font_override("font", font)
-	if end_level_lbl:
-		if is_kr:
-			end_level_lbl.text = "%d 레벨 완료" % GameState.level
-		else:
-			end_level_lbl.text = "%d LEVELS COMPLETED" % GameState.level
-		if font: end_level_lbl.add_theme_font_override("font", font)
-	if end_prompt_lbl:
-		end_prompt_lbl.text = "클릭하거나 스페이스를 눌러 재시작" if is_kr else "CLICK OR PRESS SPACE TO RESTART"
-		if font: end_prompt_lbl.add_theme_font_override("font", font)
+	_apply_end_screen_styles(is_kr)
 
 	# ── Toggle highlight (color-only, no layout impact) ───────────────────────
 	_update_lang_toggle(is_kr)
 	
 	if input_lbl_kb:
 		_update_input_toggle_visuals(true)
+
+
+func _format_number(val: int) -> String:
+	var s = str(val)
+	var formatted = ""
+	var count = 0
+	for i in range(s.length() - 1, -1, -1):
+		formatted = s[i] + formatted
+		count += 1
+		if count % 3 == 0 and i != 0:
+			formatted = "," + formatted
+	return formatted
+
+
+func _apply_end_screen_styles(is_kr: bool) -> void:
+	if not end_screen:
+		return
+	var t_font = galmuri_font if is_kr else kenney_font
+	var b_font = galmuri_font if is_kr else inter_font
+
+	# 1. Hero Title (56px EN / 50px KR, Cyber Gold, gold shadow glow)
+	if end_title_lbl:
+		end_title_lbl.text = "여름은 끝났다" if is_kr else "SUMMER'S OVER"
+		if t_font: end_title_lbl.add_theme_font_override("font", t_font)
+		end_title_lbl.add_theme_font_size_override("font_size", 50 if is_kr else 56)
+		end_title_lbl.add_theme_color_override("font_color", Color(1.0, 0.75, 0.15, 1.0))
+		end_title_lbl.add_theme_constant_override("outline_size", 6)
+		end_title_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		end_title_lbl.add_theme_constant_override("letter_spacing", 1 if is_kr else 2)
+		end_title_lbl.add_theme_color_override("font_shadow_color", Color(1.0, 0.75, 0.15, 0.25))
+		end_title_lbl.add_theme_constant_override("shadow_offset_x", 0)
+		end_title_lbl.add_theme_constant_override("shadow_offset_y", 3)
+		end_title_lbl.add_theme_constant_override("shadow_outline_size", 10)
+
+	# 2. Lore Subtitle (14px EN / 15px KR, off-white)
+	if end_subtitle_lbl:
+		end_subtitle_lbl.text = "태양이 길들여졌다" if is_kr else "THE SUN HAS BEEN TAMED"
+		if b_font: end_subtitle_lbl.add_theme_font_override("font", b_font)
+		end_subtitle_lbl.add_theme_font_size_override("font_size", 15 if is_kr else 14)
+		end_subtitle_lbl.add_theme_color_override("font_color", Color(0.85, 0.88, 0.92, 0.90))
+		end_subtitle_lbl.add_theme_constant_override("outline_size", 2)
+		end_subtitle_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		end_subtitle_lbl.add_theme_constant_override("letter_spacing", 1)
+		end_subtitle_lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.6))
+		end_subtitle_lbl.add_theme_constant_override("shadow_offset_x", 0)
+		end_subtitle_lbl.add_theme_constant_override("shadow_offset_y", 2)
+		end_subtitle_lbl.add_theme_constant_override("shadow_outline_size", 0)
+
+	# 3. Arcade Diamond (◇)
+	if end_diamond_lbl:
+		end_diamond_lbl.text = "◇"
+		if b_font: end_diamond_lbl.add_theme_font_override("font", b_font)
+		end_diamond_lbl.add_theme_font_size_override("font_size", 11)
+		end_diamond_lbl.add_theme_color_override("font_color", Color(1.0, 0.75, 0.15, 0.70))
+		end_diamond_lbl.add_theme_constant_override("outline_size", 0)
+		end_diamond_lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0))
+
+	# 4. Milestone Unlock Tag (12px EN / 13px KR, Neon Cyan)
+	if end_unlock_lbl:
+		end_unlock_lbl.text = "✦  무한 모드가 해제되었습니다  ✦" if is_kr else "✦  ENDLESS MODE UNLOCKED  ✦"
+		if t_font: end_unlock_lbl.add_theme_font_override("font", t_font)
+		end_unlock_lbl.add_theme_font_size_override("font_size", 13 if is_kr else 12)
+		end_unlock_lbl.add_theme_color_override("font_color", Color(0.25, 0.85, 1.0, 0.95))
+		end_unlock_lbl.add_theme_constant_override("outline_size", 2)
+		end_unlock_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		end_unlock_lbl.add_theme_constant_override("letter_spacing", 1)
+		end_unlock_lbl.add_theme_color_override("font_shadow_color", Color(0.2, 0.8, 1.0, 0.35))
+		end_unlock_lbl.add_theme_constant_override("shadow_offset_x", 0)
+		end_unlock_lbl.add_theme_constant_override("shadow_offset_y", 1)
+		end_unlock_lbl.add_theme_constant_override("shadow_outline_size", 4)
+
+	# 5. Telemetry Stats Rows (344px Frameless Grid)
+	if end_level_name_lbl:
+		end_level_name_lbl.text = "클리어 단계" if is_kr else "LEVELS CLEARED"
+		if b_font: end_level_name_lbl.add_theme_font_override("font", b_font)
+		end_level_name_lbl.add_theme_font_size_override("font_size", 14 if is_kr else 13)
+		end_level_name_lbl.add_theme_color_override("font_color", Color(0.85, 0.88, 0.92, 0.85))
+		end_level_name_lbl.add_theme_constant_override("outline_size", 2)
+		end_level_name_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		end_level_name_lbl.add_theme_constant_override("letter_spacing", 1)
+	if end_level_val_lbl:
+		if t_font: end_level_val_lbl.add_theme_font_override("font", t_font)
+		end_level_val_lbl.add_theme_font_size_override("font_size", 16 if is_kr else 17)
+		end_level_val_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.20, 1.0))
+		end_level_val_lbl.add_theme_constant_override("outline_size", 2)
+		end_level_val_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+
+	if end_time_name_lbl:
+		end_time_name_lbl.text = "클리어 시간" if is_kr else "CLEAR TIME"
+		if b_font: end_time_name_lbl.add_theme_font_override("font", b_font)
+		end_time_name_lbl.add_theme_font_size_override("font_size", 14 if is_kr else 13)
+		end_time_name_lbl.add_theme_color_override("font_color", Color(0.85, 0.88, 0.92, 0.85))
+		end_time_name_lbl.add_theme_constant_override("outline_size", 2)
+		end_time_name_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		end_time_name_lbl.add_theme_constant_override("letter_spacing", 1)
+	if end_time_val_lbl:
+		if t_font: end_time_val_lbl.add_theme_font_override("font", t_font)
+		end_time_val_lbl.add_theme_font_size_override("font_size", 16 if is_kr else 17)
+		end_time_val_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.20, 1.0))
+		end_time_val_lbl.add_theme_constant_override("outline_size", 2)
+		end_time_val_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+
+	if end_score_name_lbl:
+		end_score_name_lbl.text = "최종 점수" if is_kr else "FINAL SCORE"
+		if b_font: end_score_name_lbl.add_theme_font_override("font", b_font)
+		end_score_name_lbl.add_theme_font_size_override("font_size", 14 if is_kr else 13)
+		end_score_name_lbl.add_theme_color_override("font_color", Color(0.92, 0.94, 0.97, 0.95))
+		end_score_name_lbl.add_theme_constant_override("outline_size", 2)
+		end_score_name_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		end_score_name_lbl.add_theme_constant_override("letter_spacing", 1)
+	if end_score_val_lbl:
+		if t_font: end_score_val_lbl.add_theme_font_override("font", t_font)
+		end_score_val_lbl.add_theme_font_size_override("font_size", 19 if is_kr else 22)
+		end_score_val_lbl.add_theme_color_override("font_color", Color(1.0, 0.92, 0.28, 1.0))
+		end_score_val_lbl.add_theme_constant_override("outline_size", 2)
+		end_score_val_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		end_score_val_lbl.add_theme_color_override("font_shadow_color", Color(1.0, 0.80, 0.15, 0.35))
+		end_score_val_lbl.add_theme_constant_override("shadow_offset_x", 0)
+		end_score_val_lbl.add_theme_constant_override("shadow_offset_y", 1)
+		end_score_val_lbl.add_theme_constant_override("shadow_outline_size", 6)
+
+	# 6. Interactive Buttons (160x44, Cyber Gold borders)
+	var normal_style = StyleBoxFlat.new()
+	normal_style.bg_color = Color(0, 0, 0, 0.45)
+	normal_style.border_color = Color(1.0, 0.85, 0.2, 0.5)
+	normal_style.set_border_width_all(2)
+	normal_style.set_corner_radius_all(0)
+	normal_style.content_margin_left = 16
+	normal_style.content_margin_right = 16
+	normal_style.content_margin_top = 8
+	normal_style.content_margin_bottom = 8
+
+	var hover_style = normal_style.duplicate()
+	hover_style.bg_color = Color(1.0, 0.75, 0.15, 0.25)
+	hover_style.border_color = Color(1.0, 0.95, 0.4, 1.0)
+
+	var focus_style = normal_style.duplicate()
+	focus_style.bg_color = Color(1.0, 0.75, 0.15, 0.15)
+	focus_style.border_color = Color(1.0, 0.9, 0.3, 1.0)
+
+	var pressed_style = normal_style.duplicate()
+	pressed_style.bg_color = Color(1.0, 0.85, 0.2, 0.4)
+	pressed_style.border_color = Color(1.0, 0.9, 0.3, 1.0)
+
+	for btn in [end_play_again_btn, end_menu_btn]:
+		if btn:
+			if t_font: btn.add_theme_font_override("font", t_font)
+			btn.add_theme_font_size_override("font_size", 16 if is_kr else 17)
+			btn.add_theme_constant_override("letter_spacing", 1)
+			btn.add_theme_constant_override("outline_size", 2)
+			btn.add_theme_color_override("font_outline_color", Color.BLACK)
+			btn.add_theme_color_override("font_color", Color(1.0, 0.88, 0.25, 1.0))
+			btn.add_theme_color_override("font_hover_color", Color(1.0, 0.95, 0.4, 1.0))
+			btn.add_theme_color_override("font_focus_color", Color(1.0, 0.95, 0.4, 1.0))
+			btn.add_theme_color_override("font_pressed_color", Color(1.0, 0.95, 0.4, 1.0))
+			btn.add_theme_stylebox_override("normal", normal_style)
+			btn.add_theme_stylebox_override("hover", hover_style)
+			btn.add_theme_stylebox_override("focus", focus_style)
+			btn.add_theme_stylebox_override("pressed", pressed_style)
+			btn.focus_mode = Control.FOCUS_ALL
+			btn.custom_minimum_size = Vector2(160, 44)
+
+	if end_play_again_btn:
+		end_play_again_btn.text = "다시 하기" if is_kr else "PLAY AGAIN"
+	if end_menu_btn:
+		end_menu_btn.text = "메인 메뉴" if is_kr else "MAIN MENU"
 
 
 # ---------- Toggle button ---------------------------------------------------
@@ -2505,25 +2660,37 @@ func show_end_screen() -> void:
 	if filters_screen: filters_screen.visible = false
 	if controller_screen: controller_screen.visible = false
 	if lose_screen: lose_screen.visible = false
+	if combo_label: combo_label.visible = false
+	if callout_label: callout_label.visible = false
 	
-	if end_level_lbl:
-		if GameState.language == "KR":
-			end_level_lbl.text = "%d 레벨 완료" % GameState.level
-		else:
-			end_level_lbl.text = "%d LEVELS COMPLETED" % GameState.level
-		
+	var is_kr = (GameState.language == "KR")
+
+	# Populate stats telemetry
+	if end_level_val_lbl:
+		end_level_val_lbl.text = "6 / 6"
+
+	if end_time_val_lbl:
+		var total_secs = int(GameState.total_run_time)
+		var mins = total_secs / 60
+		var secs = total_secs % 60
+		end_time_val_lbl.text = "%02d:%02d" % [mins, secs]
+
+	if end_score_val_lbl:
+		end_score_val_lbl.text = _format_number(GameState.current_score)
+
 	if end_unlock_lbl:
-		if GameState.newly_unlocked_endless:
-			end_unlock_lbl.visible = true
-			end_unlock_lbl.text = "무한 모드가 해제되었습니다!" if GameState.language == "KR" else "ENDLESS MODE UNLOCKED!"
-		else:
-			end_unlock_lbl.visible = false
-		
+		end_unlock_lbl.visible = (GameState.newly_unlocked_endless or ("dawn_breaks" in GameState.unlocked_achievements))
+
+	_apply_end_screen_styles(is_kr)
+
 	end_screen.visible = true
 	end_screen.modulate.a = 0.0
 	var tw = create_tween()
 	tw.set_ease(Tween.EASE_OUT)
 	tw.tween_property(end_screen, "modulate:a", 1.0, 0.4)
+	
+	if end_play_again_btn:
+		end_play_again_btn.grab_focus()
 
 func _input(event: InputEvent) -> void:
 	if not visible:
@@ -2592,13 +2759,6 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 
-	if end_screen and end_screen.visible:
-		if event.is_action_pressed("ui_accept") or event.is_action_pressed("ui_shoot"):
-			GameState.reset()
-			get_viewport().set_input_as_handled()
-			get_tree().paused = false
-			get_tree().call_deferred("change_scene_to_file", "res://scenes/Main.tscn")
-			return
 
 func _pause_game() -> void:
 	_finish_timer_intro_immediately()
@@ -3591,6 +3751,22 @@ func _on_menu_pressed() -> void:
 	get_tree().paused = false
 	get_tree().call_deferred("change_scene_to_file", "res://scenes/Main.tscn")
 
+func _on_end_play_again_pressed() -> void:
+	Engine.time_scale = 1.0
+	GameState.reset()
+	GameState.is_survival_mode = false
+	GameState.is_retrying = true
+	get_tree().paused = false
+	get_tree().call_deferred("change_scene_to_file", "res://scenes/Main.tscn")
+
+func _on_end_menu_pressed() -> void:
+	Engine.time_scale = 1.0
+	GameState.reset()
+	GameState.is_survival_mode = false
+	GameState.is_retrying = false
+	get_tree().paused = false
+	get_tree().call_deferred("change_scene_to_file", "res://scenes/Main.tscn")
+
 var _current_max_ice_charges: int = 1
 var _ice_tween: Tween = null
 
@@ -4000,7 +4176,7 @@ func _setup_weapon_hud() -> void:
 	hud_weapon_name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	var ls = LabelSettings.new()
 	var is_kr = GameState.language == "KR"
-	ls.font = load("res://assets/ui/fonts/Galmuri11.ttf") if is_kr else load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+	ls.font = galmuri_font if is_kr else kenney_font
 	ls.font_size = 20 if is_kr else 18
 	ls.font_color = Color(1.0, 0.95, 0.5, 1.0)
 	ls.outline_size = 4

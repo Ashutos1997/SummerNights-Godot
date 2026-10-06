@@ -2761,6 +2761,7 @@ func _process(delta: float) -> void:
 				_end_overtime()
 				_trigger_supernova_loss()
 			
+		GameState.total_run_time += delta
 		if GameState.is_survival_mode:
 			GameState.survival_time += delta
 			wave_timer += delta

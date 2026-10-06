@@ -7,88 +7,74 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 ## 1. Color Palette
 * **Primary Accents:** Deep Gold `Color(1.0, 0.75, 0.15, 1.0)`, Bright Yellow `Color(1.0, 0.85, 0.2, 1.0)`.
 * **Secondary Accents:** Cyan `Color(0.2, 0.8, 1.0, 1.0)`, Water Blue `Color(0.1, 0.65, 0.95, 1.0)`.
-* **Hazard & Alert Accents:** Amber Stack Warning `Color(1.0, 0.75, 0.2, 0.95)`, Overtime Crimson `Color(1.0, 0.22, 0.22)`.
-* **Energy Shields:** Cyan Boss Shield `Color(0.2, 0.8, 1.0, 0.9)`, Golden Drone Shield `Color(1.0, 0.82, 0.18, 0.95)`.
-* **Atmospheric Events:** Rainstorm Cyan `Color(0.4, 0.85, 1.0)`, Solar Eclipse Lunar Silver `Color(0.85, 0.95, 1.0)`, Coronal Eclipse Ultraviolet `Color(0.95, 0.35, 1.0)` / Prominence Magenta `Color(1.0, 0.20, 0.90)`.
-* **Backgrounds:** Global Menu `Color(0.02, 0.01, 0.05, 0.96)`, Dark Panel `Color(0.05, 0.02, 0.1, 0.85)`.
-* **Controller Highlights:** Gold (Pause), Lime (Weapons), Cyan (Ice Blast), Orange (Power Up), Magenta (Mode Change).
+* **Hazard & Alert:** Amber Stack Warning `Color(1.0, 0.75, 0.2, 0.95)`, Overtime Crimson `Color(1.0, 0.22, 0.22)`.
+* **Shields:** Boss Cyan `Color(0.2, 0.8, 1.0, 0.9)`, Golden Drone `Color(1.0, 0.82, 0.18, 0.95)`.
+* **Atmospheric:** Rainstorm Cyan `Color(0.4, 0.85, 1.0)`, Lunar Silver `Color(0.85, 0.95, 1.0)`, Coronal Ultraviolet `Color(0.95, 0.35, 1.0)`, Prominence Magenta `Color(1.0, 0.20, 0.90)`.
+* **Backgrounds:** Global Modal `Color(0.02, 0.01, 0.05, 0.96)`, Dark Panel `Color(0.05, 0.02, 0.1, 0.85)`.
+* **Controller:** Gold (Pause), Lime (Weapons), Cyan (Ice), Orange (Power Up), Magenta (Mode).
 
 ## 2. Corner Radii
-* **0px:** Standard buttons (Main Menu, dialog popups, Back buttons).
-* **3px:** Concentric Progress Bar fill (`4px` track - `1px` border padding).
-* **4px:** Retro Flat Plates and Badges (Resource meters, Perks, Stat rows, Toast notifications, Achievement & Buff Cards).
+* **0px:** Standard buttons (Main Menu, dialogs, Back buttons).
+* **3px:** Progress Bar fill (`4px` track - `1px` padding).
+* **4px:** Retro Flat Plates and Badges (Meters, Perks, Stats, Toasts, Cards).
 * **8px:** Global menu modal frames (2px gold border).
-* **16px:** Large radial panels and overlays (Weapon Wheel).
+* **16px:** Radial panels (Weapon Wheel).
 
 ## 3. Typography
-* **English (EN):** `Kenney Future.ttf` (Titles/Headers), `Inter-Medium.ttf` (Body/Labels).
-* **Korean (KR):** `Galmuri11.ttf` (Used globally for all Korean text).
-* **Styling:** Heavy black outlines (2–3px) and drop shadows for clear sky legibility.
+* **English (EN):** `Kenney Future.ttf` (Headers), `Inter-Medium.ttf` (Body).
+* **Korean (KR):** `Galmuri11.ttf` (Universal KR font).
+* **Outlines:** 2–3px black outlines with drop shadows.
 
 ## 4. UI Components
 
 ### Global Menus
-* **Z-Index Layering:** All modal menu overlays (`PauseScreen`, `DraftingScreen`, `SettingsScreen`, `FiltersScreen`, `ControllerScreen`, `CreditsScreen`, `AchievementsScreen`, `BuffsScreen`, `WeaponWheel`, `WinScreen`, `EndScreen`, `LoseScreen`) are rendered at `z_index = 50`, strictly prioritizing them above all HUD gameplay elements (`z_index = 0`). Screen transition fades use `z_index = 100`.
-* **Borders:** 2px gold border `Color(1.0, 0.85, 0.2, 0.4)` with 8px radius and 24px screen margin. Modal frames are excluded from global Z-depth drop shadow injection to prevent shadow occlusion over content.
-* **Layout:** Strict left-aligned content with a 96px margin (except centered Win, End, and Lose Screens). 24px vertical separation.
-* **Titles:** 40x40 gold icons paired with a 2px horizontal separator rule.
+* **Layering:** Modal menus render at `z_index = 50`. Transitions use `z_index = 100`.
+* **Frames:** 2px gold border `Color(1.0, 0.85, 0.2, 0.4)` with 8px radius and 24px screen margin.
+* **Layout:** Left-aligned 96px margin (except centered Win/End/Lose). 24px vertical separation.
 
-### HUD Alignment & Resource Meters
-* **Margins:** 24px screen margins for Top-Right info and Bottom-Right resources.
-* **Resource Plates:** 38x38 dark plates (4px radii, 1px accent border) for consistent starting coordinates.
-* **Gauge Dimensions:** Uniform 200x24 gauges with 10px rounded corners.
-  * *Water:* Blue fill, red pulse below 20%.
-  * *Ice Burst:* Cyan-frost fill with notch dividers and numeric counter (`charges / max`). Unlocks Wave 2 / Level 3.
-  * *Catastrom / Celestial Awakening (Power Up):* Shared pool gauge. Standard weapons render purple Catastrom; Kitsune Buster IX renders cyan Celestial Awakening with active countdown. Dedicated toast alerts at 100%.
+### Resource Meters
+* **Plates:** 38x38 dark plates (4px radius, 1px border) with 24px screen margins.
+* **Gauges:** 200x24 with 10px rounded corners.
+  * *Water:* Blue fill; red pulse below 20%.
+  * *Ice Burst:* Cyan-frost fill with notch dividers and counter.
+  * *Power Up:* Shared gauge (Purple Catastrom or Cyan Celestial).
 
-### HUD Popup Notifications (Toasts)
-* **Form Factor & Plate Rule:** Cyberpunk Arcade Plates strictly adhering to the **4px corner radius rule** for Retro Flat Plates (1px accent border `Color(color.r, color.g, color.b, 0.45)`, softened shadow `Color(0, 0, 0, 0.35)`, 4px blur, `Vector2(0, 2)` offset). Symmetrical 16px horizontal margins.
-* **Right-Docked Alerts (380x72px):** Renders unlocks, power-up ready, and weather alerts inside a right-aligned VBoxContainer (8px separation) with 3.5s depletion bar, 0.45s slow rightward fade, and animated height collapse.
-* **Top-Center Popups (500px, 72–88px):** Centered popups for Achievements (`Color(1.0, 0.85, 0.2)`) and Buffs (`Color(0.2, 0.8, 1.0)`) sliding down from `y = -100` to `y = 24.0` (or `y = 106.0` when stacked). Automatically allocates 88px height for 2-line descriptions with 12px bottom clearance.
-* **Recessed Icon Plate:** 40x40px plate (`Color(0.02, 0.02, 0.04, 0.95)`, 4px corner radius, 1px border) housing a 26x26px centered vector icon.
-* **Typography (Even-Number System):**
-  * *Kicker Tag (10px):* Category badge (`[ ACHIEVEMENT UNLOCKED ]`, `[ BUFF UNLOCKED ]`, `[ UNLOCK ]`) using body typeface (`Inter-Medium.ttf` EN / `Galmuri11.ttf` KR) with 1px letter spacing.
-  * *Headline (14px):* Crisp white title with 3px black outline using header typeface (`Kenney Future.ttf` EN / `Galmuri11.ttf` KR).
-  * *Action / Description (12px):* Off-white `Color(0.85, 0.88, 0.92)` label with 2px black outline using body typeface (`Inter-Medium.ttf` EN / `Galmuri11.ttf` KR) with smart word wrap.
-* **Auto-Dismiss Depletion Bar:** 1.5px hairline across the bottom edge (`offset_left = 4.0`, `offset_right = -4.0`) depleting across toast lifespan.
+### Popup Notifications (Toasts)
+* **Form Factor:** Cyberpunk Arcade Plates (4px radius, 1px accent border, softened shadow).
+* **Alerts (380x72px):** Right-docked with 3.5s depletion bar, 0.45s slide-fade, and staggered exit.
+* **Popups (500x72–88px):** Centered popups for Achievements and Buffs sliding from `y = -100` to `y = 24.0` / `106.0`.
+* **Icon Plate:** Recessed 40x40px plate with 26x26 vector icon.
+* **Typography:** 10px kicker tag, 14px header title, 12px description.
 
 ### Buttons (StyleBoxFlat)
-* **Size:** Minimum `280x52`, font size `22px`, `0px` radius.
-* **States:** Normal (40% black bg, 2px gold border), Hover (20% gold bg), Pressed (40% gold bg, bright gold border).
+* **Size:** Minimum `280x52` (or `160x44` in dual clusters), font `22px` (or `16–17px`), `0px` radius.
+* **States:** Normal (40% black, 2px gold border), Hover (20% gold), Pressed (40% gold).
 * **Juice (`UIJuice.gd`):** 1.03x hover scale, 0.97x press bounce, -18dB audio ticks.
 
 ### Interactive Elements
-* **Weapon Wheel:** 6 procedural slices with 12px linear gap spacing, centered 3D previews, and 4px depth shadows. Bottom card displays archetype badges, responsive stat bars, and crit multipliers.
-* **Drafting Screen (Perks):** 3-card deal entrance with 6px drop shadows and rarity badges (`[ RARE ]`, `[ UNCOMMON ]`, `[ COMMON ]`). Max rolls feature an enhanced golden border and glowing `[ MAX ROLL! ]` / `[ 최고 수치! ]` badge. Stacking $\ge 2$ copies displays an amber badge (`[ 3RD STACK · 75% ]` / `[ 3중첩 · 효율 75% ]`) with live recalculated effective descriptions reflecting diminishing returns.
-* **Achievement & Buff Cards:** 700x100 cards adhering to the 4px Retro Flat Plate rule with 64x64 recessed icon plates (4px radii), cyber gold completion badges, and concentric progress bars (4px track / 3px fill).
-* **Settings Screen:** 3 categorized sections (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`) using 14px retro badges, 12px VBox separation, 28px category clearance, unified body typography (`Inter-Medium.ttf` EN / `Galmuri11.ttf` KR) with 16px off-white labels (`Color(0.92, 0.92, 0.92, 0.95)`), 14px toggle/language buttons (even number system), and dedicated cyber gold real-time slider numeric readouts (`100%`, `1.0x`). Mirrored 1:1 in Title Screen.
-* **Pause Menu:** Flat vertical column layout (280px width, 16px separation, 44px uniform buttons) housing Resume, Settings, Filters, Credits, Achievements, Active Buffs, Controls, and Main Menu with unbroken 8-button focus navigation.
-* **Title Screen Layout:** Symmetric horizontal split layout centered on screen (840px × 400px, `alignment = ALIGNMENT_CENTER`). Left column: flush-left title (64px EN / 78px KR with 4px letter-spacing), 60px horizontal hairline divider `Color(1.0, 0.75, 0.15, 0.35)`, clarified subtitle (14px EN / 18px KR, "COOL DOWN THE SUN BEFORE TIME RUNS OUT" / "제한 시간 내에 태양을 식혀라"), 14px clearance, and twin Retro Flat Plate telemetry cards (`StatsCards`, 144x52px, 4px corner radius, 1px hairline border, `mouse_filter = MOUSE_FILTER_IGNORE` non-button readouts): Score card (`Color(1.0, 0.85, 0.2, 0.28)` gold border, 14x14 trophy icon, Cyber Gold value) and Best Wave card (`Color(0.25, 0.85, 0.65, 0.28)` mint border, 14x14 sunset icon, Neon Mint wave number). 1px × 340px vertical gold hairline divider centered in 56px margin (28px symmetrical padding). Right column: 240px button stack with 60px hairline grouping gameplay modes (`NORMAL MODE`, `ENDLESS MODE`) from system/meta menus (`ACHIEVEMENTS`, `STATS`, `SETTINGS`), `[LOCKED]` state, `[ESC] QUIT GAME` prompt, and version footer (`v1.7`).
-* **Wave Timer Glide Intro:** At round/wave start, initial wave time fades into screen center (`scale 1.6x`, `0.25s`), holds strictly in place for `2.5s` (allowing clear reading of the live countdown), and glides smoothly across `0.85s` (`TRANS_QUAD` / `TRANS_SINE`) directly into the top-right `TimerLabel` anchor with zero-pixel handoff. Immediately dismissed and resolved if any modal menu opens or if the game is paused. Sequential tweening prevents animation overlap and supports full reduce-motion accessibility.
-* **Celestial Awakening Presentation:**
-  * *World (Layer 0):* Ethereal Domain filter with indigo split-toning and cyan anamorphic flares.
-  * *HUD (Layer 10):* Breathing cyan energy vignette, 360° reticle timer ring, and holographic text shadows.
-  * *Audio:* CC0 activation swell and deactivation dissipation SFX.
-* **Paid in Full Overtime HUD:**
-  * *Timer Badge:* Pulsing crimson `[ OVERTIME ]` / `[ 연장전 ]` badge (`Color(1.0, 0.22, 0.22)`) with 0.3s sine pulse loop.
-  * *Score Drain:* Warning red font color (`Color(1.0, 0.25, 0.25)`) with subtle 1.08x scale twitches per burn pulse.
-  * *Bankruptcy Recap:* Dedicated subtitle (`Color(1.0, 0.35, 0.35)`) on defeat screen: `"BANKRUPT: ALL SCORE DEPLETED"` / `"파산: 점수를 모두 소진했습니다"`.
-* **Solar Disruption Toast Alerts:**
-  * *Thermal Barrier:* Cyan `Color(0.2, 0.8, 1.0)` with `meter_ice.svg` icon and `[ SOLAR DISRUPTION ]` / `[ 태양 교란 ]` kicker. Shatter success uses `shatter.svg` with `Color(0.35, 0.95, 1.0)`.
-  * *Flare Barrage:* Solar orange `Color(1.0, 0.45, 0.1)` with `eclipse-flare.svg` icon and `[ SOLAR DISRUPTION ]` / `[ 태양 교란 ]` kicker.
+* **Weapon Wheel:** 6 slices, 12px gap, 3D previews, stat bars, and crit multipliers.
+* **Drafting Screen:** 3-card deal entrance with rarity badges, `[ MAX ROLL! ]` highlights, and stack warning badges.
+* **Achievement Cards:** 700x100 cards (4px radius, 64x64 icon plate, concentric progress bars).
+* **Settings Screen:** 3 categorized sections (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`) with even-number typography and live slider readouts (`100%`, `1.0x`).
+* **Pause Menu:** Flat 280px vertical column (16px gap, 44px uniform buttons).
+* **Title Screen:** Symmetrical horizontal split (840x400) with 340px vertical divider, twin 144x52 stats cards, and mode buttons.
+* **Timer Glide Intro:** Center countdown (`scale 1.6x`, 2.5s hold) glides (0.85s) into top-right anchor.
+* **Overtime HUD:** Pulsing crimson `[ OVERTIME ]` badge, red score burn feedback, and bankruptcy recap subtitle.
+* **Victory Recap ("SUMMER'S OVER"):**
+  * *Title:* Single-line 56px EN / 50px KR Cyber Gold with 10px shadow outline.
+  * *Subtitle:* 14px EN / 15px KR off-white with 2px outline.
+  * *Divider:* Twin 48x1.5px amber hairlines flanking 11px diamond symbol `◇`.
+  * *Milestone Tag:* 12px EN / 13px KR Neon Cyan with 4px shadow outline.
+  * *Telemetry Grid (344px):* Levels Cleared (`6 / 6`), Clear Time (`MM:SS`), Final Score climax (22px EN / 19px KR Cyber Gold).
+  * *Buttons (344px):* Dual 160x44px buttons (`[ PLAY AGAIN ]`, `[ MAIN MENU ]`) with 24px gap.
 
-### Boot Splash & Startup Continuity
-* **Window Initialization:** Launches directly in Fullscreen mode with dark background `Color(0.02, 0.01, 0.05, 1)` with stock splash disabled.
-* **Branding Sequence:** Monochrome Godot logo with "M A D E   W I T H" gold text, flanked by 2px hairline wings.
-* **Frame Tracing:** Dedicated `SplashBorderDrawer` progressively traces the 2px gold frame over 3.0s in sync with `ps1_startup.wav`, transitioning smoothly to the title screen.
+### Boot Splash
+* **Mode:** Launches in fullscreen with dark background `Color(0.02, 0.01, 0.05, 1)`.
+* **Sequence:** Monochrome Godot logo with gold lettering, progressively tracing 2px border over 3.0s.
 
-## 5. Procedural Sun Expressions & Rays
-* **Face Texture:** 128x128 RGBA8 procedural texture with 4px outline, reacting to heat and combat events.
-* **Overtime Shock:** Procedural expression featuring contracted pill eyes, high arched startled eyebrows, round open dropped jaw, and a procedural temple sweat droplet bead with pale-amber shock modulate (`Color(2.4, 2.0, 1.4, 0.95)`).
-* **Coronal Halo:** Additive coronal glow and heat ripples (`god_rays.gdshader`) that expand and extinguish with sun temperature.
-
-## 6. Post-Processing & Screen Effects
-* **Layering:** `retro_postprocess.gdshader` on Layer 0 (behind HUD Layer 10) to preserve UI sharpness.
-* **Dynamic Overlays:** Heat Warning (pulsing red border at 85% heat) and Frost Border (icy tint on Ice Burst).
-* **Energy Shield FX:** Fresnel glow with ripple rings and impact sparks, relying on dedicated bilingual HUD banner notifications for tactical feedback.
-* **Retro Filters:** Mutually exclusive post-processing (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
+## 5. Procedural Expressions & Effects
+* **Sun Face:** 128x128 procedural texture with 4px outline.
+* **Overtime Shock:** Contracted pill eyes, arched brows, open jaw, and temple sweat droplet.
+* **Coronal Halo:** Additive coronal glow and heat ripples (`god_rays.gdshader`).
+* **Post-Processing:** `retro_postprocess.gdshader` on Layer 0 (behind HUD Layer 10).
+* **Retro Filters:** Retro Colors, Dithering, PS1 Shading, Heatwave 1984.

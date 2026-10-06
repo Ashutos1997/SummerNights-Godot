@@ -1704,7 +1704,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 visible = false
-mouse_filter = 2
+mouse_filter = 0
 
 [node name="ColorRect" type="ColorRect" parent="HUD/EndScreen"]
 layout_mode = 1
@@ -1713,8 +1713,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-color = Color(0.03, 0.02, 0.06, 1)
+mouse_filter = 0
+color = Color(0.02, 0.01, 0.05, 0.96)
 
 [node name="BorderPanel" type="Panel" parent="HUD/EndScreen"]
 layout_mode = 1
@@ -1730,102 +1730,265 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_border")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HUD/EndScreen"]
+[node name="CenterContainer" type="CenterContainer" parent="HUD/EndScreen"]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -300.0
-offset_top = -140.0
-offset_right = 300.0
-offset_bottom = 140.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/EndScreen/CenterContainer"]
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
 mouse_filter = 2
 alignment = 1
 theme_override_constants/separation = 0
 
-[node name="Title" type="Label" parent="HUD/EndScreen/VBoxContainer"]
+[node name="Title" type="Label" parent="HUD/EndScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.75, 0.15, 1)
 theme_override_colors/font_shadow_color = Color(1, 0.75, 0.15, 0.25)
-theme_override_constants/shadow_outline_size = 12
-theme_override_font_sizes/font_size = 72
-text = "SUMMER'S"
+theme_override_constants/shadow_offset_y = 3
+theme_override_constants/shadow_outline_size = 10
+theme_override_constants/letter_spacing = 2
+theme_override_font_sizes/font_size = 56
+text = "SUMMER'S OVER"
 horizontal_alignment = 1
 
-[node name="Title2" type="Label" parent="HUD/EndScreen/VBoxContainer"]
+[node name="SpacerTitle" type="Control" parent="HUD/EndScreen/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 0.75, 0.15, 1)
-theme_override_colors/font_shadow_color = Color(1, 0.75, 0.15, 0.25)
-theme_override_constants/shadow_outline_size = 12
-theme_override_font_sizes/font_size = 72
-text = "OVER"
-horizontal_alignment = 1
 
-[node name="Spacer0" type="Control" parent="HUD/EndScreen/VBoxContainer"]
-custom_minimum_size = Vector2(0, 16)
-layout_mode = 2
-
-[node name="DividerContainer" type="CenterContainer" parent="HUD/EndScreen/VBoxContainer"]
-layout_mode = 2
-
-[node name="Divider" type="ColorRect" parent="HUD/EndScreen/VBoxContainer/DividerContainer"]
-custom_minimum_size = Vector2(80, 1)
-layout_mode = 2
-color = Color(1, 0.75, 0.15, 0.3)
-
-[node name="Spacer1" type="Control" parent="HUD/EndScreen/VBoxContainer"]
-custom_minimum_size = Vector2(0, 16)
-layout_mode = 2
-
-[node name="Subtitle" type="Label" parent="HUD/EndScreen/VBoxContainer"]
+[node name="Subtitle" type="Label" parent="HUD/EndScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 0.75, 0.15, 0.55)
-theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.9)
+theme_override_constants/letter_spacing = 1
+theme_override_font_sizes/font_size = 14
 text = "THE SUN HAS BEEN TAMED"
 horizontal_alignment = 1
 
-[node name="Spacer2" type="Control" parent="HUD/EndScreen/VBoxContainer"]
-custom_minimum_size = Vector2(0, 32)
-layout_mode = 2
-
-[node name="LevelCount" type="Label" parent="HUD/EndScreen/VBoxContainer"]
+[node name="SpacerSub" type="Control" parent="HUD/EndScreen/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 0.75, 0.15, 0.35)
-theme_override_font_sizes/font_size = 16
-text = "5 LEVELS COMPLETED"
-horizontal_alignment = 1
 
-[node name="Spacer3" type="Control" parent="HUD/EndScreen/VBoxContainer"]
-custom_minimum_size = Vector2(0, 12)
-layout_mode = 2
-
-[node name="UnlockPrompt" type="Label" parent="HUD/EndScreen/VBoxContainer"]
+[node name="DividerHBox" type="HBoxContainer" parent="HUD/EndScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(0.4, 0.8, 1, 0.75)
-theme_override_font_sizes/font_size = 14
-text = "ENDLESS MODE UNLOCKED!"
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="LineLeft" type="ColorRect" parent="HUD/EndScreen/CenterContainer/VBoxContainer/DividerHBox"]
+custom_minimum_size = Vector2(48, 1.5)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+color = Color(1, 0.75, 0.15, 0.38)
+
+[node name="DiamondLbl" type="Label" parent="HUD/EndScreen/CenterContainer/VBoxContainer/DividerHBox"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.75, 0.15, 0.7)
+theme_override_font_sizes/font_size = 11
+text = "◇"
 horizontal_alignment = 1
 
-[node name="Spacer4" type="Control" parent="HUD/EndScreen/VBoxContainer"]
-custom_minimum_size = Vector2(0, 40)
+[node name="LineRight" type="ColorRect" parent="HUD/EndScreen/CenterContainer/VBoxContainer/DividerHBox"]
+custom_minimum_size = Vector2(48, 1.5)
 layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+color = Color(1, 0.75, 0.15, 0.38)
 
-[node name="RestartPrompt" type="Label" parent="HUD/EndScreen/VBoxContainer"]
+[node name="SpacerDiv" type="Control" parent="HUD/EndScreen/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 0.75, 0.15, 0.3)
-theme_override_font_sizes/font_size = 14
-text = "CLICK OR PRESS SPACE TO RESTART"
+
+[node name="UnlockPrompt" type="Label" parent="HUD/EndScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.25, 0.85, 1, 0.95)
+theme_override_colors/font_shadow_color = Color(0.2, 0.8, 1, 0.35)
+theme_override_constants/shadow_offset_y = 1
+theme_override_constants/shadow_outline_size = 4
+theme_override_constants/letter_spacing = 1
+theme_override_font_sizes/font_size = 12
+text = "✦  ENDLESS MODE UNLOCKED  ✦"
 horizontal_alignment = 1
+
+[node name="SpacerUnlock" type="Control" parent="HUD/EndScreen/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="StatsContainer" type="VBoxContainer" parent="HUD/EndScreen/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(344, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="Row1" type="MarginContainer" parent="HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer"]
+custom_minimum_size = Vector2(344, 26)
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer/Row1"]
+layout_mode = 2
+mouse_filter = 2
+alignment = 1
+
+[node name="LevelNameLbl" type="Label" parent="HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer/Row1/HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.85)
+theme_override_constants/letter_spacing = 1
+theme_override_font_sizes/font_size = 13
+text = "LEVELS CLEARED"
+
+[node name="Spacer" type="Control" parent="HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer/Row1/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="LevelValLbl" type="Label" parent="HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer/Row1/HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 17
+text = "6 / 6"
+horizontal_alignment = 2
+
+[node name="Sep1" type="CenterContainer" parent="HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer"]
+custom_minimum_size = Vector2(344, 14)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Line" type="ColorRect" parent="HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer/Sep1"]
+custom_minimum_size = Vector2(344, 1)
+layout_mode = 2
+mouse_filter = 2
+color = Color(1, 0.75, 0.15, 0.14)
+
+[node name="Row2" type="MarginContainer" parent="HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer"]
+custom_minimum_size = Vector2(344, 26)
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer/Row2"]
+layout_mode = 2
+mouse_filter = 2
+alignment = 1
+
+[node name="TimeNameLbl" type="Label" parent="HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer/Row2/HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.85)
+theme_override_constants/letter_spacing = 1
+theme_override_font_sizes/font_size = 13
+text = "CLEAR TIME"
+
+[node name="Spacer" type="Control" parent="HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer/Row2/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="TimeValLbl" type="Label" parent="HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer/Row2/HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 17
+text = "00:00"
+horizontal_alignment = 2
+
+[node name="Sep2" type="CenterContainer" parent="HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer"]
+custom_minimum_size = Vector2(344, 14)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Line" type="ColorRect" parent="HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer/Sep2"]
+custom_minimum_size = Vector2(344, 1)
+layout_mode = 2
+mouse_filter = 2
+color = Color(1, 0.75, 0.15, 0.14)
+
+[node name="Row3" type="MarginContainer" parent="HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer"]
+custom_minimum_size = Vector2(344, 26)
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer/Row3"]
+layout_mode = 2
+mouse_filter = 2
+alignment = 1
+
+[node name="ScoreNameLbl" type="Label" parent="HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer/Row3/HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.92, 0.94, 0.97, 0.95)
+theme_override_constants/letter_spacing = 1
+theme_override_font_sizes/font_size = 13
+text = "FINAL SCORE"
+
+[node name="Spacer" type="Control" parent="HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer/Row3/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="ScoreValLbl" type="Label" parent="HUD/EndScreen/CenterContainer/VBoxContainer/StatsContainer/Row3/HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.92, 0.28, 1)
+theme_override_colors/font_shadow_color = Color(1, 0.8, 0.15, 0.35)
+theme_override_constants/shadow_offset_y = 1
+theme_override_constants/shadow_outline_size = 6
+theme_override_font_sizes/font_size = 22
+text = "0"
+horizontal_alignment = 2
+
+[node name="SpacerStats" type="Control" parent="HUD/EndScreen/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="ButtonContainer" type="HBoxContainer" parent="HUD/EndScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="PlayAgainBtn" type="Button" parent="HUD/EndScreen/CenterContainer/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(160, 44)
+layout_mode = 2
+mouse_filter = 0
+text = "PLAY AGAIN"
+
+[node name="MenuBtn" type="Button" parent="HUD/EndScreen/CenterContainer/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(160, 44)
+layout_mode = 2
+mouse_filter = 0
+text = "MAIN MENU"
+
 
 [node name="LoseScreen" type="Control" parent="HUD"]
 layout_mode = 1

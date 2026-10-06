@@ -1,89 +1,82 @@
 # Summer Nights: Feature Documentation
 
-Master record of all implemented features, mechanics, and systems in *Summer Nights*.
+Master record of implemented features, mechanics, and systems in *Summer Nights*.
 
 ---
 
 ## 1. Core Gameplay Loop
 * **Objective:** Keep the Sun's heat below 100% until the wave timer expires.
-* **Heat Mechanics:** The Sun passively generates heat; reaching 100% triggers Supernova (Game Over).
-* **Water Management:** Firing drains water; tank recharges automatically when idle.
-* **Combo System:** Continuous hits build a combo multiplier (up to 3.0x), boosting ultimate charge and shifting audio pitch.
-* **Scoring:** Points awarded for hits, flare intercepts, and magma evaporation. Multiplied by combo. High scores save locally.
-* **Progression:** 6 Normal Mode levels; Endless Mode unlocks afterward. Boss waves occur every 5th wave. Continuous water resistance scales past Wave 100.
-* **Transitions:** Cinematic "Dying Ember" fade out, full-luminance score recap, and seamless reset between waves.
+* **Heat:** Passively generates heat; reaching 100% triggers Supernova (Game Over).
+* **Water:** Firing drains water tank; recharges automatically when idle.
+* **Combo:** Consecutive hits scale multiplier (up to 3.0x), boosting ultimate charge and audio pitch.
+* **Scoring:** Points for hits, flare intercepts, and magma evaporation, scaled by combo. High scores save locally.
+* **Progression:** 6 Normal Mode levels; Endless Mode unlocks on completion. Bosses occur every 5 waves.
+* **Transitions:** "Dying Ember" fade out, score recap, and seamless wave resets.
 
 ## 2. Weapons & Tools
-* **Weapon Wheel (`TAB`):** Slows time to 0.2x. Displays centered 3D weapon previews, archetype tags, responsive cooling/capacity bars, and crit multipliers.
+* **Weapon Wheel (`TAB`):** 0.2x slow-mo. Shows 3D preview, archetype tags, cooling/capacity stats, and crit multipliers.
 * **Arsenal:**
   * *Standard Blaster:* Balanced starter weapon.
-  * *Precision Stream:* Low capacity, high critical multiplier.
-  * *Heavy Cannon:* High capacity, massive cooling, rapid drain.
+  * *Precision Stream:* High crit multiplier, low capacity.
+  * *Heavy Cannon:* High capacity, heavy cooling, rapid drain.
   * *Scatter Nozzle:* Wide spray for multi-target flare intercepts.
-  * *Kitsune Buster IX:* Endless Wave 30 unlock (160 cap, 28 cool, 2.2x crit). Grants 100% Awakening meter on first unlock. Mode toggle (`[X]` / `[Y]` / MMB):
+  * *Kitsune Buster IX:* Endless Wave 30 unlock (160 cap, 28 cool, 2.2x crit). Mode toggle (`[X]` / `[Y]` / MMB):
     * *Cannon Mode:* Precision stream with revolving 9-vial cylinder.
-    * *Blade Mode:* Katana melee strike (60° arc, 8.5m range). Cleaves flares for +15% water, damages drones, and strikes Heat Mirages and the Sun with wave damage scaling.
-  * *Gold Weapon Skin:* Unlocked at 50,000 High Score. Solid gold metallic finish with in-game Settings toggle under Display (only visible once 50k points is reached) to preserve original weapon detail if preferred.
-* **Ice Burst (Secondary `[R]`):** Freezes heat gain and sun movement for 3s. Features converged crosshair targeting, dynamic homing, and continuous swept-segment anti-tunneling. Unlocked Wave 2 / Level 3.
-* **Catastrom (Ultimate `[F]`):** Dunks Sun into ocean to clear wave. Shared Power Up pool at 100% charge. Unlocked Wave 4.
-* **Celestial Awakening (Ultimate `[F]`):** 15s super state exclusive to Kitsune Buster IX at 100% charge. 9 hydro tails, infinite water, 2.0x cooling, Creation Aura, and Ethereal Domain filter.
+    * *Blade Mode:* Katana slash (60° arc, 8.5m range). Cleaves flares for +15% water, damages drones and Sun.
+  * *Gold Weapon Skin:* Unlocked at 50k High Score. Toggle under Settings > Display.
+* **Ice Burst (`[R]`):** Freezes heat gain and Sun movement for 3s. Unlocked Level 3 / Wave 2.
+* **Catastrom (`[F]`):** Dunks Sun into ocean to clear wave. Shared meter at 100% charge. Unlocked Wave 4.
+* **Celestial Awakening (`[F]`):** 15s super mode for Kitsune Buster IX (9 hydro tails, infinite water, 2.0x cooling).
 
 ## 3. Rogue-lite Perks (Endless Mode)
-* **Drafting:** Choose 1 of 3 randomized perk cards after boss waves. Staggered card deal entrance with rarity badges.
-* **Randomized Roll Ranges:** Perks roll within bounded ranges `[min ~ max]` with proportional trade-off scaling on dual-stat perks. Maximum stat rolls display a glowing gold border and `[ MAX ROLL! ]` / `[ 최고 수치! ]` badge.
-* **Diminishing Returns & Stacking UI:** Stacking 3 or more copies of the same perk incurs diminishing returns (1st & 2nd = 100%, 3rd = 75%, 4th+ = 55%). Drafting Screen cards display amber stack badges (`[ 3RD STACK · 75% ]` / `[ 3중첩 · 효율 75% ]`) and real-time recalculated effective stats.
-* **HUD Tracker:** Top-left active buff icons with stack badges.
-* **Stat Caps:** Cooling Power capped at 2.0x, Water Drain bounded 40%–150%, Crit at 3.0x, Heat Resist at 60%, Sun Sway floored at 40%, Tank bounded 50%–250%, Ult floored at 40%, Water Refill bounded 40%–150%, Base Cooling floored at 50%.
-* **Available Perks:** High Capacity, Precision Optics, Thermal Insulator, Catastrom Flow, Heat Shield, Gravity Anchor, Glass Cannon, Heavy Water, Reckless Haste, Wind Breaker, Sub-Zero Reserve, Blade Cadence, Solar Overclock, High-Pressure Bore, Hyper-Focus, Deep Reservoir.
-* **Perk Rarities:** Common (weight 70–100), Uncommon (weight 60: Glass Cannon, Reckless Haste, High-Pressure Bore, Hyper-Focus), and Rare (Cyan/Blue badge & border, weight 20: Gravity Anchor, Thermal Insulator, Heavy Water, Solar Overclock).
+* **Drafting:** Choose 1 of 3 perk cards after boss waves. Rarity tiers: Common, Uncommon, Rare.
+* **Roll Ranges:** Randomized stat rolls within `[min ~ max]`. Max rolls show `[ MAX ROLL! ]` gold badge.
+* **Diminishing Returns:** Stacking 3+ copies scales efficiency (1st/2nd = 100%, 3rd = 75%, 4th+ = 55%) with amber stack badge.
+* **Tracker:** Top-left active buff icons with stack badges.
+* **Stat Caps:** Cooling (2.0x), Drain (40%–150%), Crit (3.0x), Heat Resist (60%), Sway (floor 40%), Tank (50%–250%), Ult (floor 40%), Refill (40%–150%), Base Cooling (floor 50%).
+* **Perk Pool:** High Capacity, Precision Optics, Thermal Insulator, Catastrom Flow, Heat Shield, Gravity Anchor, Glass Cannon, Heavy Water, Reckless Haste, Wind Breaker, Sub-Zero Reserve, Blade Cadence, Solar Overclock, High-Pressure Bore, Hyper-Focus, Deep Reservoir.
 
 ## 4. Sun Mechanics & Threats
-* **Dynamic Movement:** Sun sways horizontally, scaling up to complex Figure-8 patterns on high waves (sway speed capped at 1.3–1.5 for trackable combat).
-* **Endgame Durability Scaling:** Post-Wave 20 in Endless Mode, Sun heat capacity scales by $+2.2\%$/wave (`MAX_TEMP * (1.0 + (wave - 20) * 0.022)`), maintaining engaging 20–32s TTK combat against stacked player perks.
-* **Continuous Spray Thermal Falloff:** Holding water spray on the exact same coordinate without moving for >3.0s gradually degrades cooling efficiency down to 70% (over 3.0s–6.0s). Moving reticle aim across the Sun (distance >= 1.0), swapping weapons, or releasing fire for >= 0.4s immediately resets efficiency to 100%, encouraging active tracking over static reticle parking.
-* **Sunspots:** Glowing critical weakpoints that award bonus cooling and points.
-* **Solar Flare Shield:** Endless Boss Waves (15–25). Emissive cyan energy barrier blocking water until shattered with Ice Blast (`[R]`). On Wave 30+, replaced by the Equatorial Solar Driver & Golden Drone Shield.
-* **Solar Disruptions (Normal Waves 6+):** Randomized micro-events (40%–60% chance) occurring 4.5s–8.0s into non-boss waves:
-  * **Thermal Barrier:** Temporary cyan energy shield (6.5s–8.0s) deflecting water spray; naturally dissolves or can be shattered by Ice Blast (`[R] / [RMB]`) for +1,000 bonus score.
-  * **Flare Barrage:** Sun pulses and unleashes a rapid sequence of 5–7 solar flares (0.35s–0.45s intervals) across the arena, demanding active evasion.
-* **Solar Wind:** Physical crosswind pushing player crosshair (drift intensity capped at 1.75x).
-* **Heat Mirage (Boss):** Spawns two decoy suns and a collective overshield across all boss waves with snappy 0.3s elastic pop-in and fast horizontal split lerp. Heat regeneration is throttled by 60% during mirages, and striking the true Sun deals 1.5x bonus damage directly to the mirage overshield.
-* **High Heat Warnings:** Steam boils at 75% heat; screen pulses red and heartbeat audio plays at 85%.
-* **Supernova:** Reaching 100% heat triggers a supernova cinematic and full-luminance stats recap.
-* **"Paid in Full" Boss Overtime:** On Boss Waves (Levels 5–6, Endless every 5th wave), hitting `0:00` with banked score initiates Overtime instead of instant defeat. Score burns on an accelerating curve as emergency time, score inflow freezes, and Sun heat regen halts. Defeating the boss clears Overtime and unlocks the "Paid in Full" achievement if $\ge 5,000$ score was burned; score hitting 0 causes bankruptcy defeat.
+* **Movement:** Horizontal sway and Figure-8 paths (speed capped at 1.3–1.5).
+* **Durability Scaling:** Post-Wave 20 Endless scales heat capacity by +2.2%/wave (`MAX_TEMP * (1.0 + (wave - 20) * 0.022)`).
+* **Thermal Falloff:** Spraying a single spot for >3.0s degrades cooling efficiency to 70%. Moving aim (distance >= 1.0) or releasing trigger resets to 100%.
+* **Sunspots:** Glowing critical weakpoints awarding bonus cooling and points.
+* **Solar Flare Shield:** Cyan energy barrier (Endless Waves 15–25) shattered by Ice Blast (`[R]`).
+* **Solar Disruptions (Wave 6+):** Random micro-events (40%–60% chance) in non-boss waves:
+  * *Thermal Barrier:* Cyan shield deflecting water; dissolves or shatters via Ice Blast for +1,000 pts.
+  * *Flare Barrage:* Rapid volley of 5–7 solar flares across wide angles.
+* **Solar Wind:** Physical crosswind pushing crosshair (drift capped at 1.75x).
+* **Heat Mirage (Boss):** Spawns 2 decoys and overshield. Real Sun takes 1.5x damage to overshield; heat regen cut by 60%.
+* **Overtime ("Paid in Full"):** Boss Waves (Levels 5–6, Endless every 5th) hitting `0:00` burn score as life support. Defeating boss clears Overtime; zero score triggers bankruptcy defeat.
 
 ## 5. Dynamic Weather & Encounters
-* **Rainstorms:** Downpour grants infinite water and passive sun cooling.
-* **Solar Eclipses:** Classic lunar eclipse. Deep midnight indigo sky, brilliant twinkling stars, and a pitch-black moon disc crowned by a pearlescent silver-white Diamond-Ring Corona. Triggers **Cold Stasis**: sun heat regen halts and temperature passively cools down by -2.0°/s under the lunar shadow while obsidian shadow flares challenge player defense.
-* **Coronal Eclipses (Wave 45+):** Apex Endless combat event. Deep velvet violet twilight and violent neon magenta prominence loops. Sun heat continues rising. Features cloaked sunspots hidden in the void until illuminated (water spray within 4.5m, Kitsune Blade parries, water flare intercepts, or Ice Blasts), high-speed ultraviolet coronal flares, and **+50% bonus cooling damage** on exposed weakpoints while illuminated. Dedicated HUD weather icon (`eclipse-flare.svg`).
-* **Solar Convergence:** Apex Boss encounter (Wave 30+). Equatorial Solar Driver attaches to the Sun's waist (16-ray Sunburst Corona crest, glowing incandescent core, conduits, and drone bays) while orbiting Solar Eye Drones project an invulnerable Golden Shield (throttling Sun heat regen by 50%). Drones show progressive crack damage and award water (+15%/+20%) plus ultimate charge (+5%/+8%) on destruction. Destroying all drones overloads the Driver and shatters the shield. In Phase 2, the Driver enters Overdrive, deploying a fast-paced escort swarm with reactivated Golden Shield.
-  * **Wave 30–35:** Classic horizontal equatorial orbit (6 drones).
-  * **Wave 40+ ("Infinity Lattice"):** 8 drones split into counter-rotating dual tilted planes ($\pm 33^\circ$) in a criss-crossing 3D double helix. Ring A (Ascending Solar Gold, clockwise) and Ring B (Descending Coronal Violet, counter-clockwise) interweave at central intersection nodes, challenging 3D vertical aim tracking and enabling multi-drone Ice Blast and Kitsune Blade cleaves. Phase 2 deploys 6 high-speed Overdrive escorts.
-  * **Wave 50+ ("Harmonic Matrix"):** 8 Infinity Lattice drones feature twin Harmonic Anchor pairs (Pair 0: Solar Gold on Ring A; Pair 1: Coronal Violet on Ring B) that lock the Sun's Golden Shield into an invincible dual-frequency chromatic resonance (rhythmically undulating between Solar Gold and Coronal Violet waves, with 0 lines obscuring the Sun's face). Anchor drones feature precision optic reticle rings and radiant eye lens flares. Destroying or ice-shattering an anchor drone severs that specific frequency (+25% water) and locks the shield into the remaining single color. Severing both pairs collapses the entire Harmonic Shield (+1,500 pts, +50% water, +15% ult charge), stunning remaining drones for 3.5s and exposing the Sun directly to critical hits.
-  * **Wave 55 & 60+ ("Interceptor Escorts"):** Heavy Arc Cyan fighter drones equipped with plasma thrusters and reinforced armor (120 HP with 2-stage glowing cyan crack fracture progression and coolant venting) that actively detect the player's water spray vector. When the player targets the Sun, Interceptors dart into the central line of fire ($Z = -22.0\text{m}$); when the player shifts aim towards another orbital drone (or Harmonic Anchor), Interceptors aggressively surge forward ($+6.5\text{m}$ in front of that drone) to body-block the shots. Wave 55 deploys 1 Interceptor; Wave 60+ deploys 2 coordinated Interceptors forming a dynamic defensive pincer. Interceptors can be shattered with sustained fire, one-shot cleaved by Kitsune Blade, or instantly frozen by Ice Blast (+1,000 pts, +25% water, +10% ult charge).
+* **Rainstorms:** Grants infinite water and passive Sun cooling.
+* **Solar Eclipse (Cold Stasis):** Lunar eclipse halting heat regen with -2.0°/s passive cooling and obsidian flares.
+* **Coronal Eclipse (Wave 45+):** Deep twilight, cloaked sunspots revealed by water/parries/ice, and +50% cooling on illuminated weakpoints.
+* **Solar Convergence (Wave 30+):** Equatorial Solar Driver boss encounter:
+  * *Wave 30–35:* Horizontal ring with 6 Solar Eye Drones projecting invulnerable Golden Shield.
+  * *Wave 40+ ("Infinity Lattice"):* 8 drones in counter-rotating dual tilted planes ($\pm 33^\circ$) forming an interlocking 3D double helix. Phase 2 deploys 6 Overdrive escorts.
+  * *Wave 50+ ("Harmonic Matrix"):* 2 Harmonic Anchor pairs project dual-frequency resonance. Breaking both pairs collapses shield (+1,500 pts, +50% water, +15% ult) and stuns drones for 3.5s.
+  * *Wave 55 & 60+ ("Interceptor Escorts"):* Arc Cyan armor drones (120 HP) that body-block spray aimed at the Sun or orbital drones. Wave 55 deploys 1; Wave 60+ deploys 2.
 
 ## 6. Environment & Visuals
-* **Dynamic Ocean:** Procedural Gerstner waves, Voronoi caustics, subsurface scattering, and shimmering directional sun reflection glade with wave sparkles.
-* **Rogue Waves:** Large waves crash on the island, darkening wet sand.
-* **Sky & Atmosphere:** Dynamic sunset-to-twilight transition, forward Mie-scattering volumetric god rays (with serene silver-blue rays in cool twilight), airborne solar heat embers transitioning to twilight firefly motes, Belt of Venus lavender dusk band, aquamarine waterline glow, procedural Milky Way ribbon, shooting stars, and Venus star.
-* **Coronal Halo & Heat Waves:** Additive coronal glow and heat ripples that breathe, pulse, and extinguish with sun temperature.
-* **Sun Expressions:** Reacts dynamically to hits, crits, charging flares, Catastrom dunks, Solar Driver states (Driver Smirk and Overdrive Fury), and Paid in Full Overtime (procedural "Overtime Shock" with contracted shock pill eyes, high startled brows, round open dropped jaw, and temple sweat bead). Also integrated directly as HUD toast and banner icons.
-* **Weapon & First-Person Polish:** Semi-gloss toon shading and warm sunset rim lighting on blaster models and player arms, complemented by live illuminated glass fluid reservoir canisters tracking water capacity and low-water warning pulses.
-* **Low-Poly Seagulls:** Procedural 2-joint wing rig, flight physics, and reactive escape behaviors.
-* **Retro Filters:** Optional post-processing shaders (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
+* **Ocean:** Procedural Gerstner waves, caustics, and anisotropic sunset specular reflection glade.
+* **Sky & Atmosphere:** Dynamic twilight gradient, forward Mie scattering god rays, drifting heat embers / twilight fireflies, and Milky Way ribbon.
+* **Sun Expressions:** Procedural faces reacting to hits, crits, dunks, Driver states, and Overtime Shock.
+* **Weapons:** Toon-shaded viewmodels with glass fluid reservoirs tracking water levels.
+* **Retro Filters:** Post-processing shaders (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
 
 ## 7. UI & Game Feel
-* **Juice:** Screen shake, drop shadows, UI scale bounces, audio ticks, and golden ember bursts on flare parries.
-* **Crosshairs:** Dynamic reticles per weapon tracking water capacity. Blade mode uses katana crescent brackets.
-* **Menus:** Unified gold borders, 96px margins, Gamepad navigation, fullscreen window initialization, `z_index = 50` layer elevation prioritizing all overlay menus over HUD gameplay elements, categorized Settings sections with even-number body typography, real-time numeric/percentage slider readouts (`100%`, `1.0x`), Title Screen direct Settings modal access with instant language switching, Title Screen polish (horizontal split layout with central hairline divider, twin non-button Retro Flat Plate telemetry cards for Score and Best Wave, hairline mode divider, uniform button styling, muted locked Endless state, desktop `[ESC]` quit prompt, version-stamped footer), localized "PRESS ESC TO CLOSE" guidance prompts on all secondary menus, and standardized 4px Retro Flat Plate styling for Achievement and Buff cards with concentric progress bars (4px track / 3px fill).
-* **Filters Screen Polish:** Standardized 16px body typography (`Inter-Medium.ttf` / `Galmuri11.ttf`) and 110x34px toggle buttons matching the Settings design system.
-* **Boot Splash:** PS1-inspired intro with progressive golden border tracing and monochrome Godot logo.
-* **HUD Notification (Toast) Redesign:** Right-side transient alerts (380x72px) and top-center Achievement & Buff popups (500x72px, dynamic 88px multi-line height) redesigned into Cyberpunk Arcade Plates (4px plate corner radius, 1px accent border, softened shadow, 40x40 recessed icon plates). Adheres to an even-number typography system with body font for category kickers (10px) and descriptions (12px), header font for titles (14px), 1.5px bottom auto-dismiss depletion bars, clean depletion clearance, and staggered individual dismissals.
-* **Wave Timer Glide Intro & Title Clarification:** Initial wave timer fades into screen center at wave start (`scale 1.6x`, `0.25s`), holds strictly in place for `2.5s` (allowing clear reading of the live countdown), and glides smoothly across `0.85s` into the top-right HUD timer anchor with zero-pixel handoff (immediately dismissed if any modal menu opens or if paused). Title screen subtitle updated to `"COOL DOWN THE SUN BEFORE TIME RUNS OUT"` / `"제한 시간 내에 태양을 식혀라"` for explicit win/loss condition clarity.
-* **Accessibility:** Full Xbox controller support with haptics/aim-assist, "Reduce Motion" toggle, and EN/KR localization.
+* **Menus:** Gold borders, 96px margins, Gamepad navigation, fullscreen default, and `z_index = 50` elevation.
+* **Settings:** 3 categorized sections (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`) with even-number typography and real-time numeric readouts.
+* **Toasts & Popups:** Cyberpunk Arcade Plates (4px radius, 1px border, 40x40 icon plates, 1.5px depletion bars).
+* **Timer Glide Intro:** Round-start timer displays in screen center (`scale 1.6x`, 2.5s hold), then glides (0.85s) into top-right HUD anchor.
+* **Title Screen:** Symmetrical horizontal split (title, stats cards, mode buttons, version footer).
+* **Victory Recap ("SUMMER'S OVER"):** Normal Mode completion modal (hero title, lore subtitle, diamond divider, milestone unlock tag, 344px telemetry grid for Levels Cleared `6 / 6`, Clear Time, Final Score, and Play Again / Menu buttons).
+* **Accessibility:** Full controller support with aim assist, "Reduce Motion" toggle, and EN/KR localization.
 
 ## 8. Audio
-* **Audio Ducking:** 12dB master volume drop on massive impacts (Flares, Dunks).
-* **UI Audio:** Consistent -18dB 1800Hz sine sweep ticks on all interactions.
-* **Custom SFX:** Dedicated CC0 recordings for drone metal hits/shatters, shield spawn/deflect/break, celestial activate/deactivate, blade slashes/draws, cannon locks, boss overdrive klaxons, and perk drafting suite.
-* **Catastrom VO:** Dual-track setup (royalty-free fallback for itch.io exports, original audio for GitHub builds).
+* **Ducking:** 12dB master drop on massive impacts (Flares, Dunks).
+* **UI Audio:** Consistent -18dB 1800Hz sine ticks on all interactions.
+* **Custom SFX:** CC0 audio for drones, shields, kitsune weapon, overdrive alarms, and perk drafting.
+* **Catastrom VO:** Dual-track setup (royalty-free fallback for itch.io, original audio for GitHub).
