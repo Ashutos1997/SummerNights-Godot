@@ -408,6 +408,9 @@ func _update_language() -> void:
 			splash_center.modulate.a = 0.0
 			splash_center.scale = Vector2(0.96, 0.96)
 			splash_center.pivot_offset = Vector2(250, 120)
+
+		if godot_logo:
+			godot_logo.self_modulate = Color(3.5, 3.5, 3.5, 1.0)
 		
 		# Play the custom PS1 startup audio
 		startup_audio = AudioStreamPlayer.new()
@@ -420,6 +423,9 @@ func _update_language() -> void:
 		border_progress = 0.0
 		splash_tween = create_tween()
 		splash_tween.tween_property(self, "border_progress", 1.0, 3.0).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		splash_tween.tween_callback(func():
+			_finish_splash_and_reveal_menu(vbox)
+		)
 		
 		# Smoothly fade in and scale up the Godot logo and subtle ambient glow
 		splash_logo_tween = create_tween().set_parallel(true)
@@ -444,11 +450,6 @@ func _update_language() -> void:
 			logo_fade_tw.tween_property(splash_center, "modulate:a", 0.0, 0.7).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).set_delay(2.1)
 		if radial_glow:
 			logo_fade_tw.tween_property(radial_glow, "modulate:a", 0.0, 0.7).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).set_delay(2.1)
-		
-		# When border progress hits 1.0 at 3.0s, seamlessly transition to title screen
-		splash_tween.tween_callback(func():
-			_finish_splash_and_reveal_menu(vbox)
-		)
 	else:
 		# Return-to-title flow: immediately reveal without splash
 		if splash_container:
@@ -975,39 +976,51 @@ func _finish_splash_and_reveal_menu(vbox: Control) -> void:
 	if not is_splash_active:
 		return
 	is_splash_active = false
+	if splash_tween and splash_tween.is_valid():
+		splash_tween.kill()
+	if splash_logo_tween and splash_logo_tween.is_valid():
+		splash_logo_tween.kill()
 	border_progress = -1.0
 	$BorderPanel.visible = true
 	if splash_border_drawer and is_instance_valid(splash_border_drawer):
 		splash_border_drawer.queue_redraw()
 	
-	# Smoothly dissolve the dark curtain (SplashContainer) over 0.85s with film-grade sine easing,
-	# revealing the 3D beach world and sun face in a cinematic bloom
+	# Smoothly dissolve the dark curtain (SplashContainer) over 0.4s
 	var curtain_tw = create_tween().set_parallel(true).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	if is_instance_valid(splash_container):
-		curtain_tw.tween_property(splash_container, "modulate:a", 0.0, 0.85)
+		curtain_tw.tween_property(splash_container, "modulate:a", 0.0, 0.4)
 		curtain_tw.chain().tween_callback(func():
 			if is_instance_valid(splash_container):
 				splash_container.visible = false
 		)
 	if is_instance_valid(startup_audio):
-		curtain_tw.tween_property(startup_audio, "volume_db", -80.0, 3.5)
+		curtain_tw.tween_property(startup_audio, "volume_db", -80.0, 1.5)
 	
 	# Smoothly glide in menu elements with subtle stagger as the beach emerges
 	var slide_tw = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	if is_instance_valid(vbox):
-		vbox.position.y = orig_vbox_y + 35
-		slide_tw.tween_property(vbox, "position:y", orig_vbox_y, 0.9).set_delay(0.12)
-		slide_tw.tween_property(vbox, "modulate:a", 1.0, 0.75).set_delay(0.12)
+		var target_y = orig_vbox_y if orig_vbox_y != 0.0 else vbox.position.y
+		vbox.position.y = target_y + 35
+		slide_tw.tween_property(vbox, "position:y", target_y, 0.6).set_delay(0.08)
+		slide_tw.tween_property(vbox, "modulate:a", 1.0, 0.5).set_delay(0.08)
 	if lang_btn:
-		lang_btn.position.y = orig_lang_y + 35
-		slide_tw.tween_property(lang_btn, "position:y", orig_lang_y, 0.9).set_delay(0.15)
-		slide_tw.tween_property(lang_btn, "modulate:a", 1.0, 0.75).set_delay(0.15)
+		var target_y = orig_lang_y if orig_lang_y != 0.0 else lang_btn.position.y
+		lang_btn.position.y = target_y + 35
+		slide_tw.tween_property(lang_btn, "position:y", target_y, 0.6).set_delay(0.10)
+		slide_tw.tween_property(lang_btn, "modulate:a", 1.0, 0.5).set_delay(0.10)
 	if credit_lbl:
-		credit_lbl.position.y = orig_credit_y + 25
-		slide_tw.tween_property(credit_lbl, "position:y", orig_credit_y, 0.9).set_delay(0.18)
-		slide_tw.tween_property(credit_lbl, "modulate:a", 1.0, 0.75).set_delay(0.18)
+		var target_y = orig_credit_y if orig_credit_y != 0.0 else credit_lbl.position.y
+		credit_lbl.position.y = target_y + 25
+		slide_tw.tween_property(credit_lbl, "position:y", target_y, 0.6).set_delay(0.12)
+		slide_tw.tween_property(credit_lbl, "modulate:a", 1.0, 0.5).set_delay(0.12)
 
 func _input(event: InputEvent) -> void:
+	if is_splash_active:
+		if event.is_action_pressed("ui_accept") or event.is_action_pressed("ui_cancel") or event.is_action_pressed("ui_pause") or (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT):
+			_finish_splash_and_reveal_menu($ColorRect/HBoxContainer)
+			get_viewport().set_input_as_handled()
+		return
+
 	if (event.is_action_pressed("ui_pause") or event.is_action_pressed("ui_cancel")) and not event.is_echo():
 		if achievements_screen and achievements_screen.visible:
 			_hide_achievements()
