@@ -64,7 +64,7 @@ func _hook_button(btn: Button) -> void:
 		btn.button_up.connect(_on_btn_hover.bind(btn))
 
 func _get_btn_tween(btn: Button) -> Tween:
-	var tw = btn.get_meta("juice_tween", null) as Tween
+	var tw: Tween = btn.get_meta("juice_tween") if btn.has_meta("juice_tween") else null
 	if tw and tw.is_valid():
 		tw.kill()
 	tw = create_tween().bind_node(btn).set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)

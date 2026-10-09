@@ -1193,11 +1193,15 @@ func _show_quit_popup() -> void:
 	no_btn.grab_focus()
 	
 	var audio = AudioStreamPlayer.new()
-	audio.stream = load("res://assets/sfx/ui_tick.wav")
+	if ResourceLoader.exists("res://assets/audio/sfx/perk_hover.wav"):
+		audio.stream = load("res://assets/audio/sfx/perk_hover.wav")
 	audio.bus = "SFX"
 	add_child(audio)
-	audio.play()
-	audio.finished.connect(audio.queue_free)
+	if audio.stream:
+		audio.play()
+		audio.finished.connect(audio.queue_free)
+	else:
+		audio.queue_free()
 
 func _hide_quit_popup() -> void:
 	if not quit_popup or not quit_popup.visible: return
@@ -1205,11 +1209,15 @@ func _hide_quit_popup() -> void:
 	quit_popup.set_meta("is_hiding", true)
 	
 	var audio = AudioStreamPlayer.new()
-	audio.stream = load("res://assets/sfx/ui_tick.wav")
+	if ResourceLoader.exists("res://assets/audio/sfx/perk_hover.wav"):
+		audio.stream = load("res://assets/audio/sfx/perk_hover.wav")
 	audio.bus = "SFX"
 	add_child(audio)
-	audio.play()
-	audio.finished.connect(audio.queue_free)
+	if audio.stream:
+		audio.play()
+		audio.finished.connect(audio.queue_free)
+	else:
+		audio.queue_free()
 	
 	var tw = create_tween()
 	tw.tween_property(quit_popup, "modulate:a", 0.0, 0.15)
