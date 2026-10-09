@@ -3095,7 +3095,8 @@ func _process(delta: float) -> void:
 				var friction = 1.0
 				var r_orig = camera.project_ray_origin(virtual_mouse_pos)
 				var r_norm = camera.project_ray_normal(virtual_mouse_pos)
-				var current_t_pos = r_orig + r_norm * ((sun.position.z - r_orig.z) / r_norm.z)
+				var r_norm_z = r_norm.z if abs(r_norm.z) > 1e-4 else -1e-4
+				var current_t_pos = r_orig + r_norm * ((sun.position.z - r_orig.z) / r_norm_z)
 				if current_t_pos.distance_to(sun.global_position) < 4.5:
 					friction = 0.5
 					if is_instance_valid(sunspot_node) and sunspot_node.visible:
@@ -3142,7 +3143,8 @@ func _process(delta: float) -> void:
 		kitsune_slosh_vel = Vector2.ZERO
 
 	# Project to sun's Z depth
-	var dist = (sun.position.z - ray_origin.z) / ray_normal.z
+	var ray_norm_z = ray_normal.z if abs(ray_normal.z) > 1e-4 else -1e-4
+	var dist = (sun.position.z - ray_origin.z) / ray_norm_z
 	var target_pos = ray_origin + ray_normal * dist
 	
 	# Constrain target_pos so we can't aim too low (prevents clipping into ground)
@@ -3700,6 +3702,10 @@ func _end_overtime() -> void:
 func _trigger_supernova_loss() -> void:
 	timer_running = false
 	game_over = true
+	is_catastrom_active = false
+	is_dragging_sun = false
+	if hud and hud.grab_icon:
+		hud.grab_icon.visible = false
 	if is_celestial_awakened:
 		end_celestial_awakening()
 	GameState.total_deaths += 1
@@ -4890,8 +4896,8 @@ func _check_sun_defeat() -> void:
 		_trigger_phase2()
 	elif GameState.is_survival_mode:
 		if sun_defeated_sfx: sun_defeated_sfx.play()
+		GameState.current_wave += 1
 		if not GameState.is_dev_mode:
-			GameState.current_wave += 1
 			if GameState.current_wave > GameState.best_wave:
 				GameState.best_wave = GameState.current_wave
 				GameState.save_settings()
@@ -6672,6 +6678,7 @@ func _on_game_paused() -> void:
 	shoot_loop_sfx.stream_paused = true
 
 func _on_game_resumed() -> void:
+	if game_over or is_title_screen: return
 	timer_running = true
 	shoot_loop_sfx.stream_paused = false
 

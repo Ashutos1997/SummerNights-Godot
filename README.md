@@ -65,65 +65,35 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 
 ---
 
-## 🎮 Gameplay
-- **Defeat the Sun:** Water the sun to drop its temperature down to 0 before the timer expires! The sun gradually recovers heat over time.
-- **5-Level Difficulty:** Each level gets harder with shorter timers, aggressive sun movement (sway and figure-8 paths), and increased heat regeneration.
-- **Level 5 Boss Phase:** The final level features a two-phase encounter where the sun regains heat and speeds up.
-- **Lose Condition:** If the timer reaches 0 before the sun is defeated, you lose the level and must retry.
-- **Strategic Heat Vents:** The sun has a white-hot critical vent on its surface. Hitting this spot directly cools the sun **2.4x faster**.
-- **Solar Flares (Fireballs):** The sun periodically launches fiery solar flares towards you. You must intercept them mid-air by tracking them with the water stream for 0.33s. Destroying a flare rewards an instant **+30% Water Tank refill**.
-- **Ice Burst:** Starting in Level 3, unlock the powerful Ice Burst mechanic! Build up 3 charges over time and right-click (or press R) to fire a freezing shard at the sun, completely stopping all sun movement and heat regeneration for 3 seconds.
-- **Catastrom Ultimate:** In Level 4+, fill the Catastrom gauge by continuously watering the sun. When it hits 100%, press [F] to physically grab the sun and violently drag it down into the ocean to instantly clear the wave!
-- **6 Unlockable Weapons:** Hold TAB to slow time and open the weapon wheel. Unlock new water blasters as you progress:
-  - **Standard Blaster (Lvl 1):** Balanced cooling power and water drain.
-  - **Precision Stream (Lvl 2):** Low power, but features a massive **4.0x Critical Hit multiplier** for perfect aim.
-  - **Heavy Cannon (Lvl 3):** Extreme raw cooling power, but drains your water tank incredibly fast.
-  - **Scatter Nozzle (Lvl 4):** Wide spread, excellent for intercepting multiple solar flares at once, but lacks pinpoint cooling.
-  - **Tidal Gatling (Arcade Legend Achievement):** A massive heavy burst weapon with extreme cooling power and water drain, but a very punishing recharge rate.
-  - **Kitsune Buster IX (Celestial Secret):** A high-tier hybrid celestial blaster equipped with a translucent revolving Kyubi drum, 3.0x crit multiplier, and dual-blade frame.
-- **Solar Wind (Level 4+):** Periodic gusts of solar wind push your aim sideways for 3 seconds, forcing you to fight the drift. A warning flashes before each gust — brace yourself! Particle streaks and a rising hum signal the incoming blast.
-- **Heat Mirage Overshield (Endless Mode):** Every 5th wave in Endless mode, the sun spawns two decoy mirages that scramble positions. The mirages project a collective golden Overshield protecting the main sun from all damage. You must shoot down the mirages to shatter the shield before you can resume cooling the main sun!
+## Key Features
+
+* **Arcade Cooling Combat:** Douse the Sun before time expires or heat reaches 100%. Maintain continuous spray to build combo multipliers up to 3.0x for accelerated scoring and ultimate charging.
+* **Special Abilities:** Fire **Ice Bursts (`R`)** to freeze heat gain and stop Sun movement, or unleash the screen-clearing **Catastrom Ultimate (`F`)** to dunk the Sun into the sea.
+* **6 Unlockable Blasters:** Access a slow-motion weapon wheel (`TAB`) featuring distinct weapons, including the high-crit Precision Stream and the celestial **Kitsune Buster IX** (with Cannon and Melee Blade modes).
+* **Dynamic Hazards & Bosses:** Intercept parabolic solar flares mid-air for instant water refills, fight through crosswind gusts, shatter mirage overshields, and conquer multi-phase boss encounters.
+* **Game Modes:** Battle through 6 campaign levels in Normal Mode, or survive Endless Mode featuring rogue-lite perk drafting after boss waves.
+* **Retro-Stylized Presentation:** Low-poly 3D aesthetics, procedural Gerstner ocean waves, custom GLSL sky and heat shaders, retro CRT/PS1 filters, and full accessibility options (gamepad support, high contrast, reduce motion).
+
 ---
 
 ## Controls
 
 | Input | Action |
 |---|---|
-| Move mouse | Aim the water cannon |
-| Left click (hold) | Fire water spray |
-| Right click / R | Fire Ice Burst (when charged) |
-| F | Activate Catastrom Ultimate (when 100% charged) |
-| Tab (hold) | Open Weapon Selection Wheel (Mouse to highlight, Left Click to confirm) |
-| ESC | Open Settings / Credits |
-
----
-
-## Features
-
-- Water tank resource management with drain and recharge cycle
-- Solar heat vents with critical cooling and steam geyser effects
-- Solar flare projectiles in parabolic arcs, interceptable for water refills
-- Physical magma rock debris that crashes onto the beach, scaring away seagulls and persisting until evaporated by the water gun
-- Water stream combo system that scales your combo multiplier up to 3.0x for continuous tracking, boosting Catastrom ultimate charging
-- Dynamic Scoring System intertwined with the combo multiplier, rewarding continuous cooling, flare interceptions, and debris evaporation, while saving your high score persistently
-- Solar wind gusts that push your aim sideways with GPU particle streak visuals
-- Procedural drifting 3D low-poly clouds with depth-based parallax (CloudLayer.gd)
-- Atmospheric Coronal Halo and concentric heat ripples that breathe and scale organically with the Sun's temperature (100°C to 0°C)
-- Articulated procedural low-poly seagulls with multi-joint wing rigging, flight dynamics, landing logic, and water interactions (SeagullLayer.gd)
-- Wind sway on palm trees and bushes
-- Custom GLSL shaders for sky, heat haze, pause blur, and ocean ripples
-- WCAG 2.1 AA/AAA compliant UI with full keyboard navigation, high-contrast mode, reduce motion, and adjustable sensitivity
-- Code-synthesized procedural UI audio (hover ticks, weapon swooshes) using `AudioStreamGenerator`
-- Exported as Universal Binary (macOS Intel + Apple Silicon) and Windows .exe
+| Mouse | Aim water cannon |
+| Left Click (Hold) | Spray water |
+| Right Click / R | Fire Ice Burst (when charged) |
+| F | Activate Catastrom Ultimate (100% charge) |
+| Tab (Hold) | Open Weapon Selection Wheel |
+| ESC | Pause / Settings |
 
 ---
 
 ## Running the Project
 
-1. Open Godot 4.7.1 (stable)
-2. In the Project Manager, click Import
-3. Navigate to this folder and select `project.godot`
-4. Click Import & Edit, then press F5 to run
+1. Download and open **Godot Engine 4.7.1** (stable).
+2. In the Project Manager, click **Import** and select `project.godot`.
+3. Click **Import & Edit**, then press **F5** to run.
 
 ---
 
@@ -131,35 +101,10 @@ A 3D arcade shooter built in Godot 4. Cool down the Sun before the heat overwhel
 
 ```
 SummerNights-Godot/
-├── project.godot
-├── scenes/
-│   ├── TitleScreen.tscn
-│   ├── LoadingScreen.tscn
-│   ├── Main.tscn
-│   ├── HUD.tscn
-│   ├── GameScene.tscn
-│   └── IceBlast.tscn
-├── scripts/
-│   ├── Main.gd               - Core game loop, solar flares, vents, environment
-│   ├── HUD.gd                - HUD, settings, credits, crosshair, victory screens
-│   ├── GameScene.gd          - Game mode manager (Wave/Endless)
-│   ├── WaterGun.gd           - Water gun shooting logic and capacity
-│   ├── WeaponWheel.gd        - Weapon selection UI and logic
-│   ├── IceBlast.gd           - Ice blast projectile physics and effects
-│   ├── Sun.gd                - Sun face expressions and reactions
-│   ├── CloudLayer.gd         - Procedural drifting 3D clouds
-│   ├── SeagullLayer.gd       - Animated low-poly seagulls
-│   ├── TitleScreen.gd        - Title screen interactions
-│   ├── GameState.gd          - Autoload state (level, volume, accessibility)
-│   └── LoadingScreen.gd      - Loading screen transitions
-└── assets/
-    ├── summer_night_sky.gdshader
-    ├── heat_haze.gdshader
-    ├── stylized_water.gdshader
-    ├── sky_gradient.gdshader
-    ├── models/
-    ├── textures/
-    └── audio/
+├── assets/          # 3D models, textures, audio SFX, and shaders
+├── docs/            # Architecture guides, HUD references, and changelog
+├── scenes/          # Gameplay, HUD overlay, and menu scenes
+└── scripts/         # Core game loop, weapon mechanics, and state management
 ```
 
 ---
@@ -168,10 +113,10 @@ SummerNights-Godot/
 
 | Area | Technology |
 |---|---|
-| Engine | Godot Engine 4.7.1 (stable) |
-| Rendering | Forward+ (Metal / Vulkan) |
+| Engine | Godot Engine 4.7.1 |
 | Language | GDScript |
-| Post-FX | SSAO, SSIL, SSR, Volumetric Fog, Bloom |
+| Rendering | Forward+ (Metal / Vulkan) |
+| Post-FX | Bloom, SSAO, SSIL, SSR, Volumetric Fog, Custom GLSL Shaders |
 
 ---
 

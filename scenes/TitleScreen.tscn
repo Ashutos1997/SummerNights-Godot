@@ -230,7 +230,7 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_colors/font_color = Color(1, 0.75, 0.15, 0.18)
 theme_override_font_sizes/font_size = 12
-text = "SUMMER NIGHTS v1.7 · GODOT 4 · GDSCRIPT · FORWARD+"
+text = "SUMMER NIGHTS v1.8 · GODOT 4 · GDSCRIPT · FORWARD+"
 horizontal_alignment = 1
 [node name="LangBtn" type="Button" parent="."]
 layout_mode = 1

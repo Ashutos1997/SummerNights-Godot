@@ -273,7 +273,7 @@ func _update_language() -> void:
 			subtitle_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
 			subtitle_lbl.add_theme_constant_override("outline_size", 4)
 		if credit_lbl:
-			credit_lbl.text = "SUMMER NIGHTS v1.7 · GODOT 4 · GDSCRIPT · FORWARD+"
+			credit_lbl.text = "SUMMER NIGHTS v1.8 · GODOT 4 · GDSCRIPT · FORWARD+"
 			_style_label(credit_lbl, 14 if is_kr else 12, Color(1.0, 1.0, 1.0, 0.7), font)
 		
 
@@ -1008,7 +1008,7 @@ func _finish_splash_and_reveal_menu(vbox: Control) -> void:
 		slide_tw.tween_property(credit_lbl, "modulate:a", 1.0, 0.75).set_delay(0.18)
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_pause") and not event.is_echo():
+	if (event.is_action_pressed("ui_pause") or event.is_action_pressed("ui_cancel")) and not event.is_echo():
 		if achievements_screen and achievements_screen.visible:
 			_hide_achievements()
 			get_viewport().set_input_as_handled()
@@ -1614,7 +1614,7 @@ func _apply_settings_language() -> void:
 		if subtitle_lbl:
 			_style_label(subtitle_lbl, 18 if is_kr else 14, Color(1.0, 0.75, 0.15, 1.0), font)
 		if credit_lbl:
-			credit_lbl.text = "SUMMER NIGHTS v1.7 · GODOT 4 · GDSCRIPT · FORWARD+"
+			credit_lbl.text = "SUMMER NIGHTS v1.8 · GODOT 4 · GDSCRIPT · FORWARD+"
 			_style_label(credit_lbl, 14 if is_kr else 12, Color(1.0, 1.0, 1.0, 0.7), font)
 
 		_update_stats_cards(is_kr, font)

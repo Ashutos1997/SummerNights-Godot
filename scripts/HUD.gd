@@ -2800,14 +2800,20 @@ func _pause_game() -> void:
 	await get_tree().process_frame
 	if pause_resume_btn: pause_resume_btn.grab_focus()
 
+var _is_resuming: bool = false
+
 func _resume_game() -> void:
+	if _is_resuming: return
+	_is_resuming = true
 	var tw = create_tween()
 	tw.tween_property(pause_screen, "modulate:a", 0.0, 0.2)
 	await tw.finished
 	pause_screen.visible = false
 	get_tree().paused = false
+	Engine.time_scale = 1.0
 	emit_signal("game_resumed")
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	_is_resuming = false
 
 func _on_pause_resume_pressed() -> void:
 	_resume_game()
@@ -3739,16 +3745,20 @@ func _on_phase2_started() -> void:
 
 func _on_retry_pressed() -> void:
 	Engine.time_scale = 1.0
-	GameState.level = 1
-	GameState.current_wave = 1
+	var was_survival = GameState.is_survival_mode
+	GameState.reset()
+	GameState.is_survival_mode = was_survival
 	GameState.is_retrying = true
 	get_tree().paused = false
 	get_tree().call_deferred("reload_current_scene")
 
 func _on_menu_pressed() -> void:
 	Engine.time_scale = 1.0
-	GameState.level = 1
+	GameState.reset()
+	GameState.is_survival_mode = false
+	GameState.is_retrying = false
 	get_tree().paused = false
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	get_tree().call_deferred("change_scene_to_file", "res://scenes/Main.tscn")
 
 func _on_end_play_again_pressed() -> void:

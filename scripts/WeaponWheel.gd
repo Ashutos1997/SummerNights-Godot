@@ -518,6 +518,7 @@ func open() -> void:
 
 func close_immediate() -> void:
 	active = false
+	Engine.time_scale = 1.0
 	modulate.a = 0.0
 	hide()
 	if open_tween: open_tween.kill()

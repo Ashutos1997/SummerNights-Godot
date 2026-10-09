@@ -72,11 +72,11 @@ Master record of implemented features, mechanics, and systems in *Summer Nights*
 * **Toasts & Popups:** Cyberpunk Arcade Plates (4px radius, 1px border, 40x40 icon plates, 1.5px depletion bars).
 * **Timer Glide Intro:** Round-start timer displays in screen center (`scale 1.6x`, 2.5s hold), then glides (0.85s) into top-right HUD anchor.
 * **Title Screen:** Symmetrical horizontal split (title, stats cards, mode buttons, version footer).
-* **Victory Recap ("SUMMER'S OVER"):** Normal Mode completion modal (hero title, lore subtitle, diamond divider, milestone unlock tag, 344px telemetry grid for Levels Cleared `6 / 6`, Clear Time, Final Score, and Play Again / Menu buttons).
+* **Victory Recap ("SUMMER'S OVER"):** Normal Mode completion modal (hero title, lore subtitle, diamond divider, milestone unlock tag, 344px telemetry grid for Levels Cleared `5 / 5`, Clear Time, Final Score, and Play Again / Menu buttons).
 * **Accessibility:** Full controller support with aim assist, "Reduce Motion" toggle, and EN/KR localization.
 
 ## 8. Audio
 * **Ducking:** 12dB master drop on massive impacts (Flares, Dunks).
 * **UI Audio:** Consistent -18dB 1800Hz sine ticks on all interactions.
 * **Custom SFX:** CC0 audio for drones, shields, kitsune weapon, overdrive alarms, and perk drafting.
-* **Catastrom VO:** Dual-track setup (royalty-free fallback for itch.io, original audio for GitHub).
+* **Catastrom VO:** Dual-track setup (royalty-free fallback for itch.io release builds, original audio for local development branch).

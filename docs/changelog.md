@@ -2,8 +2,25 @@
 
 All notable changes to the Summer Nights project will be documented in this file.
 
-## [v1.7] - WIP
-*(Note: Releases are now unified to v1.7 across both GitHub and itch.io)*
+## [v1.8] - WIP
+*(Note: Releases are exclusively maintained on itch.io starting from v1.8)*
+
+### Improved
+* Export & Release Streamlining: Retired GitHub binary releases to eliminate multi-track confusion; itch.io is now the sole official release platform starting from v1.8, with Godot export presets pruned and updated to v1.8.
+* Documentation & README Streamlining: Consolidated gameplay and feature overviews in both English and Korean READMEs into a concise Key Features section while preserving full credits, third-party asset licenses, and 1:1 bilingual structure.
+
+### Fixed
+* Weapon Wheel Time Scale Trapping: Fixed softblock where closing the weapon wheel via pause menu or round completion left `Engine.time_scale` permanently at 0.2x slow motion.
+* Run State Leaks on Retry/Menu: Fixed bug where retrying or returning to menu from a defeat retained old score, perks, and stat multipliers instead of performing a clean run reset.
+* Dev Mode Endless Progression Softblock: Fixed issue where dev mode was trapped on Wave 1 because wave counter increments were mistakenly gated behind non-dev mode.
+* Ray Depth Division Safety: Added mathematical safeguards against division by zero in camera ray depth calculations when aiming at extreme view angles.
+* Catastrom State & Resume Guard: Fixed lingering Catastrom drag state on round loss and prevented premature timer ticks when unpausing outside active gameplay.
+* Title Modal Input Consistency: Supported both `ui_pause` and `ui_cancel` to ensure keyboard ESC and gamepad cancel reliably close all title screen modals.
+
+---
+
+## [v1.7] - 2026-10-09
+*(Note: Releases unified to v1.7 across both GitHub and itch.io)*
 
 ### Added
 * Interceptor Escorts (Wave 55 & 60+): Armored fighter drones (120 HP) that body-block spray aimed at the Sun or orbital drones (1 on Wave 55, 2 on Wave 60+).
@@ -317,7 +334,24 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ---
 
-## [v1.7] - WIP
+## [v1.8] - WIP
+*(참고: v1.8부터 itch.io가 단독 공식 릴리스 배포처로 운영됩니다)*
+
+### 개선됨 (Improved)
+* 배포 정책 및 프리셋 단일화: 다중 트랙 배포 혼선을 방지하기 위해 GitHub 바이너리 릴리스를 정리하고, v1.8부터 itch.io를 단독 공식 배포처로 유지하며 고도 내보내기 프리셋을 v1.8로 갱신.
+* 문서 및 README 개편: 영문 및 한국어 README의 중복 설명을 핵심 특징(Key Features) 항목으로 정갈하게 압축하고, 전체 크레딧 및 서드파티 라이선스와 1:1 다국어 구조 유지.
+
+### 수정됨 (Fixed)
+* 무기 휠 일시정지 슬로우 모션 고착 버그 수정: 일시정지나 라운드 종료로 무기 휠이 즉시 닫힐 때 `Engine.time_scale`이 0.2배속으로 영구 고착되던 소프트블록 해결.
+* 재시도 및 메뉴 복귀 시 런 상태 누수 해결: 패배 후 재시도하거나 메인 메뉴로 복귀할 때 이전 런의 점수, 퍽, 능력치 배율이 초기화되지 않고 유지되던 버그 수정.
+* 개발자 모드 엔들리스 1웨이브 고착 수정: 개발자 모드에서 웨이브 카운트 증가 로직이 누락되어 1웨이브에 갇히던 소프트블록 수정.
+* 광선 깊이 0 나누기 방지: 극단적인 시야각 조준 시 카메라 광선 Z축 0 나누기로 인한 잠재적 오류 방지.
+* 카타스트롬 드래그 및 재개 가드: 라운드 패배 시 카타스트롬 드래그 잔존 상태를 정리하고, 게임플레이 외 상태에서 일시정지 해제 시 타이머 오작동 방지.
+* 타이틀 모달 취소 입력 일관화: `ui_pause`와 `ui_cancel`을 모두 지원하여 키보드 ESC 및 게임패드 취소 버튼으로 모든 모달 창이 정상적으로 닫히도록 개선.
+
+---
+
+## [v1.7] - 2026-10-09
 *(참고: 이번 릴리스부터 GitHub 및 itch.io 배포 버전 번호가 v1.7로 통일 동기화됩니다)*
 
 ### 추가됨 (Added)
