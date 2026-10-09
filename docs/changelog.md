@@ -16,6 +16,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Ray Depth Division Safety: Added mathematical safeguards against division by zero in camera ray depth calculations when aiming at extreme view angles.
 * Catastrom State & Resume Guard: Fixed lingering Catastrom drag state on round loss and prevented premature timer ticks when unpausing outside active gameplay.
 * Title Modal Input Consistency: Supported both `ui_pause` and `ui_cancel` to ensure keyboard ESC and gamepad cancel reliably close all title screen modals.
+* Title Splash Screen Black Screen Softblock: Fixed issue where splash screen completion callback failed to execute due to mid-tween coroutine yields, and enabled instant skip via mouse click or keypress.
 
 ---
 
@@ -348,6 +349,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 광선 깊이 0 나누기 방지: 극단적인 시야각 조준 시 카메라 광선 Z축 0 나누기로 인한 잠재적 오류 방지.
 * 카타스트롬 드래그 및 재개 가드: 라운드 패배 시 카타스트롬 드래그 잔존 상태를 정리하고, 게임플레이 외 상태에서 일시정지 해제 시 타이머 오작동 방지.
 * 타이틀 모달 취소 입력 일관화: `ui_pause`와 `ui_cancel`을 모두 지원하여 키보드 ESC 및 게임패드 취소 버튼으로 모든 모달 창이 정상적으로 닫히도록 개선.
+* 타이틀 스플래시 화면 검은 화면 멈춤 수정: 트윈 코루틴 지연으로 인해 스플래시 완료 콜백이 등록되지 않던 문제를 수정하고, 마우스 클릭이나 키 입력 시 즉시 스플래시를 건너뛰도록 개선.
 
 ---
 
