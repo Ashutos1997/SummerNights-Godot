@@ -1271,6 +1271,10 @@ func _on_title_start_game(is_survival: bool) -> void:
 		if GameState.current_wave % 5 == 0:
 			is_two_phase = true
 			phase2_heat = min(95.0, 60.0 + (GameState.current_wave * 1.0))
+			sun_shield_cooldown = 2.5
+			if GameState.current_wave >= 30 and solar_convergence_mgr:
+				var d_count = 6 if GameState.current_wave < 40 else 8
+				solar_convergence_mgr.start_orbital_swarm(d_count, GameState.current_wave)
 	if GameState.is_survival_mode and hud:
 		hud.update_ice_charges(GameState.ice_charges_remaining, max_survival_ice_charges + GameState.bonus_ice_charges)
 		if GameState.current_wave < 2 and GameState.ice_charges_remaining <= 0:
@@ -1446,6 +1450,14 @@ func _build_scene() -> void:
 	solar_convergence_mgr.harmonic_tether_severed.connect(_on_harmonic_tether_severed)
 	solar_convergence_mgr.harmonic_matrix_collapsed.connect(_on_harmonic_matrix_collapsed)
 	solar_convergence_mgr.interceptor_destroyed.connect(_on_interceptor_destroyed)
+	solar_convergence_mgr.swarm_started.connect(func(tot: int, harm: bool, teth: int):
+		if hud and hud.has_method("show_boss_drone_telemetry"):
+			hud.show_boss_drone_telemetry(tot, harm, teth)
+	)
+	solar_convergence_mgr.swarm_cleared.connect(func():
+		if hud and hud.has_method("hide_boss_drone_telemetry"):
+			hud.hide_boss_drone_telemetry()
+	)
 	
 	# ── Weather Rain Particles ───────────────────────────────────────────────
 	weather_rain_particles = GPUParticles3D.new()
@@ -5548,12 +5560,16 @@ func _on_harmonic_tether_severed(pair_idx: int, _pos: Vector3) -> void:
 			title = "코로나 공명 주파수 단절!" if is_kr else "CORONAL HARMONIC SEVERED!"
 			desc = "코로나 주파수 파괴! 솔라 골드만 남음 (+25% 물)" if is_kr else "Coronal Frequency Broken! Solar Gold remaining (+25% Water)"
 			col = Color(0.95, 0.35, 1.0)
-		hud.show_toast(title, desc, "res://assets/ui/icons/driver_fury.png", col, null, "[ FREQUENCY COLLAPSED ]" if not is_kr else "[ 주파수 붕괴 ]")
+	if hud and hud.has_method("update_harmonic_matrix_tethers"):
+		var t_count = solar_convergence_mgr.active_tethers_count if solar_convergence_mgr else 0
+		hud.update_harmonic_matrix_tethers(t_count)
 
 func _on_harmonic_matrix_collapsed() -> void:
 	shake(0.55, 0.08)
 	is_sun_shielded = false
 	is_drone_shield_active = false
+	if hud and hud.has_method("update_harmonic_matrix_tethers"):
+		hud.update_harmonic_matrix_tethers(0)
 	if sun_shield_mesh and is_instance_valid(sun_shield_mesh):
 		var tw = create_tween().set_parallel()
 		tw.tween_property(sun_shield_mesh, "scale", Vector3(1.35, 1.35, 1.35), 0.35).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
@@ -5649,6 +5665,9 @@ func _on_solar_drone_destroyed(pos: Vector3) -> void:
 			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (0.05 * catastrom_buff * GameState.catastrom_charge_mult))
 
 	_spawn_damage_number(25.0, false, pos)
+	if hud and hud.has_method("update_boss_drone_telemetry"):
+		var remaining = solar_convergence_mgr.get_active_drone_count() if solar_convergence_mgr else 0
+		hud.update_boss_drone_telemetry(remaining)
 
 func _on_solar_drone_ice_shattered(pos: Vector3) -> void:
 	GameState.add_score(500)
@@ -5668,6 +5687,9 @@ func _on_solar_drone_ice_shattered(pos: Vector3) -> void:
 			GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (0.08 * catastrom_buff * GameState.catastrom_charge_mult))
 
 	_spawn_damage_number(50.0, true, pos)
+	if hud and hud.has_method("update_boss_drone_telemetry"):
+		var remaining = solar_convergence_mgr.get_active_drone_count() if solar_convergence_mgr else 0
+		hud.update_boss_drone_telemetry(remaining)
 	if hud and hud.has_method("show_toast"):
 		var is_kr = GameState.language == "KR"
 		var title = "냉기 분쇄!" if is_kr else "ICE SHATTER!"
@@ -6412,6 +6434,8 @@ func shatter_drone_shield() -> void:
 		return
 	is_drone_shield_active = false
 	is_sun_shielded = false
+	if hud and hud.has_method("on_boss_shield_collapsed"):
+		hud.on_boss_shield_collapsed()
 	if is_instance_valid(shield_break_sfx):
 		shield_break_sfx.pitch_scale = 0.85
 		shield_break_sfx.play()
@@ -6809,6 +6833,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_W:
 				if level_timer > 0.0:
 					level_timer = 0.1 # Skip wave
+			KEY_D:
+				toggle_solar_drones()
 
 func _setup_post_process() -> void:
 	var post_process_layer = CanvasLayer.new()

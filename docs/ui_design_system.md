@@ -39,6 +39,10 @@ Design tokens, color palettes, typography, and component specifications for *Sum
   * *Ice Burst:* Cyan-frost fill with notch dividers and counter.
   * *Power Up:* Shared gauge (Purple Catastrom or Cyan Celestial).
 
+### Telemetry & Combat Badges
+* **Boss Telemetry:** Retro arcade plate at `y = 86px` (4px radius, 1px gold border, 8px drop shadow) with recessed 34x34px icon well, two-tier typography (10px kicker tag in `Inter-Medium`/`Galmuri11`, 13px bold title in `Kenney Future` with 2px black outline), tactile 24x24px recessed pip wells for drone pips (`#FFD12E`), 1.5px bottom accent hairline, and cyan breach transition (`#33CCFF`).
+* **Weapon Plate:** Bottom-left 44px plate at 24px margin with recessed 38x38px icon frame (4px radius, 1px gold border) and 26x26px icon.
+
 ### Popup Notifications (Toasts)
 * **Form Factor:** Cyberpunk Arcade Plates (4px radius, 1px accent border, softened shadow).
 * **Alerts (380x72px):** Right-docked with 3.5s depletion bar, 0.45s slide-fade, and staggered exit.

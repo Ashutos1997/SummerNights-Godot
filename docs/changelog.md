@@ -5,6 +5,9 @@ All notable changes to the Summer Nights project will be documented in this file
 ## [v1.8] - WIP
 *(Note: Releases are exclusively maintained on itch.io starting from v1.8)*
 
+### Added
+* Boss & Drone Telemetry HUD (Wave 30+): Added arcade-styled telemetry plate below Sun heat gauge (`y = 86px`, 4px radius, 8px drop shadow) featuring recessed 34x34px icon well, two-tier typography (kicker tag in `Inter-Medium` + bold header in `Kenney Future` with 2px black outline), tactile 24x24px recessed pip wells with destruction flash/bounce animations, 1.5px bottom accent hairline, `UIJuice` tactile audio sync, and neon cyan shield collapse breach transition.
+
 ### Improved
 * Export & Release Streamlining: Retired GitHub binary releases to eliminate multi-track confusion; itch.io is now the sole official release platform starting from v1.8, with Godot export presets pruned and updated to v1.8.
 * Documentation & README Streamlining: Consolidated gameplay and feature overviews in both English and Korean READMEs into a concise Key Features section while preserving full credits, third-party asset licenses, and 1:1 bilingual structure.
@@ -337,6 +340,9 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ## [v1.8] - WIP
 *(참고: v1.8부터 itch.io가 단독 공식 릴리스 배포처로 운영됩니다)*
+
+### 추가됨 (Added)
+* 보스 및 드론 텔레메트리 HUD (30웨이브 이상): 태양 열기 게이지 하단(`y = 86px`, 4px 라운딩, 8px 드롭 섀도우)에 아케이드 스타일 텔레메트리 플레이트를 추가하여 음각 34x34px 아이콘 웰, 2단 타이포그래피(`Inter-Medium`/`Galmuri11` 키커 태그 + 2px 검은 외곽선 `Kenney Future` 헤더), 파괴 플래시 및 바운스 연출을 갖춘 개별 24x24px 음각 핍 웰, 1.5px 하단 헤어라인 액센트 바, `UIJuice` 햅틱 사운드 싱크, 네온 시안 방어막 돌파 전환 지원.
 
 ### 개선됨 (Improved)
 * 배포 정책 및 프리셋 단일화: 다중 트랙 배포 혼선을 방지하기 위해 GitHub 바이너리 릴리스를 정리하고, v1.8부터 itch.io를 단독 공식 배포처로 유지하며 고도 내보내기 프리셋을 v1.8로 갱신.

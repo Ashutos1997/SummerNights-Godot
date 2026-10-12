@@ -12,6 +12,7 @@ Architectural map and layout reference for `HUD.tscn`.
 
 ### Top-Center
 * **SunHeatBar:** Celsius gauge (`HEAT | X°C`). Reaching 100% triggers Supernova.
+* **BossEncounterHUD:** Retro arcade telemetry plate at `y = 86px` (4px radius, 1px gold border, 8px drop shadow). Features recessed 34x34px shield icon plate, two-tier typography (`[ ORBITAL SHIELD ]` kicker + `6/6 ACTIVE` title), tactile 24x24px recessed pip wells for drone tracking, 1.5px bottom accent hairline, and harmonic matrix tethers.
 * **Phase2Label:** Warning banner for boss phase transitions.
 * **Achievement & Buff Toasts:** 500px centered plates (4px radius, 40x40 icon, 1.5px depletion bar). Slides from top (`y = 24.0` / `y = 106.0`).
 
@@ -27,6 +28,7 @@ Architectural map and layout reference for `HUD.tscn`.
 * **Crosshair:** Dynamic weapon reticle tracking water tank.
   * *Blade Mode:* Katana crescent brackets with tsuba accents.
   * *Celestial Timer:* 360° cyan countdown ring (pulses orange at ≤3.0s).
+  * *Thermal Falloff:* Reticle shifts Cyan → Warm Orange (>2s) → Overtime Crimson (>3s) with 12px `[ HEAT FALLOFF ]` steam badge (`icon_spray_falloff.svg`).
 * **Damage Numbers:** Floating 3D hit and parry numbers (suppressed on shields).
 * **ComboLabel & Callouts:** Combo multiplier (up to 3.0x) and arcade text callouts.
 * **FlareRings:** 2D telegraph rings for incoming solar flares.
@@ -38,7 +40,7 @@ Architectural map and layout reference for `HUD.tscn`.
 * **Catastrom / Celestial Bar:** 200x24 purple or cyan gauge tracking charge or active timer.
 
 ### Bottom-Left
-* **Active Weapon Display:** Vector icon and localized name (`[CANNON]` / `[BLADE]` / `[AWAKENED]`).
+* **Active Weapon Display:** 44px height plate at 24px screen margin with recessed 38x38px icon frame (26x26 vector icon) and 14px/10px localized name and archetype tags.
 
 ---
 

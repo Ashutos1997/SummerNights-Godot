@@ -91,8 +91,26 @@ var is_overtime: bool = false
 var overtime_tween: Tween = null
 var was_bankruptcy_defeat: bool = false
 
-
-
+# ── Boss Encounter Drone & Shield Telemetry HUD (Wave 30+) ───────────────────
+var boss_telemetry_plate: PanelContainer = null
+var boss_shield_plate: PanelContainer = null
+var boss_shield_icon: TextureRect = null
+var boss_shield_kicker: Label = null
+var boss_shield_label: Label = null
+var boss_pips_container: HBoxContainer = null
+var boss_harmonic_box: HBoxContainer = null
+var boss_harmonic_plate: PanelContainer = null
+var boss_harmonic_icon: TextureRect = null
+var boss_harmonic_kicker: Label = null
+var boss_harmonic_label: Label = null
+var boss_accent_bar: ColorRect = null
+var boss_pip_wells: Array[PanelContainer] = []
+var boss_pips: Array[TextureRect] = []
+var boss_total_drones: int = 0
+var boss_active_drones: int = 0
+var boss_has_harmonic: bool = false
+var boss_active_tethers: int = 0
+var boss_telemetry_tween: Tween = null
 @onready var pause_screen       = $HUD/pause_screen
 @onready var pause_title        = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/TitleRow/Title
 @onready var pause_resume_btn   = $HUD/pause_screen/ColorRect/CenterContainer/VBoxContainer/ResumeBtn
@@ -1022,6 +1040,7 @@ func _ready() -> void:
 	credits_screen.set_meta("accessible_name", "Credits screen")
 	
 	_setup_controls_ui()
+	_init_boss_telemetry_hud()
 
 # ---------- Settings Categories & Language ---------------------------------
 
@@ -1910,6 +1929,10 @@ func _apply_language(lang: String) -> void:
 	if phase2_label:
 		phase2_label.text = "2단계" if is_kr else "PHASE 2"
 		if font: phase2_label.add_theme_font_override("font", font)
+	if boss_telemetry_plate:
+		_update_boss_shield_label(boss_active_drones, boss_total_drones, boss_active_drones == 0)
+		if boss_has_harmonic:
+			_update_harmonic_matrix_label(boss_active_tethers)
 	if settings_back_btn:
 		settings_back_btn.text = "뒤로" if is_kr else "BACK"
 		if font: settings_back_btn.add_theme_font_override("font", font)
@@ -2613,6 +2636,7 @@ func _on_critical_hit() -> void:
 
 func _on_sun_defeated(level: int) -> void:
 	_finish_timer_intro_immediately()
+	hide_boss_drone_telemetry(false)
 	if weapon_wheel and weapon_wheel.has_method("close_immediate"):
 		weapon_wheel.close_immediate()
 	elif weapon_wheel and weapon_wheel.active:
@@ -4093,7 +4117,485 @@ func show_drones_shield_hint() -> void:
 	var title = "드론 방어막 활성!" if is_kr else "DRONE SHIELD ACTIVE!"
 	var desc = "먼저 궤도 드론을 파괴하세요!" if is_kr else "SHOOT THE DRONES FIRST!"
 	var kicker = "[ TACTICAL ALERT ]" if not is_kr else "[ 전술 경고 ]"
-	show_toast(title, desc, "res://assets/ui/ui_adventure/PNG/Default/minimap_icon_exclamation_yellow.png", Color(1.0, 0.85, 0.20, 1.0), null, kicker)
+	show_toast(title, desc, "res://assets/ui/icons/icon_shield_drone.svg", Color(1.0, 0.85, 0.20, 1.0), null, kicker)
+	if boss_telemetry_plate and boss_telemetry_plate.visible and not GameState.reduce_motion:
+		var b_tw = create_tween()
+		b_tw.tween_property(boss_telemetry_plate, "scale", Vector2(1.06, 1.06), 0.1)
+		b_tw.tween_property(boss_telemetry_plate, "scale", Vector2(1.0, 1.0), 0.15)
+
+# ── Boss Encounter Drone & Shield Telemetry HUD (Wave 30+) ───────────────────
+func _init_boss_telemetry_hud() -> void:
+	boss_telemetry_plate = PanelContainer.new()
+	boss_telemetry_plate.name = "BossEncounterHUD"
+	boss_telemetry_plate.anchor_left = 0.5
+	boss_telemetry_plate.anchor_right = 0.5
+	boss_telemetry_plate.anchor_top = 0.0
+	boss_telemetry_plate.anchor_bottom = 0.0
+	boss_telemetry_plate.offset_top = 86.0
+	boss_telemetry_plate.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	boss_telemetry_plate.grow_vertical = Control.GROW_DIRECTION_END
+	boss_telemetry_plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	boss_telemetry_plate.visible = false
+	boss_telemetry_plate.modulate.a = 0.0
+	boss_telemetry_plate.resized.connect(func():
+		boss_telemetry_plate.pivot_offset = boss_telemetry_plate.size / 2.0
+	)
+
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.04, 0.02, 0.08, 0.94)
+	style.border_width_left = 1
+	style.border_width_top = 1
+	style.border_width_right = 1
+	style.border_width_bottom = 1
+	style.border_color = Color(1.0, 0.82, 0.18, 0.45)
+	style.set_corner_radius_all(4)
+	style.shadow_color = Color(0, 0, 0, 0.45)
+	style.shadow_size = 8
+	style.shadow_offset = Vector2(0, 4)
+	style.content_margin_left = 12.0
+	style.content_margin_right = 12.0
+	style.content_margin_top = 7.0
+	style.content_margin_bottom = 6.0
+	boss_telemetry_plate.add_theme_stylebox_override("panel", style)
+
+	var root_vbox = VBoxContainer.new()
+	root_vbox.name = "RootVBox"
+	root_vbox.add_theme_constant_override("separation", 5)
+	boss_telemetry_plate.add_child(root_vbox)
+
+	var main_hbox = HBoxContainer.new()
+	main_hbox.name = "MainHBox"
+	main_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	main_hbox.add_theme_constant_override("separation", 12)
+	root_vbox.add_child(main_hbox)
+
+	# 1. Recessed Shield Micro-Plate & Two-Tier Label
+	var shield_box = HBoxContainer.new()
+	shield_box.name = "ShieldBox"
+	shield_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	shield_box.add_theme_constant_override("separation", 8)
+	main_hbox.add_child(shield_box)
+
+	boss_shield_plate = PanelContainer.new()
+	boss_shield_plate.name = "ShieldPlate"
+	boss_shield_plate.custom_minimum_size = Vector2(34, 34)
+	boss_shield_plate.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	boss_shield_plate.pivot_offset = Vector2(17, 17)
+
+	var plate_style = StyleBoxFlat.new()
+	plate_style.bg_color = Color(0.02, 0.01, 0.04, 0.95)
+	plate_style.border_width_left = 1
+	plate_style.border_width_top = 1
+	plate_style.border_width_right = 1
+	plate_style.border_width_bottom = 1
+	plate_style.border_color = Color(1.0, 0.82, 0.18, 0.45)
+	plate_style.set_corner_radius_all(4)
+	boss_shield_plate.add_theme_stylebox_override("panel", plate_style)
+
+	boss_shield_icon = TextureRect.new()
+	boss_shield_icon.name = "ShieldIcon"
+	boss_shield_icon.texture = load("res://assets/ui/icons/icon_shield_drone.svg")
+	boss_shield_icon.custom_minimum_size = Vector2(20, 20)
+	boss_shield_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	boss_shield_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	boss_shield_icon.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	boss_shield_icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	boss_shield_icon.pivot_offset = Vector2(10, 10)
+	boss_shield_icon.self_modulate = Color(1.0, 0.82, 0.18)
+	boss_shield_plate.add_child(boss_shield_icon)
+	shield_box.add_child(boss_shield_plate)
+
+	var shield_text_col = VBoxContainer.new()
+	shield_text_col.name = "ShieldTextCol"
+	shield_text_col.alignment = BoxContainer.ALIGNMENT_CENTER
+	shield_text_col.add_theme_constant_override("separation", 1)
+	shield_box.add_child(shield_text_col)
+
+	var is_kr = GameState.language == "KR"
+	var title_f: Font = galmuri_font if is_kr else kenney_font
+	var body_f: Font = galmuri_font if is_kr else inter_font
+
+	boss_shield_kicker = Label.new()
+	boss_shield_kicker.name = "ShieldKicker"
+	boss_shield_kicker.text = "[ 궤도 방어막 ]" if is_kr else "[ ORBITAL SHIELD ]"
+	if body_f: boss_shield_kicker.add_theme_font_override("font", body_f)
+	boss_shield_kicker.add_theme_font_size_override("font_size", 9)
+	boss_shield_kicker.add_theme_color_override("font_color", Color(1.0, 0.85, 0.20, 0.75))
+	boss_shield_kicker.add_theme_constant_override("letter_spacing", 1)
+	shield_text_col.add_child(boss_shield_kicker)
+
+	boss_shield_label = Label.new()
+	boss_shield_label.name = "ShieldLabel"
+	boss_shield_label.text = "6/6 ACTIVE"
+	if title_f: boss_shield_label.add_theme_font_override("font", title_f)
+	boss_shield_label.add_theme_font_size_override("font_size", 13)
+	boss_shield_label.add_theme_color_override("font_color", Color(1.0, 0.90, 0.35))
+	boss_shield_label.add_theme_color_override("font_outline_color", Color.BLACK)
+	boss_shield_label.add_theme_constant_override("outline_size", 2)
+	boss_shield_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.6))
+	boss_shield_label.add_theme_constant_override("shadow_outline_size", 2)
+	boss_shield_label.add_theme_constant_override("shadow_offset_y", 2)
+	shield_text_col.add_child(boss_shield_label)
+
+	# 2. Separator Divider
+	var div = ColorRect.new()
+	div.name = "Divider"
+	div.custom_minimum_size = Vector2(1, 24)
+	div.color = Color(1.0, 0.85, 0.20, 0.25)
+	div.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	main_hbox.add_child(div)
+
+	# 3. Drone Pip Micro-Wells Container
+	boss_pips_container = HBoxContainer.new()
+	boss_pips_container.name = "PipsContainer"
+	boss_pips_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	boss_pips_container.add_theme_constant_override("separation", 6)
+	main_hbox.add_child(boss_pips_container)
+
+	# 4. Harmonic Matrix Section (Wave 50+)
+	boss_harmonic_box = HBoxContainer.new()
+	boss_harmonic_box.name = "HarmonicBox"
+	boss_harmonic_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	boss_harmonic_box.add_theme_constant_override("separation", 8)
+	boss_harmonic_box.visible = false
+	main_hbox.add_child(boss_harmonic_box)
+
+	var h_div = ColorRect.new()
+	h_div.name = "HarmonicDivider"
+	h_div.custom_minimum_size = Vector2(1, 24)
+	h_div.color = Color(1.0, 0.20, 0.90, 0.35)
+	h_div.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	boss_harmonic_box.add_child(h_div)
+
+	boss_harmonic_plate = PanelContainer.new()
+	boss_harmonic_plate.name = "HarmonicPlate"
+	boss_harmonic_plate.custom_minimum_size = Vector2(32, 32)
+	boss_harmonic_plate.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	boss_harmonic_plate.pivot_offset = Vector2(16, 16)
+
+	var h_style = StyleBoxFlat.new()
+	h_style.bg_color = Color(0.02, 0.01, 0.04, 0.95)
+	h_style.border_width_left = 1
+	h_style.border_width_top = 1
+	h_style.border_width_right = 1
+	h_style.border_width_bottom = 1
+	h_style.border_color = Color(1.0, 0.20, 0.90, 0.45)
+	h_style.set_corner_radius_all(4)
+	boss_harmonic_plate.add_theme_stylebox_override("panel", h_style)
+
+	boss_harmonic_icon = TextureRect.new()
+	boss_harmonic_icon.name = "HarmonicIcon"
+	boss_harmonic_icon.texture = load("res://assets/ui/icons/icon_harmonic_tether.svg")
+	boss_harmonic_icon.custom_minimum_size = Vector2(18, 18)
+	boss_harmonic_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	boss_harmonic_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	boss_harmonic_icon.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	boss_harmonic_icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	boss_harmonic_icon.pivot_offset = Vector2(9, 9)
+	boss_harmonic_icon.self_modulate = Color(1.0, 0.20, 0.90)
+	boss_harmonic_plate.add_child(boss_harmonic_icon)
+	boss_harmonic_box.add_child(boss_harmonic_plate)
+
+	var h_text_col = VBoxContainer.new()
+	h_text_col.name = "HarmonicTextCol"
+	h_text_col.alignment = BoxContainer.ALIGNMENT_CENTER
+	h_text_col.add_theme_constant_override("separation", 1)
+	boss_harmonic_box.add_child(h_text_col)
+
+	boss_harmonic_kicker = Label.new()
+	boss_harmonic_kicker.name = "HarmonicKicker"
+	boss_harmonic_kicker.text = "[ 공명 매트릭스 ]" if is_kr else "[ HARMONIC MATRIX ]"
+	if body_f: boss_harmonic_kicker.add_theme_font_override("font", body_f)
+	boss_harmonic_kicker.add_theme_font_size_override("font_size", 9)
+	boss_harmonic_kicker.add_theme_color_override("font_color", Color(1.0, 0.35, 0.95, 0.75))
+	boss_harmonic_kicker.add_theme_constant_override("letter_spacing", 1)
+	h_text_col.add_child(boss_harmonic_kicker)
+
+	boss_harmonic_label = Label.new()
+	boss_harmonic_label.name = "HarmonicLabel"
+	boss_harmonic_label.text = "2/2 TETHERS"
+	if title_f: boss_harmonic_label.add_theme_font_override("font", title_f)
+	boss_harmonic_label.add_theme_font_size_override("font_size", 12)
+	boss_harmonic_label.add_theme_color_override("font_color", Color(1.0, 0.45, 0.95))
+	boss_harmonic_label.add_theme_color_override("font_outline_color", Color.BLACK)
+	boss_harmonic_label.add_theme_constant_override("outline_size", 2)
+	h_text_col.add_child(boss_harmonic_label)
+
+	# 5. Bottom Hairline Accent Bar
+	boss_accent_bar = ColorRect.new()
+	boss_accent_bar.name = "AccentBar"
+	boss_accent_bar.custom_minimum_size = Vector2(0, 1.5)
+	boss_accent_bar.color = Color(1.0, 0.85, 0.20, 0.40)
+	boss_accent_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	boss_accent_bar.size_flags_vertical = Control.SIZE_SHRINK_END
+	root_vbox.add_child(boss_accent_bar)
+
+	$HUD.add_child(boss_telemetry_plate)
+
+func show_boss_drone_telemetry(total_drones: int, has_harmonic: bool = false, tethers_count: int = 2) -> void:
+	if not boss_telemetry_plate:
+		return
+	boss_total_drones = total_drones
+	boss_active_drones = total_drones
+	boss_has_harmonic = has_harmonic
+	boss_active_tethers = tethers_count
+
+	# Reset visual styles to active golden state
+	var base_style = boss_telemetry_plate.get_theme_stylebox("panel") as StyleBoxFlat
+	if base_style:
+		base_style = base_style.duplicate()
+		base_style.border_color = Color(1.0, 0.82, 0.18, 0.45)
+		boss_telemetry_plate.add_theme_stylebox_override("panel", base_style)
+	if boss_shield_plate:
+		var sp_style = boss_shield_plate.get_theme_stylebox("panel") as StyleBoxFlat
+		if sp_style:
+			sp_style = sp_style.duplicate()
+			sp_style.border_color = Color(1.0, 0.82, 0.18, 0.45)
+			boss_shield_plate.add_theme_stylebox_override("panel", sp_style)
+	if boss_accent_bar:
+		boss_accent_bar.color = Color(1.0, 0.85, 0.20, 0.40)
+	boss_telemetry_plate.scale = Vector2.ONE
+
+	for w in boss_pip_wells:
+		w.queue_free()
+	boss_pip_wells.clear()
+	boss_pips.clear()
+
+	var pip_tex = load("res://assets/ui/icons/icon_drone_pip.svg")
+	for i in range(total_drones):
+		var well = PanelContainer.new()
+		well.name = "PipWell_%d" % i
+		well.custom_minimum_size = Vector2(24, 24)
+		well.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		well.pivot_offset = Vector2(12, 12)
+
+		var w_style = StyleBoxFlat.new()
+		w_style.bg_color = Color(0.02, 0.01, 0.04, 0.90)
+		w_style.border_width_left = 1
+		w_style.border_width_top = 1
+		w_style.border_width_right = 1
+		w_style.border_width_bottom = 1
+		w_style.border_color = Color(1.0, 0.82, 0.18, 0.50)
+		w_style.set_corner_radius_all(4)
+		well.add_theme_stylebox_override("panel", w_style)
+
+		var pip = TextureRect.new()
+		pip.name = "Pip_%d" % i
+		pip.texture = pip_tex
+		pip.custom_minimum_size = Vector2(14, 14)
+		pip.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		pip.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		pip.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		pip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		pip.pivot_offset = Vector2(7, 7)
+		pip.self_modulate = Color(1.0, 0.82, 0.18)
+		well.add_child(pip)
+
+		boss_pips_container.add_child(well)
+		boss_pip_wells.append(well)
+		boss_pips.append(pip)
+
+	boss_harmonic_box.visible = has_harmonic
+	if has_harmonic:
+		_update_harmonic_matrix_label(tethers_count)
+
+	_update_boss_shield_label(boss_active_drones, total_drones, false)
+
+	if boss_telemetry_tween and boss_telemetry_tween.is_valid():
+		boss_telemetry_tween.kill()
+
+	boss_telemetry_plate.visible = true
+	if GameState.reduce_motion:
+		boss_telemetry_plate.modulate.a = 1.0
+		boss_telemetry_plate.offset_top = 86.0
+	else:
+		boss_telemetry_plate.modulate.a = 0.0
+		boss_telemetry_plate.offset_top = 74.0
+		boss_telemetry_tween = create_tween().set_parallel(true)
+		boss_telemetry_tween.tween_property(boss_telemetry_plate, "modulate:a", 1.0, 0.35).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		boss_telemetry_tween.tween_property(boss_telemetry_plate, "offset_top", 86.0, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+func update_boss_drone_telemetry(active_count: int) -> void:
+	if not boss_telemetry_plate or not boss_telemetry_plate.visible:
+		return
+
+	var prev_active = boss_active_drones
+	boss_active_drones = clampi(active_count, 0, boss_total_drones)
+
+	if prev_active > boss_active_drones:
+		# Tactile feedback tick
+		UIJuice.play_tick()
+
+		for i in range(boss_active_drones, min(prev_active, boss_pips.size())):
+			var pip = boss_pips[i]
+			var well = boss_pip_wells[i] if i < boss_pip_wells.size() else null
+
+			var dead_style = StyleBoxFlat.new()
+			dead_style.bg_color = Color(0.01, 0.01, 0.02, 0.50)
+			dead_style.border_width_left = 1
+			dead_style.border_width_top = 1
+			dead_style.border_width_right = 1
+			dead_style.border_width_bottom = 1
+			dead_style.border_color = Color(0.25, 0.25, 0.35, 0.25)
+			dead_style.set_corner_radius_all(4)
+
+			if not GameState.reduce_motion:
+				if well:
+					var w_tw = create_tween().set_parallel(true)
+					w_tw.tween_property(well, "scale", Vector2(1.22, 1.22), 0.08).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+					w_tw.chain().tween_property(well, "scale", Vector2(1.0, 1.0), 0.16).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+					well.add_theme_stylebox_override("panel", dead_style)
+
+				var tw = create_tween().set_parallel(true)
+				tw.tween_property(pip, "self_modulate", Color(2.4, 2.4, 2.4), 0.08)
+				tw.tween_property(pip, "scale", Vector2(1.30, 1.30), 0.08)
+				tw.chain().tween_property(pip, "self_modulate", Color(0.35, 0.35, 0.40, 0.22), 0.20)
+				tw.parallel().tween_property(pip, "scale", Vector2(1.0, 1.0), 0.20)
+			else:
+				if well:
+					well.add_theme_stylebox_override("panel", dead_style)
+				pip.self_modulate = Color(0.35, 0.35, 0.40, 0.22)
+
+	if boss_active_drones == 0:
+		on_boss_shield_collapsed()
+	else:
+		_update_boss_shield_label(boss_active_drones, boss_total_drones, false)
+
+func on_boss_shield_collapsed() -> void:
+	if not boss_telemetry_plate or not boss_telemetry_plate.visible:
+		return
+	_update_boss_shield_label(0, boss_total_drones, true)
+
+	# Shift plate border, shield plate, and accent hairline to Neon Cyan
+	var c_style = boss_telemetry_plate.get_theme_stylebox("panel") as StyleBoxFlat
+	if c_style:
+		c_style = c_style.duplicate()
+		c_style.border_color = Color(0.2, 0.85, 1.0, 0.65)
+		boss_telemetry_plate.add_theme_stylebox_override("panel", c_style)
+
+	if boss_accent_bar:
+		if not GameState.reduce_motion:
+			var a_tw = create_tween()
+			a_tw.tween_property(boss_accent_bar, "color", Color(0.2, 0.85, 1.0, 0.85), 0.25)
+		else:
+			boss_accent_bar.color = Color(0.2, 0.85, 1.0, 0.85)
+
+	if boss_shield_plate:
+		var sp_style = boss_shield_plate.get_theme_stylebox("panel") as StyleBoxFlat
+		if sp_style:
+			sp_style = sp_style.duplicate()
+			sp_style.border_color = Color(0.2, 0.85, 1.0, 0.65)
+			boss_shield_plate.add_theme_stylebox_override("panel", sp_style)
+
+	if boss_shield_icon:
+		if not GameState.reduce_motion:
+			var tw = create_tween().set_parallel(true)
+			tw.tween_property(boss_shield_icon, "self_modulate", Color(0.3, 0.95, 1.0), 0.15)
+			tw.tween_property(boss_shield_icon, "scale", Vector2(1.25, 1.25), 0.15)
+			tw.chain().tween_property(boss_shield_icon, "scale", Vector2(1.0, 1.0), 0.2)
+		else:
+			boss_shield_icon.self_modulate = Color(0.3, 0.95, 1.0)
+
+	# Satisfying plate pulse
+	if not GameState.reduce_motion:
+		var p_tw = create_tween()
+		p_tw.tween_property(boss_telemetry_plate, "scale", Vector2(1.05, 1.05), 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		p_tw.tween_property(boss_telemetry_plate, "scale", Vector2(1.0, 1.0), 0.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+
+	if boss_telemetry_tween and boss_telemetry_tween.is_valid():
+		boss_telemetry_tween.kill()
+	boss_telemetry_tween = create_tween()
+	boss_telemetry_tween.tween_interval(2.8)
+	boss_telemetry_tween.tween_property(boss_telemetry_plate, "modulate:a", 0.0, 0.45)
+	boss_telemetry_tween.tween_callback(func(): boss_telemetry_plate.visible = false)
+
+func update_harmonic_matrix_tethers(active_tethers: int) -> void:
+	if not boss_harmonic_box or not boss_telemetry_plate.visible:
+		return
+	var prev_tethers = boss_active_tethers
+	boss_active_tethers = max(0, active_tethers)
+	_update_harmonic_matrix_label(boss_active_tethers)
+
+	if prev_tethers > boss_active_tethers:
+		UIJuice.play_tick()
+
+	if boss_active_tethers == 0:
+		if not GameState.reduce_motion:
+			var tw = create_tween().set_parallel(true)
+			tw.tween_property(boss_harmonic_icon, "self_modulate", Color(2.4, 2.4, 2.4), 0.1)
+			tw.chain().tween_property(boss_harmonic_icon, "self_modulate", Color(0.4, 0.4, 0.4, 0.3), 0.25)
+			tw.chain().tween_interval(1.5)
+			tw.tween_property(boss_harmonic_box, "modulate:a", 0.0, 0.35)
+			tw.tween_callback(func(): boss_harmonic_box.visible = false)
+		else:
+			boss_harmonic_box.visible = false
+
+func hide_boss_drone_telemetry(animated: bool = true) -> void:
+	if not boss_telemetry_plate or not boss_telemetry_plate.visible:
+		return
+	if boss_telemetry_tween and boss_telemetry_tween.is_valid():
+		boss_telemetry_tween.kill()
+	if animated and not GameState.reduce_motion:
+		boss_telemetry_tween = create_tween()
+		boss_telemetry_tween.tween_property(boss_telemetry_plate, "modulate:a", 0.0, 0.25)
+		boss_telemetry_tween.tween_callback(func(): boss_telemetry_plate.visible = false)
+	else:
+		boss_telemetry_plate.modulate.a = 0.0
+		boss_telemetry_plate.visible = false
+
+func _update_boss_shield_label(active: int, total: int, collapsed: bool) -> void:
+	if not boss_shield_label: return
+	var is_kr = GameState.language == "KR"
+	var title_f: Font = galmuri_font if is_kr else kenney_font
+	var body_f: Font = galmuri_font if is_kr else inter_font
+
+	if boss_shield_kicker:
+		if body_f: boss_shield_kicker.add_theme_font_override("font", body_f)
+		if collapsed or active <= 0:
+			boss_shield_kicker.text = "[ 방어막 돌파 ]" if is_kr else "[ BREACH SUCCESS ]"
+			boss_shield_kicker.add_theme_color_override("font_color", Color(0.2, 0.85, 1.0, 0.85))
+		else:
+			boss_shield_kicker.text = "[ 궤도 방어막 ]" if is_kr else "[ ORBITAL SHIELD ]"
+			boss_shield_kicker.add_theme_color_override("font_color", Color(1.0, 0.85, 0.20, 0.75))
+
+	if title_f: boss_shield_label.add_theme_font_override("font", title_f)
+	if collapsed or active <= 0:
+		boss_shield_label.text = "방어막 붕괴!" if is_kr else "SHIELD COLLAPSED!"
+		boss_shield_label.add_theme_color_override("font_color", Color(0.3, 0.95, 1.0))
+		if boss_shield_icon:
+			boss_shield_icon.self_modulate = Color(0.3, 0.95, 1.0)
+	else:
+		boss_shield_label.text = ("드론 %d/%d기 활성" % [active, total]) if is_kr else ("%d/%d ACTIVE" % [active, total])
+		boss_shield_label.add_theme_color_override("font_color", Color(1.0, 0.90, 0.35))
+		if boss_shield_icon:
+			boss_shield_icon.self_modulate = Color(1.0, 0.82, 0.18)
+
+func _update_harmonic_matrix_label(active_tethers: int) -> void:
+	if not boss_harmonic_label: return
+	var is_kr = GameState.language == "KR"
+	var title_f: Font = galmuri_font if is_kr else kenney_font
+	var body_f: Font = galmuri_font if is_kr else inter_font
+
+	if boss_harmonic_kicker:
+		if body_f: boss_harmonic_kicker.add_theme_font_override("font", body_f)
+		if active_tethers <= 0:
+			boss_harmonic_kicker.text = "[ 매트릭스 해제 ]" if is_kr else "[ MATRIX CLEARED ]"
+			boss_harmonic_kicker.add_theme_color_override("font_color", Color(0.2, 0.85, 1.0, 0.85))
+		else:
+			boss_harmonic_kicker.text = "[ 공명 매트릭스 ]" if is_kr else "[ HARMONIC MATRIX ]"
+			boss_harmonic_kicker.add_theme_color_override("font_color", Color(1.0, 0.35, 0.95, 0.75))
+
+	if title_f: boss_harmonic_label.add_theme_font_override("font", title_f)
+	if active_tethers <= 0:
+		boss_harmonic_label.text = "연결 해제!" if is_kr else "TETHERS BROKEN!"
+		boss_harmonic_label.add_theme_color_override("font_color", Color(0.2, 0.85, 1.0))
+		if boss_harmonic_icon:
+			boss_harmonic_icon.self_modulate = Color(0.2, 0.85, 1.0)
+	else:
+		boss_harmonic_label.text = ("%d/2 연결" % active_tethers) if is_kr else ("%d/2 TETHERS" % active_tethers)
+		boss_harmonic_label.add_theme_color_override("font_color", Color(1.0, 0.45, 0.95))
+		if boss_harmonic_icon:
+			boss_harmonic_icon.self_modulate = Color(1.0, 0.20, 0.90)
 
 func show_thermal_surge_warning() -> void:
 	var is_kr = GameState.language == "KR"

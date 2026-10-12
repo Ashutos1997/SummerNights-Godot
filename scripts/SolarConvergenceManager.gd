@@ -15,6 +15,8 @@ signal solar_driver_equipped(pos: Vector3)
 signal harmonic_tether_severed(pair_idx: int, pos: Vector3)
 signal harmonic_matrix_collapsed()
 signal interceptor_destroyed(pos: Vector3)
+signal swarm_started(total_drones: int, has_harmonic: bool, tethers_count: int)
+signal swarm_cleared()
 
 enum State {
 	IDLE,
@@ -255,6 +257,8 @@ func start_orbital_swarm(count: int = 6, wave: int = 1, is_phase2: bool = false)
 		var tw = create_tween()
 		tw.tween_interval(0.35 + j * 0.15)
 		tw.tween_property(d_node, "scale", Vector3(1.7, 1.7, 1.7), 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	
+	swarm_started.emit(active_drones.size(), is_harmonic_matrix, active_tethers_count)
 
 func _create_interceptor_drone(index: int, total: int, wave: int) -> Dictionary:
 	var drone_root = Node3D.new()
@@ -1243,6 +1247,7 @@ func clear_drones() -> void:
 			node.queue_free()
 	active_drones.clear()
 	current_state = State.IDLE
+	swarm_cleared.emit()
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Wave 50+ Harmonic Resonance Matrix Mechanics (Shield-Surface Frequency Resonance)

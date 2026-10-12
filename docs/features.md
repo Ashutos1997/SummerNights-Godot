@@ -71,6 +71,7 @@ Master record of implemented features, mechanics, and systems in *Summer Nights*
 * **Settings:** 3 categorized sections (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`) with even-number typography and real-time numeric readouts.
 * **Toasts & Popups:** Cyberpunk Arcade Plates (4px radius, 1px border, 40x40 icon plates, 1.5px depletion bars).
 * **Timer Glide Intro:** Round-start timer displays in screen center (`scale 1.6x`, 2.5s hold), then glides (0.85s) into top-right HUD anchor.
+* **Boss & Drone Telemetry HUD:** Retro arcade plate below Sun heat gauge (`y = 86px`, 4px radius, 8px drop shadow) featuring recessed 34x34px icon well, two-tier kicker & header typography, individual 24x24px recessed drone pip wells with destruction flash/bounce animations, tactile tick audio (`UIJuice`), and neon cyan shield collapse breach transition in Wave 30+.
 * **Title Screen:** Symmetrical horizontal split (title, stats cards, mode buttons, version footer).
 * **Victory Recap ("SUMMER'S OVER"):** Normal Mode completion modal (hero title, lore subtitle, diamond divider, milestone unlock tag, 344px telemetry grid for Levels Cleared `5 / 5`, Clear Time, Final Score, and Play Again / Menu buttons).
 * **Accessibility:** Full controller support with aim assist, "Reduce Motion" toggle, and EN/KR localization.
