@@ -20,6 +20,10 @@ func _ready() -> void:
 func play_tick() -> void:
 	_play_tick()
 
+func apply_button_juice(btn: Button) -> void:
+	if btn:
+		_hook_button(btn)
+
 func _play_tick() -> void:
 	if not _tick_player.playing:
 		_tick_player.play()
