@@ -47,7 +47,7 @@ Architectural map and layout reference for `HUD.tscn`.
 ## 2. Screen Overlays (Menus)
 * **Z-Index Layering:** All modal menus render at `z_index = 50` above HUD gameplay elements (`z_index = 0`). Opening any menu immediately cancels active timer intros. Screen fades use `z_index = 100`.
 * **Styling:** 96px left margin, 24px vertical gap, gold borders, and localized "PRESS ESC TO CLOSE" prompts.
-* **PauseScreen (`ESC`):** 280px vertical button stack (Resume, Settings, Filters, Credits, Controls, Achievements, Buffs, Menu). Main Menu button triggers `AbandonConfirmModal` (`z_index = 60`, 400x200px retro card with `[ CANCEL ]` safe default focus and `[ ABANDON ]` hazard button).
+* **PauseScreen (`ESC`):** 280px vertical button stack (Resume, Settings, Filters, Credits, Controls, Achievements, Buffs, Menu). Main Menu button triggers AbandonConfirmModal (1:1 identical to Title Screen quit popup: 400x180px, 8px radius, 2px gold border, 90% black overlay, dual 140x48px buttons with YES / NO options, NO default focus).
 * **CreditsScreen:** Autoscrolling bilingual credits with complete asset attributions.
 * **AchievementsScreen:** 700x100 card list tracking 14 achievements with progress bars and badges.
 * **DraftingScreen (Perks):** 3-card post-boss modal with rarity badges, `[ MAX ROLL! ]` highlights, and stack warning badges.

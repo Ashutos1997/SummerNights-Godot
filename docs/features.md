@@ -73,7 +73,7 @@ Master record of implemented features, mechanics, and systems in *Summer Nights*
 * **Timer Glide Intro:** Round-start timer displays in screen center (`scale 1.6x`, 2.5s hold), then glides (0.85s) into top-right HUD anchor.
 * **Boss & Drone Telemetry HUD:** Retro arcade plate below Sun heat gauge (`y = 86px`, 4px radius, 8px drop shadow) featuring recessed 34x34px icon well, two-tier kicker & header typography, individual 24x24px recessed drone pip wells with destruction flash/bounce animations, tactile tick audio (`UIJuice`), and neon cyan shield collapse breach transition in Wave 30+.
 * **Title Screen:** Symmetrical horizontal split (title, stats cards, mode buttons, version footer).
-* **Abandon Run Modal:** Intercepts Pause Menu "MAIN MENU" button with a retro arcade modal (`[ CANCEL ]` default focus / `[ ABANDON ]` hazard alert) to prevent accidental loss of active runs.
+* **Abandon Run Modal:** Intercepts Pause Menu "MAIN MENU" button with a 1:1 replica of the Title Screen quit confirmation popup (400x180px, 8px radius, 2px gold border, YES / NO options with NO safe default focus).
 * **Victory Recap ("SUMMER'S OVER"):** Normal Mode completion modal (hero title, lore subtitle, diamond divider, milestone unlock tag, 344px telemetry grid for Levels Cleared `5 / 5`, Clear Time, Final Score, and Play Again / Menu buttons).
 * **Accessibility:** Full controller support with aim assist, "Reduce Motion" toggle, and EN/KR localization.
 

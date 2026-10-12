@@ -150,13 +150,9 @@ var settings_cat_gameplay_lbl: Label = null
 var settings_cat_system_lbl: Label = null
 
 var abandon_modal: Control = null
-var abandon_modal_bg: ColorRect = null
-var abandon_modal_panel: Panel = null
-var abandon_cancel_btn: Button = null
-var abandon_forfeit_btn: Button = null
-var abandon_modal_title: Label = null
-var abandon_modal_kicker: Label = null
-var abandon_modal_desc: Label = null
+var abandon_yes_btn: Button = null
+var abandon_no_btn: Button = null
+var abandon_message_lbl: Label = null
 
 @onready var filters_screen    = $HUD/FiltersScreen
 @onready var filters_bg        = $HUD/FiltersScreen/BG
@@ -2063,24 +2059,18 @@ func _apply_language(lang: String) -> void:
 	if pause_menu_btn:
 		pause_menu_btn.text = "메인 메뉴" if is_kr else "MAIN MENU"
 		if font: pause_menu_btn.add_theme_font_override("font", font)
-	if abandon_modal_title:
-		abandon_modal_title.text = "진행 포기?" if is_kr else "ABANDON RUN?"
-		if is_kr and body_font:
-			abandon_modal_title.add_theme_font_override("font", body_font)
-		elif font:
-			abandon_modal_title.add_theme_font_override("font", font)
-	if abandon_modal_kicker:
-		abandon_modal_kicker.text = "[ 경고 ]" if is_kr else "[ CAUTION ]"
-		if body_font: abandon_modal_kicker.add_theme_font_override("font", body_font)
-	if abandon_modal_desc:
-		abandon_modal_desc.text = "현재 웨이브 진행 상황 및 퍽이 저장되지 않습니다." if is_kr else "Current wave progress and perks will be forfeited."
-		if body_font: abandon_modal_desc.add_theme_font_override("font", body_font)
-	if abandon_cancel_btn:
-		abandon_cancel_btn.text = "취소" if is_kr else "CANCEL"
-		if body_font: abandon_cancel_btn.add_theme_font_override("font", body_font)
-	if abandon_forfeit_btn:
-		abandon_forfeit_btn.text = "포기" if is_kr else "ABANDON"
-		if body_font: abandon_forfeit_btn.add_theme_font_override("font", body_font)
+	if abandon_message_lbl:
+		abandon_message_lbl.text = "게임을 종료하시겠습니까?" if is_kr else "DO YOU WANT TO QUIT?"
+		if font: abandon_message_lbl.add_theme_font_override("font", font)
+		abandon_message_lbl.add_theme_font_size_override("font_size", 22 if is_kr else 20)
+	if abandon_yes_btn:
+		abandon_yes_btn.text = "예 (YES)" if is_kr else "YES"
+		if font: abandon_yes_btn.add_theme_font_override("font", font)
+		abandon_yes_btn.add_theme_font_size_override("font_size", 18 if is_kr else 16)
+	if abandon_no_btn:
+		abandon_no_btn.text = "아니요 (NO)" if is_kr else "NO"
+		if font: abandon_no_btn.add_theme_font_override("font", font)
+		abandon_no_btn.add_theme_font_size_override("font_size", 18 if is_kr else 16)
 	if esc_hint_label:
 		esc_hint_label.text = "ESC · 일시정지" if is_kr else "ESC · PAUSE"
 		esc_hint_label.add_theme_font_override("font", kenney_font)
@@ -3842,155 +3832,80 @@ func _init_abandon_confirm_modal() -> void:
 	
 	abandon_modal = Control.new()
 	abandon_modal.name = "AbandonConfirmModal"
-	abandon_modal.set_anchors_preset(Control.PRESET_FULL_RECT)
-	abandon_modal.mouse_filter = Control.MOUSE_FILTER_STOP
+	abandon_modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	abandon_modal.visible = false
 	abandon_modal.z_index = 60
 	
-	# Scrim overlay background
-	abandon_modal_bg = ColorRect.new()
-	abandon_modal_bg.name = "ModalScrim"
-	abandon_modal_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	abandon_modal_bg.color = Color(0.01, 0.0, 0.02, 0.72)
-	abandon_modal_bg.mouse_filter = Control.MOUSE_FILTER_STOP
-	abandon_modal.add_child(abandon_modal_bg)
+	var overlay = ColorRect.new()
+	overlay.name = "Overlay"
+	overlay.color = Color(0, 0, 0, 0.90)
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	abandon_modal.add_child(overlay)
 	
-	# Centered Modal Dialog Card
 	var center = CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	center.name = "CenterContainer"
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	abandon_modal.add_child(center)
 	
-	abandon_modal_panel = Panel.new()
-	abandon_modal_panel.name = "ModalCard"
-	abandon_modal_panel.custom_minimum_size = Vector2(400, 200)
+	var panel = Panel.new()
+	panel.name = "Panel"
+	panel.custom_minimum_size = Vector2(400, 180)
+	var panel_style = StyleBoxFlat.new()
+	panel_style.bg_color = Color(0, 0, 0, 0.96)
+	panel_style.border_width_left = 2
+	panel_style.border_width_top = 2
+	panel_style.border_width_right = 2
+	panel_style.border_width_bottom = 2
+	panel_style.border_color = Color(1.0, 0.85, 0.2, 0.8)
+	panel_style.corner_radius_top_left = 8
+	panel_style.corner_radius_top_right = 8
+	panel_style.corner_radius_bottom_left = 8
+	panel_style.corner_radius_bottom_right = 8
+	panel.add_theme_stylebox_override("panel", panel_style)
+	center.add_child(panel)
 	
-	var style_panel = StyleBoxFlat.new()
-	style_panel.bg_color = Color(0.04, 0.02, 0.08, 0.98)
-	style_panel.border_color = Color(1.0, 0.75, 0.15, 0.95)
-	style_panel.set_border_width_all(1)
-	style_panel.set_corner_radius_all(4)
-	style_panel.shadow_color = Color(0, 0, 0, 0.85)
-	style_panel.shadow_size = 12
-	style_panel.content_margin_left = 24
-	style_panel.content_margin_right = 24
-	style_panel.content_margin_top = 20
-	style_panel.content_margin_bottom = 20
-	abandon_modal_panel.add_theme_stylebox_override("panel", style_panel)
-	center.add_child(abandon_modal_panel)
+	var margin = MarginContainer.new()
+	margin.name = "MarginContainer"
+	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	margin.add_theme_constant_override("margin_top", 32)
+	margin.add_theme_constant_override("margin_bottom", 24)
+	panel.add_child(margin)
 	
 	var vbox = VBoxContainer.new()
-	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vbox.name = "VBoxContainer"
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	vbox.add_theme_constant_override("separation", 10)
-	abandon_modal_panel.add_child(vbox)
+	vbox.add_theme_constant_override("separation", 32)
+	margin.add_child(vbox)
 	
-	var is_kr = (GameState.language == "kr")
-	var header_font = load("res://assets/fonts/Kenney Future.ttf")
-	var body_font = load("res://assets/fonts/Galmuri11.ttf") if is_kr else load("res://assets/fonts/Inter-Medium.ttf")
+	abandon_message_lbl = Label.new()
+	abandon_message_lbl.name = "Message"
+	abandon_message_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(abandon_message_lbl)
 	
-	# Kicker
-	abandon_modal_kicker = Label.new()
-	abandon_modal_kicker.name = "Kicker"
-	abandon_modal_kicker.text = "[ 경고 ]" if is_kr else "[ CAUTION ]"
-	abandon_modal_kicker.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	abandon_modal_kicker.add_theme_color_override("font_color", Color(1.0, 0.75, 0.2, 0.95))
-	abandon_modal_kicker.add_theme_font_size_override("font_size", 11)
-	if body_font: abandon_modal_kicker.add_theme_font_override("font", body_font)
-	vbox.add_child(abandon_modal_kicker)
+	var hbox = HBoxContainer.new()
+	hbox.name = "HBoxContainer"
+	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	hbox.add_theme_constant_override("separation", 24)
+	vbox.add_child(hbox)
 	
-	# Title
-	abandon_modal_title = Label.new()
-	abandon_modal_title.name = "Title"
-	abandon_modal_title.text = "진행 포기?" if is_kr else "ABANDON RUN?"
-	abandon_modal_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	abandon_modal_title.add_theme_color_override("font_color", Color(1.0, 0.88, 0.25, 1.0))
-	abandon_modal_title.add_theme_font_size_override("font_size", 20)
-	abandon_modal_title.add_theme_constant_override("outline_size", 2)
-	abandon_modal_title.add_theme_color_override("font_outline_color", Color.BLACK)
-	if is_kr and body_font:
-		abandon_modal_title.add_theme_font_override("font", body_font)
-	elif header_font:
-		abandon_modal_title.add_theme_font_override("font", header_font)
-	vbox.add_child(abandon_modal_title)
+	abandon_yes_btn = Button.new()
+	abandon_yes_btn.name = "YesBtn"
+	abandon_yes_btn.custom_minimum_size = Vector2(140, 48)
+	hbox.add_child(abandon_yes_btn)
 	
-	# Subtext Description
-	abandon_modal_desc = Label.new()
-	abandon_modal_desc.name = "Description"
-	abandon_modal_desc.text = "현재 웨이브 진행 상황 및 퍽이 저장되지 않습니다." if is_kr else "Current wave progress and perks will be forfeited."
-	abandon_modal_desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	abandon_modal_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	abandon_modal_desc.add_theme_color_override("font_color", Color(0.85, 0.85, 0.88, 0.95))
-	abandon_modal_desc.add_theme_font_size_override("font_size", 13)
-	if body_font: abandon_modal_desc.add_theme_font_override("font", body_font)
-	vbox.add_child(abandon_modal_desc)
+	abandon_no_btn = Button.new()
+	abandon_no_btn.name = "NoBtn"
+	abandon_no_btn.custom_minimum_size = Vector2(140, 48)
+	hbox.add_child(abandon_no_btn)
 	
-	# Spacer
-	var spacer = Control.new()
-	spacer.custom_minimum_size = Vector2(0, 6)
-	vbox.add_child(spacer)
-	
-	# Button Row
-	var btn_row = HBoxContainer.new()
-	btn_row.name = "ButtonRow"
-	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	btn_row.add_theme_constant_override("separation", 16)
-	vbox.add_child(btn_row)
-	
-	# Cancel Button (Safe Default)
-	abandon_cancel_btn = Button.new()
-	abandon_cancel_btn.name = "CancelBtn"
-	abandon_cancel_btn.text = "취소" if is_kr else "CANCEL"
-	abandon_cancel_btn.custom_minimum_size = Vector2(140, 42)
-	var cancel_normal = StyleBoxFlat.new()
-	cancel_normal.bg_color = Color(0, 0, 0, 0.5)
-	cancel_normal.border_color = Color(1.0, 0.85, 0.2, 0.8)
-	cancel_normal.set_border_width_all(2)
-	cancel_normal.set_corner_radius_all(0)
-	var cancel_hover = cancel_normal.duplicate()
-	cancel_hover.bg_color = Color(1.0, 0.85, 0.2, 0.2)
-	abandon_cancel_btn.add_theme_stylebox_override("normal", cancel_normal)
-	abandon_cancel_btn.add_theme_stylebox_override("hover", cancel_hover)
-	abandon_cancel_btn.add_theme_stylebox_override("focus", cancel_hover)
-	abandon_cancel_btn.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.95))
-	abandon_cancel_btn.add_theme_font_size_override("font_size", 16)
-	if body_font: abandon_cancel_btn.add_theme_font_override("font", body_font)
-	UIJuice.apply_button_juice(abandon_cancel_btn)
-	btn_row.add_child(abandon_cancel_btn)
-	
-	# Forfeit / Abandon Button
-	abandon_forfeit_btn = Button.new()
-	abandon_forfeit_btn.name = "ForfeitBtn"
-	abandon_forfeit_btn.text = "포기" if is_kr else "ABANDON"
-	abandon_forfeit_btn.custom_minimum_size = Vector2(140, 42)
-	var forfeit_normal = StyleBoxFlat.new()
-	forfeit_normal.bg_color = Color(0.25, 0.05, 0.06, 0.65)
-	forfeit_normal.border_color = Color(1.0, 0.3, 0.3, 0.85)
-	forfeit_normal.set_border_width_all(2)
-	forfeit_normal.set_corner_radius_all(0)
-	var forfeit_hover = forfeit_normal.duplicate()
-	forfeit_hover.bg_color = Color(1.0, 0.25, 0.25, 0.3)
-	abandon_forfeit_btn.add_theme_stylebox_override("normal", forfeit_normal)
-	abandon_forfeit_btn.add_theme_stylebox_override("hover", forfeit_hover)
-	abandon_forfeit_btn.add_theme_stylebox_override("focus", forfeit_hover)
-	abandon_forfeit_btn.add_theme_color_override("font_color", Color(1.0, 0.45, 0.45, 1.0))
-	abandon_forfeit_btn.add_theme_font_size_override("font_size", 16)
-	if body_font: abandon_forfeit_btn.add_theme_font_override("font", body_font)
-	UIJuice.apply_button_juice(abandon_forfeit_btn)
-	btn_row.add_child(abandon_forfeit_btn)
-	
-	# Focus wiring
-	abandon_cancel_btn.focus_neighbor_right = abandon_cancel_btn.get_path_to(abandon_forfeit_btn)
-	abandon_forfeit_btn.focus_neighbor_left = abandon_forfeit_btn.get_path_to(abandon_cancel_btn)
-	
-	# Connections
-	abandon_cancel_btn.pressed.connect(func():
-		_hide_abandon_confirm_modal()
-	)
-	abandon_forfeit_btn.pressed.connect(func():
+	abandon_yes_btn.pressed.connect(func():
 		_hide_abandon_confirm_modal()
 		_on_menu_pressed()
 	)
+	abandon_no_btn.pressed.connect(_hide_abandon_confirm_modal)
+	
+	abandon_yes_btn.focus_neighbor_right = abandon_yes_btn.get_path_to(abandon_no_btn)
+	abandon_no_btn.focus_neighbor_left = abandon_no_btn.get_path_to(abandon_yes_btn)
 	
 	if pause_screen:
 		pause_screen.add_child(abandon_modal)
@@ -3998,22 +3913,126 @@ func _init_abandon_confirm_modal() -> void:
 func _show_abandon_confirm_modal() -> void:
 	if not abandon_modal:
 		_init_abandon_confirm_modal()
+	
+	var is_kr = (GameState.language == "KR" or GameState.language == "kr")
+	var font = galmuri_font if is_kr else kenney_font
+	
+	if abandon_message_lbl:
+		abandon_message_lbl.text = "게임을 종료하시겠습니까?" if is_kr else "DO YOU WANT TO QUIT?"
+		if font: abandon_message_lbl.add_theme_font_override("font", font)
+		abandon_message_lbl.add_theme_font_size_override("font_size", 22 if is_kr else 20)
+		abandon_message_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
+		abandon_message_lbl.add_theme_constant_override("outline_size", 2)
+		abandon_message_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+	
+	if abandon_yes_btn and abandon_no_btn:
+		abandon_yes_btn.text = "예 (YES)" if is_kr else "YES"
+		abandon_no_btn.text = "아니요 (NO)" if is_kr else "NO"
+		
+		# Apply standard button styles (Primary - NO)
+		var style_menu_btn = StyleBoxFlat.new()
+		style_menu_btn.bg_color = Color(0, 0, 0, 0.4)
+		style_menu_btn.border_color = Color(1.0, 0.85, 0.2, 0.6)
+		style_menu_btn.set_border_width_all(2)
+		style_menu_btn.set_corner_radius_all(0)
+		
+		var style_hover = style_menu_btn.duplicate()
+		style_hover.bg_color = Color(1.0, 0.75, 0.15, 0.2)
+		
+		var style_pressed = style_menu_btn.duplicate()
+		style_pressed.bg_color = Color(1.0, 0.85, 0.2, 0.4)
+		style_pressed.border_color = Color(1.0, 0.9, 0.3, 1.0)
+		
+		var style_focus = StyleBoxFlat.new()
+		style_focus.bg_color = Color(0, 0, 0, 0)
+		style_focus.border_color = Color(1.0, 0.85, 0.2, 1.0)
+		style_focus.set_border_width_all(2)
+		style_focus.set_corner_radius_all(6)
+		
+		# Apply secondary button styles (Secondary - YES)
+		var style_sec_btn = StyleBoxFlat.new()
+		style_sec_btn.bg_color = Color(0, 0, 0, 0.3)
+		style_sec_btn.border_color = Color(0.6, 0.6, 0.6, 0.4)
+		style_sec_btn.set_border_width_all(2)
+		style_sec_btn.set_corner_radius_all(0)
+		
+		var style_sec_hover = style_sec_btn.duplicate()
+		style_sec_hover.bg_color = Color(0.4, 0.4, 0.4, 0.2)
+		style_sec_hover.border_color = Color(0.8, 0.8, 0.8, 0.6)
+		
+		var style_sec_pressed = style_sec_btn.duplicate()
+		style_sec_pressed.bg_color = Color(0.2, 0.2, 0.2, 0.4)
+		style_sec_pressed.border_color = Color(0.5, 0.5, 0.5, 0.8)
+		
+		var style_sec_focus = StyleBoxFlat.new()
+		style_sec_focus.bg_color = Color(0, 0, 0, 0)
+		style_sec_focus.border_color = Color(0.6, 0.6, 0.6, 1.0)
+		style_sec_focus.set_border_width_all(2)
+		style_sec_focus.set_corner_radius_all(6)
+		
+		for btn in [abandon_yes_btn, abandon_no_btn]:
+			var is_primary = (btn == abandon_no_btn)
+			
+			if font: btn.add_theme_font_override("font", font)
+			btn.add_theme_font_size_override("font_size", 18 if is_kr else 16)
+			
+			var txt_color = Color(1.0, 0.85, 0.2, 1.0) if is_primary else Color(0.7, 0.7, 0.7, 1.0)
+			var txt_hover = Color(1.0, 0.85, 0.2, 1.0) if is_primary else Color(0.9, 0.9, 0.9, 1.0)
+			
+			btn.add_theme_color_override("font_color", txt_color)
+			btn.add_theme_color_override("font_hover_color", txt_hover)
+			btn.add_theme_color_override("font_pressed_color", txt_color)
+			btn.add_theme_color_override("font_focus_color", txt_color)
+			btn.add_theme_constant_override("outline_size", 2)
+			btn.add_theme_color_override("font_outline_color", Color.BLACK)
+			
+			btn.add_theme_stylebox_override("normal", style_menu_btn if is_primary else style_sec_btn)
+			btn.add_theme_stylebox_override("hover", style_hover if is_primary else style_sec_hover)
+			btn.add_theme_stylebox_override("pressed", style_pressed if is_primary else style_sec_pressed)
+			btn.add_theme_stylebox_override("focus", style_focus if is_primary else style_sec_focus)
+	
+	var audio = AudioStreamPlayer.new()
+	if ResourceLoader.exists("res://assets/audio/sfx/perk_hover.wav"):
+		audio.stream = load("res://assets/audio/sfx/perk_hover.wav")
+	audio.bus = "SFX"
+	add_child(audio)
+	if audio.stream:
+		audio.play()
+		audio.finished.connect(audio.queue_free)
+	else:
+		audio.queue_free()
+	
 	abandon_modal.visible = true
 	abandon_modal.modulate.a = 0.0
+	abandon_modal.set_meta("is_hiding", false)
+	
 	var tw = create_tween()
-	tw.set_ease(Tween.EASE_OUT)
-	tw.tween_property(abandon_modal, "modulate:a", 1.0, 0.18)
-	await get_tree().process_frame
-	if abandon_cancel_btn:
-		abandon_cancel_btn.grab_focus()
+	tw.tween_property(abandon_modal, "modulate:a", 1.0, 0.2)
+	
+	if abandon_no_btn:
+		abandon_no_btn.grab_focus()
 
 func _hide_abandon_confirm_modal() -> void:
-	if not abandon_modal or not abandon_modal.visible:
-		return
+	if not abandon_modal or not abandon_modal.visible: return
+	if abandon_modal.get_meta("is_hiding", false): return
+	abandon_modal.set_meta("is_hiding", true)
+	
+	var audio = AudioStreamPlayer.new()
+	if ResourceLoader.exists("res://assets/audio/sfx/perk_hover.wav"):
+		audio.stream = load("res://assets/audio/sfx/perk_hover.wav")
+	audio.bus = "SFX"
+	add_child(audio)
+	if audio.stream:
+		audio.play()
+		audio.finished.connect(audio.queue_free)
+	else:
+		audio.queue_free()
+	
 	var tw = create_tween()
 	tw.tween_property(abandon_modal, "modulate:a", 0.0, 0.15)
 	tw.tween_callback(func():
 		abandon_modal.visible = false
+		abandon_modal.set_meta("is_hiding", false)
 		if pause_menu_btn:
 			pause_menu_btn.grab_focus()
 	)
