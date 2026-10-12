@@ -1219,7 +1219,7 @@ func _build_settings_category_headers(font: Font) -> void:
 	settings_cat_system_lbl = cat_system.get_node_or_null("HBox/Plate/Label")
 
 	# Sizing adjustments to comfortably fit 410px columns
-	for row_name in ["RowBGM", "RowSFX", "RowSens", "RowMotion", "RowVibration", "RowFullscreen", "RowGoldSkin"]:
+	for row_name in ["RowBGM", "RowSFX", "RowSens", "RowMotion", "RowVibration", "RowFullscreen", "RowGoldSkin", "RowLanguage"]:
 		var r_node = settings_screen.find_child(row_name, true, false)
 		if r_node:
 			var r_lbl = r_node.get_node_or_null("Label")
@@ -1638,9 +1638,9 @@ func _apply_language(lang: String) -> void:
 	var row_texts_en := ["Music Volume", "Sound Effects", "Sensitivity", "Reduce Motion", "Vibration", "Fullscreen", "Gold Gun Skin", "Language"]
 	var row_texts_kr := ["배경음악 볼륨", "효과음 볼륨", "마우스 감도", "화면 흔들림 감소", "진동", "전체 화면", "황금 무기 스킨", "언어"]
 	var row_names    := ["RowBGM", "RowSFX", "RowSens", "RowMotion", "RowVibration", "RowFullscreen", "RowGoldSkin", "RowLanguage"]
-	if settings_vbox:
+	if settings_screen:
 		for i in range(row_names.size()):
-			var r = settings_vbox.get_node_or_null(row_names[i])
+			var r = settings_screen.find_child(row_names[i], true, false)
 			if r:
 				var r_lbl = r.get_node_or_null("Label")
 				if r_lbl:
@@ -1668,7 +1668,7 @@ func _apply_language(lang: String) -> void:
 		if lang_btn_kr and body_font:
 			lang_btn_kr.add_theme_font_override("font", body_font)
 			lang_btn_kr.add_theme_font_size_override("font_size", 14)
-		var lang_row = settings_vbox.get_node_or_null("RowLanguage")
+		var lang_row = settings_screen.find_child("RowLanguage", true, false)
 		if lang_row:
 			var sep = lang_row.get_node_or_null("ToggleBox/Sep")
 			if sep and body_font:
@@ -3015,6 +3015,7 @@ func _open_settings() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	if filters_screen: filters_screen.visible = false
 	if credits_screen: credits_screen.visible = false
+	_apply_language(GameState.language)
 	_update_gold_skin_visibility()
 	settings_screen.visible = true
 	settings_screen.modulate.a = 0.0

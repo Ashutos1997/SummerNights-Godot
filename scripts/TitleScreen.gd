@@ -2336,6 +2336,7 @@ func _build_settings_screen() -> void:
 func _show_settings() -> void:
 	if is_starting or not settings_screen: return
 	
+	_apply_settings_language()
 	_update_toggle_btn(setting_motion_check, GameState.reduce_motion)
 	_update_toggle_btn(setting_vibration_check, GameState.vibration_enabled)
 	_update_toggle_btn(setting_fullscreen_check, GameState.fullscreen)
