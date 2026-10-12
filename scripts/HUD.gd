@@ -133,6 +133,8 @@ var buffs_prompt: Label = null
 @onready var settings_bg       = $HUD/SettingsScreen/BG
 @onready var settings_title    = $HUD/SettingsScreen/CenterContainer/VBoxContainer/TitleRow/Title
 @onready var settings_prompt   = $HUD/SettingsScreen/CenterContainer/VBoxContainer/ClosePrompt
+@onready var bgm_slider        = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowBGM/Slider
+@onready var bgm_val_lbl       = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowBGM/ValLabel
 @onready var sfx_slider        = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowSFX/Slider
 @onready var sfx_val_lbl       = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowSFX/ValLabel
 @onready var sens_slider       = $HUD/SettingsScreen/CenterContainer/VBoxContainer/RowSens/Slider
@@ -146,6 +148,15 @@ var buffs_prompt: Label = null
 var settings_cat_audio_lbl: Label = null
 var settings_cat_gameplay_lbl: Label = null
 var settings_cat_system_lbl: Label = null
+
+var abandon_modal: Control = null
+var abandon_modal_bg: ColorRect = null
+var abandon_modal_panel: Panel = null
+var abandon_cancel_btn: Button = null
+var abandon_forfeit_btn: Button = null
+var abandon_modal_title: Label = null
+var abandon_modal_kicker: Label = null
+var abandon_modal_desc: Label = null
 
 @onready var filters_screen    = $HUD/FiltersScreen
 @onready var filters_bg        = $HUD/FiltersScreen/BG
@@ -772,7 +783,7 @@ func _ready() -> void:
 				p_lbl.modulate.a = 1.0
  
 	# Row Labels styling (13.4:1 contrast PASS - even number system: 16px body font)
-	for row_name in ["RowSFX", "RowSens", "RowMotion", "RowVibration", "RowFullscreen", "RowGoldSkin"]:
+	for row_name in ["RowBGM", "RowSFX", "RowSens", "RowMotion", "RowVibration", "RowFullscreen", "RowGoldSkin"]:
 		var r_node = $HUD/SettingsScreen/CenterContainer/VBoxContainer.get_node_or_null(row_name)
 		if r_node:
 			var r_lbl = r_node.get_node_or_null("Label")
@@ -796,6 +807,8 @@ func _ready() -> void:
 	_build_settings_category_headers(font)
 	# Build language row programmatically (below RowFullscreen)
 	_build_lang_row(body_font)
+	# Initialize abandon run confirmation modal in pause screen
+	_init_abandon_confirm_modal()
 
 	if pause_resume_btn:
 		pause_resume_btn.pressed.connect(_on_pause_resume_pressed)
@@ -806,7 +819,7 @@ func _ready() -> void:
 	if credits_btn:
 		credits_btn.pressed.connect(_on_credits_pressed)
 	if pause_menu_btn:
-		pause_menu_btn.pressed.connect(_on_menu_pressed)
+		pause_menu_btn.pressed.connect(_show_abandon_confirm_modal)
 		
 	if credits_btn:
 		achievements_btn = credits_btn.duplicate()
@@ -854,6 +867,9 @@ func _ready() -> void:
 	# Slider texture overrides
 	var grab_tex = load("res://assets/ui/kenney_ui_pack/slide_hangle.png")
 	if grab_tex:
+		if bgm_slider:
+			bgm_slider.add_theme_icon_override("grabber", grab_tex)
+			bgm_slider.add_theme_icon_override("grabber_highlight", grab_tex)
 		sfx_slider.add_theme_icon_override("grabber", grab_tex)
 		sfx_slider.add_theme_icon_override("grabber_highlight", grab_tex)
 		sens_slider.add_theme_icon_override("grabber", grab_tex)
@@ -966,16 +982,21 @@ func _ready() -> void:
 	# Do not poll OS mode here as macOS fullscreen transitions are asynchronous.
 
 	# Apply GameState values to controls
+	if bgm_slider:
+		bgm_slider.value = GameState.bgm_volume
 	sfx_slider.value = GameState.sfx_volume
 	sens_slider.value = GameState.mouse_sensitivity
+	if bgm_val_lbl:
+		bgm_val_lbl.text = "%d%%" % int(round(GameState.bgm_volume * 100.0))
+		if body_font: bgm_val_lbl.add_theme_font_override("font", body_font)
+		bgm_val_lbl.add_theme_font_size_override("font_size", 14)
 	if sfx_val_lbl:
 		sfx_val_lbl.text = "%d%%" % int(round(GameState.sfx_volume * 100.0))
 		if body_font: sfx_val_lbl.add_theme_font_override("font", body_font)
 		sfx_val_lbl.add_theme_font_size_override("font_size", 14)
-	if sens_val_lbl:
-		sens_val_lbl.text = "%.1fx" % GameState.mouse_sensitivity
-		if body_font: sens_val_lbl.add_theme_font_override("font", body_font)
-		sens_val_lbl.add_theme_font_size_override("font_size", 14)
+	sens_val_lbl.text = "%.1fx" % GameState.mouse_sensitivity
+	if body_font: sens_val_lbl.add_theme_font_override("font", body_font)
+	sens_val_lbl.add_theme_font_size_override("font_size", 14)
 	motion_check.button_pressed = GameState.reduce_motion
 	if vibration_check: vibration_check.button_pressed = GameState.vibration_enabled
 	fullscreen_check.button_pressed = GameState.fullscreen
@@ -986,6 +1007,8 @@ func _ready() -> void:
 	if heatwave_check: heatwave_check.button_pressed = GameState.filter_heatwave
 
 	# Connect control signals
+	if bgm_slider:
+		bgm_slider.value_changed.connect(_on_bgm_volume_changed)
 	sfx_slider.value_changed.connect(_on_sfx_volume_changed)
 	sens_slider.value_changed.connect(_on_sens_changed)
 	motion_check.toggled.connect(_on_motion_toggled)
@@ -1111,14 +1134,16 @@ func _build_settings_category_headers(font: Font) -> void:
 		
 		return wrap
 
-	# 1. AUDIO category (before RowSFX) - 10px margin gives 22px total gap from Divider
+	# 1. AUDIO category (before first audio row) - 10px margin gives 22px total gap from Divider
 	var cat_audio = vbox.get_node_or_null("CatHeaderAudio")
 	if not cat_audio:
 		cat_audio = make_cat.call("CatHeaderAudio", "AUDIO", "오디오", 10)
-		var sfx_row = vbox.get_node_or_null("RowSFX")
-		if sfx_row:
+		var first_audio_row = vbox.get_node_or_null("RowBGM")
+		if not first_audio_row:
+			first_audio_row = vbox.get_node_or_null("RowSFX")
+		if first_audio_row:
 			vbox.add_child(cat_audio)
-			vbox.move_child(cat_audio, sfx_row.get_index())
+			vbox.move_child(cat_audio, first_audio_row.get_index())
 		else:
 			vbox.add_child(cat_audio)
 	settings_cat_audio_lbl = cat_audio.get_node_or_null("HBox/Plate/Label")
@@ -1527,9 +1552,9 @@ func _apply_language(lang: String) -> void:
 		if icon_panel:
 			icon_panel.add_theme_stylebox_override("panel", icon_style)
 
-	var row_texts_en := ["Master Volume", "Sensitivity", "Reduce Motion", "Vibration", "Fullscreen", "Gold Gun Skin", "Language"]
-	var row_texts_kr := ["전체 볼륨", "마우스 감도", "화면 흔들림 감소", "진동", "전체 화면", "황금 무기 스킨", "언어"]
-	var row_names    := ["RowSFX", "RowSens", "RowMotion", "RowVibration", "RowFullscreen", "RowGoldSkin", "RowLanguage"]
+	var row_texts_en := ["Music Volume", "Sound Effects", "Sensitivity", "Reduce Motion", "Vibration", "Fullscreen", "Gold Gun Skin", "Language"]
+	var row_texts_kr := ["배경음악 볼륨", "효과음 볼륨", "마우스 감도", "화면 흔들림 감소", "진동", "전체 화면", "황금 무기 스킨", "언어"]
+	var row_names    := ["RowBGM", "RowSFX", "RowSens", "RowMotion", "RowVibration", "RowFullscreen", "RowGoldSkin", "RowLanguage"]
 	if settings_vbox:
 		for i in range(row_names.size()):
 			var r = settings_vbox.get_node_or_null(row_names[i])
@@ -2038,6 +2063,24 @@ func _apply_language(lang: String) -> void:
 	if pause_menu_btn:
 		pause_menu_btn.text = "메인 메뉴" if is_kr else "MAIN MENU"
 		if font: pause_menu_btn.add_theme_font_override("font", font)
+	if abandon_modal_title:
+		abandon_modal_title.text = "진행 포기?" if is_kr else "ABANDON RUN?"
+		if is_kr and body_font:
+			abandon_modal_title.add_theme_font_override("font", body_font)
+		elif font:
+			abandon_modal_title.add_theme_font_override("font", font)
+	if abandon_modal_kicker:
+		abandon_modal_kicker.text = "[ 경고 ]" if is_kr else "[ CAUTION ]"
+		if body_font: abandon_modal_kicker.add_theme_font_override("font", body_font)
+	if abandon_modal_desc:
+		abandon_modal_desc.text = "현재 웨이브 진행 상황 및 퍽이 저장되지 않습니다." if is_kr else "Current wave progress and perks will be forfeited."
+		if body_font: abandon_modal_desc.add_theme_font_override("font", body_font)
+	if abandon_cancel_btn:
+		abandon_cancel_btn.text = "취소" if is_kr else "CANCEL"
+		if body_font: abandon_cancel_btn.add_theme_font_override("font", body_font)
+	if abandon_forfeit_btn:
+		abandon_forfeit_btn.text = "포기" if is_kr else "ABANDON"
+		if body_font: abandon_forfeit_btn.add_theme_font_override("font", body_font)
 	if esc_hint_label:
 		esc_hint_label.text = "ESC · 일시정지" if is_kr else "ESC · PAUSE"
 		esc_hint_label.add_theme_font_override("font", kenney_font)
@@ -2232,6 +2275,15 @@ func _update_toggle_btn(btn: Button, enabled: bool) -> void:
 		btn.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9, 0.85))
 		btn.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 1.0, 1.0))
 
+func _on_bgm_volume_changed(val: float) -> void:
+	GameState.bgm_volume = val
+	GameState.save_settings()
+	if bgm_val_lbl:
+		bgm_val_lbl.text = "%d%%" % int(round(val * 100.0))
+	var db_val = linear_to_db(val)
+	var idx = AudioServer.get_bus_index("BGM")
+	if idx != -1: AudioServer.set_bus_volume_db(idx, db_val)
+
 func _on_sfx_volume_changed(val: float) -> void:
 	GameState.sfx_volume = val
 	GameState.save_settings()
@@ -2242,8 +2294,6 @@ func _on_sfx_volume_changed(val: float) -> void:
 	if idx1 != -1: AudioServer.set_bus_volume_db(idx1, db_val)
 	var idx2 = AudioServer.get_bus_index("SFX_UI")
 	if idx2 != -1: AudioServer.set_bus_volume_db(idx2, db_val)
-	var idx_master = AudioServer.get_bus_index("Master")
-	if idx_master != -1: AudioServer.set_bus_volume_db(idx_master, db_val)
 
 func _on_sens_changed(val: float) -> void:
 	GameState.mouse_sensitivity = val
@@ -2735,6 +2785,11 @@ func _input(event: InputEvent) -> void:
 	var is_pause = event.is_action_pressed("ui_pause")
 	
 	if (is_cancel or is_pause) and not event.is_echo():
+		if abandon_modal and abandon_modal.visible:
+			_hide_abandon_confirm_modal()
+			get_viewport().set_input_as_handled()
+			return
+
 		if weapon_wheel.active:
 			weapon_wheel.close()
 			get_viewport().set_input_as_handled()
@@ -2829,6 +2884,8 @@ var _is_resuming: bool = false
 func _resume_game() -> void:
 	if _is_resuming: return
 	_is_resuming = true
+	if abandon_modal:
+		abandon_modal.visible = false
 	var tw = create_tween()
 	tw.tween_property(pause_screen, "modulate:a", 0.0, 0.2)
 	await tw.finished
@@ -2888,7 +2945,10 @@ func _open_settings() -> void:
 	tw.set_ease(Tween.EASE_OUT)
 	tw.tween_property(settings_screen, "modulate:a", 1.0, 0.3)
 	await get_tree().process_frame
-	if sfx_slider: sfx_slider.grab_focus()
+	if bgm_slider:
+		bgm_slider.grab_focus()
+	elif sfx_slider:
+		sfx_slider.grab_focus()
 
 func _close_settings() -> void:
 	var tw = create_tween()
@@ -3775,6 +3835,188 @@ func _on_retry_pressed() -> void:
 	GameState.is_retrying = true
 	get_tree().paused = false
 	get_tree().call_deferred("reload_current_scene")
+
+func _init_abandon_confirm_modal() -> void:
+	if abandon_modal:
+		return
+	
+	abandon_modal = Control.new()
+	abandon_modal.name = "AbandonConfirmModal"
+	abandon_modal.set_anchors_preset(Control.PRESET_FULL_RECT)
+	abandon_modal.mouse_filter = Control.MOUSE_FILTER_STOP
+	abandon_modal.visible = false
+	abandon_modal.z_index = 60
+	
+	# Scrim overlay background
+	abandon_modal_bg = ColorRect.new()
+	abandon_modal_bg.name = "ModalScrim"
+	abandon_modal_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	abandon_modal_bg.color = Color(0.01, 0.0, 0.02, 0.72)
+	abandon_modal_bg.mouse_filter = Control.MOUSE_FILTER_STOP
+	abandon_modal.add_child(abandon_modal_bg)
+	
+	# Centered Modal Dialog Card
+	var center = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	abandon_modal.add_child(center)
+	
+	abandon_modal_panel = Panel.new()
+	abandon_modal_panel.name = "ModalCard"
+	abandon_modal_panel.custom_minimum_size = Vector2(400, 200)
+	
+	var style_panel = StyleBoxFlat.new()
+	style_panel.bg_color = Color(0.04, 0.02, 0.08, 0.98)
+	style_panel.border_color = Color(1.0, 0.75, 0.15, 0.95)
+	style_panel.set_border_width_all(1)
+	style_panel.set_corner_radius_all(4)
+	style_panel.shadow_color = Color(0, 0, 0, 0.85)
+	style_panel.shadow_size = 12
+	style_panel.content_margin_left = 24
+	style_panel.content_margin_right = 24
+	style_panel.content_margin_top = 20
+	style_panel.content_margin_bottom = 20
+	abandon_modal_panel.add_theme_stylebox_override("panel", style_panel)
+	center.add_child(abandon_modal_panel)
+	
+	var vbox = VBoxContainer.new()
+	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_theme_constant_override("separation", 10)
+	abandon_modal_panel.add_child(vbox)
+	
+	var is_kr = (GameState.language == "kr")
+	var header_font = load("res://assets/fonts/Kenney Future.ttf")
+	var body_font = load("res://assets/fonts/Galmuri11.ttf") if is_kr else load("res://assets/fonts/Inter-Medium.ttf")
+	
+	# Kicker
+	abandon_modal_kicker = Label.new()
+	abandon_modal_kicker.name = "Kicker"
+	abandon_modal_kicker.text = "[ 경고 ]" if is_kr else "[ CAUTION ]"
+	abandon_modal_kicker.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	abandon_modal_kicker.add_theme_color_override("font_color", Color(1.0, 0.75, 0.2, 0.95))
+	abandon_modal_kicker.add_theme_font_size_override("font_size", 11)
+	if body_font: abandon_modal_kicker.add_theme_font_override("font", body_font)
+	vbox.add_child(abandon_modal_kicker)
+	
+	# Title
+	abandon_modal_title = Label.new()
+	abandon_modal_title.name = "Title"
+	abandon_modal_title.text = "진행 포기?" if is_kr else "ABANDON RUN?"
+	abandon_modal_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	abandon_modal_title.add_theme_color_override("font_color", Color(1.0, 0.88, 0.25, 1.0))
+	abandon_modal_title.add_theme_font_size_override("font_size", 20)
+	abandon_modal_title.add_theme_constant_override("outline_size", 2)
+	abandon_modal_title.add_theme_color_override("font_outline_color", Color.BLACK)
+	if is_kr and body_font:
+		abandon_modal_title.add_theme_font_override("font", body_font)
+	elif header_font:
+		abandon_modal_title.add_theme_font_override("font", header_font)
+	vbox.add_child(abandon_modal_title)
+	
+	# Subtext Description
+	abandon_modal_desc = Label.new()
+	abandon_modal_desc.name = "Description"
+	abandon_modal_desc.text = "현재 웨이브 진행 상황 및 퍽이 저장되지 않습니다." if is_kr else "Current wave progress and perks will be forfeited."
+	abandon_modal_desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	abandon_modal_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	abandon_modal_desc.add_theme_color_override("font_color", Color(0.85, 0.85, 0.88, 0.95))
+	abandon_modal_desc.add_theme_font_size_override("font_size", 13)
+	if body_font: abandon_modal_desc.add_theme_font_override("font", body_font)
+	vbox.add_child(abandon_modal_desc)
+	
+	# Spacer
+	var spacer = Control.new()
+	spacer.custom_minimum_size = Vector2(0, 6)
+	vbox.add_child(spacer)
+	
+	# Button Row
+	var btn_row = HBoxContainer.new()
+	btn_row.name = "ButtonRow"
+	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	btn_row.add_theme_constant_override("separation", 16)
+	vbox.add_child(btn_row)
+	
+	# Cancel Button (Safe Default)
+	abandon_cancel_btn = Button.new()
+	abandon_cancel_btn.name = "CancelBtn"
+	abandon_cancel_btn.text = "취소" if is_kr else "CANCEL"
+	abandon_cancel_btn.custom_minimum_size = Vector2(140, 42)
+	var cancel_normal = StyleBoxFlat.new()
+	cancel_normal.bg_color = Color(0, 0, 0, 0.5)
+	cancel_normal.border_color = Color(1.0, 0.85, 0.2, 0.8)
+	cancel_normal.set_border_width_all(2)
+	cancel_normal.set_corner_radius_all(0)
+	var cancel_hover = cancel_normal.duplicate()
+	cancel_hover.bg_color = Color(1.0, 0.85, 0.2, 0.2)
+	abandon_cancel_btn.add_theme_stylebox_override("normal", cancel_normal)
+	abandon_cancel_btn.add_theme_stylebox_override("hover", cancel_hover)
+	abandon_cancel_btn.add_theme_stylebox_override("focus", cancel_hover)
+	abandon_cancel_btn.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.95))
+	abandon_cancel_btn.add_theme_font_size_override("font_size", 16)
+	if body_font: abandon_cancel_btn.add_theme_font_override("font", body_font)
+	UIJuice.apply_button_juice(abandon_cancel_btn)
+	btn_row.add_child(abandon_cancel_btn)
+	
+	# Forfeit / Abandon Button
+	abandon_forfeit_btn = Button.new()
+	abandon_forfeit_btn.name = "ForfeitBtn"
+	abandon_forfeit_btn.text = "포기" if is_kr else "ABANDON"
+	abandon_forfeit_btn.custom_minimum_size = Vector2(140, 42)
+	var forfeit_normal = StyleBoxFlat.new()
+	forfeit_normal.bg_color = Color(0.25, 0.05, 0.06, 0.65)
+	forfeit_normal.border_color = Color(1.0, 0.3, 0.3, 0.85)
+	forfeit_normal.set_border_width_all(2)
+	forfeit_normal.set_corner_radius_all(0)
+	var forfeit_hover = forfeit_normal.duplicate()
+	forfeit_hover.bg_color = Color(1.0, 0.25, 0.25, 0.3)
+	abandon_forfeit_btn.add_theme_stylebox_override("normal", forfeit_normal)
+	abandon_forfeit_btn.add_theme_stylebox_override("hover", forfeit_hover)
+	abandon_forfeit_btn.add_theme_stylebox_override("focus", forfeit_hover)
+	abandon_forfeit_btn.add_theme_color_override("font_color", Color(1.0, 0.45, 0.45, 1.0))
+	abandon_forfeit_btn.add_theme_font_size_override("font_size", 16)
+	if body_font: abandon_forfeit_btn.add_theme_font_override("font", body_font)
+	UIJuice.apply_button_juice(abandon_forfeit_btn)
+	btn_row.add_child(abandon_forfeit_btn)
+	
+	# Focus wiring
+	abandon_cancel_btn.focus_neighbor_right = abandon_cancel_btn.get_path_to(abandon_forfeit_btn)
+	abandon_forfeit_btn.focus_neighbor_left = abandon_forfeit_btn.get_path_to(abandon_cancel_btn)
+	
+	# Connections
+	abandon_cancel_btn.pressed.connect(func():
+		_hide_abandon_confirm_modal()
+	)
+	abandon_forfeit_btn.pressed.connect(func():
+		_hide_abandon_confirm_modal()
+		_on_menu_pressed()
+	)
+	
+	if pause_screen:
+		pause_screen.add_child(abandon_modal)
+
+func _show_abandon_confirm_modal() -> void:
+	if not abandon_modal:
+		_init_abandon_confirm_modal()
+	abandon_modal.visible = true
+	abandon_modal.modulate.a = 0.0
+	var tw = create_tween()
+	tw.set_ease(Tween.EASE_OUT)
+	tw.tween_property(abandon_modal, "modulate:a", 1.0, 0.18)
+	await get_tree().process_frame
+	if abandon_cancel_btn:
+		abandon_cancel_btn.grab_focus()
+
+func _hide_abandon_confirm_modal() -> void:
+	if not abandon_modal or not abandon_modal.visible:
+		return
+	var tw = create_tween()
+	tw.tween_property(abandon_modal, "modulate:a", 0.0, 0.15)
+	tw.tween_callback(func():
+		abandon_modal.visible = false
+		if pause_menu_btn:
+			pause_menu_btn.grab_focus()
+	)
 
 func _on_menu_pressed() -> void:
 	Engine.time_scale = 1.0

@@ -812,7 +812,7 @@ func _ready() -> void:
 	ambient_sfx = AudioStreamPlayer.new()
 	var ocean_stream = load("res://assets/audio/sfx/ocean_waves.wav")
 	ambient_sfx.stream = ocean_stream
-	ambient_sfx.bus = "SFX_UI"  # Respect SFX volume slider
+	ambient_sfx.bus = "BGM"  # Route to dedicated BGM/ambient music bus
 	ambient_sfx.volume_db = -80.0  # Start silent, fade in below
 	add_child(ambient_sfx)
 	ambient_sfx.play()

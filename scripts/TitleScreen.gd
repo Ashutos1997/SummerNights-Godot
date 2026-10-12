@@ -53,6 +53,8 @@ var settings_screen: Control
 var quit_popup: Control
 var achievement_list: VBoxContainer
 
+var setting_bgm_slider: HSlider
+var setting_bgm_val_lbl: Label
 var setting_sfx_slider: HSlider
 var setting_sfx_val_lbl: Label
 var setting_sens_slider: HSlider
@@ -1673,7 +1675,8 @@ func _apply_settings_language() -> void:
 			if font: setting_cat_system_lbl.add_theme_font_override("font", font)
 
 		var row_names = {
-			"RowSFX": "전체 볼륨" if is_kr else "Master Volume",
+			"RowBGM": "배경음악 볼륨" if is_kr else "Music Volume",
+			"RowSFX": "효과음 볼륨" if is_kr else "Sound Effects",
 			"RowSens": "마우스 감도" if is_kr else "Sensitivity",
 			"RowMotion": "화면 흔들림 감소" if is_kr else "Reduce Motion",
 			"RowVibration": "진동" if is_kr else "Vibration",
@@ -1885,6 +1888,56 @@ func _build_settings_screen() -> void:
 	vbox.add_child(cat_audio_wrap)
 	setting_cat_audio_lbl = cat_audio_wrap.get_node("HBox/Plate/Label")
 
+	# RowBGM
+	var row_bgm = HBoxContainer.new()
+	row_bgm.name = "RowBGM"
+	row_bgm.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(row_bgm)
+
+	var bgm_lbl = Label.new()
+	bgm_lbl.name = "Label"
+	bgm_lbl.custom_minimum_size = Vector2(280, 0)
+	bgm_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	bgm_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bgm_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	row_bgm.add_child(bgm_lbl)
+	setting_row_labels["RowBGM"] = bgm_lbl
+
+	setting_bgm_slider = HSlider.new()
+	setting_bgm_slider.name = "Slider"
+	setting_bgm_slider.custom_minimum_size = Vector2(180, 28)
+	setting_bgm_slider.size_flags_horizontal = Control.SIZE_SHRINK_END
+	setting_bgm_slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	setting_bgm_slider.min_value = 0.0
+	setting_bgm_slider.max_value = 1.0
+	setting_bgm_slider.step = 0.05
+	setting_bgm_slider.value = GameState.bgm_volume
+	if grab_tex:
+		setting_bgm_slider.add_theme_icon_override("grabber", grab_tex)
+		setting_bgm_slider.add_theme_icon_override("grabber_highlight", grab_tex)
+	setting_bgm_slider.value_changed.connect(func(val):
+		GameState.bgm_volume = val
+		GameState.save_settings()
+		if setting_bgm_val_lbl: setting_bgm_val_lbl.text = "%d%%" % int(round(val * 100.0))
+		var db_val = linear_to_db(val)
+		var idx_bgm = AudioServer.get_bus_index("BGM")
+		if idx_bgm != -1: AudioServer.set_bus_volume_db(idx_bgm, db_val)
+	)
+	row_bgm.add_child(setting_bgm_slider)
+
+	setting_bgm_val_lbl = Label.new()
+	setting_bgm_val_lbl.name = "ValLabel"
+	setting_bgm_val_lbl.custom_minimum_size = Vector2(52, 28)
+	setting_bgm_val_lbl.size_flags_horizontal = Control.SIZE_SHRINK_END
+	setting_bgm_val_lbl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	setting_bgm_val_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	setting_bgm_val_lbl.add_theme_color_override("font_color", Color(1, 0.88, 0.3, 1))
+	setting_bgm_val_lbl.add_theme_font_size_override("font_size", 14)
+	setting_bgm_val_lbl.text = "%d%%" % int(round(GameState.bgm_volume * 100.0))
+	setting_bgm_val_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	setting_bgm_val_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	row_bgm.add_child(setting_bgm_val_lbl)
+
 	# RowSFX
 	var row_sfx = HBoxContainer.new()
 	row_sfx.name = "RowSFX"
@@ -1921,8 +1974,6 @@ func _build_settings_screen() -> void:
 		if idx1 != -1: AudioServer.set_bus_volume_db(idx1, db_val)
 		var idx2 = AudioServer.get_bus_index("SFX_UI")
 		if idx2 != -1: AudioServer.set_bus_volume_db(idx2, db_val)
-		var idx_master = AudioServer.get_bus_index("Master")
-		if idx_master != -1: AudioServer.set_bus_volume_db(idx_master, db_val)
 	)
 	row_sfx.add_child(setting_sfx_slider)
 
@@ -2247,6 +2298,10 @@ func _show_settings() -> void:
 	_update_toggle_btn(setting_gold_skin_check, GameState.gold_skin_enabled)
 	if setting_gold_skin_row:
 		setting_gold_skin_row.visible = "dawn_breaks" in GameState.unlocked_achievements
+	if setting_bgm_slider:
+		setting_bgm_slider.value = GameState.bgm_volume
+	if setting_bgm_val_lbl:
+		setting_bgm_val_lbl.text = "%d%%" % int(round(GameState.bgm_volume * 100.0))
 	if setting_sfx_slider:
 		setting_sfx_slider.value = GameState.sfx_volume
 	if setting_sfx_val_lbl:
@@ -2265,7 +2320,10 @@ func _show_settings() -> void:
 	var tw = create_tween()
 	tw.tween_property(settings_screen, "modulate:a", 1.0, 0.2)
 	await tw.finished
-	if setting_sfx_slider: setting_sfx_slider.grab_focus()
+	if setting_bgm_slider:
+		setting_bgm_slider.grab_focus()
+	elif setting_sfx_slider:
+		setting_sfx_slider.grab_focus()
 
 func _hide_settings() -> void:
 	if not settings_screen or not settings_screen.visible: return

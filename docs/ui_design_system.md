@@ -59,8 +59,8 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 * **Weapon Wheel:** 6 slices, 12px gap, 3D previews, stat bars, and crit multipliers.
 * **Drafting Screen:** 3-card deal entrance with rarity badges, `[ MAX ROLL! ]` highlights, and stack warning badges.
 * **Achievement Cards:** 700x100 cards (4px radius, 64x64 icon plate, concentric progress bars).
-* **Settings Screen:** 3 categorized sections (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`) with even-number typography and live slider readouts (`100%`, `1.0x`).
-* **Pause Menu:** Flat 280px vertical column (16px gap, 44px uniform buttons).
+* **Settings Screen:** 3 categorized sections (`AUDIO` with dedicated Music & SFX sliders, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`) with even-number typography and live slider readouts (`100%`, `1.0x`).
+* **Pause Menu:** Flat 280px vertical column (16px gap, 44px uniform buttons) with Abandon Run confirmation card (`z_index = 60`, 400x200px, 4px radius, 1px gold border, 12px shadow, dual 140x42px buttons: `[ CANCEL ]` default focus, `[ ABANDON ]` hazard alert).
 * **Title Screen:** Symmetrical horizontal split (840x400) with 340px vertical divider, twin 144x52 stats cards, and mode buttons.
 * **Timer Glide Intro:** Center countdown (`scale 1.6x`, 2.5s hold) glides (0.85s) into top-right anchor.
 * **Overtime HUD:** Pulsing crimson `[ OVERTIME ]` badge, red score burn feedback, and bankruptcy recap subtitle.

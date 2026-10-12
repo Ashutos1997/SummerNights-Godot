@@ -47,13 +47,13 @@ Architectural map and layout reference for `HUD.tscn`.
 ## 2. Screen Overlays (Menus)
 * **Z-Index Layering:** All modal menus render at `z_index = 50` above HUD gameplay elements (`z_index = 0`). Opening any menu immediately cancels active timer intros. Screen fades use `z_index = 100`.
 * **Styling:** 96px left margin, 24px vertical gap, gold borders, and localized "PRESS ESC TO CLOSE" prompts.
-* **PauseScreen (`ESC`):** 280px vertical button stack (Resume, Settings, Filters, Credits, Controls, Achievements, Buffs, Menu).
+* **PauseScreen (`ESC`):** 280px vertical button stack (Resume, Settings, Filters, Credits, Controls, Achievements, Buffs, Menu). Main Menu button triggers `AbandonConfirmModal` (`z_index = 60`, 400x200px retro card with `[ CANCEL ]` safe default focus and `[ ABANDON ]` hazard button).
 * **CreditsScreen:** Autoscrolling bilingual credits with complete asset attributions.
 * **AchievementsScreen:** 700x100 card list tracking 14 achievements with progress bars and badges.
 * **DraftingScreen (Perks):** 3-card post-boss modal with rarity badges, `[ MAX ROLL! ]` highlights, and stack warning badges.
 * **FiltersScreen:** Mutually exclusive post-processing options (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
 * **ControllerScreen:** Keyboard and Xbox layout diagrams with control legends.
-* **SettingsScreen:** 3 sections (`AUDIO`, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`) with even-number typography and live slider readouts.
+* **SettingsScreen:** 3 sections (`AUDIO` with separate Music and SFX sliders, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`) with even-number typography and live percentage readouts.
 * **WeaponWheel (`TAB`):** 0.2x slow-mo 6-slice wedge with 3D previews, stat bars, and crit multipliers.
 * **End State Screens:** Fullscreen modal overlays (`WinScreen`, `EndScreen`, `LoseScreen`) with content container rendered above `BorderPanel` to eliminate drop shadow dimming.
   * *WinScreen:* Level complete breakdown with loading status.

@@ -889,6 +889,42 @@ vertical_alignment = 1
 layout_mode = 2
 mouse_filter = 2
 
+[node name="RowBGM" type="HBoxContainer" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer/RowBGM"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 0.75)
+theme_override_font_sizes/font_size = 16
+text = "MUSIC VOLUME"
+vertical_alignment = 1
+
+[node name="Slider" type="HSlider" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer/RowBGM"]
+custom_minimum_size = Vector2(180, 28)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+mouse_filter = 0
+max_value = 1.0
+step = 0.05
+value = 0.8
+
+[node name="ValLabel" type="Label" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer/RowBGM"]
+custom_minimum_size = Vector2(52, 28)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "80%"
+horizontal_alignment = 2
+vertical_alignment = 1
+
 [node name="RowSFX" type="HBoxContainer" parent="HUD/SettingsScreen/CenterContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2

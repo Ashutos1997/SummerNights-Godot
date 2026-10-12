@@ -339,6 +339,7 @@ var current_weapon_id: String = "standard"
 var kitsune_mode: String = "cannon"  # "cannon" or "blade"
 var level: int = 1
 var sfx_volume: float = 1.0
+var bgm_volume: float = 0.8
 var mouse_sensitivity: float = 1.0
 var reduce_motion: bool = false
 var vibration_enabled: bool = true
@@ -719,6 +720,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func save_settings() -> void:
 	var config = ConfigFile.new()
 	config.set_value("Audio", "sfx_volume", sfx_volume)
+	config.set_value("Audio", "bgm_volume", bgm_volume)
 	config.set_value("Controls", "mouse_sensitivity", mouse_sensitivity)
 	config.set_value("Accessibility", "reduce_motion", reduce_motion)
 	config.set_value("Accessibility", "vibration_enabled", vibration_enabled)
@@ -742,10 +744,22 @@ func save_settings() -> void:
 	config.set_value("Stats", "kitsune_first_unlock_awarded", kitsune_first_unlock_awarded)
 	config.save(SETTINGS_FILE_PATH)
 
+func apply_audio_settings() -> void:
+	var sfx_db = linear_to_db(sfx_volume)
+	var idx1 = AudioServer.get_bus_index("SFX_WEAPON")
+	if idx1 != -1: AudioServer.set_bus_volume_db(idx1, sfx_db)
+	var idx2 = AudioServer.get_bus_index("SFX_UI")
+	if idx2 != -1: AudioServer.set_bus_volume_db(idx2, sfx_db)
+	
+	var bgm_db = linear_to_db(bgm_volume)
+	var idx_bgm = AudioServer.get_bus_index("BGM")
+	if idx_bgm != -1: AudioServer.set_bus_volume_db(idx_bgm, bgm_db)
+
 func load_settings() -> void:
 	var config = ConfigFile.new()
 	if config.load(SETTINGS_FILE_PATH) == OK:
 		sfx_volume = config.get_value("Audio", "sfx_volume", 1.0)
+		bgm_volume = config.get_value("Audio", "bgm_volume", 0.8)
 		mouse_sensitivity = config.get_value("Controls", "mouse_sensitivity", 1.0)
 		reduce_motion = config.get_value("Accessibility", "reduce_motion", false)
 		vibration_enabled = config.get_value("Accessibility", "vibration_enabled", true)
@@ -782,6 +796,8 @@ func load_settings() -> void:
 		var loaded_achievements = config.get_value("Stats", "unlocked_achievements", [])
 		unlocked_achievements.assign(loaded_achievements)
 		
+	apply_audio_settings()
+
 	# Apply fullscreen state (whether loaded from config or default true) with a slight delay for macOS window server
 	if is_inside_tree() and get_tree():
 		var apply_timer = get_tree().create_timer(0.1)
