@@ -780,7 +780,7 @@ func _ready() -> void:
  
 	# Row Labels styling (13.4:1 contrast PASS - even number system: 16px body font)
 	for row_name in ["RowBGM", "RowSFX", "RowSens", "RowMotion", "RowVibration", "RowFullscreen", "RowGoldSkin"]:
-		var r_node = $HUD/SettingsScreen/CenterContainer/VBoxContainer.get_node_or_null(row_name)
+		var r_node = settings_screen.find_child(row_name, true, false)
 		if r_node:
 			var r_lbl = r_node.get_node_or_null("Label")
 			if r_lbl:
@@ -1069,6 +1069,10 @@ func _build_settings_category_headers(font: Font) -> void:
 	
 	var is_kr = GameState.language == "KR"
 	
+	# Upgrade Settings container to generous two-column arcade plate
+	vbox.custom_minimum_size = Vector2(880, 0)
+	vbox.add_theme_constant_override("separation", 16)
+	
 	var make_cat = func(node_name: String, title_en: String, title_kr: String, top_margin: int) -> MarginContainer:
 		var wrap = MarginContainer.new()
 		wrap.name = node_name
@@ -1130,48 +1134,122 @@ func _build_settings_category_headers(font: Font) -> void:
 		
 		return wrap
 
-	# 1. AUDIO category (before first audio row) - 10px margin gives 22px total gap from Divider
-	var cat_audio = vbox.get_node_or_null("CatHeaderAudio")
-	if not cat_audio:
-		cat_audio = make_cat.call("CatHeaderAudio", "AUDIO", "오디오", 10)
-		var first_audio_row = vbox.get_node_or_null("RowBGM")
-		if not first_audio_row:
-			first_audio_row = vbox.get_node_or_null("RowSFX")
-		if first_audio_row:
-			vbox.add_child(cat_audio)
-			vbox.move_child(cat_audio, first_audio_row.get_index())
+	# Check or create ColumnsHBox
+	var columns_hbox = vbox.get_node_or_null("ColumnsHBox")
+	var left_col: VBoxContainer = null
+	var right_col: VBoxContainer = null
+	if not columns_hbox:
+		columns_hbox = HBoxContainer.new()
+		columns_hbox.name = "ColumnsHBox"
+		columns_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+		columns_hbox.add_theme_constant_override("separation", 36)
+		
+		left_col = VBoxContainer.new()
+		left_col.name = "LeftCol"
+		left_col.custom_minimum_size = Vector2(410, 0)
+		left_col.add_theme_constant_override("separation", 10)
+		columns_hbox.add_child(left_col)
+		
+		var col_sep = VSeparator.new()
+		col_sep.name = "ColSep"
+		var col_sep_style = StyleBoxLine.new()
+		col_sep_style.color = Color(1.0, 0.88, 0.3, 0.22)
+		col_sep_style.thickness = 1
+		col_sep_style.vertical = true
+		col_sep.add_theme_stylebox_override("separator", col_sep_style)
+		columns_hbox.add_child(col_sep)
+		
+		right_col = VBoxContainer.new()
+		right_col.name = "RightCol"
+		right_col.custom_minimum_size = Vector2(410, 0)
+		right_col.add_theme_constant_override("separation", 12)
+		columns_hbox.add_child(right_col)
+		
+		var div2 = vbox.get_node_or_null("Divider2")
+		if div2:
+			vbox.add_child(columns_hbox)
+			vbox.move_child(columns_hbox, div2.get_index())
 		else:
-			vbox.add_child(cat_audio)
+			vbox.add_child(columns_hbox)
+		
+		# Move rows to columns
+		var left_rows = ["RowBGM", "RowSFX", "RowSens", "RowMotion", "RowVibration"]
+		for r_name in left_rows:
+			var r = vbox.get_node_or_null(r_name)
+			if r:
+				vbox.remove_child(r)
+				left_col.add_child(r)
+		
+		var right_rows = ["RowFullscreen", "RowGoldSkin"]
+		for r_name in right_rows:
+			var r = vbox.get_node_or_null(r_name)
+			if r:
+				vbox.remove_child(r)
+				right_col.add_child(r)
+	else:
+		left_col = columns_hbox.get_node_or_null("LeftCol")
+		right_col = columns_hbox.get_node_or_null("RightCol")
+
+	# 1. AUDIO category (top of LeftCol)
+	var cat_audio = left_col.get_node_or_null("CatHeaderAudio")
+	if not cat_audio:
+		cat_audio = make_cat.call("CatHeaderAudio", "AUDIO", "오디오", 0)
+		left_col.add_child(cat_audio)
+		left_col.move_child(cat_audio, 0)
 	settings_cat_audio_lbl = cat_audio.get_node_or_null("HBox/Plate/Label")
 
-	# 2. GAMEPLAY & CONTROLS category (before RowSens) - 16px margin gives 28px total gap from RowSFX
-	var cat_gameplay = vbox.get_node_or_null("CatHeaderGameplay")
+	# 2. GAMEPLAY & CONTROLS category (before RowSens in LeftCol)
+	var cat_gameplay = left_col.get_node_or_null("CatHeaderGameplay")
 	if not cat_gameplay:
-		cat_gameplay = make_cat.call("CatHeaderGameplay", "GAMEPLAY & CONTROLS", "조작 및 편의", 16)
-		var sens_row = vbox.get_node_or_null("RowSens")
+		cat_gameplay = make_cat.call("CatHeaderGameplay", "GAMEPLAY & CONTROLS", "조작 및 편의", 14)
+		var sens_row = left_col.get_node_or_null("RowSens")
 		if sens_row:
-			vbox.add_child(cat_gameplay)
-			vbox.move_child(cat_gameplay, sens_row.get_index())
+			left_col.add_child(cat_gameplay)
+			left_col.move_child(cat_gameplay, sens_row.get_index())
 		else:
-			vbox.add_child(cat_gameplay)
+			left_col.add_child(cat_gameplay)
 	settings_cat_gameplay_lbl = cat_gameplay.get_node_or_null("HBox/Plate/Label")
 
-	# 3. DISPLAY & SYSTEM category (before RowFullscreen) - 16px margin gives 28px total gap from RowVibration
-	var cat_system = vbox.get_node_or_null("CatHeaderSystem")
+	# 3. DISPLAY & SYSTEM category (top of RightCol)
+	var cat_system = right_col.get_node_or_null("CatHeaderSystem")
 	if not cat_system:
-		cat_system = make_cat.call("CatHeaderSystem", "DISPLAY & SYSTEM", "화면 및 시스템", 16)
-		var fs_row = vbox.get_node_or_null("RowFullscreen")
-		if fs_row:
-			vbox.add_child(cat_system)
-			vbox.move_child(cat_system, fs_row.get_index())
-		else:
-			vbox.add_child(cat_system)
+		cat_system = make_cat.call("CatHeaderSystem", "DISPLAY & SYSTEM", "화면 및 시스템", 0)
+		right_col.add_child(cat_system)
+		right_col.move_child(cat_system, 0)
 	settings_cat_system_lbl = cat_system.get_node_or_null("HBox/Plate/Label")
+
+	# Sizing adjustments to comfortably fit 410px columns
+	for row_name in ["RowBGM", "RowSFX", "RowSens", "RowMotion", "RowVibration", "RowFullscreen", "RowGoldSkin"]:
+		var r_node = settings_screen.find_child(row_name, true, false)
+		if r_node:
+			var r_lbl = r_node.get_node_or_null("Label")
+			if r_lbl:
+				r_lbl.custom_minimum_size = Vector2(170, 0)
 
 	# Bottom divider breathing room (18px separation)
 	var div2 = vbox.get_node_or_null("Divider2")
 	if div2:
 		div2.add_theme_constant_override("separation", 18)
+
+	# Setup cross-column focus links
+	if bgm_slider and fullscreen_check:
+		bgm_slider.focus_neighbor_right = bgm_slider.get_path_to(fullscreen_check)
+		fullscreen_check.focus_neighbor_left = fullscreen_check.get_path_to(bgm_slider)
+	if sfx_slider and fullscreen_check:
+		sfx_slider.focus_neighbor_right = sfx_slider.get_path_to(fullscreen_check)
+	if sens_slider and lang_btn_en:
+		sens_slider.focus_neighbor_right = sens_slider.get_path_to(lang_btn_en)
+		lang_btn_en.focus_neighbor_left = lang_btn_en.get_path_to(sens_slider)
+	if motion_check and lang_btn_en:
+		motion_check.focus_neighbor_right = motion_check.get_path_to(lang_btn_en)
+	if vibration_check and gold_skin_check:
+		vibration_check.focus_neighbor_right = vibration_check.get_path_to(gold_skin_check)
+		gold_skin_check.focus_neighbor_left = gold_skin_check.get_path_to(vibration_check)
+	if vibration_check and settings_back_btn:
+		vibration_check.focus_neighbor_bottom = vibration_check.get_path_to(settings_back_btn)
+		settings_back_btn.focus_neighbor_top = settings_back_btn.get_path_to(vibration_check)
+	if gold_skin_check and settings_back_btn:
+		gold_skin_check.focus_neighbor_bottom = gold_skin_check.get_path_to(settings_back_btn)
 
 func _build_lang_row(in_body_font: Font = null) -> void:
 	var vbox = $HUD/SettingsScreen/CenterContainer/VBoxContainer
@@ -1262,18 +1340,27 @@ func _build_lang_row(in_body_font: Font = null) -> void:
 
 	row.add_child(toggle_box)
 
-	# Insert right before Divider2 (so the bottom divider stays directly above the BackBtn)
-	var divider2 = vbox.get_node_or_null("Divider2")
-	if divider2:
-		vbox.add_child(row)
-		vbox.move_child(row, divider2.get_index())
-	else:
-		var back_btn = vbox.get_node_or_null("BackBtn")
-		if back_btn:
-			vbox.add_child(row)
-			vbox.move_child(row, back_btn.get_index())
+	# Insert into RightCol if two-column layout exists, otherwise right before Divider2
+	var right_col = vbox.get_node_or_null("ColumnsHBox/RightCol")
+	if right_col:
+		var gold_skin_row = right_col.get_node_or_null("RowGoldSkin")
+		if gold_skin_row:
+			right_col.add_child(row)
+			right_col.move_child(row, gold_skin_row.get_index())
 		else:
+			right_col.add_child(row)
+	else:
+		var divider2 = vbox.get_node_or_null("Divider2")
+		if divider2:
 			vbox.add_child(row)
+			vbox.move_child(row, divider2.get_index())
+		else:
+			var back_btn = vbox.get_node_or_null("BackBtn")
+			if back_btn:
+				vbox.add_child(row)
+				vbox.move_child(row, back_btn.get_index())
+			else:
+				vbox.add_child(row)
 
 func _update_lang_toggle(is_kr: bool) -> void:
 	# Color-only update — styleboxes are baked at build time, no layout reflow

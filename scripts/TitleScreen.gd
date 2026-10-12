@@ -1738,17 +1738,17 @@ func _build_settings_screen() -> void:
 	add_child(settings_screen)
 	
 	var bg = ColorRect.new()
-	bg.color = Color(0.02, 0.01, 0.05, 0.96)
+	bg.color = Color(0.01, 0.01, 0.03, 0.98)
 	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	settings_screen.add_child(bg)
 	
 	var border = Panel.new()
 	border.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	border.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	border.offset_left = 24
-	border.offset_top = 24
-	border.offset_right = -24
-	border.offset_bottom = -24
+	border.offset_left = 32
+	border.offset_top = 28
+	border.offset_right = -32
+	border.offset_bottom = -28
 	
 	var border_style = StyleBoxFlat.new()
 	border_style.bg_color = Color(0, 0, 0, 0)
@@ -1771,8 +1771,8 @@ func _build_settings_screen() -> void:
 	
 	var vbox = VBoxContainer.new()
 	vbox.name = "VBoxContainer"
-	vbox.custom_minimum_size = Vector2(560, 0)
-	vbox.add_theme_constant_override("separation", 12)
+	vbox.custom_minimum_size = Vector2(880, 0)
+	vbox.add_theme_constant_override("separation", 16)
 	center.add_child(vbox)
 	
 	var title_row = HBoxContainer.new()
@@ -1883,20 +1883,48 @@ func _build_settings_screen() -> void:
 
 	var grab_tex = load("res://assets/ui/kenney_ui_pack/slide_hangle.png")
 
-	# 1. AUDIO category
-	var cat_audio_wrap = make_cat.call("CatHeaderAudio", "AUDIO", "오디오", 6)
-	vbox.add_child(cat_audio_wrap)
+	# Columns Container (Left: Audio & Controls, Right: Display & System)
+	var columns_hbox = HBoxContainer.new()
+	columns_hbox.name = "ColumnsHBox"
+	columns_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	columns_hbox.add_theme_constant_override("separation", 36)
+	vbox.add_child(columns_hbox)
+
+	var left_col = VBoxContainer.new()
+	left_col.name = "LeftCol"
+	left_col.custom_minimum_size = Vector2(410, 0)
+	left_col.add_theme_constant_override("separation", 10)
+	columns_hbox.add_child(left_col)
+
+	var col_sep = VSeparator.new()
+	col_sep.name = "ColSep"
+	var col_sep_style = StyleBoxLine.new()
+	col_sep_style.color = Color(1.0, 0.88, 0.3, 0.22)
+	col_sep_style.thickness = 1
+	col_sep_style.vertical = true
+	col_sep.add_theme_stylebox_override("separator", col_sep_style)
+	columns_hbox.add_child(col_sep)
+
+	var right_col = VBoxContainer.new()
+	right_col.name = "RightCol"
+	right_col.custom_minimum_size = Vector2(410, 0)
+	right_col.add_theme_constant_override("separation", 12)
+	columns_hbox.add_child(right_col)
+
+	# ── LEFT COLUMN: 1. AUDIO category ──────────────────────────────────
+	var cat_audio_wrap = make_cat.call("CatHeaderAudio", "AUDIO", "오디오", 0)
+	left_col.add_child(cat_audio_wrap)
 	setting_cat_audio_lbl = cat_audio_wrap.get_node("HBox/Plate/Label")
 
 	# RowBGM
 	var row_bgm = HBoxContainer.new()
 	row_bgm.name = "RowBGM"
 	row_bgm.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(row_bgm)
+	left_col.add_child(row_bgm)
 
 	var bgm_lbl = Label.new()
 	bgm_lbl.name = "Label"
-	bgm_lbl.custom_minimum_size = Vector2(280, 0)
+	bgm_lbl.custom_minimum_size = Vector2(170, 0)
 	bgm_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	bgm_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bgm_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -1905,7 +1933,7 @@ func _build_settings_screen() -> void:
 
 	setting_bgm_slider = HSlider.new()
 	setting_bgm_slider.name = "Slider"
-	setting_bgm_slider.custom_minimum_size = Vector2(180, 28)
+	setting_bgm_slider.custom_minimum_size = Vector2(160, 28)
 	setting_bgm_slider.size_flags_horizontal = Control.SIZE_SHRINK_END
 	setting_bgm_slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	setting_bgm_slider.min_value = 0.0
@@ -1927,7 +1955,7 @@ func _build_settings_screen() -> void:
 
 	setting_bgm_val_lbl = Label.new()
 	setting_bgm_val_lbl.name = "ValLabel"
-	setting_bgm_val_lbl.custom_minimum_size = Vector2(52, 28)
+	setting_bgm_val_lbl.custom_minimum_size = Vector2(48, 28)
 	setting_bgm_val_lbl.size_flags_horizontal = Control.SIZE_SHRINK_END
 	setting_bgm_val_lbl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	setting_bgm_val_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -1942,11 +1970,11 @@ func _build_settings_screen() -> void:
 	var row_sfx = HBoxContainer.new()
 	row_sfx.name = "RowSFX"
 	row_sfx.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(row_sfx)
+	left_col.add_child(row_sfx)
 
 	var sfx_lbl = Label.new()
 	sfx_lbl.name = "Label"
-	sfx_lbl.custom_minimum_size = Vector2(280, 0)
+	sfx_lbl.custom_minimum_size = Vector2(170, 0)
 	sfx_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	sfx_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	sfx_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -1955,7 +1983,7 @@ func _build_settings_screen() -> void:
 
 	setting_sfx_slider = HSlider.new()
 	setting_sfx_slider.name = "Slider"
-	setting_sfx_slider.custom_minimum_size = Vector2(180, 28)
+	setting_sfx_slider.custom_minimum_size = Vector2(160, 28)
 	setting_sfx_slider.size_flags_horizontal = Control.SIZE_SHRINK_END
 	setting_sfx_slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	setting_sfx_slider.min_value = 0.0
@@ -1979,7 +2007,7 @@ func _build_settings_screen() -> void:
 
 	setting_sfx_val_lbl = Label.new()
 	setting_sfx_val_lbl.name = "ValLabel"
-	setting_sfx_val_lbl.custom_minimum_size = Vector2(52, 28)
+	setting_sfx_val_lbl.custom_minimum_size = Vector2(48, 28)
 	setting_sfx_val_lbl.size_flags_horizontal = Control.SIZE_SHRINK_END
 	setting_sfx_val_lbl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	setting_sfx_val_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -1990,20 +2018,20 @@ func _build_settings_screen() -> void:
 	setting_sfx_val_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	row_sfx.add_child(setting_sfx_val_lbl)
 
-	# 2. GAMEPLAY & CONTROLS category
-	var cat_gameplay_wrap = make_cat.call("CatHeaderGameplay", "GAMEPLAY & CONTROLS", "조작 및 편의", 12)
-	vbox.add_child(cat_gameplay_wrap)
+	# ── LEFT COLUMN: 2. GAMEPLAY & CONTROLS category ─────────────────────
+	var cat_gameplay_wrap = make_cat.call("CatHeaderGameplay", "GAMEPLAY & CONTROLS", "조작 및 편의", 14)
+	left_col.add_child(cat_gameplay_wrap)
 	setting_cat_gameplay_lbl = cat_gameplay_wrap.get_node("HBox/Plate/Label")
 
 	# RowSens
 	var row_sens = HBoxContainer.new()
 	row_sens.name = "RowSens"
 	row_sens.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(row_sens)
+	left_col.add_child(row_sens)
 
 	var sens_lbl = Label.new()
 	sens_lbl.name = "Label"
-	sens_lbl.custom_minimum_size = Vector2(280, 0)
+	sens_lbl.custom_minimum_size = Vector2(170, 0)
 	sens_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	sens_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	sens_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -2012,7 +2040,7 @@ func _build_settings_screen() -> void:
 
 	setting_sens_slider = HSlider.new()
 	setting_sens_slider.name = "Slider"
-	setting_sens_slider.custom_minimum_size = Vector2(180, 28)
+	setting_sens_slider.custom_minimum_size = Vector2(160, 28)
 	setting_sens_slider.size_flags_horizontal = Control.SIZE_SHRINK_END
 	setting_sens_slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	setting_sens_slider.min_value = 0.1
@@ -2031,7 +2059,7 @@ func _build_settings_screen() -> void:
 
 	setting_sens_val_lbl = Label.new()
 	setting_sens_val_lbl.name = "ValLabel"
-	setting_sens_val_lbl.custom_minimum_size = Vector2(52, 28)
+	setting_sens_val_lbl.custom_minimum_size = Vector2(48, 28)
 	setting_sens_val_lbl.size_flags_horizontal = Control.SIZE_SHRINK_END
 	setting_sens_val_lbl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	setting_sens_val_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -2046,11 +2074,11 @@ func _build_settings_screen() -> void:
 	var row_motion = HBoxContainer.new()
 	row_motion.name = "RowMotion"
 	row_motion.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(row_motion)
+	left_col.add_child(row_motion)
 
 	var motion_lbl = Label.new()
 	motion_lbl.name = "Label"
-	motion_lbl.custom_minimum_size = Vector2(280, 0)
+	motion_lbl.custom_minimum_size = Vector2(170, 0)
 	motion_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	motion_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	motion_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -2058,7 +2086,7 @@ func _build_settings_screen() -> void:
 	setting_row_labels["RowMotion"] = motion_lbl
 
 	setting_motion_check = Button.new()
-	setting_motion_check.custom_minimum_size = Vector2(110, 34)
+	setting_motion_check.custom_minimum_size = Vector2(100, 32)
 	setting_motion_check.size_flags_horizontal = Control.SIZE_SHRINK_END
 	setting_motion_check.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	setting_motion_check.toggle_mode = true
@@ -2077,11 +2105,11 @@ func _build_settings_screen() -> void:
 	var row_vibration = HBoxContainer.new()
 	row_vibration.name = "RowVibration"
 	row_vibration.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(row_vibration)
+	left_col.add_child(row_vibration)
 
 	var vib_lbl = Label.new()
 	vib_lbl.name = "Label"
-	vib_lbl.custom_minimum_size = Vector2(280, 0)
+	vib_lbl.custom_minimum_size = Vector2(170, 0)
 	vib_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	vib_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vib_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -2089,7 +2117,7 @@ func _build_settings_screen() -> void:
 	setting_row_labels["RowVibration"] = vib_lbl
 
 	setting_vibration_check = Button.new()
-	setting_vibration_check.custom_minimum_size = Vector2(110, 34)
+	setting_vibration_check.custom_minimum_size = Vector2(100, 32)
 	setting_vibration_check.size_flags_horizontal = Control.SIZE_SHRINK_END
 	setting_vibration_check.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	setting_vibration_check.toggle_mode = true
@@ -2104,20 +2132,20 @@ func _build_settings_screen() -> void:
 	)
 	row_vibration.add_child(setting_vibration_check)
 
-	# 3. DISPLAY & SYSTEM category
-	var cat_system_wrap = make_cat.call("CatHeaderSystem", "DISPLAY & SYSTEM", "화면 및 시스템", 12)
-	vbox.add_child(cat_system_wrap)
+	# ── RIGHT COLUMN: 3. DISPLAY & SYSTEM category ───────────────────────
+	var cat_system_wrap = make_cat.call("CatHeaderSystem", "DISPLAY & SYSTEM", "화면 및 시스템", 0)
+	right_col.add_child(cat_system_wrap)
 	setting_cat_system_lbl = cat_system_wrap.get_node("HBox/Plate/Label")
 
 	# RowFullscreen
 	var row_fs = HBoxContainer.new()
 	row_fs.name = "RowFullscreen"
 	row_fs.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(row_fs)
+	right_col.add_child(row_fs)
 
 	var fs_lbl = Label.new()
 	fs_lbl.name = "Label"
-	fs_lbl.custom_minimum_size = Vector2(280, 0)
+	fs_lbl.custom_minimum_size = Vector2(170, 0)
 	fs_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	fs_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	fs_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -2125,7 +2153,7 @@ func _build_settings_screen() -> void:
 	setting_row_labels["RowFullscreen"] = fs_lbl
 
 	setting_fullscreen_check = Button.new()
-	setting_fullscreen_check.custom_minimum_size = Vector2(110, 34)
+	setting_fullscreen_check.custom_minimum_size = Vector2(100, 32)
 	setting_fullscreen_check.size_flags_horizontal = Control.SIZE_SHRINK_END
 	setting_fullscreen_check.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	setting_fullscreen_check.toggle_mode = true
@@ -2148,11 +2176,11 @@ func _build_settings_screen() -> void:
 	var row_lang = HBoxContainer.new()
 	row_lang.name = "RowLanguage"
 	row_lang.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(row_lang)
+	right_col.add_child(row_lang)
 
 	var lang_lbl = Label.new()
 	lang_lbl.name = "Label"
-	lang_lbl.custom_minimum_size = Vector2(280, 0)
+	lang_lbl.custom_minimum_size = Vector2(170, 0)
 	lang_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	lang_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	lang_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -2218,11 +2246,11 @@ func _build_settings_screen() -> void:
 	setting_gold_skin_row = HBoxContainer.new()
 	setting_gold_skin_row.name = "RowGoldSkin"
 	setting_gold_skin_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(setting_gold_skin_row)
+	right_col.add_child(setting_gold_skin_row)
 
 	var gold_lbl = Label.new()
 	gold_lbl.name = "Label"
-	gold_lbl.custom_minimum_size = Vector2(280, 0)
+	gold_lbl.custom_minimum_size = Vector2(170, 0)
 	gold_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	gold_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	gold_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -2230,7 +2258,7 @@ func _build_settings_screen() -> void:
 	setting_row_labels["RowGoldSkin"] = gold_lbl
 
 	setting_gold_skin_check = Button.new()
-	setting_gold_skin_check.custom_minimum_size = Vector2(110, 34)
+	setting_gold_skin_check.custom_minimum_size = Vector2(100, 32)
 	setting_gold_skin_check.size_flags_horizontal = Control.SIZE_SHRINK_END
 	setting_gold_skin_check.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	setting_gold_skin_check.toggle_mode = true
@@ -2258,7 +2286,7 @@ func _build_settings_screen() -> void:
 	# Back button
 	settings_back_btn = Button.new()
 	settings_back_btn.name = "BackBtn"
-	settings_back_btn.custom_minimum_size = Vector2(260, 38)
+	settings_back_btn.custom_minimum_size = Vector2(260, 42)
 	settings_back_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	var back_style = StyleBoxFlat.new()
 	back_style.bg_color = Color(0, 0, 0, 0.4)
@@ -2288,6 +2316,22 @@ func _build_settings_screen() -> void:
 	settings_prompt_lbl.add_theme_color_override("font_color", Color(1, 0.8, 0.2, 0.35))
 	settings_prompt_lbl.add_theme_font_size_override("font_size", 14)
 	vbox.add_child(settings_prompt_lbl)
+
+	# Two-column gamepad cross navigation
+	setting_bgm_slider.focus_neighbor_right = setting_bgm_slider.get_path_to(setting_fullscreen_check)
+	setting_sfx_slider.focus_neighbor_right = setting_sfx_slider.get_path_to(setting_fullscreen_check)
+	setting_sens_slider.focus_neighbor_right = setting_sens_slider.get_path_to(setting_lang_btn_en)
+	setting_motion_check.focus_neighbor_right = setting_motion_check.get_path_to(setting_lang_btn_en)
+	setting_vibration_check.focus_neighbor_right = setting_vibration_check.get_path_to(setting_gold_skin_check)
+
+	setting_fullscreen_check.focus_neighbor_left = setting_fullscreen_check.get_path_to(setting_bgm_slider)
+	setting_lang_btn_en.focus_neighbor_left = setting_lang_btn_en.get_path_to(setting_sens_slider)
+	setting_lang_btn_kr.focus_neighbor_left = setting_lang_btn_kr.get_path_to(setting_sens_slider)
+	setting_gold_skin_check.focus_neighbor_left = setting_gold_skin_check.get_path_to(setting_vibration_check)
+
+	setting_vibration_check.focus_neighbor_bottom = setting_vibration_check.get_path_to(settings_back_btn)
+	setting_gold_skin_check.focus_neighbor_bottom = setting_gold_skin_check.get_path_to(settings_back_btn)
+	settings_back_btn.focus_neighbor_top = settings_back_btn.get_path_to(setting_vibration_check)
 
 func _show_settings() -> void:
 	if is_starting or not settings_screen: return

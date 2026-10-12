@@ -11,6 +11,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Pause Menu Abandon Run Confirmation Modal: Intercepts the "MAIN MENU" button with a confirmation popup matching the Title Screen quit dialog 1:1 (`AbandonConfirmModal`, 400x180px, 8px radius, 2px gold border, 90% black scrim) featuring localized "DO YOU WANT TO QUIT?" prompt and dual 140x48px buttons (`[ YES ]` / `[ NO ]` with safe default focus on `NO`).
 
 ### Improved
+* Settings Menu Two-Column Layout Polish: Redesigned the Settings screen into a spacious symmetrical two-column arcade plate (880px width, 36px separation with vertical hairline divider) separating Audio and Gameplay Controls on the left from Display and System on the right, providing generous top/bottom breathing room (>100px margins) and seamless cross-column gamepad navigation.
 * Export & Release Streamlining: Retired GitHub binary releases to eliminate multi-track confusion; itch.io is now the sole official release platform starting from v1.8, with Godot export presets pruned and updated to v1.8.
 * Documentation & README Streamlining: Consolidated gameplay and feature overviews in both English and Korean READMEs into a concise Key Features section while preserving full credits, third-party asset licenses, and 1:1 bilingual structure.
 
@@ -349,6 +350,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 일시정지 메뉴 진행 포기 확인 모달: 일시정지 메뉴의 "메인 메뉴" 클릭 시 타이틀 화면 종료 팝업과 1:1 동일한 디자인의 확인 모달(`AbandonConfirmModal`, 400x180px, 8px 라운딩, 2px 골드 테두리, 90% 블랙 스크림)을 적용하여 다국어 지원("DO YOU WANT TO QUIT?" / "게임을 종료하시겠습니까?") 및 140x48px 규격의 `[ YES ]` / `[ NO ]`(안전 기본 포커스) 선택지를 제공.
 
 ### 개선됨 (Improved)
+* 설정 메뉴 2단 레이아웃 개편: 설정 창을 대칭형 2단 아케이드 플레이트(너비 880px, 36px 간격 및 수직 헤어라인 구분선)로 재설계하여 좌측에 오디오 및 조작/편의, 우측에 화면 및 시스템 설정을 분리 배치함으로써 상하 100px 이상의 쾌적한 여백 공간을 확보하고 패드 십자 이동 내비게이션을 지원.
 * 배포 정책 및 프리셋 단일화: 다중 트랙 배포 혼선을 방지하기 위해 GitHub 바이너리 릴리스를 정리하고, v1.8부터 itch.io를 단독 공식 배포처로 유지하며 고도 내보내기 프리셋을 v1.8로 갱신.
 * 문서 및 README 개편: 영문 및 한국어 README의 중복 설명을 핵심 특징(Key Features) 항목으로 정갈하게 압축하고, 전체 크레딧 및 서드파티 라이선스와 1:1 다국어 구조 유지.
 

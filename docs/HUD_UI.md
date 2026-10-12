@@ -53,7 +53,7 @@ Architectural map and layout reference for `HUD.tscn`.
 * **DraftingScreen (Perks):** 3-card post-boss modal with rarity badges, `[ MAX ROLL! ]` highlights, and stack warning badges.
 * **FiltersScreen:** Mutually exclusive post-processing options (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
 * **ControllerScreen:** Keyboard and Xbox layout diagrams with control legends.
-* **SettingsScreen:** 3 sections (`AUDIO` with separate Music and SFX sliders, `GAMEPLAY & CONTROLS`, `DISPLAY & SYSTEM`) with even-number typography and live percentage readouts.
+* **SettingsScreen:** Symmetrical two-column arcade layout (880px width, 36px separation, vertical hairline separator) providing generous top/bottom margins: Left column (`AUDIO` with Music and SFX sliders, `GAMEPLAY & CONTROLS` with Sensitivity, Reduce Motion, Vibration); Right column (`DISPLAY & SYSTEM` with Fullscreen, Language, Gold Gun Skin).
 * **WeaponWheel (`TAB`):** 0.2x slow-mo 6-slice wedge with 3D previews, stat bars, and crit multipliers.
 * **End State Screens:** Fullscreen modal overlays (`WinScreen`, `EndScreen`, `LoseScreen`) with content container rendered above `BorderPanel` to eliminate drop shadow dimming.
   * *WinScreen:* Level complete breakdown with loading status.
