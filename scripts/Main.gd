@@ -1271,10 +1271,6 @@ func _on_title_start_game(is_survival: bool) -> void:
 		if GameState.current_wave % 5 == 0:
 			is_two_phase = true
 			phase2_heat = min(95.0, 60.0 + (GameState.current_wave * 1.0))
-			sun_shield_cooldown = 2.5
-			if GameState.current_wave >= 30 and solar_convergence_mgr:
-				var d_count = 6 if GameState.current_wave < 40 else 8
-				solar_convergence_mgr.start_orbital_swarm(d_count, GameState.current_wave)
 	if GameState.is_survival_mode and hud:
 		hud.update_ice_charges(GameState.ice_charges_remaining, max_survival_ice_charges + GameState.bonus_ice_charges)
 		if GameState.current_wave < 2 and GameState.ice_charges_remaining <= 0:
