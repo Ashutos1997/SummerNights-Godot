@@ -1704,12 +1704,10 @@ func _apply_settings_language() -> void:
 		if setting_lang_btn_kr and body_font:
 			setting_lang_btn_kr.add_theme_font_override("font", body_font)
 			setting_lang_btn_kr.add_theme_font_size_override("font_size", 14)
-		if setting_sfx_val_lbl and body_font:
-			setting_sfx_val_lbl.add_theme_font_override("font", body_font)
-			setting_sfx_val_lbl.add_theme_font_size_override("font_size", 14)
-		if setting_sens_val_lbl and body_font:
-			setting_sens_val_lbl.add_theme_font_override("font", body_font)
-			setting_sens_val_lbl.add_theme_font_size_override("font_size", 14)
+		for val_lbl in [setting_bgm_val_lbl, setting_sfx_val_lbl, setting_sens_val_lbl]:
+			if val_lbl and body_font:
+				val_lbl.add_theme_font_override("font", body_font)
+				val_lbl.add_theme_font_size_override("font_size", 14)
 
 		_update_setting_lang_toggle(is_kr)
 

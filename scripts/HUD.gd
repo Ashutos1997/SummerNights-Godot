@@ -1692,12 +1692,10 @@ func _apply_language(lang: String) -> void:
 			if cur_font: settings_cat_system_lbl.add_theme_font_override("font", cur_font)
 			settings_cat_system_lbl.add_theme_font_size_override("font_size", 14)
 
-		if sfx_val_lbl and body_font:
-			sfx_val_lbl.add_theme_font_override("font", body_font)
-			sfx_val_lbl.add_theme_font_size_override("font_size", 14)
-		if sens_val_lbl and body_font:
-			sens_val_lbl.add_theme_font_override("font", body_font)
-			sens_val_lbl.add_theme_font_size_override("font_size", 14)
+		for val_lbl in [bgm_val_lbl, sfx_val_lbl, sens_val_lbl]:
+			if val_lbl and body_font:
+				val_lbl.add_theme_font_override("font", body_font)
+				val_lbl.add_theme_font_size_override("font_size", 14)
 
 	for btn in [settings_back_btn]:
 		if btn:
