@@ -147,6 +147,7 @@ var buffs_prompt: Label = null
 @onready var settings_back_btn = $HUD/SettingsScreen/CenterContainer/VBoxContainer/BackBtn
 var settings_cat_audio_lbl: Label = null
 var settings_cat_gameplay_lbl: Label = null
+var settings_cat_display_lbl: Label = null
 var settings_cat_system_lbl: Label = null
 
 var abandon_modal: Control = null
@@ -1147,7 +1148,7 @@ func _build_settings_category_headers(font: Font) -> void:
 		left_col = VBoxContainer.new()
 		left_col.name = "LeftCol"
 		left_col.custom_minimum_size = Vector2(410, 0)
-		left_col.add_theme_constant_override("separation", 10)
+		left_col.add_theme_constant_override("separation", 14)
 		columns_hbox.add_child(left_col)
 		
 		var col_sep = VSeparator.new()
@@ -1162,7 +1163,7 @@ func _build_settings_category_headers(font: Font) -> void:
 		right_col = VBoxContainer.new()
 		right_col.name = "RightCol"
 		right_col.custom_minimum_size = Vector2(410, 0)
-		right_col.add_theme_constant_override("separation", 12)
+		right_col.add_theme_constant_override("separation", 14)
 		columns_hbox.add_child(right_col)
 		
 		var div2 = vbox.get_node_or_null("Divider2")
@@ -1172,15 +1173,15 @@ func _build_settings_category_headers(font: Font) -> void:
 		else:
 			vbox.add_child(columns_hbox)
 		
-		# Move rows to columns
-		var left_rows = ["RowBGM", "RowSFX", "RowSens", "RowMotion", "RowVibration"]
+		# Move rows to columns (Symmetrical 4x2 grid)
+		var left_rows = ["RowBGM", "RowSFX", "RowSens", "RowVibration"]
 		for r_name in left_rows:
 			var r = vbox.get_node_or_null(r_name)
 			if r:
 				vbox.remove_child(r)
 				left_col.add_child(r)
 		
-		var right_rows = ["RowFullscreen", "RowGoldSkin"]
+		var right_rows = ["RowFullscreen", "RowMotion", "RowGoldSkin"]
 		for r_name in right_rows:
 			var r = vbox.get_node_or_null(r_name)
 			if r:
@@ -1201,7 +1202,7 @@ func _build_settings_category_headers(font: Font) -> void:
 	# 2. GAMEPLAY & CONTROLS category (before RowSens in LeftCol)
 	var cat_gameplay = left_col.get_node_or_null("CatHeaderGameplay")
 	if not cat_gameplay:
-		cat_gameplay = make_cat.call("CatHeaderGameplay", "GAMEPLAY & CONTROLS", "조작 및 편의", 14)
+		cat_gameplay = make_cat.call("CatHeaderGameplay", "GAMEPLAY & CONTROLS", "조작 및 편의", 22)
 		var sens_row = left_col.get_node_or_null("RowSens")
 		if sens_row:
 			left_col.add_child(cat_gameplay)
@@ -1210,46 +1211,120 @@ func _build_settings_category_headers(font: Font) -> void:
 			left_col.add_child(cat_gameplay)
 	settings_cat_gameplay_lbl = cat_gameplay.get_node_or_null("HBox/Plate/Label")
 
-	# 3. DISPLAY & SYSTEM category (top of RightCol)
+	# 3. DISPLAY category (top of RightCol)
+	var cat_display = right_col.get_node_or_null("CatHeaderDisplay")
+	if not cat_display:
+		cat_display = make_cat.call("CatHeaderDisplay", "DISPLAY", "화면", 0)
+		right_col.add_child(cat_display)
+		right_col.move_child(cat_display, 0)
+	settings_cat_display_lbl = cat_display.get_node_or_null("HBox/Plate/Label")
+
+	# 4. SYSTEM category (before RowLanguage in RightCol)
 	var cat_system = right_col.get_node_or_null("CatHeaderSystem")
 	if not cat_system:
-		cat_system = make_cat.call("CatHeaderSystem", "DISPLAY & SYSTEM", "화면 및 시스템", 0)
+		cat_system = make_cat.call("CatHeaderSystem", "SYSTEM", "시스템", 22)
 		right_col.add_child(cat_system)
-		right_col.move_child(cat_system, 0)
+	var lang_row = right_col.get_node_or_null("RowLanguage")
+	var gold_row = right_col.get_node_or_null("RowGoldSkin")
+	if lang_row:
+		right_col.move_child(cat_system, lang_row.get_index())
+	elif gold_row:
+		right_col.move_child(cat_system, gold_row.get_index())
 	settings_cat_system_lbl = cat_system.get_node_or_null("HBox/Plate/Label")
 
-	# Sizing adjustments to comfortably fit 410px columns
-	for row_name in ["RowBGM", "RowSFX", "RowSens", "RowMotion", "RowVibration", "RowFullscreen", "RowGoldSkin", "RowLanguage"]:
+	# Standardize all row heights and alignments to 410x38
+	for row_name in ["RowBGM", "RowSFX", "RowSens", "RowVibration", "RowFullscreen", "RowMotion", "RowGoldSkin", "RowLanguage"]:
 		var r_node = settings_screen.find_child(row_name, true, false)
 		if r_node:
+			r_node.custom_minimum_size = Vector2(410, 38)
+			if r_node is BoxContainer:
+				r_node.alignment = BoxContainer.ALIGNMENT_CENTER
 			var r_lbl = r_node.get_node_or_null("Label")
 			if r_lbl:
 				r_lbl.custom_minimum_size = Vector2(170, 0)
+				r_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+				r_lbl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+				r_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			var slider = r_node.get_node_or_null("Slider")
+			if slider:
+				slider.custom_minimum_size = Vector2(150, 28)
+				slider.size_flags_horizontal = Control.SIZE_SHRINK_END
+				slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+			var val_lbl = r_node.get_node_or_null("ValLabel")
+			if val_lbl:
+				val_lbl.custom_minimum_size = Vector2(48, 28)
+				val_lbl.size_flags_horizontal = Control.SIZE_SHRINK_END
+				val_lbl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+			var check_btn = r_node.get_node_or_null("Check")
+			if check_btn:
+				check_btn.custom_minimum_size = Vector2(104, 32)
+				check_btn.size_flags_horizontal = Control.SIZE_SHRINK_END
+				check_btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 
 	# Bottom divider breathing room (18px separation)
 	var div2 = vbox.get_node_or_null("Divider2")
 	if div2:
 		div2.add_theme_constant_override("separation", 18)
 
-	# Setup cross-column focus links
+	# Setup cross-column focus links (4x2 symmetric grid)
+	# Row 1: BGM <---> Fullscreen
 	if bgm_slider and fullscreen_check:
 		bgm_slider.focus_neighbor_right = bgm_slider.get_path_to(fullscreen_check)
 		fullscreen_check.focus_neighbor_left = fullscreen_check.get_path_to(bgm_slider)
-	if sfx_slider and fullscreen_check:
-		sfx_slider.focus_neighbor_right = sfx_slider.get_path_to(fullscreen_check)
+
+	# Row 2: SFX <---> Reduce Motion
+	if sfx_slider and motion_check:
+		sfx_slider.focus_neighbor_right = sfx_slider.get_path_to(motion_check)
+		motion_check.focus_neighbor_left = motion_check.get_path_to(sfx_slider)
+
+	# Row 3: Sensitivity <---> Language (ENG / KOR)
 	if sens_slider and lang_btn_en:
 		sens_slider.focus_neighbor_right = sens_slider.get_path_to(lang_btn_en)
 		lang_btn_en.focus_neighbor_left = lang_btn_en.get_path_to(sens_slider)
-	if motion_check and lang_btn_en:
-		motion_check.focus_neighbor_right = motion_check.get_path_to(lang_btn_en)
+		if lang_btn_kr:
+			lang_btn_kr.focus_neighbor_left = lang_btn_kr.get_path_to(sens_slider)
+
+	# Row 4: Vibration <---> Gold Gun Skin
 	if vibration_check and gold_skin_check:
 		vibration_check.focus_neighbor_right = vibration_check.get_path_to(gold_skin_check)
 		gold_skin_check.focus_neighbor_left = gold_skin_check.get_path_to(vibration_check)
+
+	# Vertical navigation: Left Column
+	if bgm_slider and sfx_slider:
+		bgm_slider.focus_neighbor_bottom = bgm_slider.get_path_to(sfx_slider)
+		sfx_slider.focus_neighbor_top = sfx_slider.get_path_to(bgm_slider)
+	if sfx_slider and sens_slider:
+		sfx_slider.focus_neighbor_bottom = sens_slider.get_path_to(sens_slider)
+		sens_slider.focus_neighbor_top = sens_slider.get_path_to(sfx_slider)
+	if sens_slider and vibration_check:
+		sens_slider.focus_neighbor_bottom = sens_slider.get_path_to(vibration_check)
+		vibration_check.focus_neighbor_top = vibration_check.get_path_to(sens_slider)
 	if vibration_check and settings_back_btn:
 		vibration_check.focus_neighbor_bottom = vibration_check.get_path_to(settings_back_btn)
-		settings_back_btn.focus_neighbor_top = settings_back_btn.get_path_to(vibration_check)
+
+	# Vertical navigation: Right Column
+	if fullscreen_check and motion_check:
+		fullscreen_check.focus_neighbor_bottom = fullscreen_check.get_path_to(motion_check)
+		motion_check.focus_neighbor_top = motion_check.get_path_to(fullscreen_check)
+	if motion_check and lang_btn_en:
+		motion_check.focus_neighbor_bottom = motion_check.get_path_to(lang_btn_en)
+		lang_btn_en.focus_neighbor_top = lang_btn_en.get_path_to(motion_check)
+		if lang_btn_kr:
+			lang_btn_kr.focus_neighbor_top = lang_btn_kr.get_path_to(motion_check)
+	if lang_btn_en and lang_btn_kr:
+		lang_btn_en.focus_neighbor_right = lang_btn_en.get_path_to(lang_btn_kr)
+		lang_btn_kr.focus_neighbor_left = lang_btn_kr.get_path_to(lang_btn_en)
+	if lang_btn_en and gold_skin_check:
+		lang_btn_en.focus_neighbor_bottom = lang_btn_en.get_path_to(gold_skin_check)
+		if lang_btn_kr:
+			lang_btn_kr.focus_neighbor_bottom = lang_btn_kr.get_path_to(gold_skin_check)
+		gold_skin_check.focus_neighbor_top = gold_skin_check.get_path_to(lang_btn_en)
 	if gold_skin_check and settings_back_btn:
 		gold_skin_check.focus_neighbor_bottom = gold_skin_check.get_path_to(settings_back_btn)
+
+	# Bottom Back button
+	if settings_back_btn and vibration_check:
+		settings_back_btn.focus_neighbor_top = settings_back_btn.get_path_to(vibration_check)
 
 func _build_lang_row(in_body_font: Font = null) -> void:
 	var vbox = $HUD/SettingsScreen/CenterContainer/VBoxContainer
@@ -1263,29 +1338,48 @@ func _build_lang_row(in_body_font: Font = null) -> void:
 
 	var row = HBoxContainer.new()
 	row.name = "RowLanguage"
+	row.custom_minimum_size = Vector2(410, 38)
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
 	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	row.add_theme_constant_override("separation", 16)
 
 	var lbl = Label.new()
 	lbl.name = "Label"
 	lbl.text = "언어" if is_kr else "Language"
+	lbl.custom_minimum_size = Vector2(170, 0)
 	lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	lbl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_style_lbl(lbl, 16, Color(0.92, 0.92, 0.92, 0.95), 2, Color.BLACK, row_font)
 	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	row.add_child(lbl)
 
-	# ENG | KOR inline toggle (matches ON/OFF button visual language)
+	# Matching 104x32 LangPlate to align with ON/OFF buttons
+	var lang_plate = PanelContainer.new()
+	lang_plate.name = "LangPlate"
+	lang_plate.custom_minimum_size = Vector2(104, 32)
+	lang_plate.size_flags_horizontal = Control.SIZE_SHRINK_END
+	lang_plate.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var p_style = StyleBoxFlat.new()
+	p_style.bg_color = Color(0, 0, 0, 0.4)
+	p_style.border_color = Color(1.0, 0.88, 0.3, 0.4)
+	p_style.set_border_width_all(1)
+	p_style.set_corner_radius_all(4)
+	lang_plate.add_theme_stylebox_override("panel", p_style)
+	row.add_child(lang_plate)
+
 	var toggle_box = HBoxContainer.new()
 	toggle_box.name = "ToggleBox"
-	toggle_box.add_theme_constant_override("separation", 0)
-	toggle_box.size_flags_horizontal = Control.SIZE_SHRINK_END
+	toggle_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	toggle_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	toggle_box.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	toggle_box.add_theme_constant_override("separation", 2)
+	lang_plate.add_child(toggle_box)
 
 	# ENG button
 	var btn_en = Button.new()
 	btn_en.name = "LangEN"
 	btn_en.text = "ENG"
 	if row_font: btn_en.add_theme_font_override("font", row_font)
-	btn_en.add_theme_font_size_override("font_size", 14)
+	btn_en.add_theme_font_size_override("font_size", 13)
 	btn_en.add_theme_constant_override("outline_size", 1)
 	btn_en.add_theme_color_override("font_outline_color", Color.BLACK)
 	var lang_focus = StyleBoxFlat.new()
@@ -1304,10 +1398,11 @@ func _build_lang_row(in_body_font: Font = null) -> void:
 	# Separator
 	var sep = Label.new()
 	sep.name = "Sep"
-	sep.text = " | "
+	sep.text = "|"
 	if row_font: sep.add_theme_font_override("font", row_font)
-	sep.add_theme_font_size_override("font_size", 14)
+	sep.add_theme_font_size_override("font_size", 12)
 	sep.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3, 0.35))
+	sep.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	toggle_box.add_child(sep)
 
 	# KOR button
@@ -1315,7 +1410,7 @@ func _build_lang_row(in_body_font: Font = null) -> void:
 	btn_kr.name = "LangKR"
 	btn_kr.text = "KOR"
 	if row_font: btn_kr.add_theme_font_override("font", row_font)
-	btn_kr.add_theme_font_size_override("font_size", 14)
+	btn_kr.add_theme_font_size_override("font_size", 13)
 	btn_kr.add_theme_constant_override("outline_size", 1)
 	btn_kr.add_theme_color_override("font_outline_color", Color.BLACK)
 	btn_kr.add_theme_stylebox_override("focus", lang_focus)
@@ -1329,26 +1424,27 @@ func _build_lang_row(in_body_font: Font = null) -> void:
 	var baked_style := StyleBoxFlat.new()
 	baked_style.bg_color = Color(0, 0, 0, 0)
 	baked_style.set_border_width_all(0)
-	baked_style.content_margin_left = 10
-	baked_style.content_margin_right = 10
-	baked_style.content_margin_top = 3
-	baked_style.content_margin_bottom = 3
+	baked_style.content_margin_left = 6
+	baked_style.content_margin_right = 6
+	baked_style.content_margin_top = 2
+	baked_style.content_margin_bottom = 2
 	for b in [btn_en, btn_kr]:
 		b.add_theme_stylebox_override("normal", baked_style)
 		b.add_theme_stylebox_override("hover", baked_style)
 		b.add_theme_stylebox_override("pressed", baked_style)
 
-	row.add_child(toggle_box)
-
 	# Insert into RightCol if two-column layout exists, otherwise right before Divider2
 	var right_col = vbox.get_node_or_null("ColumnsHBox/RightCol")
 	if right_col:
+		var cat_sys = right_col.get_node_or_null("CatHeaderSystem")
 		var gold_skin_row = right_col.get_node_or_null("RowGoldSkin")
 		if gold_skin_row:
 			right_col.add_child(row)
 			right_col.move_child(row, gold_skin_row.get_index())
 		else:
 			right_col.add_child(row)
+		if cat_sys and gold_skin_row:
+			right_col.move_child(cat_sys, row.get_index())
 	else:
 		var divider2 = vbox.get_node_or_null("Divider2")
 		if divider2:
@@ -1676,19 +1772,21 @@ func _apply_language(lang: String) -> void:
 				sep.add_theme_font_size_override("font_size", 14)
 
 		# Categorized Section Badges (14px even number system)
+		var cur_font = galmuri_font if is_kr else kenney_font
 		if settings_cat_audio_lbl:
 			settings_cat_audio_lbl.text = "오디오" if is_kr else "AUDIO"
-			var cur_font = galmuri_font if is_kr else kenney_font
 			if cur_font: settings_cat_audio_lbl.add_theme_font_override("font", cur_font)
 			settings_cat_audio_lbl.add_theme_font_size_override("font_size", 14)
 		if settings_cat_gameplay_lbl:
 			settings_cat_gameplay_lbl.text = "조작 및 편의" if is_kr else "GAMEPLAY & CONTROLS"
-			var cur_font = galmuri_font if is_kr else kenney_font
 			if cur_font: settings_cat_gameplay_lbl.add_theme_font_override("font", cur_font)
 			settings_cat_gameplay_lbl.add_theme_font_size_override("font_size", 14)
+		if settings_cat_display_lbl:
+			settings_cat_display_lbl.text = "화면" if is_kr else "DISPLAY"
+			if cur_font: settings_cat_display_lbl.add_theme_font_override("font", cur_font)
+			settings_cat_display_lbl.add_theme_font_size_override("font_size", 14)
 		if settings_cat_system_lbl:
-			settings_cat_system_lbl.text = "화면 및 시스템" if is_kr else "DISPLAY & SYSTEM"
-			var cur_font = galmuri_font if is_kr else kenney_font
+			settings_cat_system_lbl.text = "시스템" if is_kr else "SYSTEM"
 			if cur_font: settings_cat_system_lbl.add_theme_font_override("font", cur_font)
 			settings_cat_system_lbl.add_theme_font_size_override("font_size", 14)
 

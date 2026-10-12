@@ -68,7 +68,7 @@ Master record of implemented features, mechanics, and systems in *Summer Nights*
 
 ## 7. UI & Game Feel
 * **Menus:** Gold borders, 96px margins, Gamepad navigation, fullscreen default, and `z_index = 50` elevation.
-* **Settings:** Two-column arcade plate (880px width, 36px separation) separating Audio & Gameplay Controls on the left from Display & System on the right, providing generous top/bottom margins and seamless gamepad cross navigation.
+* **Settings:** Symmetrical 4x2 arcade plate (880px width, 36px separation) balancing 4 audio/control settings on the left and 4 display/system settings on the right with uniform row geometry and seamless gamepad navigation.
 * **Toasts & Popups:** Cyberpunk Arcade Plates (4px radius, 1px border, 40x40 icon plates, 1.5px depletion bars).
 * **Timer Glide Intro:** Round-start timer displays in screen center (`scale 1.6x`, 2.5s hold), then glides (0.85s) into top-right HUD anchor.
 * **Boss & Drone Telemetry HUD:** Retro arcade plate below Sun heat gauge (`y = 86px`, 4px radius, 8px drop shadow) featuring recessed 34x34px icon well, two-tier kicker & header typography, individual 24x24px recessed drone pip wells with destruction flash/bounce animations, tactile tick audio (`UIJuice`), and neon cyan shield collapse breach transition in Wave 30+.
