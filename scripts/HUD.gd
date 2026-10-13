@@ -764,9 +764,9 @@ func _ready() -> void:
 			win_loading_lbl.modulate.a = 1.0
 
 	_apply_end_screen_styles(is_kr)
-	_style_lbl(settings_title, 28, Color(1.0, 0.88, 0.3, 1.0), 3, Color.BLACK, font)
-	if filters_title: _style_lbl(filters_title, 28, Color(1.0, 0.88, 0.3, 1.0), 3, Color.BLACK, font)
-	_style_lbl(credits_title, 28, Color(1.0, 0.88, 0.3, 1.0), 3, Color.BLACK, font)
+	_style_lbl(settings_title, 32, Color(1.0, 0.88, 0.3, 1.0), 3, Color.BLACK, font)
+	if filters_title: _style_lbl(filters_title, 32, Color(1.0, 0.88, 0.3, 1.0), 3, Color.BLACK, font)
+	_style_lbl(credits_title, 32, Color(1.0, 0.88, 0.3, 1.0), 3, Color.BLACK, font)
 	
 	# Close Prompts — Settings, Filters, and Credits (WCAG 10.7:1 PASS)
 	for p_lbl in [settings_prompt, filters_prompt, credits_prompt]:
@@ -1545,7 +1545,7 @@ func _apply_language(lang: String) -> void:
 	if settings_title:
 		settings_title.text = "설정" if is_kr else "SETTINGS"
 		if font: settings_title.add_theme_font_override("font", font)
-		settings_title.add_theme_font_size_override("font_size", 28)
+		settings_title.add_theme_font_size_override("font_size", 32)
 		settings_title.add_theme_constant_override("outline_size", 3)
 		settings_title.add_theme_color_override("font_outline_color", Color.BLACK)
 
@@ -2243,9 +2243,9 @@ func _apply_language(lang: String) -> void:
 		pause_menu_btn.text = "메인 메뉴" if is_kr else "MAIN MENU"
 		if font: pause_menu_btn.add_theme_font_override("font", font)
 	if abandon_message_lbl:
-		abandon_message_lbl.text = "게임을 종료하시겠습니까?" if is_kr else "DO YOU WANT TO QUIT?"
+		abandon_message_lbl.text = "이번 런을 종료하시겠습니까?" if is_kr else "DO YOU WANT TO END THIS RUN?"
 		if font: abandon_message_lbl.add_theme_font_override("font", font)
-		abandon_message_lbl.add_theme_font_size_override("font_size", 22 if is_kr else 20)
+		abandon_message_lbl.add_theme_font_size_override("font_size", 22 if is_kr else 18)
 	if abandon_yes_btn:
 		abandon_yes_btn.text = "예 (YES)" if is_kr else "YES"
 		if font: abandon_yes_btn.add_theme_font_override("font", font)
@@ -4033,7 +4033,7 @@ func _init_abandon_confirm_modal() -> void:
 	
 	var panel = Panel.new()
 	panel.name = "Panel"
-	panel.custom_minimum_size = Vector2(400, 180)
+	panel.custom_minimum_size = Vector2(440, 180)
 	var panel_style = StyleBoxFlat.new()
 	panel_style.bg_color = Color(0, 0, 0, 0.96)
 	panel_style.border_width_left = 2
@@ -4102,9 +4102,9 @@ func _show_abandon_confirm_modal() -> void:
 	var font = galmuri_font if is_kr else kenney_font
 	
 	if abandon_message_lbl:
-		abandon_message_lbl.text = "게임을 종료하시겠습니까?" if is_kr else "DO YOU WANT TO QUIT?"
+		abandon_message_lbl.text = "이번 런을 종료하시겠습니까?" if is_kr else "DO YOU WANT TO END THIS RUN?"
 		if font: abandon_message_lbl.add_theme_font_override("font", font)
-		abandon_message_lbl.add_theme_font_size_override("font_size", 22 if is_kr else 20)
+		abandon_message_lbl.add_theme_font_size_override("font_size", 22 if is_kr else 18)
 		abandon_message_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
 		abandon_message_lbl.add_theme_constant_override("outline_size", 2)
 		abandon_message_lbl.add_theme_color_override("font_outline_color", Color.BLACK)

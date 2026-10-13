@@ -47,13 +47,13 @@ Architectural map and layout reference for `HUD.tscn`.
 ## 2. Screen Overlays (Menus)
 * **Z-Index Layering:** All modal menus render at `z_index = 50` above HUD gameplay elements (`z_index = 0`). Opening any menu immediately cancels active timer intros. Screen fades use `z_index = 100`.
 * **Styling:** 96px left margin, 24px vertical gap, gold borders, and localized "PRESS ESC TO CLOSE" prompts.
-* **PauseScreen (`ESC`):** 280px vertical button stack (Resume, Settings, Filters, Credits, Controls, Achievements, Buffs, Menu). Main Menu button triggers AbandonConfirmModal (1:1 identical to Title Screen quit popup: 400x180px, 8px radius, 2px gold border, 90% black overlay, dual 140x48px buttons with YES / NO options, NO default focus).
+* **PauseScreen (`ESC`):** 280px vertical button stack (Resume, Settings, Filters, Credits, Controls, Achievements, Buffs, Menu). Main Menu button triggers AbandonConfirmModal (440x180px, 8px radius, 2px gold border, 90% black overlay, localized "DO YOU WANT TO END THIS RUN?" / "이번 런을 종료하시겠습니까?", dual 140x48px buttons with YES / NO options, NO default focus).
 * **CreditsScreen:** Autoscrolling bilingual credits with complete asset attributions.
 * **AchievementsScreen:** 700x100 card list tracking 14 achievements with progress bars and badges.
 * **DraftingScreen (Perks):** 3-card post-boss modal with rarity badges, `[ MAX ROLL! ]` highlights, and stack warning badges.
 * **FiltersScreen:** Mutually exclusive post-processing options (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
 * **ControllerScreen:** Keyboard and Xbox layout diagrams with control legends.
-* **SettingsScreen:** Symmetrical 4x2 arcade plate (880px width, 36px separation, vertical hairline separator): Left column has `AUDIO` (Music & SFX sliders) + `GAMEPLAY & CONTROLS` (Sensitivity, Vibration); Right column has `DISPLAY` (Fullscreen, Reduce Motion) + `SYSTEM` (104x32px `LangPlate` ENG|KOR, Gold Gun Skin); uniform 410x38px row geometry and 14px row separation.
+* **SettingsScreen:** Symmetrical 4x2 arcade plate (880px width, 36px separation, vertical hairline separator) with standardized 32px header title: Left column has `AUDIO` (Music & SFX sliders) + `GAMEPLAY & CONTROLS` (Sensitivity, Vibration); Right column has `DISPLAY` (Fullscreen, Reduce Motion) + `SYSTEM` (104x32px `LangPlate` ENG|KOR, Gold Gun Skin); uniform 410x38px row geometry and 14px row separation.
 * **WeaponWheel (`TAB`):** 0.2x slow-mo 6-slice wedge with 3D previews, stat bars, and crit multipliers.
 * **End State Screens:** Fullscreen modal overlays (`WinScreen`, `EndScreen`, `LoseScreen`) with content container rendered above `BorderPanel` to eliminate drop shadow dimming.
   * *WinScreen:* Level complete breakdown with loading status.

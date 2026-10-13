@@ -68,12 +68,12 @@ Master record of implemented features, mechanics, and systems in *Summer Nights*
 
 ## 7. UI & Game Feel
 * **Menus:** Gold borders, 96px margins, Gamepad navigation, fullscreen default, and `z_index = 50` elevation.
-* **Settings:** Symmetrical 4x2 arcade plate (880px width, 36px separation) balancing 4 audio/control settings on the left and 4 display/system settings on the right with uniform row geometry and seamless gamepad navigation.
+* **Settings:** Symmetrical 4x2 arcade plate (880px width, 36px separation) with standardized 32px header title, balancing 4 audio/control settings on the left and 4 display/system settings on the right with uniform row geometry and seamless gamepad navigation.
 * **Toasts & Popups:** Cyberpunk Arcade Plates (4px radius, 1px border, 40x40 icon plates, 1.5px depletion bars).
 * **Timer Glide Intro:** Round-start timer displays in screen center (`scale 1.6x`, 2.5s hold), then glides (0.85s) into top-right HUD anchor.
 * **Boss & Drone Telemetry HUD:** Retro arcade plate below Sun heat gauge (`y = 86px`, 4px radius, 8px drop shadow) featuring recessed 34x34px icon well, two-tier kicker & header typography, individual 24x24px recessed drone pip wells with destruction flash/bounce animations, tactile tick audio (`UIJuice`), and neon cyan shield collapse breach transition in Wave 30+.
 * **Title Screen:** Symmetrical horizontal split (title, stats cards, mode buttons, version footer).
-* **Abandon Run Modal:** Intercepts Pause Menu "MAIN MENU" button with a 1:1 replica of the Title Screen quit confirmation popup (400x180px, 8px radius, 2px gold border, YES / NO options with NO safe default focus).
+* **Abandon Run Modal:** Intercepts Pause Menu "MAIN MENU" button during Normal and Endless runs with a confirmation popup (440x180px, 8px radius, 2px gold border, "DO YOU WANT TO END THIS RUN?" / "이번 런을 종료하시겠습니까?", YES / NO options with NO safe default focus).
 * **Victory Recap ("SUMMER'S OVER"):** Normal Mode completion modal (hero title, lore subtitle, diamond divider, milestone unlock tag, 344px telemetry grid for Levels Cleared `5 / 5`, Clear Time, Final Score, and Play Again / Menu buttons).
 * **Accessibility:** Full controller support with aim assist, "Reduce Motion" toggle, and EN/KR localization.
 

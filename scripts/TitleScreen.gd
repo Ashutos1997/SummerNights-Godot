@@ -1662,7 +1662,7 @@ func _apply_settings_language() -> void:
 	if settings_screen:
 		if settings_title_lbl:
 			settings_title_lbl.text = "설정" if is_kr else "SETTINGS"
-			_style_label(settings_title_lbl, 40, Color(1.0, 0.85, 0.2, 1.0), font)
+			_style_label(settings_title_lbl, 32, Color(1.0, 0.85, 0.2, 1.0), font)
 			settings_title_lbl.add_theme_constant_override("outline_size", 4)
 			settings_title_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 		if setting_cat_audio_lbl:

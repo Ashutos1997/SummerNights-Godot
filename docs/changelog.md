@@ -8,11 +8,12 @@ All notable changes to the Summer Nights project will be documented in this file
 ### Added
 * Boss & Drone Telemetry HUD (Wave 30+): Added arcade-styled telemetry plate below Sun heat gauge (`y = 86px`, 4px radius, 8px drop shadow) featuring recessed 34x34px icon well, two-tier typography (kicker tag in `Inter-Medium` + bold header in `Kenney Future` with 2px black outline), tactile 24x24px recessed pip wells with destruction flash/bounce animations, 1.5px bottom accent hairline, `UIJuice` tactile audio sync, and neon cyan shield collapse breach transition.
 * Dedicated BGM vs. SFX Audio Separation: Added a dedicated `BGM` audio bus (`bus/3`) routing ocean ambient surf music, with separate "Music Volume" and "Sound Effects" sliders in both in-game and title screen Settings menus, persisted in user settings.
-* Pause Menu Abandon Run Confirmation Modal: Intercepts the "MAIN MENU" button with a confirmation popup matching the Title Screen quit dialog 1:1 (`AbandonConfirmModal`, 400x180px, 8px radius, 2px gold border, 90% black scrim) featuring localized "DO YOU WANT TO QUIT?" prompt and dual 140x48px buttons (`[ YES ]` / `[ NO ]` with safe default focus on `NO`).
+* Pause Menu Abandon Run Confirmation Modal: Intercepts the "MAIN MENU" button during Normal and Endless runs with a dedicated confirmation popup (`AbandonConfirmModal`, 440x180px, 8px radius, 2px gold border, 90% black scrim) featuring localized "DO YOU WANT TO END THIS RUN?" / "이번 런을 종료하시겠습니까?" prompt and dual 140x48px buttons (`[ YES ]` / `[ NO ]` with safe default focus on `NO`).
 
 ### Improved
 * Settings Menu 4x2 Symmetrical Grid & Spacing Polish: Perfectly balanced the Settings screen into a symmetrical 4x2 arcade layout (880px width, 36px column gap) with 4 settings on the left (AUDIO + GAMEPLAY & CONTROLS) and 4 on the right (DISPLAY + SYSTEM); standardized uniform 410x38px row geometry, 14px row separation, 22px category top margins, and a matching 104x32px bordered LangPlate toggle box for ENG|KOR; established a seamless bidirectional 4x2 gamepad navigation mesh.
 * Export & Release Streamlining: Retired GitHub binary releases to eliminate multi-track confusion; itch.io is now the sole official release platform starting from v1.8, with Godot export presets pruned and updated to v1.8.
+* Settings Menu Title Font Standardization: Standardized the "SETTINGS" / "설정" title header font size to 32px across TitleScreen, HUD, and scene definitions, bringing it into 1:1 visual alignment with all other modal menus (Paused, Filters, Credits, Controls, Achievements, Buffs).
 * Documentation & README Streamlining: Consolidated gameplay and feature overviews in both English and Korean READMEs into a concise Key Features section while preserving full credits, third-party asset licenses, and 1:1 bilingual structure.
 
 ### Fixed
@@ -348,11 +349,12 @@ All notable changes to the Summer Nights project will be documented in this file
 ### 추가됨 (Added)
 * 보스 및 드론 텔레메트리 HUD (30웨이브 이상): 태양 열기 게이지 하단(`y = 86px`, 4px 라운딩, 8px 드롭 섀도우)에 아케이드 스타일 텔레메트리 플레이트를 추가하여 음각 34x34px 아이콘 웰, 2단 타이포그래피(`Inter-Medium`/`Galmuri11` 키커 태그 + 2px 검은 외곽선 `Kenney Future` 헤더), 파괴 플래시 및 바운스 연출을 갖춘 개별 24x24px 음각 핍 웰, 1.5px 하단 헤어라인 액센트 바, `UIJuice` 햅틱 사운드 싱크, 네온 시안 방어막 돌파 전환 지원.
 * 배경음악(BGM) 및 효과음(SFX) 독립 볼륨 분리: 전용 `BGM` 오디오 버스를 신설하여 파도 배경음을 라우팅하고, 인게임 및 타이틀 설정 창에 독립된 "배경음악 볼륨" 및 "효과음 볼륨" 슬라이더를 도입하여 사용자 설정에 개별 저장되도록 구현.
-* 일시정지 메뉴 진행 포기 확인 모달: 일시정지 메뉴의 "메인 메뉴" 클릭 시 타이틀 화면 종료 팝업과 1:1 동일한 디자인의 확인 모달(`AbandonConfirmModal`, 400x180px, 8px 라운딩, 2px 골드 테두리, 90% 블랙 스크림)을 적용하여 다국어 지원("DO YOU WANT TO QUIT?" / "게임을 종료하시겠습니까?") 및 140x48px 규격의 `[ YES ]` / `[ NO ]`(안전 기본 포커스) 선택지를 제공.
+* 일시정지 메뉴 진행 포기 확인 모달: 일반 및 엔들리스 모드 실행 중 일시정지 메뉴의 "메인 메뉴" 클릭 시 전용 확인 모달(`AbandonConfirmModal`, 440x180px, 8px 라운딩, 2px 골드 테두리, 90% 블랙 스크림)을 적용하여 명확한 런 포기 문구("DO YOU WANT TO END THIS RUN?" / "이번 런을 종료하시겠습니까?") 및 140x48px 규격의 `[ YES ]` / `[ NO ]`(안전 기본 포커스) 선택지를 제공.
 
 ### 개선됨 (Improved)
 * 설정 메뉴 4x2 완벽 대칭 격자 및 간격 정밀화: 설정 창을 좌우 각각 4개 옵션(좌측: 오디오 + 조작 및 편의, 우측: 화면 + 시스템)으로 구성된 4x2 대칭형 아케이드 플레이트(너비 880px, 36px 열 간격)로 정밀 개편; 균일한 410x38px 행 규격, 14px 행 간격, 22px 카테고리 상단 여백 및 ON/OFF 버튼과 동일한 104x32px 테두리 플레이트의 언어 토글 박스(ENG|KOR)를 적용하고 양방향 4x2 패드 십자 이동 메시 구축.
 * 배포 정책 및 프리셋 단일화: 다중 트랙 배포 혼선을 방지하기 위해 GitHub 바이너리 릴리스를 정리하고, v1.8부터 itch.io를 단독 공식 배포처로 유지하며 고도 내보내기 프리셋을 v1.8로 갱신.
+* 설정 메뉴 제목 서체 크기 표준화: 타이틀 화면과 인게임 HUD 및 씬 파일에 걸쳐 "SETTINGS" / "설정" 모달 제목 폰트 크기를 32px로 통일하여 다른 모든 오버레이 메뉴(일시정지, 필터, 크레딧, 조작법, 업적, 버프)와 1:1 시각적 일관성을 확보.
 * 문서 및 README 개편: 영문 및 한국어 README의 중복 설명을 핵심 특징(Key Features) 항목으로 정갈하게 압축하고, 전체 크레딧 및 서드파티 라이선스와 1:1 다국어 구조 유지.
 
 ### 수정됨 (Fixed)
