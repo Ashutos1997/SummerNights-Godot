@@ -1437,14 +1437,10 @@ func _build_lang_row(in_body_font: Font = null) -> void:
 	var right_col = vbox.get_node_or_null("ColumnsHBox/RightCol")
 	if right_col:
 		var cat_sys = right_col.get_node_or_null("CatHeaderSystem")
-		var gold_skin_row = right_col.get_node_or_null("RowGoldSkin")
-		if gold_skin_row:
-			right_col.add_child(row)
-			right_col.move_child(row, gold_skin_row.get_index())
-		else:
-			right_col.add_child(row)
-		if cat_sys and gold_skin_row:
-			right_col.move_child(cat_sys, row.get_index())
+		right_col.add_child(row)
+		# Place RowLanguage right after CatHeaderSystem so it falls under SYSTEM
+		if cat_sys:
+			right_col.move_child(row, cat_sys.get_index() + 1)
 	else:
 		var divider2 = vbox.get_node_or_null("Divider2")
 		if divider2:
@@ -2629,7 +2625,7 @@ func _on_gold_skin_toggled(toggled: bool) -> void:
 
 func _update_gold_skin_visibility() -> void:
 	if row_gold_skin:
-		row_gold_skin.visible = (GameState.high_score >= 50000)
+		row_gold_skin.visible = "dawn_breaks" in GameState.unlocked_achievements
 
 func _make_ui_tick_player() -> AudioStreamPlayer:
 	# Synthesise a short 10ms 1kHz sine tick — no audio file needed
