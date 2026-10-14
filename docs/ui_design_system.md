@@ -14,7 +14,7 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 * **Controller:** Gold (Pause), Lime (Weapons), Cyan (Ice), Orange (Power Up), Magenta (Mode).
 
 ## 2. Corner Radii
-* **0px:** Standard buttons (Main Menu, dialogs, Back buttons).
+* **0px:** Standard buttons (Main Menu, Pause Menu, dialogs, Back buttons) and keyboard/controller focus rings.
 * **3px:** Progress Bar fill (`4px` track - `1px` padding).
 * **4px:** Retro Flat Plates and Badges (Meters, Perks, Stats, Toasts, Cards).
 * **8px:** Global menu modal frames (2px gold border).
@@ -41,6 +41,7 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 
 ### Telemetry & Combat Badges
 * **Boss Telemetry:** Retro arcade plate at `y = 86px` (4px radius, 1px gold border, 8px drop shadow) with recessed 34x34px icon well, two-tier typography (10px kicker tag in `Inter-Medium`/`Galmuri11`, 13px bold title in `Kenney Future` with 2px black outline), tactile 24x24px recessed pip wells for drone pips (`#FFD12E`), 1.5px bottom accent hairline, and cyan breach transition (`#33CCFF`).
+* **Wind Telemetry:** Top-right 104x40px plate adjacent to weather container (4px radius, 1px border) with 12px EN / 14px KR telemetry label (`◀ 28 KTS` / `35 KTS ▶`). Transitions border and text from Gold `Color(1.0, 0.85, 0.2, 0.4)` to Cyan `Color(0.2, 0.85, 1.0, 0.95)` with 1.15x scale pop on active gusts.
 * **Weapon Plate:** Bottom-left 44px plate at 24px margin with recessed 38x38px icon frame (4px radius, 1px gold border) and 26x26px icon.
 
 ### Popup Notifications (Toasts)
@@ -52,7 +53,7 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 
 ### Buttons (StyleBoxFlat)
 * **Size:** Minimum `280x52` (or `160x44` in dual clusters), font `22px` (or `16–17px`), `0px` radius.
-* **States:** Normal (40% black, 2px gold border), Hover (20% gold), Pressed (40% gold).
+* **States:** Normal (40% black, 2px gold border), Hover (20% gold), Pressed (40% gold), Focus (2px gold ring, strict 0px radius).
 * **Juice (`UIJuice.gd`):** 1.03x hover scale, 0.97x press bounce, -18dB audio ticks.
 
 ### Interactive Elements
@@ -82,3 +83,4 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 * **Coronal Halo:** Additive coronal glow and heat ripples (`god_rays.gdshader`).
 * **Post-Processing:** `retro_postprocess.gdshader` on Layer 0 (behind HUD Layer 10).
 * **Retro Filters:** Retro Colors, Dithering, PS1 Shading, Heatwave 1984.
+* **Celestial Beach Clouds:** Procedural low-poly sphere clusters with toon lighting dynamically synchronized to global sky lighting (warm peach sunset to moonlit twilight cyan rim) at Sun depth (Z = -38).

@@ -9,6 +9,8 @@ All notable changes to the Summer Nights project will be documented in this file
 * Boss & Drone Telemetry HUD (Wave 30+): Added arcade-styled telemetry plate below Sun heat gauge (`y = 86px`, 4px radius, 8px drop shadow) featuring recessed 34x34px icon well, two-tier typography (kicker tag in `Inter-Medium` + bold header in `Kenney Future` with 2px black outline), tactile 24x24px recessed pip wells with destruction flash/bounce animations, 1.5px bottom accent hairline, `UIJuice` tactile audio sync, and neon cyan shield collapse breach transition.
 * Dedicated BGM vs. SFX Audio Separation: Added a dedicated `BGM` audio bus (`bus/3`) routing ocean ambient surf music, with separate "Music Volume" and "Sound Effects" sliders in both in-game and title screen Settings menus, persisted in user settings.
 * Pause Menu Abandon Run Confirmation Modal: Intercepts the "MAIN MENU" button during Normal and Endless runs with a dedicated confirmation popup (`AbandonConfirmModal`, 440x180px, 8px radius, 2px gold border, 90% black scrim) featuring localized "DO YOU WANT TO END THIS RUN?" / "이번 런을 종료하시겠습니까?" prompt and dual 140x48px buttons (`[ YES ]` / `[ NO ]` with safe default focus on `NO`).
+* Dynamic Solar Wind System & HUD Wind Vane: Overhauled crosswinds into a dynamic atmospheric system scaling from 14–50 kts across waves and levels, accompanied by a top-right HUD wind indicator (`◀ 28 KTS` / `35 KTS ▶`) with cyan pulse alerts and 3D sun warning banners. Integrated weapon-specific deflection physics to encourage situational weapon swaps: Precision Stream (0.0, 100% wind immune laser needle), Heavy Cannon (0.25 deflection), Kitsune Buster IX (0.35 gun mode, 0.0 melee blade mode), Standard Blaster (1.0 baseline), and Tidal Gatling (1.75 heavy droplet spray sweep), with lateral 3D particle spray bending and Wind Breaker perk synergy.
+* Celestial Beach Clouds (Soft Cover): Added multiple randomized drifting low-poly beach clouds (up to 3 concurrently) to regular waves (Levels 2–5, non-boss Endless) at Sun depth (Z = -38). Clouds feature randomized speeds (3.8–6.2 m/s), altitudes (11.5–16.0m), scales, and organic puff clusters, providing dynamic soft cover absorbing 50% water damage with steam puffs and +15 bonus points.
 
 ### Improved
 * Settings Menu 4x2 Symmetrical Grid & Spacing Polish: Perfectly balanced the Settings screen into a symmetrical 4x2 arcade layout (880px width, 36px column gap) with 4 settings on the left (AUDIO + GAMEPLAY & CONTROLS) and 4 on the right (DISPLAY + SYSTEM); standardized uniform 410x38px row geometry, 14px row separation, 22px category top margins, and a matching 104x32px bordered LangPlate toggle box for ENG|KOR; established a seamless bidirectional 4x2 gamepad navigation mesh.
@@ -25,6 +27,8 @@ All notable changes to the Summer Nights project will be documented in this file
 * Title Modal Input Consistency: Supported both `ui_pause` and `ui_cancel` to ensure keyboard ESC and gamepad cancel reliably close all title screen modals.
 * Title Splash Screen Black Screen Softblock: Fixed issue where splash screen completion callback failed to execute due to mid-tween coroutine yields, and enabled instant skip via mouse click or keypress.
 * Settings Menu Korean Localization & Typeface Polish: Fixed bug where Settings row labels and the BGM numeric readout remained in default English typography under Korean mode, ensuring full Korean typeface (Galmuri11) application and instant refresh across all options and percentage values.
+* Button Focus Corner Radius Consistency: Fixed button focus rings having an unintended 6px rounded corner radius on the pause menu (e.g. Controls button after closing controls, Resume button), title screen, and modal dialogs, strictly aligning all button focus outlines to the established 0px sharp low-poly arcade design system.
+* Hit-Stop Frame Snappiness Polish: Reduced impact hit-stop freeze duration on Ice Blast sun freezes and Solar Flare Barrier shatters from 80ms down to a crisp 30ms (0.03s), eliminating perceived micro-stutter/lag spikes during high-framerate mouse tracking while preserving punchy tactile feedback.
 
 ---
 
@@ -350,6 +354,8 @@ All notable changes to the Summer Nights project will be documented in this file
 * 보스 및 드론 텔레메트리 HUD (30웨이브 이상): 태양 열기 게이지 하단(`y = 86px`, 4px 라운딩, 8px 드롭 섀도우)에 아케이드 스타일 텔레메트리 플레이트를 추가하여 음각 34x34px 아이콘 웰, 2단 타이포그래피(`Inter-Medium`/`Galmuri11` 키커 태그 + 2px 검은 외곽선 `Kenney Future` 헤더), 파괴 플래시 및 바운스 연출을 갖춘 개별 24x24px 음각 핍 웰, 1.5px 하단 헤어라인 액센트 바, `UIJuice` 햅틱 사운드 싱크, 네온 시안 방어막 돌파 전환 지원.
 * 배경음악(BGM) 및 효과음(SFX) 독립 볼륨 분리: 전용 `BGM` 오디오 버스를 신설하여 파도 배경음을 라우팅하고, 인게임 및 타이틀 설정 창에 독립된 "배경음악 볼륨" 및 "효과음 볼륨" 슬라이더를 도입하여 사용자 설정에 개별 저장되도록 구현.
 * 일시정지 메뉴 진행 포기 확인 모달: 일반 및 엔들리스 모드 실행 중 일시정지 메뉴의 "메인 메뉴" 클릭 시 전용 확인 모달(`AbandonConfirmModal`, 440x180px, 8px 라운딩, 2px 골드 테두리, 90% 블랙 스크림)을 적용하여 명확한 런 포기 문구("DO YOU WANT TO END THIS RUN?" / "이번 런을 종료하시겠습니까?") 및 140x48px 규격의 `[ YES ]` / `[ NO ]`(안전 기본 포커스) 선택지를 제공.
+* 동적 태양풍 시스템 및 HUD 풍향계: 태양풍을 14~50노트(kts) 규격으로 스테이지/웨이브에 따라 동적 스케일링되는 대기 시스템으로 전면 개편하고, 우측 상단 HUD에 돌풍 펄스 및 방향 화살표를 표시하는 전용 풍향계(`◀ 28 KTS` / `35 KTS ▶`)와 3D 접근 경고 배너를 추가. 무기 교체 유도를 위해 무기별 풍압 저항도(정밀 스트림: 0.0 완전 면역, 헤비 캐논: 0.25, 키츠네 버스터 IX: 사격 모드 0.35 / 검 모드 0.0 완전 면역, 기본 블래스터: 1.0, 타이달 개틀링: 1.75 측면 휩쓸림) 및 3D 물줄기 파티클 굴절, 윈드 브레이커(-60% 드리프트) 퍽 시너지 구현.
+* 천체 해변 구름 (소프트 엄폐): 일반 웨이브(2~5단계, 보스 제외 엔들리스 웨이브)에 태양 궤도 깊이(Z = -38)로 부유하는 다중 무작위 로우폴리 해변 구름(동시 최대 3개)을 추가. 구름은 무작위 속도(3.8~6.2 m/s), 고도(11.5~16.0m), 크기 및 유기적 클러스터 형상을 가지며, 물줄기 대미지를 50% 흡수하고 증기 이펙트와 +15점 보너스를 제공하는 동적 소프트 엄폐물 역할을 수행.
 
 ### 개선됨 (Improved)
 * 설정 메뉴 4x2 완벽 대칭 격자 및 간격 정밀화: 설정 창을 좌우 각각 4개 옵션(좌측: 오디오 + 조작 및 편의, 우측: 화면 + 시스템)으로 구성된 4x2 대칭형 아케이드 플레이트(너비 880px, 36px 열 간격)로 정밀 개편; 균일한 410x38px 행 규격, 14px 행 간격, 22px 카테고리 상단 여백 및 ON/OFF 버튼과 동일한 104x32px 테두리 플레이트의 언어 토글 박스(ENG|KOR)를 적용하고 양방향 4x2 패드 십자 이동 메시 구축.
@@ -366,6 +372,8 @@ All notable changes to the Summer Nights project will be documented in this file
 * 타이틀 모달 취소 입력 일관화: `ui_pause`와 `ui_cancel`을 모두 지원하여 키보드 ESC 및 게임패드 취소 버튼으로 모든 모달 창이 정상적으로 닫히도록 개선.
 * 타이틀 스플래시 화면 검은 화면 멈춤 수정: 트윈 코루틴 지연으로 인해 스플래시 완료 콜백이 등록되지 않던 문제를 수정하고, 마우스 클릭이나 키 입력 시 즉시 스플래시를 건너뛰도록 개선.
 * 설정 메뉴 한국어 서체 및 번역 일괄 적용: 2단 레이아웃 개편 후 배경음악 볼륨 수치(예: 80%) 및 행 레이블에 한국어 갈무리11 서체가 온전히 적용되지 않던 현상을 수정하여 모든 옵션명과 백분율 수치가 통일된 한국어 픽셀 서체로 정상 표시되도록 개선.
+* 버튼 포커스 외곽선 라운딩 규격화 (0px): 일시정지 메뉴(조작법 창 닫은 후 CONTROLS 버튼, RESUME 버튼 등), 타이틀 화면 및 모달 대화 상자에서 버튼 포커스 링 테두리에 6px 모서리 굴곡이 적용되던 문제를 수정하여 모든 버튼 포커스 외곽선이 로우폴리 아케이드 디자인 시스템 규격(0px 직각 모서리)에 일치하도록 개선.
+* 타격감 역경직(Hit-Stop) 프레임 반응성 개선: 얼음 폭발(Ice Blast) 태양 동결 및 태양 플레어 방어막 파괴 시 적용되던 히트스톱 일시정지 시간을 기존 80ms에서 경쾌한 30ms(0.03초)로 단축하여, 고주사율 마우스 트래킹 환경에서 끊김이나 렉으로 오인되던 현상을 해결하고 경쾌한 손맛 유지.
 
 ---
 

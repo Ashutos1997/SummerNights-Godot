@@ -82,7 +82,8 @@ func _process(delta: float) -> void:
 					queue_free()
 					return
 
-	# 4. Check Sun Impact (Continuous swept segment check - mathematical anti-tunneling)
+
+	# 5. Check Sun Impact (Continuous swept segment check - mathematical anti-tunneling)
 	if is_instance_valid(main_node) and main_node.get("sun"):
 		var sun_pos = main_node.sun.global_position
 		var t = 0.0

@@ -21,6 +21,7 @@ Architectural map and layout reference for `HUD.tscn`.
   * **TimerLabel:** Wave countdown. Intro animation starts centered (`scale 1.6x`, 2.5s hold) and glides (0.85s) into position. Red pulse under 10s. Shows `[ OVERTIME ]` badge during boss overtime.
   * **ScoreLabel:** Live score display. Flashes red during Overtime score burn.
 * **WeatherIconContainer:** Persistent weather indicator (Normal, Rain, Eclipse, Coronal Eclipse).
+* **WindContainer:** 104x40px telemetry plate (4px radius, 1px gold/cyan border) adjacent to WeatherIconContainer displaying wind speed in knots and gust direction arrow (`◀ 28 KTS` / `35 KTS ▶`). Illuminates cyan with a 1.15x scale pop when active gusts initiate.
 * **WeatherTimerLabel:** Eclipse duration timer.
 * **ToastContainer (VBoxContainer):** 380px notification column (8px gap) for combat and unlock alerts with 1.5px depletion bars and staggered reflow.
 
@@ -30,7 +31,7 @@ Architectural map and layout reference for `HUD.tscn`.
   * *Celestial Timer:* 360° cyan countdown ring (pulses orange at ≤3.0s).
   * *Thermal Falloff:* Reticle shifts Cyan → Warm Orange (>2s) → Overtime Crimson (>3s) with 12px `[ HEAT FALLOFF ]` steam badge (`icon_spray_falloff.svg`).
 * **Damage Numbers:** Floating 3D hit and parry numbers (suppressed on shields).
-* **ComboLabel & Callouts:** Combo multiplier (up to 3.0x) and arcade text callouts.
+* **ComboLabel & Callouts:** Combo multiplier (up to 3.0x) and arcade text callouts (`[ REWRITE! ]`, `[ RAINMAKER! ]`, `[ OVERTIME ]`).
 * **FlareRings:** 2D telegraph rings for incoming solar flares.
 
 ### Bottom-Right (Resource Meters)

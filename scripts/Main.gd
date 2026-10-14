@@ -139,6 +139,7 @@ var wind_state: int = 0  # 0=idle, 1=warning, 2=active
 var wind_timer: float = 0.0
 var wind_direction: float = 0.0  # -1.0 or 1.0
 var wind_strength: float = 0.0  # Current drift force (pixels/sec)
+var current_wind_knots: float = 0.0  # Wind speed in knots (14-50 kts)
 const WIND_IDLE_MIN: float = 12.0
 const WIND_IDLE_MAX: float = 16.0
 const WIND_WARN_DURATION: float = 1.5
@@ -656,6 +657,7 @@ var gun:         Node3D
 var frost_aura:  GPUParticles3D
 var muzzle:      Marker3D
 var seagull_layer: Node3D = null
+var cloud_layer: Node3D = null
 var virtual_mouse_pos: Vector2
 var blasts:      Node3D
 var particles:   GPUParticles3D
@@ -1027,6 +1029,7 @@ func _ready() -> void:
 	wind_elapsed = 0.0
 	# Level 5 gets 30% stronger, more frequent gusts
 	wind_level_mult = 1.3 if GameState.level >= 5 else 1.0
+	_setup_wave_wind()
 
 	heat_regen_base = cfg.heat_regen_base
 	if GameState.is_survival_mode:
@@ -1567,6 +1570,7 @@ func _build_scene() -> void:
 		clouds_node.name = "CloudLayer"
 		clouds_node.set_script(cloud_layer_script)
 		add_child(clouds_node)
+		cloud_layer = clouds_node
 
 	# ── Circling Low-Poly Seagulls ──────────────────────────────────────────
 	var seagull_script = load("res://scripts/SeagullLayer.gd")
@@ -2908,6 +2912,15 @@ func _process(delta: float) -> void:
 			target_drift.x = wind_direction * (wind_strength / 14.0)
 		motes_proc.gravity = motes_proc.gravity.lerp(target_drift, delta * 2.0)
 
+	if is_instance_valid(gun_spray) and gun_spray.process_material:
+		var gs_mat = gun_spray.process_material as ParticleProcessMaterial
+		if gs_mat:
+			var target_spray_x = 0.0
+			if wind_state == 2 and solar_wind_enabled:
+				var weapon_sens = _get_weapon_wind_sensitivity()
+				target_spray_x = wind_direction * (wind_strength / 18.0) * weapon_sens
+			gs_mat.gravity.x = lerp(gs_mat.gravity.x, target_spray_x, delta * 6.0)
+
 	# Increase difficulty based on level
 	var regen_rate = heat_regen_base
 		
@@ -3019,6 +3032,7 @@ func _process(delta: float) -> void:
 		var overtime_throttle = 0.0 if is_overtime else 1.0
 		temperature += (heat_regen_base * overtime_throttle * drone_shield_throttle * mirage_throttle * (1.0 - GameState.heat_resistance)) * delta # Sun gets hotter over time
 		
+		
 	# ─── Reactive Solar Heat Surge Logic (Disabled — rethinking mechanic) ────
 	# TODO: Reimplement when new design is ready.
 	
@@ -3070,6 +3084,9 @@ func _process(delta: float) -> void:
 			_process_solar_wind(delta)
 	else:
 		wind_strength = 0.0
+		if current_wind_knots > 0.0:
+			current_wind_knots = 0.0
+			if hud: hud.update_wind_indicator(0.0, 0.0, false)
 		if wind_particles and wind_particles.emitting:
 			wind_particles.emitting = false
 
@@ -3122,7 +3139,8 @@ func _process(delta: float) -> void:
 		wind_elapsed += delta
 		# Turbulent drift: base drift + sine wobble for organic feel
 		var turbulence = 1.0 + sin(wind_elapsed * 5.0) * 0.35 + sin(wind_elapsed * 13.0) * 0.15
-		virtual_mouse_pos.x += wind_direction * wind_strength * turbulence * wind_level_mult * delta * GameState.wind_drift_mult
+		var weapon_sens = _get_weapon_wind_sensitivity()
+		virtual_mouse_pos.x += wind_direction * wind_strength * turbulence * weapon_sens * delta * GameState.wind_drift_mult
 		var viewport_size = get_viewport().get_visible_rect().size
 		virtual_mouse_pos.x = clamp(virtual_mouse_pos.x, 0, viewport_size.x)
 		mouse_pos = virtual_mouse_pos
@@ -4426,6 +4444,18 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				var resist = max(0.2, 1.0 - (GameState.current_wave - 100) * 0.01)
 				damage_mult *= resist
 				
+		# Soft Cover: Drifting Beach Clouds absorb 50% of water spray when passing in front
+		if is_instance_valid(cloud_layer) and cloud_layer.has_method("check_water_spray"):
+			var aim_origin = muzzle.global_position if is_instance_valid(muzzle) else (camera.global_position if is_instance_valid(camera) else Vector3.ZERO)
+			var aim_dir = (target_pos - aim_origin).normalized() if target_pos != aim_origin else Vector3.FORWARD
+			var cloud_hit = cloud_layer.check_water_spray(aim_origin, aim_dir)
+			if cloud_hit.get("hit", false):
+				damage_mult *= 0.5
+				if steam_particles and randf() < 0.2:
+					steam_particles.global_position = cloud_hit.get("hit_pos", target_pos)
+					steam_particles.restart()
+				GameState.add_score(int(15 * delta * 10))
+				
 		if is_critical:
 			var dmg = current_weapon_power * (current_weapon_crit * GameState.crit_damage_mult) * damage_mult * current_spray_efficiency * delta
 			if active_weather == "coronal_eclipse":
@@ -5008,6 +5038,7 @@ func _check_sun_defeat() -> void:
 				wind_warn_label.modulate.a = 0.0
 			if wind_particles: wind_particles.emitting = false
 			if wind_sfx: wind_sfx.stop()
+		_setup_wave_wind()
 		
 		current_max_temp = _get_current_max_temp()
 		temperature = current_max_temp
@@ -5265,14 +5296,67 @@ func _spawn_wet_mark(pos: Vector3, normal: Vector3) -> void:
 	tween.tween_callback(decal.queue_free)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Solar Wind Hazard
+# Solar Wind Hazard & Weapon Sensitivity
 # ─────────────────────────────────────────────────────────────────────────────
+func _get_weapon_wind_sensitivity() -> float:
+	match GameState.current_weapon_id:
+		"precision":
+			return 0.0  # 100% immune: laser stream cuts through wind
+		"heavy":
+			return 0.25 # Heavy slug resists crosswind deflection
+		"kitsune":
+			if GameState.kitsune_mode == "blade":
+				return 0.0  # Melee arc is immune
+			return 0.35 # Focused buster blast has low drift
+		"tidal":
+			return 1.75 # Wide fine droplet mist sweeps heavily sideways
+		"scatter":
+			return 1.25 # Wide pattern catches crosswind
+		_:
+			return 1.0  # Standard blaster baseline
+
+func _setup_wave_wind() -> void:
+	if not solar_wind_enabled:
+		current_wind_knots = 0.0
+		wind_strength = 0.0
+		if hud: hud.update_wind_indicator(0.0, 0.0, false)
+		return
+		
+	wind_direction = [-1.0, 1.0].pick_random()
+	
+	if GameState.is_survival_mode:
+		var wave = GameState.current_wave
+		if wave < 4:
+			current_wind_knots = 0.0
+		elif wave <= 9:
+			current_wind_knots = randf_range(14.0, 22.0)
+		elif wave <= 19:
+			current_wind_knots = randf_range(22.0, 30.0)
+		elif wave <= 34:
+			current_wind_knots = randf_range(30.0, 40.0)
+		else:
+			current_wind_knots = randf_range(40.0, 50.0)
+	else:
+		var lvl = GameState.level
+		if lvl <= 3:
+			current_wind_knots = 0.0
+		elif lvl == 4:
+			current_wind_knots = randf_range(16.0, 22.0)
+		elif lvl == 5:
+			current_wind_knots = randf_range(26.0, 34.0)
+		else: # Level 6+
+			current_wind_knots = randf_range(38.0, 48.0)
+			
+	if hud and current_wind_knots > 0.0:
+		hud.update_wind_indicator(current_wind_knots, wind_direction, wind_state == 2)
+
 func _process_solar_wind(delta: float) -> void:
 	# Ice Burst suppresses wind entirely
 	if is_sun_frozen:
 		if wind_state == 2:
 			wind_strength = 0.0
 			if wind_particles: wind_particles.emitting = false
+			if hud: hud.update_wind_indicator(current_wind_knots, wind_direction, false)
 		return
 	
 	wind_timer -= delta
@@ -5282,14 +5366,18 @@ func _process_solar_wind(delta: float) -> void:
 			if wind_timer <= 0.0:
 				wind_state = 1
 				wind_timer = WIND_WARN_DURATION
-				wind_direction = [-1.0, 1.0].pick_random()
+				if wind_direction == 0.0:
+					wind_direction = [-1.0, 1.0].pick_random()
 				wind_elapsed = 0.0
+				if hud and current_wind_knots > 0.0:
+					hud.update_wind_indicator(current_wind_knots, wind_direction, false)
 				# Show warning
 				if not wind_warn_label:
 					_setup_solar_wind_visuals()
 				if wind_warn_label:
 					var is_kr = GameState.language == "KR"
-					wind_warn_label.text = "⚠ 태양풍 접근!" if is_kr else "⚠ WIND INCOMING!"
+					wind_warn_label.font = load("res://assets/fonts/Galmuri11.ttf") if is_kr else preload("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+					wind_warn_label.text = "⚠ 태양풍 접근 [%d KTS]!" % int(round(current_wind_knots)) if is_kr else "⚠ WIND INCOMING [%d KTS]!" % int(round(current_wind_knots))
 					wind_warn_label.modulate = Color(1.0, 0.9, 0.3, 1.0)
 					wind_warn_label.visible = true
 					wind_warn_label.modulate.a = 0.0
@@ -5310,12 +5398,15 @@ func _process_solar_wind(delta: float) -> void:
 			if wind_timer <= 0.0:
 				wind_state = 2
 				wind_timer = WIND_ACTIVE_DURATION
-				wind_strength = WIND_DRIFT_SPEED
+				wind_strength = current_wind_knots * 10.0 if current_wind_knots > 0.0 else WIND_DRIFT_SPEED
 				wind_elapsed = 0.0
+				if hud and current_wind_knots > 0.0:
+					hud.update_wind_indicator(current_wind_knots, wind_direction, true)
 				# Switch warning text
 				if wind_warn_label:
 					var is_kr = GameState.language == "KR"
-					wind_warn_label.text = "태양풍!" if is_kr else "SOLAR WIND!"
+					wind_warn_label.font = load("res://assets/fonts/Galmuri11.ttf") if is_kr else preload("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+					wind_warn_label.text = "태양풍 [%d KTS]!" % int(round(current_wind_knots)) if is_kr else "SOLAR WIND [%d KTS]!" % int(round(current_wind_knots))
 					wind_warn_label.modulate = Color(1.0, 0.6, 0.1, 1.0)
 					wind_warn_label.pixel_size = 0.01  # Reset pulse
 				# Enable particle streaks (match wind direction)
@@ -5340,6 +5431,9 @@ func _process_solar_wind(delta: float) -> void:
 				var idle_max = WIND_IDLE_MAX * (0.7 if wind_level_mult > 1.0 else 1.0)
 				wind_timer = randf_range(idle_min, idle_max)
 				wind_strength = 0.0
+				wind_direction = [-1.0, 1.0].pick_random()
+				if hud and current_wind_knots > 0.0:
+					hud.update_wind_indicator(current_wind_knots, wind_direction, false)
 				# Hide warning and particles
 				if wind_warn_label:
 					var tw = create_tween()
@@ -5369,7 +5463,7 @@ func _setup_solar_wind_visuals() -> void:
 	wind_warn_label.no_depth_test = true
 	var is_kr = GameState.language == "KR"
 	wind_warn_label.text = "⚠ 태양풍 접근!" if is_kr else "⚠ WIND INCOMING!"
-	wind_warn_label.font = preload("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+	wind_warn_label.font = load("res://assets/fonts/Galmuri11.ttf") if is_kr else preload("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
 	wind_warn_label.font_size = 300
 	wind_warn_label.modulate = Color(1.0, 0.9, 0.3, 1.0)
 	wind_warn_label.outline_size = 16
@@ -6483,6 +6577,7 @@ func shatter_drone_shield() -> void:
 		add_child(burst)
 		get_tree().create_timer(1.2).timeout.connect(burst.queue_free)
 
+
 func freeze_sun() -> void:
 
 	if is_sun_shielded:
@@ -6549,9 +6644,9 @@ func freeze_sun() -> void:
 			add_child(burst)
 			get_tree().create_timer(1.0).timeout.connect(burst.queue_free)
 		
-		# Hit-stop for shield shatter
+		# Hit-stop for shield shatter (crisp 30ms impact bite without locking mouse tracking)
 		Engine.time_scale = 0.05
-		var shatter_timer = get_tree().create_timer(0.08, true, false, true)
+		var shatter_timer = get_tree().create_timer(0.03, true, false, true)
 		shatter_timer.timeout.connect(func():
 			Engine.time_scale = 1.0
 			shake(0.6, 0.1)
@@ -6566,9 +6661,9 @@ func freeze_sun() -> void:
 	sun_freeze_timer = 3.0
 	ice_hit_sfx.play()
 	
-	# Hit-Stop (Juice): Microscopic pause to sell the heavy impact
+	# Hit-Stop (Juice): Snappy 30ms pause to sell heavy impact without perceived lag spike
 	Engine.time_scale = 0.05
-	var hitstop_timer = get_tree().create_timer(0.08, true, false, true)
+	var hitstop_timer = get_tree().create_timer(0.03, true, false, true)
 	hitstop_timer.timeout.connect(func():
 		Engine.time_scale = 1.0
 		shake(0.5, 0.1) # Bigger shake when time resumes

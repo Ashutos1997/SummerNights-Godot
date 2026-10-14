@@ -45,11 +45,12 @@ Master record of implemented features, mechanics, and systems in *Summer Nights*
 * **Solar Disruptions (Wave 6+):** Random micro-events (40%–60% chance) in non-boss waves:
   * *Thermal Barrier:* Cyan shield deflecting water; dissolves or shatters via Ice Blast for +1,000 pts.
   * *Flare Barrage:* Rapid volley of 5–7 solar flares across wide angles.
-* **Solar Wind:** Physical crosswind pushing crosshair (drift capped at 1.75x).
+* **Dynamic Solar Wind:** Atmospheric crosswinds scaling from 14–50 kts across waves and levels with live HUD vane telemetry (`◀ 28 KTS` / `35 KTS ▶`). Deflects aim and water spray based on weapon aerodynamics: Precision Stream (0.0, 100% immune), Heavy Cannon (0.25), Kitsune Buster IX (0.35 gun, 0.0 blade), Standard Blaster (1.0), and Tidal Gatling (1.75). Synergizes with Wind Breaker perk (-60% drift).
 * **Heat Mirage (Boss):** Spawns 2 decoys and overshield. Real Sun takes 1.5x damage to overshield; heat regen cut by 60%.
 * **Overtime ("Paid in Full"):** Boss Waves (Levels 5–6, Endless every 5th) hitting `0:00` burn score as life support. Defeating boss clears Overtime; zero score triggers bankruptcy defeat.
 
 ## 5. Dynamic Weather & Encounters
+* **Celestial Beach Clouds (Soft Cover):** Multiple stylized low-poly cumulus clouds (up to 3 concurrently) drift horizontally with randomized altitudes (11.5–16.0m), drift speeds (3.8–6.2 m/s), and organic puff clusters across regular waves (Levels 2–5, non-boss Endless) at Sun depth (Z = -38). Absorbs 50% water spray damage when passing in front of the Sun, emitting steam puffs and rewarding +15 pts.
 * **Rainstorms:** Grants infinite water and passive Sun cooling.
 * **Solar Eclipse (Cold Stasis):** Lunar eclipse halting heat regen with -2.0°/s passive cooling and obsidian flares.
 * **Coronal Eclipse (Wave 45+):** Deep twilight, cloaked sunspots revealed by water/parries/ice, and +50% cooling on illuminated weakpoints.

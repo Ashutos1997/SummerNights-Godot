@@ -811,7 +811,7 @@ func _show_achievements() -> void:
 	style_focus.bg_color = Color(0, 0, 0, 0)
 	style_focus.border_color = Color(1.0, 0.85, 0.2, 1.0)
 	style_focus.set_border_width_all(2)
-	style_focus.set_corner_radius_all(6)
+	style_focus.set_corner_radius_all(0)
 	style_focus.content_margin_left = 6
 	style_focus.content_margin_right = 6
 	style_focus.content_margin_top = 4
@@ -1155,7 +1155,7 @@ func _show_quit_popup() -> void:
 	style_focus.bg_color = Color(0, 0, 0, 0)
 	style_focus.border_color = Color(1.0, 0.85, 0.2, 1.0)
 	style_focus.set_border_width_all(2)
-	style_focus.set_corner_radius_all(6)
+	style_focus.set_corner_radius_all(0)
 	
 	# Apply secondary button styles (Secondary - YES)
 	var style_sec_btn = StyleBoxFlat.new()
@@ -1176,7 +1176,7 @@ func _show_quit_popup() -> void:
 	style_sec_focus.bg_color = Color(0, 0, 0, 0)
 	style_sec_focus.border_color = Color(0.6, 0.6, 0.6, 1.0)
 	style_sec_focus.set_border_width_all(2)
-	style_sec_focus.set_corner_radius_all(6)
+	style_sec_focus.set_corner_radius_all(0)
 	
 	for btn in [yes_btn, no_btn]:
 		var is_primary = (btn == no_btn)
@@ -1428,7 +1428,7 @@ func _show_stats() -> void:
 	style_focus.bg_color = Color(0, 0, 0, 0)
 	style_focus.border_color = Color(1.0, 0.85, 0.2, 1.0)
 	style_focus.set_border_width_all(2)
-	style_focus.set_corner_radius_all(6)
+	style_focus.set_corner_radius_all(0)
 	style_focus.content_margin_left = 6
 	style_focus.content_margin_right = 6
 	style_focus.content_margin_top = 4
@@ -1881,7 +1881,7 @@ func _build_settings_screen() -> void:
 	style_focus.bg_color = Color(0, 0, 0, 0)
 	style_focus.border_color = Color(1.0, 0.85, 0.2, 1.0)
 	style_focus.set_border_width_all(2)
-	style_focus.set_corner_radius_all(6)
+	style_focus.set_corner_radius_all(0)
 
 	var grab_tex = load("res://assets/ui/kenney_ui_pack/slide_hangle.png")
 

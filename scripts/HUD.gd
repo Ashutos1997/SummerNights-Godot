@@ -77,6 +77,9 @@ var callout_label: Label
 var active_perks_hud: HFlowContainer
 var _ignore_focus_out_until: int = 0
 var last_callout_tier: int = 0
+var wind_container: PanelContainer = null
+var wind_label: Label = null
+var _last_wind_active: bool = false
 @onready var phase2_label      = $HUD/Phase2Label
 @onready var lose_screen       = $HUD/LoseScreen
 @onready var lose_title_lbl    = $HUD/LoseScreen/VBoxContainer/Title
@@ -343,6 +346,93 @@ func update_weather_icon(weather_type: String) -> void:
 		_weather_pulse_tween = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 		_weather_pulse_tween.tween_property(weather_icon_container, "scale", Vector2(1.1, 1.1), 0.6)
 		_weather_pulse_tween.tween_property(weather_icon_container, "scale", Vector2(1.0, 1.0), 0.6)
+
+# ── Dynamic Wind Indicator HUD ────────────────────────────────────────────────
+func _setup_wind_indicator() -> void:
+	if wind_container: return
+	
+	wind_container = PanelContainer.new()
+	wind_container.name = "WindContainer"
+	wind_container.anchors_preset = Control.PRESET_TOP_RIGHT
+	wind_container.anchor_left = 1.0
+	wind_container.anchor_right = 1.0
+	wind_container.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	wind_container.offset_left = -176.0
+	wind_container.offset_top = 90.0
+	wind_container.offset_right = -72.0
+	wind_container.offset_bottom = 130.0
+	wind_container.visible = false
+	wind_container.pivot_offset = Vector2(52, 20)
+	
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.04, 0.02, 0.08, 0.75)
+	style.border_color = Color(1.0, 0.85, 0.2, 0.4)
+	style.border_width_left = 1
+	style.border_width_right = 1
+	style.border_width_top = 1
+	style.border_width_bottom = 1
+	style.corner_radius_top_left = 4
+	style.corner_radius_top_right = 4
+	style.corner_radius_bottom_left = 4
+	style.corner_radius_bottom_right = 4
+	style.content_margin_left = 4.0
+	style.content_margin_right = 4.0
+	style.content_margin_top = 2.0
+	style.content_margin_bottom = 2.0
+	wind_container.add_theme_stylebox_override("panel", style)
+	
+	wind_label = Label.new()
+	wind_label.name = "WindLabel"
+	wind_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	wind_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	wind_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	wind_label.label_settings = LabelSettings.new()
+	var is_kr = GameState.language == "KR"
+	wind_label.label_settings.font = galmuri_font if is_kr else kenney_font
+	wind_label.label_settings.font_size = 14 if is_kr else 12
+	wind_label.label_settings.font_color = Color(1.0, 0.85, 0.3, 0.7)
+	wind_label.label_settings.outline_size = 2
+	wind_label.label_settings.outline_color = Color.BLACK
+	wind_label.text = "-- KTS"
+	
+	wind_container.add_child(wind_label)
+	$HUD.add_child(wind_container)
+
+func update_wind_indicator(knots: float, direction: float, is_active: bool) -> void:
+	if not wind_container or not wind_label:
+		return
+	
+	if knots <= 0.0:
+		wind_container.visible = false
+		_last_wind_active = false
+		return
+		
+	wind_container.visible = true
+	
+	var arrow = "◀ " if direction < 0.0 else ""
+	var arrow_suffix = " ▶" if direction > 0.0 else ""
+	wind_label.text = "%s%d KTS%s" % [arrow, int(round(knots)), arrow_suffix]
+	
+	var style = wind_container.get_theme_stylebox("panel") as StyleBoxFlat
+	if is_active:
+		if style:
+			style.border_color = Color(0.2, 0.85, 1.0, 0.95)
+			style.bg_color = Color(0.02, 0.10, 0.18, 0.85)
+		wind_label.label_settings.font_color = Color(0.3, 0.95, 1.0, 1.0)
+		
+		# Juice pop on gust initiation
+		if not _last_wind_active:
+			_last_wind_active = true
+			if not reduce_motion:
+				wind_container.scale = Vector2(1.15, 1.15)
+				var tw = create_tween()
+				tw.tween_property(wind_container, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	else:
+		_last_wind_active = false
+		if style:
+			style.border_color = Color(1.0, 0.85, 0.2, 0.4)
+			style.bg_color = Color(0.04, 0.02, 0.08, 0.75)
+		wind_label.label_settings.font_color = Color(1.0, 0.85, 0.3, 0.7)
 
 func _process(delta: float) -> void:	
 	if heat_bar:
@@ -839,6 +929,7 @@ func _ready() -> void:
 	if font:
 		if pause_title: _style_lbl(pause_title, 32, Color(1.0, 0.85, 0.2, 1.0), 3, Color.BLACK, font)
 
+	_setup_wind_indicator()
 	_apply_language(GameState.language)
 	_setup_weapon_hud()
 	
@@ -901,7 +992,7 @@ func _ready() -> void:
 	style_focus.bg_color = Color(0, 0, 0, 0)
 	style_focus.border_color = Color(1.0, 0.85, 0.2, 1.0)
 	style_focus.set_border_width_all(2)
-	style_focus.set_corner_radius_all(6)
+	style_focus.set_corner_radius_all(0)
 	style_focus.content_margin_left = 6
 	style_focus.content_margin_right = 6
 	style_focus.content_margin_top = 4
@@ -1386,7 +1477,7 @@ func _build_lang_row(in_body_font: Font = null) -> void:
 	lang_focus.bg_color = Color(0, 0, 0, 0)
 	lang_focus.border_color = Color(1.0, 0.85, 0.2, 1.0)
 	lang_focus.set_border_width_all(2)
-	lang_focus.set_corner_radius_all(6)
+	lang_focus.set_corner_radius_all(4)
 	
 	btn_en.add_theme_stylebox_override("focus", lang_focus)
 	btn_en.add_theme_stylebox_override("hover", StyleBoxEmpty.new())
@@ -1532,6 +1623,10 @@ func _apply_language(lang: String) -> void:
 	if callout_label:
 		if font: callout_label.add_theme_font_override("font", font)
 		callout_label.add_theme_font_size_override("font_size", 42 if is_kr else 36)
+
+	if wind_label and wind_label.label_settings:
+		wind_label.label_settings.font = galmuri_font if is_kr else kenney_font
+		wind_label.label_settings.font_size = 14 if is_kr else 12
 
 	# ── Top-right labels (in HBoxContainer, sizes scaled to match visually) ──
 	# (These buttons were moved to the pause menu, styled in _ready and translated below)
@@ -4127,7 +4222,7 @@ func _show_abandon_confirm_modal() -> void:
 		style_focus.bg_color = Color(0, 0, 0, 0)
 		style_focus.border_color = Color(1.0, 0.85, 0.2, 1.0)
 		style_focus.set_border_width_all(2)
-		style_focus.set_corner_radius_all(6)
+		style_focus.set_corner_radius_all(0)
 		
 		# Apply secondary button styles (Secondary - YES)
 		var style_sec_btn = StyleBoxFlat.new()
@@ -4148,7 +4243,7 @@ func _show_abandon_confirm_modal() -> void:
 		style_sec_focus.bg_color = Color(0, 0, 0, 0)
 		style_sec_focus.border_color = Color(0.6, 0.6, 0.6, 1.0)
 		style_sec_focus.set_border_width_all(2)
-		style_sec_focus.set_corner_radius_all(6)
+		style_sec_focus.set_corner_radius_all(0)
 		
 		for btn in [abandon_yes_btn, abandon_no_btn]:
 			var is_primary = (btn == abandon_no_btn)
@@ -5430,7 +5525,7 @@ func show_achievements_screen() -> void:
 	style_focus.bg_color = Color(0, 0, 0, 0)
 	style_focus.border_color = Color(1.0, 0.85, 0.2, 1.0)
 	style_focus.set_border_width_all(2)
-	style_focus.set_corner_radius_all(6)
+	style_focus.set_corner_radius_all(0)
 	style_focus.content_margin_left = 6
 	style_focus.content_margin_right = 6
 	style_focus.content_margin_top = 4
@@ -5776,7 +5871,7 @@ func show_buffs_screen() -> void:
 	style_focus.bg_color = Color(0, 0, 0, 0)
 	style_focus.border_color = Color(1.0, 0.85, 0.2, 1.0)
 	style_focus.set_border_width_all(2)
-	style_focus.set_corner_radius_all(6)
+	style_focus.set_corner_radius_all(0)
 	style_focus.content_margin_left = 6
 	style_focus.content_margin_right = 6
 	style_focus.content_margin_top = 4
