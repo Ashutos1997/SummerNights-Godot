@@ -17,13 +17,16 @@ Architectural map and layout reference for `HUD.tscn`.
 * **Achievement & Buff Toasts:** 500px centered plates (4px radius, 40x40 icon, 1.5px depletion bar). Slides from top (`y = 24.0` / `y = 106.0`).
 
 ### Top-Right
-* **TopRightInfo (VBoxContainer):** 24px right-aligned container.
-  * **TimerLabel:** Wave countdown. Intro animation starts centered (`scale 1.6x`, 2.5s hold) and glides (0.85s) into position. Red pulse under 10s. Shows `[ OVERTIME ]` badge during boss overtime.
-  * **ScoreLabel:** Live score display. Flashes red during Overtime score burn.
-* **WeatherIconContainer:** Persistent weather indicator (Normal, Rain, Eclipse, Coronal Eclipse).
-* **WindContainer:** 104x40px telemetry plate (4px radius, 1px gold/cyan border) adjacent to WeatherIconContainer displaying wind speed in knots and gust direction arrow (`◀ 28 KTS` / `35 KTS ▶`). Illuminates cyan with a 1.15x scale pop when active gusts initiate.
-* **WeatherTimerLabel:** Eclipse duration timer.
-* **ToastContainer (VBoxContainer):** 380px notification column (8px gap) for combat and unlock alerts with 1.5px depletion bars and staggered reflow.
+* **TopRightInfo (VBoxContainer):** 24px right-aligned container at `y = 22px` (`offset_bottom = 76px`, 2px separation). Unified 22px typography across both English and Korean.
+  * **TimerLabel:** Wave countdown (22px). Intro animation starts centered (`scale 1.6x`, 2.5s hold) and glides (0.85s) into position. Red pulse under 10s. Shows `[ OVERTIME ]` badge during boss overtime.
+  * **ScoreLabel:** Live score display (22px). Flashes red during Overtime score burn.
+* **Unified Aero-Weather Capsule (`WeatherIconContainer`):** Streamlined 172x44px retro telemetry pill at `y = 96px` (4px radius, 1px gold/cyan border), providing a clean 20px vertical gap below the score display and 18px gap above toasts, completely unified across languages:
+  * *Vector Direction Arrow (Far Left):* High-visibility vector arrow (`◀`, `▶`, or `●` when calm) rendered directly on the capsule face for instant subconscious recognition (<20ms).
+  * *Wind Speed & Intensity Gauge (Center):* High-legibility 16px knots readout (`19 KTS` in EN/KR; `CALM` / `바람 없음` at 14px) paired with a 3-pip intensity gauge (5x16px pips: Tier 1 `<24kts`, Tier 2 `24–35kts`, Tier 3 `≥36kts`). Illuminates cyan (`#33CCFF`) with a 1.12x container scale pop and 1.25x arrow bounce during active gust surges.
+  * *Hairline Divider:* 1px vertical separator (`1x22px`).
+  * *Weather Icon (Right):* Direct 24x24px weather condition icon with subtle pulse tweens on weather transitions.
+* **WeatherTimerLabel:** Eclipse duration timer anchored beneath the weather icon.
+* **ToastContainer (VBoxContainer):** 380px notification column at `y = 158px` (8px gap) for combat and unlock alerts with 1.5px depletion bars and staggered reflow.
 
 ### Center
 * **Crosshair:** Dynamic weapon reticle tracking water tank.

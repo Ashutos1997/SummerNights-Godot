@@ -45,7 +45,7 @@ Master record of implemented features, mechanics, and systems in *Summer Nights*
 * **Solar Disruptions (Wave 6+):** Random micro-events (40%–60% chance) in non-boss waves:
   * *Thermal Barrier:* Cyan shield deflecting water; dissolves or shatters via Ice Blast for +1,000 pts.
   * *Flare Barrage:* Rapid volley of 5–7 solar flares across wide angles.
-* **Dynamic Solar Wind:** Atmospheric crosswinds scaling from 14–50 kts across waves and levels with live HUD vane telemetry (`◀ 28 KTS` / `35 KTS ▶`). Deflects aim and water spray based on weapon aerodynamics: Precision Stream (0.0, 100% immune), Heavy Cannon (0.25), Kitsune Buster IX (0.35 gun, 0.0 blade), Standard Blaster (1.0), and Tidal Gatling (1.75). Synergizes with Wind Breaker perk (-60% drift).
+* **Dynamic Solar Wind:** Atmospheric crosswinds scaling from 14–50 kts across waves and levels with Unified Aero-Weather Capsule HUD telemetry (direct vector arrow `◀`/`▶`, bold 16px knots readout `19 KTS` / `CALM`, 3-pip severity gauge, and active gust cyan surges). Deflects aim and water spray based on weapon aerodynamics: Precision Stream (0.0, 100% immune), Heavy Cannon (0.25), Kitsune Buster IX (0.35 gun, 0.0 blade), Standard Blaster (1.0), and Tidal Gatling (1.75). Synergizes with Wind Breaker perk (-60% drift).
 * **Heat Mirage (Boss):** Spawns 2 decoys and overshield. Real Sun takes 1.5x damage to overshield; heat regen cut by 60%.
 * **Overtime ("Paid in Full"):** Boss Waves (Levels 5–6, Endless every 5th) hitting `0:00` burn score as life support. Defeating boss clears Overtime; zero score triggers bankruptcy defeat.
 

@@ -78,8 +78,17 @@ var active_perks_hud: HFlowContainer
 var _ignore_focus_out_until: int = 0
 var last_callout_tier: int = 0
 var wind_container: PanelContainer = null
+var wind_direction_box: PanelContainer = null
+var wind_direction_label: Label = null
 var wind_label: Label = null
+var wind_kicker_label: Label = null
+var wind_divider: Panel = null
+var weather_well: PanelContainer = null
+var wind_pips: Array[Panel] = []
 var _last_wind_active: bool = false
+var _current_knots: float = 0.0
+var _current_wind_direction: float = 0.0
+var _current_wind_is_active: bool = false
 @onready var phase2_label      = $HUD/Phase2Label
 @onready var lose_screen       = $HUD/LoseScreen
 @onready var lose_title_lbl    = $HUD/LoseScreen/VBoxContainer/Title
@@ -322,7 +331,10 @@ func update_weather_icon(weather_type: String) -> void:
 		weather_icon.modulate = Color(1.0, 0.85, 0.25, 1.0)
 		if _weather_pulse_tween:
 			_weather_pulse_tween.kill()
-		weather_icon_container.scale = Vector2(1, 1)
+		if weather_icon:
+			weather_icon.scale = Vector2.ONE
+		else:
+			weather_icon_container.scale = Vector2.ONE
 		return
 		
 	if weather_type == "rain":
@@ -338,34 +350,43 @@ func update_weather_icon(weather_type: String) -> void:
 	if _weather_pulse_tween:
 		_weather_pulse_tween.kill()
 		
-	# Reset scale
-	weather_icon_container.scale = Vector2(1, 1)
-	weather_icon_container.pivot_offset = weather_icon_container.size / 2.0
+	var target_pulse_node: Control = weather_icon if weather_icon else weather_icon_container
+	target_pulse_node.scale = Vector2(1, 1)
+	target_pulse_node.pivot_offset = target_pulse_node.size / 2.0
 	
 	if not reduce_motion:
 		_weather_pulse_tween = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-		_weather_pulse_tween.tween_property(weather_icon_container, "scale", Vector2(1.1, 1.1), 0.6)
-		_weather_pulse_tween.tween_property(weather_icon_container, "scale", Vector2(1.0, 1.0), 0.6)
+		_weather_pulse_tween.tween_property(target_pulse_node, "scale", Vector2(1.15, 1.15), 0.6)
+		_weather_pulse_tween.tween_property(target_pulse_node, "scale", Vector2(1.0, 1.0), 0.6)
 
-# ── Dynamic Wind Indicator HUD ────────────────────────────────────────────────
+# ── Dynamic Wind Indicator HUD (Aero-Vector Station) ──────────────────────────
 func _setup_wind_indicator() -> void:
-	if wind_container: return
+	if not weather_icon_container: return
+	if wind_direction_label: return # Already configured
 	
-	wind_container = PanelContainer.new()
-	wind_container.name = "WindContainer"
-	wind_container.anchors_preset = Control.PRESET_TOP_RIGHT
-	wind_container.anchor_left = 1.0
-	wind_container.anchor_right = 1.0
-	wind_container.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	wind_container.offset_left = -176.0
-	wind_container.offset_top = 90.0
-	wind_container.offset_right = -72.0
-	wind_container.offset_bottom = 130.0
-	wind_container.visible = false
-	wind_container.pivot_offset = Vector2(52, 20)
+	if not kenney_font:
+		kenney_font = load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+	if not galmuri_font:
+		galmuri_font = load("res://assets/fonts/Galmuri11.ttf")
+	if not inter_font:
+		inter_font = load("res://assets/fonts/Inter-Medium.ttf")
+		
+	var is_kr = GameState.language == "KR"
+	
+	# Master Capsule geometry (172x44px retro plate, strictly adhering to design system)
+	weather_icon_container.anchors_preset = Control.PRESET_TOP_RIGHT
+	weather_icon_container.anchor_left = 1.0
+	weather_icon_container.anchor_right = 1.0
+	weather_icon_container.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	weather_icon_container.offset_left = -196.0
+	weather_icon_container.offset_top = 96.0
+	weather_icon_container.offset_right = -24.0
+	weather_icon_container.offset_bottom = 140.0
+	weather_icon_container.visible = true
+	weather_icon_container.pivot_offset = Vector2(86, 22)
 	
 	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.04, 0.02, 0.08, 0.75)
+	style.bg_color = Color(0.04, 0.02, 0.08, 0.85)
 	style.border_color = Color(1.0, 0.85, 0.2, 0.4)
 	style.border_width_left = 1
 	style.border_width_right = 1
@@ -375,64 +396,220 @@ func _setup_wind_indicator() -> void:
 	style.corner_radius_top_right = 4
 	style.corner_radius_bottom_left = 4
 	style.corner_radius_bottom_right = 4
-	style.content_margin_left = 4.0
-	style.content_margin_right = 4.0
-	style.content_margin_top = 2.0
-	style.content_margin_bottom = 2.0
-	wind_container.add_theme_stylebox_override("panel", style)
+	style.content_margin_left = 10.0
+	style.content_margin_right = 10.0
+	style.content_margin_top = 4.0
+	style.content_margin_bottom = 4.0
+	weather_icon_container.add_theme_stylebox_override("panel", style)
+	
+	wind_container = weather_icon_container
+	
+	if weather_icon and weather_icon.get_parent() == weather_icon_container:
+		weather_icon_container.remove_child(weather_icon)
+		
+	var aero_hbox = HBoxContainer.new()
+	aero_hbox.name = "AeroHBox"
+	aero_hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	aero_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	aero_hbox.add_theme_constant_override("separation", 8)
+	weather_icon_container.add_child(aero_hbox)
+	
+	# 1. Clean Direction Arrow Label (Direct placement, no enclosing box)
+	wind_direction_label = Label.new()
+	wind_direction_label.name = "DirectionLabel"
+	wind_direction_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	wind_direction_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	wind_direction_label.custom_minimum_size = Vector2(18, 24)
+	wind_direction_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	wind_direction_label.pivot_offset = Vector2(9, 12)
+	wind_direction_label.label_settings = LabelSettings.new()
+	wind_direction_label.label_settings.font = galmuri_font if galmuri_font else kenney_font
+	wind_direction_label.label_settings.font_size = 16
+	wind_direction_label.label_settings.font_color = Color(1.0, 0.85, 0.3, 0.95)
+	wind_direction_label.label_settings.outline_size = 2
+	wind_direction_label.label_settings.outline_color = Color.BLACK
+	wind_direction_label.text = "●"
+	aero_hbox.add_child(wind_direction_label)
+	
+	# 2. Main Wind Data Row (Center: Big 16px Knots + 3 Tall Pips)
+	var wind_data_hbox = HBoxContainer.new()
+	wind_data_hbox.name = "WindDataHBox"
+	wind_data_hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	wind_data_hbox.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	wind_data_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	wind_data_hbox.add_theme_constant_override("separation", 6)
+	aero_hbox.add_child(wind_data_hbox)
 	
 	wind_label = Label.new()
 	wind_label.name = "WindLabel"
-	wind_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	wind_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	wind_label.autowrap_mode = TextServer.AUTOWRAP_OFF
 	wind_label.label_settings = LabelSettings.new()
-	var is_kr = GameState.language == "KR"
 	wind_label.label_settings.font = galmuri_font if is_kr else kenney_font
-	wind_label.label_settings.font_size = 14 if is_kr else 12
-	wind_label.label_settings.font_color = Color(1.0, 0.85, 0.3, 0.7)
+	wind_label.label_settings.font_size = 14 if is_kr else 14
+	wind_label.label_settings.font_color = Color(1.0, 0.85, 0.3, 0.9)
 	wind_label.label_settings.outline_size = 2
 	wind_label.label_settings.outline_color = Color.BLACK
-	wind_label.text = "-- KTS"
+	wind_label.text = "바람 없음" if is_kr else "CALM"
+	wind_data_hbox.add_child(wind_label)
 	
-	wind_container.add_child(wind_label)
-	$HUD.add_child(wind_container)
+	var wind_pips_container = HBoxContainer.new()
+	wind_pips_container.name = "WindPipsContainer"
+	wind_pips_container.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	wind_pips_container.add_theme_constant_override("separation", 3)
+	wind_data_hbox.add_child(wind_pips_container)
+	
+	wind_pips.clear()
+	for i in range(3):
+		var pip = Panel.new()
+		pip.name = "Pip%d" % (i + 1)
+		pip.custom_minimum_size = Vector2(5, 16)
+		var pip_style = StyleBoxFlat.new()
+		pip_style.bg_color = Color(0.18, 0.14, 0.24, 0.65)
+		pip_style.border_color = Color(0.3, 0.25, 0.35, 0.5)
+		pip_style.border_width_left = 1
+		pip_style.border_width_right = 1
+		pip_style.border_width_top = 1
+		pip_style.border_width_bottom = 1
+		pip_style.corner_radius_top_left = 1
+		pip_style.corner_radius_top_right = 1
+		pip_style.corner_radius_bottom_left = 1
+		pip_style.corner_radius_bottom_right = 1
+		pip.add_theme_stylebox_override("panel", pip_style)
+		wind_pips_container.add_child(pip)
+		wind_pips.append(pip)
+		
+	# 3. Vertical Hairline Divider
+	wind_divider = Panel.new()
+	wind_divider.name = "AeroDivider"
+	wind_divider.custom_minimum_size = Vector2(1, 22)
+	wind_divider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var div_style = StyleBoxFlat.new()
+	div_style.bg_color = Color(1.0, 0.85, 0.2, 0.25)
+	wind_divider.add_theme_stylebox_override("panel", div_style)
+	aero_hbox.add_child(wind_divider)
+	
+	# 4. Weather Icon (Direct placement, no enclosing box)
+	if weather_icon:
+		weather_icon.custom_minimum_size = Vector2(24, 24)
+		weather_icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		weather_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		weather_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		weather_icon.pivot_offset = Vector2(12, 12)
+		aero_hbox.add_child(weather_icon)
+		
+	if not weather_timer_lbl:
+		weather_timer_lbl = Label.new()
+		weather_timer_lbl.label_settings = LabelSettings.new()
+		weather_timer_lbl.label_settings.font = galmuri_font if is_kr else kenney_font
+		weather_timer_lbl.label_settings.font_size = 14
+		weather_timer_lbl.label_settings.font_color = Color(1.0, 0.4, 0.4)
+		weather_timer_lbl.label_settings.outline_size = 4
+		weather_timer_lbl.label_settings.outline_color = Color.BLACK
+		weather_timer_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		weather_icon_container.get_parent().add_child(weather_timer_lbl)
+		weather_timer_lbl.visible = false
+
+func _set_wind_pips(active_count: int, is_gust: bool) -> void:
+	for i in range(wind_pips.size()):
+		var pip = wind_pips[i]
+		var p_style = pip.get_theme_stylebox("panel") as StyleBoxFlat
+		if not p_style: continue
+		if i < active_count:
+			if is_gust:
+				p_style.bg_color = Color(0.2, 0.85, 1.0, 1.0)
+				p_style.border_color = Color(0.4, 0.95, 1.0, 0.9)
+			else:
+				p_style.bg_color = Color(1.0, 0.82, 0.18, 1.0)
+				p_style.border_color = Color(1.0, 0.9, 0.3, 0.8)
+		else:
+			p_style.bg_color = Color(0.18, 0.14, 0.24, 0.65)
+			p_style.border_color = Color(0.3, 0.25, 0.35, 0.5)
 
 func update_wind_indicator(knots: float, direction: float, is_active: bool) -> void:
-	if not wind_container or not wind_label:
-		return
-	
-	if knots <= 0.0:
-		wind_container.visible = false
-		_last_wind_active = false
+	if not weather_icon_container or not wind_label:
 		return
 		
-	wind_container.visible = true
+	_current_knots = knots
+	_current_wind_direction = direction
+	_current_wind_is_active = is_active
 	
-	var arrow = "◀ " if direction < 0.0 else ""
-	var arrow_suffix = " ▶" if direction > 0.0 else ""
-	wind_label.text = "%s%d KTS%s" % [arrow, int(round(knots)), arrow_suffix]
+	var is_kr = GameState.language == "KR"
+	var plate_style = weather_icon_container.get_theme_stylebox("panel") as StyleBoxFlat
+	var div_style = wind_divider.get_theme_stylebox("panel") as StyleBoxFlat if wind_divider else null
 	
-	var style = wind_container.get_theme_stylebox("panel") as StyleBoxFlat
+	if knots <= 0.0:
+		_last_wind_active = false
+		if wind_direction_label:
+			wind_direction_label.text = "●"
+			wind_direction_label.label_settings.font_color = Color(1.0, 0.85, 0.3, 0.5)
+		wind_label.text = "바람 없음" if is_kr else "CALM"
+		wind_label.label_settings.font_size = 14 if is_kr else 14
+		wind_label.label_settings.font_color = Color(1.0, 0.85, 0.3, 0.6)
+		_set_wind_pips(0, false)
+		if plate_style:
+			plate_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
+			plate_style.bg_color = Color(0.04, 0.02, 0.08, 0.85)
+		if div_style:
+			div_style.bg_color = Color(1.0, 0.85, 0.2, 0.2)
+		return
+		
+	var arrow = "◀" if direction < 0.0 else ("▶" if direction > 0.0 else "●")
+	if wind_direction_label:
+		wind_direction_label.text = arrow
+		
+	wind_label.text = "%d KTS" % int(round(knots))
+	wind_label.label_settings.font_size = 15 if is_kr else 16
+	
+	var tier = 1
+	if knots >= 36.0:
+		tier = 3
+	elif knots >= 24.0:
+		tier = 2
+	_set_wind_pips(tier, is_active)
+	
 	if is_active:
-		if style:
-			style.border_color = Color(0.2, 0.85, 1.0, 0.95)
-			style.bg_color = Color(0.02, 0.10, 0.18, 0.85)
+		if plate_style:
+			plate_style.border_color = Color(0.2, 0.85, 1.0, 0.95)
+			plate_style.bg_color = Color(0.02, 0.10, 0.18, 0.90)
+		if div_style:
+			div_style.bg_color = Color(0.2, 0.85, 1.0, 0.4)
+		if wind_direction_label:
+			wind_direction_label.label_settings.font_color = Color(0.3, 0.95, 1.0, 1.0)
 		wind_label.label_settings.font_color = Color(0.3, 0.95, 1.0, 1.0)
 		
 		# Juice pop on gust initiation
 		if not _last_wind_active:
 			_last_wind_active = true
 			if not reduce_motion:
-				wind_container.scale = Vector2(1.15, 1.15)
+				weather_icon_container.scale = Vector2(1.12, 1.12)
 				var tw = create_tween()
-				tw.tween_property(wind_container, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+				tw.tween_property(weather_icon_container, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+				if wind_direction_label:
+					wind_direction_label.scale = Vector2(1.25, 1.25)
+					var tw_dir = create_tween()
+					tw_dir.tween_property(wind_direction_label, "scale", Vector2.ONE, 0.2).set_trans(Tween.TRANS_BOUNCE)
 	else:
 		_last_wind_active = false
-		if style:
-			style.border_color = Color(1.0, 0.85, 0.2, 0.4)
-			style.bg_color = Color(0.04, 0.02, 0.08, 0.75)
-		wind_label.label_settings.font_color = Color(1.0, 0.85, 0.3, 0.7)
+		if plate_style:
+			plate_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
+			plate_style.bg_color = Color(0.04, 0.02, 0.08, 0.85)
+		if div_style:
+			div_style.bg_color = Color(1.0, 0.85, 0.2, 0.25)
+		if wind_direction_label:
+			wind_direction_label.label_settings.font_color = Color(1.0, 0.85, 0.3, 0.95)
+		wind_label.label_settings.font_color = Color(1.0, 0.85, 0.3, 0.9)
+
+func update_eclipse_timer(time_left: float) -> void:
+	if not weather_timer_lbl: return
+	if time_left > 0.0:
+		weather_timer_lbl.visible = true
+		weather_timer_lbl.text = "%ds" % int(ceil(time_left))
+		if weather_icon_container:
+			weather_timer_lbl.global_position = Vector2(
+				weather_icon_container.global_position.x + weather_icon_container.size.x - 26,
+				weather_icon_container.global_position.y + weather_icon_container.size.y + 4
+			)
+	else:
+		weather_timer_lbl.visible = false
 
 func _process(delta: float) -> void:	
 	if heat_bar:
@@ -634,34 +811,7 @@ func _ready() -> void:
 	callout_label.position = combo_label.position + Vector2(0, 40)
 	callout_label.set_anchors_preset(Control.PRESET_CENTER)
 	
-	if weather_icon_container:
-		var w_style = StyleBoxFlat.new()
-		w_style.bg_color = Color(0.0, 0.0, 0.0, 0.4)
-		w_style.border_color = Color(1.0, 0.85, 0.2, 0.6)
-		w_style.border_width_bottom = 2
-		w_style.border_width_top = 2
-		w_style.border_width_left = 2
-		w_style.border_width_right = 2
-		w_style.corner_radius_bottom_left = 8
-		w_style.corner_radius_bottom_right = 8
-		w_style.corner_radius_top_left = 8
-		w_style.corner_radius_top_right = 8
-		w_style.content_margin_left = 6.0
-		w_style.content_margin_right = 6.0
-		w_style.content_margin_top = 6.0
-		w_style.content_margin_bottom = 6.0
-		weather_icon_container.add_theme_stylebox_override("panel", w_style)
-		
-		weather_timer_lbl = Label.new()
-		weather_timer_lbl.label_settings = LabelSettings.new()
-		weather_timer_lbl.label_settings.font = load("res://assets/fonts/Galmuri11.ttf") if GameState.language == "KR" else load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
-		weather_timer_lbl.label_settings.font_size = 14
-		weather_timer_lbl.label_settings.font_color = Color(1.0, 0.4, 0.4)
-		weather_timer_lbl.label_settings.outline_size = 4
-		weather_timer_lbl.label_settings.outline_color = Color.BLACK
-		weather_timer_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		weather_icon_container.get_parent().add_child(weather_timer_lbl)
-		weather_timer_lbl.visible = false
+	_setup_wind_indicator()
 		
 	update_weather_icon("none")
 	
@@ -802,7 +952,7 @@ func _ready() -> void:
 	_style_lbl(callout_label, 36, Color(0.4, 0.9, 1.0, 1.0), 3, Color.BLACK, callout_font)
 	
 	if score_label:
-		_style_lbl(score_label, 26, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
+		_style_lbl(score_label, 22, Color(1.0, 0.9, 0.3, 1.0), 3, Color.BLACK, font)
 	_style_lbl(phase2_label, 48, Color(1.0, 0.4, 0.1, 1.0), 3, Color.BLACK, font)
 	
 	_style_lbl(lose_title_lbl, 64, Color(1.0, 0.4, 0.1, 1.0), 3, Color.BLACK, font)
@@ -1608,16 +1758,16 @@ func _apply_language(lang: String) -> void:
 		else:
 			level_label.text = "%02d 단계" % GameState.level if is_kr else "LVL  %02d" % GameState.level
 		if font: level_label.add_theme_font_override("font", font)
-		level_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
+		level_label.add_theme_font_size_override("font_size", 22)
 	if timer_label:
 		if font: timer_label.add_theme_font_override("font", font)
-		timer_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
+		timer_label.add_theme_font_size_override("font_size", 22)
 	if is_instance_valid(flying_timer_label) and flying_timer_label:
 		if font: flying_timer_label.add_theme_font_override("font", font)
-		flying_timer_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
+		flying_timer_label.add_theme_font_size_override("font_size", 22)
 	if score_label:
 		if font: score_label.add_theme_font_override("font", font)
-		score_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
+		score_label.add_theme_font_size_override("font_size", 22)
 		_update_score_display(display_score)
 		
 	if callout_label:
@@ -1626,7 +1776,13 @@ func _apply_language(lang: String) -> void:
 
 	if wind_label and wind_label.label_settings:
 		wind_label.label_settings.font = galmuri_font if is_kr else kenney_font
-		wind_label.label_settings.font_size = 14 if is_kr else 12
+		wind_label.label_settings.font_size = 15 if is_kr else 16
+
+	if wind_direction_label and wind_direction_label.label_settings:
+		wind_direction_label.label_settings.font = galmuri_font if galmuri_font else kenney_font
+		wind_direction_label.label_settings.font_size = 16
+		
+	update_wind_indicator(_current_knots, _current_wind_direction, _current_wind_is_active)
 
 	# ── Top-right labels (in HBoxContainer, sizes scaled to match visually) ──
 	# (These buttons were moved to the pause menu, styled in _ready and translated below)
@@ -2778,7 +2934,8 @@ func _apply_unified_drop_shadows(node: Node) -> void:
 		"SettingsScreen", "FiltersScreen", "PauseScreen", "pause_screen",
 		"GameOverScreen", "LoseScreen", "LevelClearScreen", "WinScreen",
 		"EndScreen", "CreditsScreen", "AchievementsScreen", "BuffsScreen",
-		"ControllerScreen", "DraftingScreen"
+		"ControllerScreen", "DraftingScreen",
+		"WeatherWell", "DirectionBox", "Pip1", "Pip2", "Pip3", "AeroDivider"
 	]
 	if node.name in skip_names:
 		return
@@ -3616,7 +3773,7 @@ func present_wave_timer(initial_seconds: float) -> void:
 	var is_kr = (GameState.language == "KR")
 	var font_path = "res://assets/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
 	var font = load(font_path)
-	var font_sz = 26 if is_kr else 22
+	var font_sz = 22
 	
 	var mins = int(initial_seconds) / 60
 	var secs = int(initial_seconds) % 60

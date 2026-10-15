@@ -41,7 +41,7 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 
 ### Telemetry & Combat Badges
 * **Boss Telemetry:** Retro arcade plate at `y = 86px` (4px radius, 1px gold border, 8px drop shadow) with recessed 34x34px icon well, two-tier typography (10px kicker tag in `Inter-Medium`/`Galmuri11`, 13px bold title in `Kenney Future` with 2px black outline), tactile 24x24px recessed pip wells for drone pips (`#FFD12E`), 1.5px bottom accent hairline, and cyan breach transition (`#33CCFF`).
-* **Wind Telemetry:** Top-right 104x40px plate adjacent to weather container (4px radius, 1px border) with 12px EN / 14px KR telemetry label (`◀ 28 KTS` / `35 KTS ▶`). Transitions border and text from Gold `Color(1.0, 0.85, 0.2, 0.4)` to Cyan `Color(0.2, 0.85, 1.0, 0.95)` with 1.15x scale pop on active gusts.
+* **Unified Aero-Weather Capsule:** Top-right 172x44px plate at `y = 96px` (4px radius, 1px border, 4px shadow) fusing wind telemetry and weather bay directly without nested box containers, providing a clean 20px vertical gap below the score display. Features high-visibility vector arrow (`◀`, `▶`, `●`), large 16px knots readout (`19 KTS` / `CALM`), 3-pip severity gauge (5x16px pips), 1px hairline divider, and direct 24x24px weather icon. Flashes border and text from Gold `Color(1.0, 0.85, 0.2, 0.4)` to Cyan `Color(0.2, 0.85, 1.0, 0.95)` with 1.12x container pop and 1.25x arrow bounce on active gusts.
 * **Weapon Plate:** Bottom-left 44px plate at 24px margin with recessed 38x38px icon frame (4px radius, 1px gold border) and 26x26px icon.
 
 ### Popup Notifications (Toasts)
