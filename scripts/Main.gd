@@ -1069,7 +1069,8 @@ func _ready() -> void:
 	hud.game_resumed.connect(_on_game_resumed)
 	hud.weapon_changed.connect(_on_weapon_changed)
 	
-	
+	if hud and current_wind_knots > 0.0:
+		hud.update_wind_indicator(current_wind_knots, wind_direction, false)
 	
 	if GameState.is_survival_mode:
 		GameState.ice_charges_remaining = GameState.bonus_ice_charges # Start with bonus ice in Endless Mode
@@ -2861,10 +2862,12 @@ func _process(delta: float) -> void:
 	# Dynamic Wind Sway on tropical foliage
 	var wind_t = Time.get_ticks_msec() * 0.001
 	var hazard_bend = 0.0
-	if solar_wind_enabled and wind_state == 2:
-		# wind_direction is -1 or 1, wind_strength maxes around WIND_DRIFT_SPEED
-		var intensity = clamp(wind_strength / 280.0, 0.0, 1.0)
-		hazard_bend = intensity * wind_direction * -0.22 # Aggressive bend opposite to drift direction for visual weight
+	if current_wind_knots > 0.0:
+		var ambient_intensity = clamp(current_wind_knots / 50.0, 0.0, 1.0)
+		hazard_bend = ambient_intensity * wind_direction * -0.07 # Subtle ambient lean matching prevailing wind
+		if solar_wind_enabled and wind_state == 2:
+			var surge_intensity = clamp(wind_strength / 280.0, 0.0, 1.0)
+			hazard_bend += surge_intensity * wind_direction * -0.16 # Aggressive whipping during active solar surge
 		
 	for f_prop in foliage_props:
 		if is_instance_valid(f_prop):
@@ -2899,26 +2902,33 @@ func _process(delta: float) -> void:
 			if mat:
 				mat.emission_energy_multiplier = lerp(mat.emission_energy_multiplier, target_energy, delta * 2.0)
 				
-		# 3. Solar Winds (Sway)
+		# 3. Solar & Atmospheric Winds (Sway)
 		var target_gravity = Vector3(0, 0.1, 0)
-		if wind_state == 2 and solar_wind_enabled:
-			target_gravity.x = wind_direction * (wind_strength / 20.0) # Blow them sideways
+		if current_wind_knots > 0.0:
+			var base_drift = wind_direction * (current_wind_knots / 16.0)
+			if wind_state == 2 and solar_wind_enabled:
+				base_drift *= 2.0
+			target_gravity.x = base_drift
 		ff_mat.gravity = ff_mat.gravity.lerp(target_gravity, delta * 2.0)
 
 	if is_instance_valid(ambient_motes_particles) and ambient_motes_particles.process_material:
 		var motes_proc = ambient_motes_particles.process_material as ParticleProcessMaterial
 		var target_drift = Vector3(0.0, 0.10, -0.04)
-		if wind_state == 2 and solar_wind_enabled:
-			target_drift.x = wind_direction * (wind_strength / 14.0)
+		if current_wind_knots > 0.0:
+			var base_mote = wind_direction * (current_wind_knots / 12.0)
+			if wind_state == 2 and solar_wind_enabled:
+				base_mote *= 2.2
+			target_drift.x = base_mote
 		motes_proc.gravity = motes_proc.gravity.lerp(target_drift, delta * 2.0)
 
 	if is_instance_valid(gun_spray) and gun_spray.process_material:
 		var gs_mat = gun_spray.process_material as ParticleProcessMaterial
 		if gs_mat:
 			var target_spray_x = 0.0
-			if wind_state == 2 and solar_wind_enabled:
+			if current_wind_knots > 0.0:
 				var weapon_sens = _get_weapon_wind_sensitivity()
-				target_spray_x = wind_direction * (wind_strength / 18.0) * weapon_sens
+				var gust_mult = (1.5 + sin(wind_elapsed * 6.0) * 0.25) if (wind_state == 2 and solar_wind_enabled) else 1.0
+				target_spray_x = wind_direction * (current_wind_knots / 2.2) * weapon_sens * GameState.wind_drift_mult * gust_mult
 			gs_mat.gravity.x = lerp(gs_mat.gravity.x, target_spray_x, delta * 6.0)
 
 	# Increase difficulty based on level
@@ -3133,17 +3143,10 @@ func _process(delta: float) -> void:
 				virtual_mouse_pos.x = clamp(virtual_mouse_pos.x, 0, viewport_size.x)
 				virtual_mouse_pos.y = clamp(virtual_mouse_pos.y, 0, viewport_size.y)
 
-	# Aim gun (apply wind drift to virtual mouse position)
+	# Aim gun (reticle tracks player input 1:1 with zero cursor drag)
 	var mouse_pos = virtual_mouse_pos
 	if wind_state == 2 and wind_strength > 0.0:
 		wind_elapsed += delta
-		# Turbulent drift: base drift + sine wobble for organic feel
-		var turbulence = 1.0 + sin(wind_elapsed * 5.0) * 0.35 + sin(wind_elapsed * 13.0) * 0.15
-		var weapon_sens = _get_weapon_wind_sensitivity()
-		virtual_mouse_pos.x += wind_direction * wind_strength * turbulence * weapon_sens * delta * GameState.wind_drift_mult
-		var viewport_size = get_viewport().get_visible_rect().size
-		virtual_mouse_pos.x = clamp(virtual_mouse_pos.x, 0, viewport_size.x)
-		mouse_pos = virtual_mouse_pos
 	var ray_origin = camera.project_ray_origin(mouse_pos)
 	var ray_normal = camera.project_ray_normal(mouse_pos)
 	# Mouse / aim angular velocity for fluid inertia simulation
@@ -3175,6 +3178,12 @@ func _process(delta: float) -> void:
 	
 	# Constrain target_pos so we can't aim too low (prevents clipping into ground)
 	target_pos.y = max(target_pos.y, -2.0)
+	
+	# Physical ballistic water stream deflection across crosswind
+	var weapon_wind_sens = _get_weapon_wind_sensitivity()
+	var gust_mult = (1.5 + sin(wind_elapsed * 6.0) * 0.25) if (wind_state == 2 and solar_wind_enabled) else 1.0
+	var wind_deflection_x = wind_direction * (current_wind_knots / 12.0) * weapon_wind_sens * GameState.wind_drift_mult * gust_mult
+	var water_target_pos = target_pos + Vector3(wind_deflection_x, 0.0, 0.0)
 	
 	# Gun follows mouse but returns to base when not shooting
 	if is_shooting:
@@ -3324,15 +3333,16 @@ func _process(delta: float) -> void:
 										GameState.save_settings()
 		
 			# Check Solar Flare Interception (Requires ~0.33s of tracking water spray)
+			var water_stream_dir = (water_target_pos - aim_origin).normalized() if water_target_pos != aim_origin else aim_dir
 			var intercepted_flares = []
 			for flare in active_flares:
 				var f_node = flare["node"] as Node3D
 				if is_instance_valid(f_node):
 					var flare_pos = f_node.global_position
-					var vec_to_flare = flare_pos - ray_origin
-					var proj_t = vec_to_flare.dot(ray_normal)
+					var vec_to_flare = flare_pos - aim_origin
+					var proj_t = vec_to_flare.dot(water_stream_dir)
 					if proj_t > 0.0:
-						var closest_pt = ray_origin + ray_normal * proj_t
+						var closest_pt = aim_origin + water_stream_dir * proj_t
 						var dist_to_ray = flare_pos.distance_to(closest_pt)
 						if dist_to_ray < 2.8: # Focused 2.8m radius requiring tracking aim
 							# Cool & shrink flare over 0.33s of sustained hit
@@ -3398,10 +3408,10 @@ func _process(delta: float) -> void:
 			for rock in active_magma_rocks:
 				if is_instance_valid(rock):
 					var r_pos = rock.global_position
-					var vec_to_rock = r_pos - ray_origin
-					var proj_t = vec_to_rock.dot(ray_normal)
+					var vec_to_rock = r_pos - aim_origin
+					var proj_t = vec_to_rock.dot(water_stream_dir)
 					if proj_t > 0.0:
-						var closest_pt = ray_origin + ray_normal * proj_t
+						var closest_pt = aim_origin + water_stream_dir * proj_t
 						var dist_to_ray = r_pos.distance_to(closest_pt)
 						if dist_to_ray < 2.0: # Generous hitbox for rocks
 							# Rock hit by water! Evaporate it visually
@@ -3431,7 +3441,7 @@ func _process(delta: float) -> void:
 				if GameState.is_survival_mode and GameState.current_wave >= 5:
 					wave_dmg_mult = 1.0 + (GameState.current_wave - 4) * 0.15
 				var stream_dmg = current_weapon_power * wave_dmg_mult * delta
-				var drone_hit = solar_convergence_mgr.check_water_stream_intercept(ray_origin, ray_normal, stream_dmg)
+				var drone_hit = solar_convergence_mgr.check_water_stream_intercept(aim_origin, water_stream_dir, stream_dmg)
 				if drone_hit.get("hit", false):
 					hit_solar_drone = true
 					var h_pos = drone_hit["position"]
@@ -3447,14 +3457,14 @@ func _process(delta: float) -> void:
 			for m in active_mirages:
 				var node = m["node"] as Node3D
 				if is_instance_valid(node):
-					var m_dist = target_pos.distance_to(node.position)
+					var m_dist = water_target_pos.distance_to(node.position)
 					if m_dist < 5.0 and m_dist < closest_mirage_dist:
 						closest_mirage_dist = m_dist
 						closest_mirage_pos = node.position
 						hit_mirage = true
 					
 			# Check real sun hit
-			var aim_dist = target_pos.distance_to(sun.position)
+			var aim_dist = water_target_pos.distance_to(sun.position)
 			if hit_solar_drone:
 				# Water intercepted and absorbed by orbiting drone shield (blocks damage to Sun)
 				combo_timer += delta
@@ -3471,7 +3481,7 @@ func _process(delta: float) -> void:
 			elif hit_mirage and closest_mirage_dist < aim_dist:
 				# Hit a mirage! Deal damage to the mirage shield
 				if steam_particles and randf() < 0.2:
-					steam_particles.global_position = target_pos
+					steam_particles.global_position = water_target_pos
 					steam_particles.restart()
 				if sizzle_sfx and not sizzle_sfx.playing and randf() < 0.3:
 					sizzle_sfx.play()
@@ -3507,7 +3517,7 @@ func _process(delta: float) -> void:
 			elif aim_dist < 5.0: # Close enough to hit the real sun
 				if solar_convergence_mgr and solar_convergence_mgr.get_active_drone_count() > 0:
 					# Coronal Drone Shield is active: Drones protect the Sun!
-					_on_shield_deflect(target_pos)
+					_on_shield_deflect(water_target_pos)
 					drone_shield_spray_duration += delta
 					if drone_shield_spray_duration >= 0.5:
 						drone_shield_spray_duration = -2.5
@@ -3526,7 +3536,7 @@ func _process(delta: float) -> void:
 					combo_grace_timer = 0.5 if "untouchable" in GameState.unlocked_achievements else 0.0
 				else:
 					# Drones destroyed or inactive: Real Sun takes cooling damage!
-					_on_hit(delta, target_pos)
+					_on_hit(delta, water_target_pos)
 					combo_timer += delta
 					if combo_timer >= 1.5:
 						if not combo_active:
@@ -4456,6 +4466,11 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 					steam_particles.restart()
 				GameState.add_score(int(15 * delta * 10))
 				
+		# Solar Wind Surge Thermal Evaporation: Light water spray partially vaporizes in the scorching coronal blast
+		if wind_state == 2 and solar_wind_enabled:
+			if GameState.current_weapon_id != "heavy" and GameState.current_weapon_id != "precision":
+				damage_mult *= 0.70 # -30% cooling efficiency on fine droplet sprays
+				
 		if is_critical:
 			var dmg = current_weapon_power * (current_weapon_crit * GameState.crit_damage_mult) * damage_mult * current_spray_efficiency * delta
 			if active_weather == "coronal_eclipse":
@@ -5377,7 +5392,7 @@ func _process_solar_wind(delta: float) -> void:
 				if wind_warn_label:
 					var is_kr = GameState.language == "KR"
 					wind_warn_label.font = load("res://assets/fonts/Galmuri11.ttf") if is_kr else preload("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
-					wind_warn_label.text = "⚠ 태양풍 접근 [%d KTS]!" % int(round(current_wind_knots)) if is_kr else "⚠ WIND INCOMING [%d KTS]!" % int(round(current_wind_knots))
+					wind_warn_label.text = "⚠ 태양풍 접근!" if is_kr else "⚠ SOLAR WIND INCOMING!"
 					wind_warn_label.modulate = Color(1.0, 0.9, 0.3, 1.0)
 					wind_warn_label.visible = true
 					wind_warn_label.modulate.a = 0.0
@@ -5406,7 +5421,7 @@ func _process_solar_wind(delta: float) -> void:
 				if wind_warn_label:
 					var is_kr = GameState.language == "KR"
 					wind_warn_label.font = load("res://assets/fonts/Galmuri11.ttf") if is_kr else preload("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
-					wind_warn_label.text = "태양풍 [%d KTS]!" % int(round(current_wind_knots)) if is_kr else "SOLAR WIND [%d KTS]!" % int(round(current_wind_knots))
+					wind_warn_label.text = "태양풍 돌풍!" if is_kr else "SOLAR WIND SURGE!"
 					wind_warn_label.modulate = Color(1.0, 0.6, 0.1, 1.0)
 					wind_warn_label.pixel_size = 0.01  # Reset pulse
 				# Enable particle streaks (match wind direction)

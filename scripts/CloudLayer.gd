@@ -188,6 +188,7 @@ func _process_beach_clouds(delta: float) -> void:
 		return
 
 	var time = Time.get_ticks_msec() * 0.001
+	var surge_mult = 1.35 if (main_node and "wind_state" in main_node and main_node.wind_state == 2) else 1.0
 	
 	# Process existing clouds
 	for i in range(interactive_clouds.size() - 1, -1, -1):
@@ -200,8 +201,8 @@ func _process_beach_clouds(delta: float) -> void:
 		# Sync cloud drift direction with active wind direction
 		c["dir"] = wind_dir
 		
-		# Move horizontally across the combat plane
-		node.position.x += c["speed"] * c["dir"] * delta
+		# Move horizontally across the combat plane (boosted during active solar wind surge)
+		node.position.x += c["speed"] * c["dir"] * surge_mult * delta
 		
 		# Gentle vertical bobbing
 		var bob = sin(time * c["bob_speed"] + c["time_offset"]) * c["bob_amp"]
@@ -219,7 +220,10 @@ func _process_beach_clouds(delta: float) -> void:
 func _spawn_single_interactive_cloud(rng: RandomNumberGenerator, wind_dir: float, x_pos: float, is_initial: bool) -> void:
 	var base_y = rng.randf_range(11.5, 16.0) # Sky altitude passing directly over the Sun at Y=13.5
 	var z_depth = rng.randf_range(-37.0, -39.5) # Subtly layered in front of Sun at -42, far behind trees
-	var speed = rng.randf_range(3.8, 6.2) # Varied drift speed
+	var speed = rng.randf_range(3.8, 6.2) # Base drift speed
+	var main_node = get_tree().current_scene
+	if main_node and "current_wind_knots" in main_node and main_node.current_wind_knots > 0.0:
+		speed = lerpf(3.0, 7.5, main_node.current_wind_knots / 50.0) * rng.randf_range(0.9, 1.1)
 	var scale_factor = rng.randf_range(0.85, 1.35)
 	var radius = 5.6 * scale_factor
 	

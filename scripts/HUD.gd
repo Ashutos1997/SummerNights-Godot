@@ -411,37 +411,33 @@ func _setup_wind_indicator() -> void:
 	aero_hbox.name = "AeroHBox"
 	aero_hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	aero_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	aero_hbox.add_theme_constant_override("separation", 8)
+	aero_hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	aero_hbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	aero_hbox.add_theme_constant_override("separation", 6)
 	weather_icon_container.add_child(aero_hbox)
 	
-	# 1. Clean Direction Arrow Label (Direct placement, no enclosing box)
+	# 1. Clean Direction Arrow Label (Direct placement, perfectly centered vector glyph)
 	wind_direction_label = Label.new()
 	wind_direction_label.name = "DirectionLabel"
 	wind_direction_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	wind_direction_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	wind_direction_label.custom_minimum_size = Vector2(18, 24)
+	wind_direction_label.custom_minimum_size = Vector2(16, 20)
 	wind_direction_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	wind_direction_label.pivot_offset = Vector2(9, 12)
+	wind_direction_label.pivot_offset = Vector2(8, 10)
 	wind_direction_label.label_settings = LabelSettings.new()
-	wind_direction_label.label_settings.font = galmuri_font if galmuri_font else kenney_font
-	wind_direction_label.label_settings.font_size = 16
+	wind_direction_label.label_settings.font = inter_font if inter_font else galmuri_font
+	wind_direction_label.label_settings.font_size = 14
 	wind_direction_label.label_settings.font_color = Color(1.0, 0.85, 0.3, 0.95)
 	wind_direction_label.label_settings.outline_size = 2
 	wind_direction_label.label_settings.outline_color = Color.BLACK
 	wind_direction_label.text = "●"
 	aero_hbox.add_child(wind_direction_label)
 	
-	# 2. Main Wind Data Row (Center: Big 16px Knots + 3 Tall Pips)
-	var wind_data_hbox = HBoxContainer.new()
-	wind_data_hbox.name = "WindDataHBox"
-	wind_data_hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	wind_data_hbox.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	wind_data_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	wind_data_hbox.add_theme_constant_override("separation", 6)
-	aero_hbox.add_child(wind_data_hbox)
-	
+	# 2. Main Wind Data Label
 	wind_label = Label.new()
 	wind_label.name = "WindLabel"
+	wind_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	wind_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	wind_label.label_settings = LabelSettings.new()
 	wind_label.label_settings.font = galmuri_font if is_kr else kenney_font
 	wind_label.label_settings.font_size = 14 if is_kr else 14
@@ -449,13 +445,14 @@ func _setup_wind_indicator() -> void:
 	wind_label.label_settings.outline_size = 2
 	wind_label.label_settings.outline_color = Color.BLACK
 	wind_label.text = "바람 없음" if is_kr else "CALM"
-	wind_data_hbox.add_child(wind_label)
+	aero_hbox.add_child(wind_label)
 	
+	# 3. Wind Severity Gauge (3 Tall Pips)
 	var wind_pips_container = HBoxContainer.new()
 	wind_pips_container.name = "WindPipsContainer"
 	wind_pips_container.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	wind_pips_container.add_theme_constant_override("separation", 3)
-	wind_data_hbox.add_child(wind_pips_container)
+	aero_hbox.add_child(wind_pips_container)
 	
 	wind_pips.clear()
 	for i in range(3):
@@ -477,23 +474,23 @@ func _setup_wind_indicator() -> void:
 		wind_pips_container.add_child(pip)
 		wind_pips.append(pip)
 		
-	# 3. Vertical Hairline Divider
+	# 4. Vertical Hairline Divider
 	wind_divider = Panel.new()
 	wind_divider.name = "AeroDivider"
-	wind_divider.custom_minimum_size = Vector2(1, 22)
+	wind_divider.custom_minimum_size = Vector2(1, 20)
 	wind_divider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var div_style = StyleBoxFlat.new()
 	div_style.bg_color = Color(1.0, 0.85, 0.2, 0.25)
 	wind_divider.add_theme_stylebox_override("panel", div_style)
 	aero_hbox.add_child(wind_divider)
 	
-	# 4. Weather Icon (Direct placement, no enclosing box)
+	# 5. Weather Icon (Direct placement, perfectly centered)
 	if weather_icon:
-		weather_icon.custom_minimum_size = Vector2(24, 24)
+		weather_icon.custom_minimum_size = Vector2(22, 22)
 		weather_icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		weather_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		weather_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		weather_icon.pivot_offset = Vector2(12, 12)
+		weather_icon.pivot_offset = Vector2(11, 11)
 		aero_hbox.add_child(weather_icon)
 		
 	if not weather_timer_lbl:
@@ -1779,8 +1776,8 @@ func _apply_language(lang: String) -> void:
 		wind_label.label_settings.font_size = 15 if is_kr else 16
 
 	if wind_direction_label and wind_direction_label.label_settings:
-		wind_direction_label.label_settings.font = galmuri_font if galmuri_font else kenney_font
-		wind_direction_label.label_settings.font_size = 16
+		wind_direction_label.label_settings.font = inter_font if inter_font else galmuri_font
+		wind_direction_label.label_settings.font_size = 14
 		
 	update_wind_indicator(_current_knots, _current_wind_direction, _current_wind_is_active)
 
