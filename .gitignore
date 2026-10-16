@@ -29,3 +29,6 @@ viewer/
 # Local tools and asset generation scripts
 tools/
 
+# Screenshots
+screenshots/
+
