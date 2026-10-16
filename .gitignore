@@ -32,3 +32,8 @@ tools/
 # Screenshots
 screenshots/
 
+# Documentation and agent skills
+docs/
+.agents/
+skills-lock.json
+
