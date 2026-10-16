@@ -2,8 +2,6 @@
 
 Design tokens, color palettes, typography, and component specifications for *Summer Nights*.
 
-> For granular component specifications, token matrices, and lint rules, refer to [docs/system/](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/index.md), the [Rules Catalog](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/rules.md), and the interactive portal in [docs/site/index.html](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/site/index.html).
-
 ---
 
 ## 1. Color Palette

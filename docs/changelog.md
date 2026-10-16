@@ -15,8 +15,6 @@ All notable changes to the Summer Nights project will be documented in this file
 ### Improved
 * Unified Aero-Vector Weather Capsule HUD: Streamlined 172x44px telemetry plate at `y = 96px` with centered vector arrow (14px), 16px knots readout (`19 KTS` / `CALM`), 3-pip gauge, hairline divider, and 22x22px weather icon.
 * Settings Menu Symmetrical 4x2 Grid: Balanced 880px arcade plate with standardized 32px title header, dual 4-row columns, and full gamepad navigation.
-* Modular UI Design System Architecture (`docs/system/`): Complete Geist-modeled design system documentation with foundational tokens, 7 component specs, rules catalog, and registry.
-* Clean Minimalist Design System Portal (`docs/site/`): Minimal editorial documentation portal inspired by `design.how` with light/dark themes and 1:1 Godot in-engine interactive preview stages.
 * Export & Release Streamlining: Retired GitHub binary releases to establish itch.io as the single official distribution platform; export presets updated to v1.8.
 * Settings Menu Title Font Standardization: Standardized "SETTINGS" / "설정" modal header font to 32px across TitleScreen and HUD.
 * Documentation & README Streamlining: Consolidated gameplay overviews in English and Korean READMEs into a concise Key Features section.
@@ -363,8 +361,6 @@ All notable changes to the Summer Nights project will be documented in this file
 ### 개선됨 (Improved)
 * 통합 에어로 벡터 기상 캡슐 HUD: 우측 상단 172x44px 텔레메트리 플레이트(`y = 96px`)에 중앙 정렬 벡터 화살표(14px), 16px 풍속 수치(`19 KTS` / `바람 없음`), 3단계 핍 게이지, 구분선 및 22x22px 날씨 아이콘 적용.
 * 설정 메뉴 4x2 대칭 격자 개편: 32px 통일 헤더 타이틀, 좌우 4행 2열 레이아웃, 양방향 패드 네비게이션을 갖춘 880px 규격 아케이드 플레이트 정비.
-* 모듈형 UI 디자인 시스템 아키텍처 구축 (`docs/system/`): 파운데이션 토큰, 7대 컴포넌트 명세, 규칙 카탈로그, 레지스트리를 포함한 Geist 스타일 체계적 디자인 시스템 문서 완비.
-* 클린 미니멀 디자인 시스템 포털 개편 (`docs/site/`): `design.how` 스타일의 라이트/다크 에디토리얼 포털 구축 및 게임 엔진과 100% 동일한 1:1 고도 인터랙티브 프리뷰 스테이지 완비.
 * 배포 정책 및 프리셋 단일화: itch.io를 단독 공식 배포처로 확립하고 고도 내보내기 프리셋을 v1.8로 갱신.
 * 설정 메뉴 제목 서체 크기 표준화: 타이틀 화면 및 인게임 HUD의 설정 모달 제목 폰트 크기를 32px로 통일.
 * 문서 및 README 개편: 영문 및 한국어 README의 설명을 핵심 특징(Key Features) 항목으로 압축 정돈.
