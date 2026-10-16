@@ -42,7 +42,7 @@ Design tokens, color palettes, typography, and component specifications for *Sum
   * *Power Up:* Shared gauge (Purple Catastrom or Cyan Celestial).
 
 ### Telemetry & Combat Badges
-* **Unified Aero-Weather Capsule:** Top-right 172x44px plate at `y = 96px` (4px radius, 1px border, 4px shadow) fusing wind telemetry and weather bay in a centered flat row (`ALIGNMENT_CENTER`, uniform 6px element separation) without dead gaps. Features high-visibility vector arrow (`◀`, `▶`, `●` in 14px `Inter-Medium` for vertical centering), large 16px knots readout (`19 KTS` / `CALM`), 3-pip severity gauge (5x16px pips), 1x20px hairline divider, and direct 22x22px weather icon. Flashes border and text from Gold `Color(1.0, 0.85, 0.2, 0.4)` to Cyan `Color(0.2, 0.85, 1.0, 0.95)` with 1.12x container pop and 1.25x arrow bounce on active gusts.
+* **Unified Aero-Weather Capsule:** 172x44px plate at `y = 96px` (4px radius, 1px border). Centered HBox (6px gap): vector arrow (`◀`/`▶`/`●`, 14px), 16px knots readout (`19 KTS` / `CALM`), 3-pip gauge (5x16px), 1x20px divider, and 22x22px weather icon. Flashes Cyan `Color(0.2, 0.85, 1.0, 0.95)` with 1.12x scale pop and 1.25x arrow bounce on gusts.
 * **Weapon Plate:** Bottom-left 44px plate at 24px margin with recessed 38x38px icon frame (4px radius, 1px gold border) and 26x26px icon.
 
 ### Popup Notifications (Toasts)
@@ -61,8 +61,8 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 * **Weapon Wheel:** 6 slices, 12px gap, 3D previews, stat bars, and crit multipliers.
 * **Drafting Screen:** 3-card deal entrance with rarity badges, `[ MAX ROLL! ]` highlights, and stack warning badges.
 * **Achievement Cards:** 700x100 cards (4px radius, 64x64 icon plate, concentric progress bars).
-* **Settings Screen:** Symmetrical 4x2 arcade plate (880px width, 36px column gap, vertical hairline separator) with standardized 32px header title matching all overlay menus, uniform 410x38px row geometry, and 14px row separation: Left column has `AUDIO` (Music & SFX sliders) + `GAMEPLAY & CONTROLS` (Sensitivity slider, Vibration toggle); Right column has `DISPLAY` (Fullscreen, Reduce Motion toggles) + `SYSTEM` (104x32px `LangPlate` ENG|KOR toggle, Gold Gun Skin toggle); 22px category top margins; bidirectional 4x2 gamepad navigation mesh.
-* **Pause Menu:** Flat 280px vertical column (16px gap, 44px uniform buttons) with Abandon Run confirmation card (440x180px, 8px radius, 2px gold border, 90% black overlay, localized "DO YOU WANT TO END THIS RUN?" / "이번 런을 종료하시겠습니까?", dual 140x48px buttons with YES / NO options, NO default focus).
+* **Settings Screen:** Symmetrical 4x2 arcade modal (880px width, 32px title, hairline divider, 410x38px rows). Left column: Audio (Music/SFX) & Controls (Sensitivity/Vibration). Right column: Display (Fullscreen/Reduce Motion) & System (LangPlate ENG|KOR, Gold Skin). Full gamepad navigation.
+* **Pause Menu:** 280px vertical column (16px gap, 44px buttons). Quitting triggers Abandon Run confirmation card (440x180px, 8px radius, 2px gold border, YES/NO with NO default focus).
 * **Title Screen:** Symmetrical horizontal split (840x400) with 340px vertical divider, twin 144x52 stats cards, and mode buttons.
 * **Timer Glide Intro:** Center countdown (`scale 1.6x`, 2.5s hold) glides (0.85s) into top-right anchor.
 * **Overtime HUD:** Pulsing crimson `[ OVERTIME ]` badge, red score burn feedback, and bankruptcy recap subtitle.
@@ -84,4 +84,4 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 * **Coronal Halo:** Additive coronal glow and heat ripples (`god_rays.gdshader`).
 * **Post-Processing:** `retro_postprocess.gdshader` on Layer 0 (behind HUD Layer 10).
 * **Retro Filters:** Retro Colors, Dithering, PS1 Shading, Heatwave 1984.
-* **Celestial Beach Clouds:** Procedural low-poly sphere clusters with toon lighting dynamically synchronized to global sky lighting (warm peach sunset to moonlit twilight cyan rim) at Sun depth (Z = -38).
+* **Celestial Beach Clouds:** Procedural low-poly clouds at Sun depth (Z = -38) with toon lighting synced to sky color.

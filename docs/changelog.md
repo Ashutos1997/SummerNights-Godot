@@ -6,31 +6,32 @@ All notable changes to the Summer Nights project will be documented in this file
 *(Note: Releases are exclusively maintained on itch.io starting from v1.8)*
 
 ### Added
-* Boss & Drone Telemetry HUD (Wave 30+): Added arcade-styled telemetry plate below Sun heat gauge (`y = 86px`, 4px radius, 8px drop shadow) featuring recessed 34x34px icon well, two-tier typography (kicker tag in `Inter-Medium` + bold header in `Kenney Future` with 2px black outline), tactile 24x24px recessed pip wells with destruction flash/bounce animations, 1.5px bottom accent hairline, `UIJuice` tactile audio sync, and neon cyan shield collapse breach transition.
-* Dedicated BGM vs. SFX Audio Separation: Added a dedicated `BGM` audio bus (`bus/3`) routing ocean ambient surf music, with separate "Music Volume" and "Sound Effects" sliders in both in-game and title screen Settings menus, persisted in user settings.
-* Pause Menu Abandon Run Confirmation Modal: Intercepts the "MAIN MENU" button during Normal and Endless runs with a dedicated confirmation popup (`AbandonConfirmModal`, 440x180px, 8px radius, 2px gold border, 90% black scrim) featuring localized "DO YOU WANT TO END THIS RUN?" / "이번 런을 종료하시겠습니까?" prompt and dual 140x48px buttons (`[ YES ]` / `[ NO ]` with safe default focus on `NO`).
-* Dynamic Coastal Wind Ballistics & Solar Wind Surges: Overhauled wind into two complementary systems: (1) Continuous Coastal Wind (14–50 kts) with Aero-Weather Capsule telemetry (`◀ 28 KTS` / `35 KTS ▶`), preserving 1:1 crisp reticle tracking with zero cursor drag while physically deflecting the 3D water stream trajectory across 42m based on weapon aerodynamics (Precision Stream: 0.0 immune, Heavy Cannon: 0.25, Kitsune Buster: 0.35 gun / 0.0 blade, Standard Blaster: 1.0, Tidal Gatling: 1.75 heavy spray sweep, Wind Breaker perk: -60% deflection) and dynamically driving beach cloud drift speeds; and (2) Celestial Solar Wind Surges (Wave 4+ / Level 4+), unleashing outward coronal heat waves with 3D warning banners (`⚠ SOLAR WIND INCOMING!` → `SOLAR WIND SURGE!`), cyan HUD gust flares, +50% wind deflection gusts, and 30% thermal spray evaporation on fine mist weapons (shattered by Ice Blast `[R]`).
-* Celestial Beach Clouds (Soft Cover): Added multiple randomized drifting low-poly beach clouds (up to 3 concurrently) to regular waves (Levels 2–5, non-boss Endless) at Sun depth (Z = -38). Clouds feature randomized speeds (3.8–6.2 m/s), altitudes (11.5–16.0m), scales, and organic puff clusters, providing dynamic soft cover absorbing 50% water damage with steam puffs and +15 bonus points.
+* Boss & Drone Telemetry HUD (Wave 30+): Retro arcade plate below Sun gauge (`y = 86px`) tracking boss shields and orbital drones with animated 24x24px pip wells.
+* Dedicated BGM vs. SFX Separation: Dedicated `BGM` audio bus (`bus/3`) and independent Music/SFX volume sliders in Settings menus.
+* Pause Menu Abandon Run Modal: Confirmation dialog (`AbandonConfirmModal`, 440x180px) intercepting "Main Menu" quits with safe NO default focus.
+* Dynamic Coastal Wind & Solar Wind Surges: Crosswinds (14–50 kts) curve water trajectories across 42m based on weapon aerodynamics, with reticle remaining 1:1 crisp. Periodic Coronal Surges (Wave 4+ / Level 4+) add +50% wind gusts and 30% thermal spray evaporation.
+* Celestial Beach Clouds (Soft Cover): Up to 3 clouds drift at Sun depth (Z = -38), absorbing 50% water damage and awarding +15 pts.
 
-* Unified Aero-Vector Weather Capsule HUD & Centering Polish: Streamlined the top-right environmental HUD into a sleek 172x44px retro telemetry pill at `y = 96px` (4px radius, 1px gold/cyan border). Flatted internal layout into a unified centered row (`ALIGNMENT_CENTER`, 6px uniform element separation) without dead gaps or nested sub-boxes, centering the entire cluster within the capsule. Switched vector arrow (`◀`, `▶`, `●`) to `Inter-Medium` (14px) for pixel-perfect vertical alignment with the bold 16px knots speed readout (`19 KTS` / `CALM` / `바람 없음`), 3-pip intensity gauge (5x16px pips), 1x20px hairline divider, and 22x22px weather icon. Standardized top-right typography to 22px across both English and Korean, maintaining a balanced 20px vertical gap below the score display and 18px gap above notifications.
-* Settings Menu 4x2 Symmetrical Grid & Spacing Polish: Perfectly balanced the Settings screen into a symmetrical 4x2 arcade layout (880px width, 36px column gap) with 4 settings on the left (AUDIO + GAMEPLAY & CONTROLS) and 4 on the right (DISPLAY + SYSTEM); standardized uniform 410x38px row geometry, 14px row separation, 22px category top margins, and a matching 104x32px bordered LangPlate toggle box for ENG|KOR; established a seamless bidirectional 4x2 gamepad navigation mesh.
-* Modular UI Design System Architecture (`docs/system/`): Implemented comprehensive Geist-modeled design system documentation following agentic skills specifications. Houses foundational tokens ([colors.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/colors.md), [typography.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/typography.md), [materials.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/materials.md), [layout.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/layout.md), [motion.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/motion.md), [writing.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/writing.md), [brand.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/brand.md)), 7 canonical component specs ([button.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/button.md), [toast.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/toast.md), [resource-meter.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/resource-meter.md), [aero-weather-capsule.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/aero-weather-capsule.md), [modal-frame.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/modal-frame.md), [settings-panel.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/settings-panel.md), [weapon-wheel.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/weapon-wheel.md)), master [rules catalog](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/rules.md), [coverage gaps](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/coverage-gaps.md), machine-readable [registry.json](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/registry.json), and [llms.txt](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/llms.txt).
-* Clean Minimalist Design System Portal (`docs/site/`): Overhauled the interactive design system documentation site into a clean, minimal editorial portal inspired by `design.how` and Geist. Features dual light and dark modes, streamlined left rail navigation, searchable rule catalog, and dedicated 1:1 Godot in-engine preview stages showcasing Kenney 9-patch water/ice resource meters, dynamic reticle crosshair with tank linkage, 172x44px aero-weather capsule, 6/6 boss telemetry plate, and strict 0px arcade buttons with synthesized `UIJuice` audio.
-* Export & Release Streamlining: Retired GitHub binary releases to eliminate multi-track confusion; itch.io is now the sole official release platform starting from v1.8, with Godot export presets pruned and updated to v1.8.
-* Settings Menu Title Font Standardization: Standardized the "SETTINGS" / "설정" title header font size to 32px across TitleScreen, HUD, and scene definitions, bringing it into 1:1 visual alignment with all other modal menus (Paused, Filters, Credits, Controls, Achievements, Buffs).
-* Documentation & README Streamlining: Consolidated gameplay and feature overviews in both English and Korean READMEs into a concise Key Features section while preserving full credits, third-party asset licenses, and 1:1 bilingual structure.
+### Improved
+* Unified Aero-Vector Weather Capsule HUD: Streamlined 172x44px telemetry plate at `y = 96px` with centered vector arrow (14px), 16px knots readout (`19 KTS` / `CALM`), 3-pip gauge, hairline divider, and 22x22px weather icon.
+* Settings Menu Symmetrical 4x2 Grid: Balanced 880px arcade plate with standardized 32px title header, dual 4-row columns, and full gamepad navigation.
+* Modular UI Design System Architecture (`docs/system/`): Complete Geist-modeled design system documentation with foundational tokens, 7 component specs, rules catalog, and registry.
+* Clean Minimalist Design System Portal (`docs/site/`): Minimal editorial documentation portal inspired by `design.how` with light/dark themes and 1:1 Godot in-engine interactive preview stages.
+* Export & Release Streamlining: Retired GitHub binary releases to establish itch.io as the single official distribution platform; export presets updated to v1.8.
+* Settings Menu Title Font Standardization: Standardized "SETTINGS" / "설정" modal header font to 32px across TitleScreen and HUD.
+* Documentation & README Streamlining: Consolidated gameplay overviews in English and Korean READMEs into a concise Key Features section.
 
 ### Fixed
-* Weapon Wheel Time Scale Trapping: Fixed softblock where closing the weapon wheel via pause menu or round completion left `Engine.time_scale` permanently at 0.2x slow motion.
-* Run State Leaks on Retry/Menu: Fixed bug where retrying or returning to menu from a defeat retained old score, perks, and stat multipliers instead of performing a clean run reset.
-* Dev Mode Endless Progression Softblock: Fixed issue where dev mode was trapped on Wave 1 because wave counter increments were mistakenly gated behind non-dev mode.
-* Ray Depth Division Safety: Added mathematical safeguards against division by zero in camera ray depth calculations when aiming at extreme view angles.
-* Catastrom State & Resume Guard: Fixed lingering Catastrom drag state on round loss and prevented premature timer ticks when unpausing outside active gameplay.
-* Title Modal Input Consistency: Supported both `ui_pause` and `ui_cancel` to ensure keyboard ESC and gamepad cancel reliably close all title screen modals.
-* Title Splash Screen Black Screen Softblock: Fixed issue where splash screen completion callback failed to execute due to mid-tween coroutine yields, and enabled instant skip via mouse click or keypress.
-* Settings Menu Korean Localization & Typeface Polish: Fixed bug where Settings row labels and the BGM numeric readout remained in default English typography under Korean mode, ensuring full Korean typeface (Galmuri11) application and instant refresh across all options and percentage values.
-* Button Focus Corner Radius Consistency: Fixed button focus rings having an unintended 6px rounded corner radius on the pause menu (e.g. Controls button after closing controls, Resume button), title screen, and modal dialogs, strictly aligning all button focus outlines to the established 0px sharp low-poly arcade design system.
-* Hit-Stop Frame Snappiness Polish: Reduced impact hit-stop freeze duration on Ice Blast sun freezes and Solar Flare Barrier shatters from 80ms down to a crisp 30ms (0.03s), eliminating perceived micro-stutter/lag spikes during high-framerate mouse tracking while preserving punchy tactile feedback.
+* Weapon Wheel Time Scale Trapping: Fixed softblock where closing the weapon wheel via pause menu left `Engine.time_scale` permanently at 0.2x.
+* Run State Leaks on Retry/Menu: Fixed bug where retrying or returning to menu from defeat retained old score, perks, and stat multipliers.
+* Dev Mode Endless Progression Softblock: Fixed issue where dev mode was trapped on Wave 1 due to gated counter increment.
+* Ray Depth Division Safety: Added safeguards against division by zero in camera ray depth calculations at extreme angles.
+* Catastrom State & Resume Guard: Fixed lingering Catastrom drag state on defeat and prevented premature timer ticks on unpause.
+* Title Modal Input Consistency: Supported both `ui_pause` and `ui_cancel` to close title screen modals.
+* Title Splash Screen Black Screen Softblock: Fixed coroutine delay preventing splash completion and added instant skip on click/keypress.
+* Settings Menu Korean Typography: Fixed Korean mode font inheritance on BGM percentage readout and row labels.
+* Button Focus Corner Radius Consistency: Fixed unintended 6px radius on button focus rings, standardizing all buttons to 0px sharp corners.
+* Hit-Stop Frame Snappiness Polish: Reduced impact hit-stop duration from 80ms to 30ms on ice freezes and flare barrier shatters.
 
 ---
 
@@ -353,32 +354,32 @@ All notable changes to the Summer Nights project will be documented in this file
 *(참고: v1.8부터 itch.io가 단독 공식 릴리스 배포처로 운영됩니다)*
 
 ### 추가됨 (Added)
-* 보스 및 드론 텔레메트리 HUD (30웨이브 이상): 태양 열기 게이지 하단(`y = 86px`, 4px 라운딩, 8px 드롭 섀도우)에 아케이드 스타일 텔레메트리 플레이트를 추가하여 음각 34x34px 아이콘 웰, 2단 타이포그래피(`Inter-Medium`/`Galmuri11` 키커 태그 + 2px 검은 외곽선 `Kenney Future` 헤더), 파괴 플래시 및 바운스 연출을 갖춘 개별 24x24px 음각 핍 웰, 1.5px 하단 헤어라인 액센트 바, `UIJuice` 햅틱 사운드 싱크, 네온 시안 방어막 돌파 전환 지원.
-* 배경음악(BGM) 및 효과음(SFX) 독립 볼륨 분리: 전용 `BGM` 오디오 버스를 신설하여 파도 배경음을 라우팅하고, 인게임 및 타이틀 설정 창에 독립된 "배경음악 볼륨" 및 "효과음 볼륨" 슬라이더를 도입하여 사용자 설정에 개별 저장되도록 구현.
-* 일시정지 메뉴 진행 포기 확인 모달: 일반 및 엔들리스 모드 실행 중 일시정지 메뉴의 "메인 메뉴" 클릭 시 전용 확인 모달(`AbandonConfirmModal`, 440x180px, 8px 라운딩, 2px 골드 테두리, 90% 블랙 스크림)을 적용하여 명확한 런 포기 문구("DO YOU WANT TO END THIS RUN?" / "이번 런을 종료하시겠습니까?") 및 140x48px 규격의 `[ YES ]` / `[ NO ]`(안전 기본 포커스) 선택지를 제공.
-* 동적 해변 풍향 탄도학 및 태양풍 돌풍 시스템: 바람 시스템을 상호 보완적인 2대 시스템으로 고도화: (1) 에어로 기상 캡슐 텔레메트리(`◀ 28 KTS` / `35 KTS ▶`)를 갖춘 상시 해변 측풍(14~50노트)을 도입하여 마우스 커서 강제 드래그를 전면 배제하고 1:1 반응성을 유지하면서 42m 거리에 걸친 3D 물줄기 궤적만을 무기 공기역학(정밀 스트림: 0.0 완전 면역, 헤비 캐논: 0.25, 키츠네 버스터 IX: 0.35 사격 / 0.0 검, 기본 블래스터: 1.0, 타이달 개틀링: 1.75 휩쓸림, 윈드 브레이커: -60% 편차 감소)에 따라 물리적으로 굴절시키고 해변 구름 이동 속도와 연동; (2) 태양 본체의 천체 공격인 태양풍 돌풍(4웨이브/4레벨 이상)을 적용하여 3D 접근 배너(`⚠ SOLAR WIND INCOMING!` → `SOLAR WIND SURGE!`), 시안색 HUD 돌풍 플래시, +50% 풍압 서지, 미세 물방울에 대한 30% 열기 증발 페널티(헤비/정밀 관통, 얼음 폭발 `[R]`로 방어막 분쇄 및 돌풍 해제) 구현.
-* 천체 해변 구름 (소프트 엄폐): 일반 웨이브(2~5단계, 보스 제외 엔들리스 웨이브)에 태양 궤도 깊이(Z = -38)로 부유하는 다중 무작위 로우폴리 해변 구름(동시 최대 3개)을 추가. 구름은 무작위 속도(3.8~6.2 m/s), 고도(11.5~16.0m), 크기 및 유기적 클러스터 형상을 가지며, 물줄기 대미지를 50% 흡수하고 증기 이펙트와 +15점 보너스를 제공하는 동적 소프트 엄폐물 역할을 수행.
+* 보스 및 드론 텔레메트리 HUD (30웨이브 이상): 태양 게이지 하단(`y = 86px`)에 보스 방어막 및 궤도 드론 상태를 표시하는 아케이드 텔레메트리 플레이트 및 24x24px 핍 웰 추가.
+* 배경음악(BGM) 및 효과음(SFX) 독립 볼륨 분리: 전용 `BGM` 버스(`bus/3`) 신설 및 설정 메뉴에 독립된 배경음악/효과음 볼륨 슬라이더 추가.
+* 일시정지 메뉴 진행 포기 확인 모달: 일반 및 엔들리스 모드에서 "메인 메뉴" 클릭 시 안전 NO 기본 포커스를 갖춘 확인 팝업(`AbandonConfirmModal`, 440x180px) 추가.
+* 동적 해변 풍향 탄도학 및 태양풍 돌풍 시스템: 1:1 조준선 반응성을 유지하며 무기 공기역학에 따라 물줄기 궤적을 굴절시키는 해변 측풍(14~50노트) 및 +50% 풍압 서지와 30% 물 증발 페널티를 주는 태양풍 돌풍(4웨이브/4레벨 이상) 추가.
+* 천체 해변 구름 (소프트 엄폐): 태양 깊이(Z = -38)에 최대 3개의 구름이 부유하여 물줄기 대미지를 50% 흡수하고 +15점을 부여하는 소프트 엄폐물 추가.
 
 ### 개선됨 (Improved)
-* 통합 에어로 벡터 기상 캡슐 HUD 및 중앙 정렬 정밀화: 우측 상단 환경 정보 표시창을 시각적 군더더기 없는 172x44px 단일 아케이드 텔레메트리 알약형 캡슐(`y = 96px`, 4px 라운딩, 1px 골드/시안 테두리)로 정밀화. 캡슐 내부의 사각 이중 컨테이너 박스를 제거하고 단일 중앙 정렬 행(`ALIGNMENT_CENTER`, 6px 균일 요소 간격)으로 전면 평탄화하여 전체 요소를 캡슐 중앙에 응집 배치. 방향 화살표(`◀`, `▶`, `●`)를 `Inter-Medium`(14px) 서체로 교체하여 16px 대형 풍속 수치(`19 KTS` / `바람 없음`), 3단계 핍 게이지(5x16px), 1x20px 수직 구분선, 22x22px 날씨 아이콘과 수직 중심선(`y = 18px`)을 픽셀 단위로 일치시킴. 영문과 한국어의 상단 라벨 폰트 크기를 22px로 통일하여 언어에 상관없이 점수 하단에 정확히 20px, 알림창 상단에 18px의 안정적인 수직 여백을 1:1 완벽 구현.
-* 설정 메뉴 4x2 완벽 대칭 격자 및 간격 정밀화: 설정 창을 좌우 각각 4개 옵션(좌측: 오디오 + 조작 및 편의, 우측: 화면 + 시스템)으로 구성된 4x2 대칭형 아케이드 플레이트(너비 880px, 36px 열 간격)로 정밀 개편; 균일한 410x38px 행 규격, 14px 행 간격, 22px 카테고리 상단 여백 및 ON/OFF 버튼과 동일한 104x32px 테두리 플레이트의 언어 토글 박스(ENG|KOR)를 적용하고 양방향 4x2 패드 십자 이동 메시 구축.
-* 모듈형 UI 디자인 시스템 아키텍처 구축 (`docs/system/`): 에이전틱 스킬 규격을 준수하는 Geist 스타일의 체계적인 UI 디자인 시스템 문서군을 신설. 7개 파운데이션 토큰 명세([colors.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/colors.md), [typography.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/typography.md), [materials.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/materials.md), [layout.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/layout.md), [motion.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/motion.md), [writing.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/writing.md), [brand.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/brand.md)), 7대 표준 컴포넌트 스펙([button.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/button.md), [toast.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/toast.md), [resource-meter.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/resource-meter.md), [aero-weather-capsule.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/aero-weather-capsule.md), [modal-frame.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/modal-frame.md), [settings-panel.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/settings-panel.md), [weapon-wheel.md](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/weapon-wheel.md)), 마스터 [규칙 카탈로그](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/rules.md), [커버리지 갭 가이드](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/coverage-gaps.md), 기계 판독형 [registry.json](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/registry.json) 및 [llms.txt](file:///Users/ashj/Desktop/Projects/SummerNights-Godot/docs/system/llms.txt) 완비.
-* 클린 미니멀 디자인 시스템 포털 개편 (`docs/site/`): 인터랙티브 디자인 시스템 문서 사이트를 `design.how` 및 Geist 스타일의 깔끔하고 미니멀한 에디토리얼 포털로 전면 개편. 라이트/다크 모드 듀얼 테마, 직관적인 좌측 레일 네비게이션, 검색 가능한 규칙 카탈로그, 그리고 실제 게임과 100% 동일한 1:1 고도 인게임 프리뷰 스테이지(Kenney 9패치 워터/아이스 자원 게이지, 수조 연동 동적 조준선 레티클, 172x44px 에어로 기상 캡슐, 6/6 보스 텔레메트리 플레이트, 엄격한 0px 아케이드 버튼 및 `UIJuice` 햅틱 사운드 연동)를 완비.
-* 배포 정책 및 프리셋 단일화: 다중 트랙 배포 혼선을 방지하기 위해 GitHub 바이너리 릴리스를 정리하고, v1.8부터 itch.io를 단독 공식 배포처로 유지하며 고도 내보내기 프리셋을 v1.8로 갱신.
-* 설정 메뉴 제목 서체 크기 표준화: 타이틀 화면과 인게임 HUD 및 씬 파일에 걸쳐 "SETTINGS" / "설정" 모달 제목 폰트 크기를 32px로 통일하여 다른 모든 오버레이 메뉴(일시정지, 필터, 크레딧, 조작법, 업적, 버프)와 1:1 시각적 일관성을 확보.
-* 문서 및 README 개편: 영문 및 한국어 README의 중복 설명을 핵심 특징(Key Features) 항목으로 정갈하게 압축하고, 전체 크레딧 및 서드파티 라이선스와 1:1 다국어 구조 유지.
+* 통합 에어로 벡터 기상 캡슐 HUD: 우측 상단 172x44px 텔레메트리 플레이트(`y = 96px`)에 중앙 정렬 벡터 화살표(14px), 16px 풍속 수치(`19 KTS` / `바람 없음`), 3단계 핍 게이지, 구분선 및 22x22px 날씨 아이콘 적용.
+* 설정 메뉴 4x2 대칭 격자 개편: 32px 통일 헤더 타이틀, 좌우 4행 2열 레이아웃, 양방향 패드 네비게이션을 갖춘 880px 규격 아케이드 플레이트 정비.
+* 모듈형 UI 디자인 시스템 아키텍처 구축 (`docs/system/`): 파운데이션 토큰, 7대 컴포넌트 명세, 규칙 카탈로그, 레지스트리를 포함한 Geist 스타일 체계적 디자인 시스템 문서 완비.
+* 클린 미니멀 디자인 시스템 포털 개편 (`docs/site/`): `design.how` 스타일의 라이트/다크 에디토리얼 포털 구축 및 게임 엔진과 100% 동일한 1:1 고도 인터랙티브 프리뷰 스테이지 완비.
+* 배포 정책 및 프리셋 단일화: itch.io를 단독 공식 배포처로 확립하고 고도 내보내기 프리셋을 v1.8로 갱신.
+* 설정 메뉴 제목 서체 크기 표준화: 타이틀 화면 및 인게임 HUD의 설정 모달 제목 폰트 크기를 32px로 통일.
+* 문서 및 README 개편: 영문 및 한국어 README의 설명을 핵심 특징(Key Features) 항목으로 압축 정돈.
 
 ### 수정됨 (Fixed)
-* 무기 휠 일시정지 슬로우 모션 고착 버그 수정: 일시정지나 라운드 종료로 무기 휠이 즉시 닫힐 때 `Engine.time_scale`이 0.2배속으로 영구 고착되던 소프트블록 해결.
-* 재시도 및 메뉴 복귀 시 런 상태 누수 해결: 패배 후 재시도하거나 메인 메뉴로 복귀할 때 이전 런의 점수, 퍽, 능력치 배율이 초기화되지 않고 유지되던 버그 수정.
-* 개발자 모드 엔들리스 1웨이브 고착 수정: 개발자 모드에서 웨이브 카운트 증가 로직이 누락되어 1웨이브에 갇히던 소프트블록 수정.
-* 광선 깊이 0 나누기 방지: 극단적인 시야각 조준 시 카메라 광선 Z축 0 나누기로 인한 잠재적 오류 방지.
-* 카타스트롬 드래그 및 재개 가드: 라운드 패배 시 카타스트롬 드래그 잔존 상태를 정리하고, 게임플레이 외 상태에서 일시정지 해제 시 타이머 오작동 방지.
-* 타이틀 모달 취소 입력 일관화: `ui_pause`와 `ui_cancel`을 모두 지원하여 키보드 ESC 및 게임패드 취소 버튼으로 모든 모달 창이 정상적으로 닫히도록 개선.
-* 타이틀 스플래시 화면 검은 화면 멈춤 수정: 트윈 코루틴 지연으로 인해 스플래시 완료 콜백이 등록되지 않던 문제를 수정하고, 마우스 클릭이나 키 입력 시 즉시 스플래시를 건너뛰도록 개선.
-* 설정 메뉴 한국어 서체 및 번역 일괄 적용: 2단 레이아웃 개편 후 배경음악 볼륨 수치(예: 80%) 및 행 레이블에 한국어 갈무리11 서체가 온전히 적용되지 않던 현상을 수정하여 모든 옵션명과 백분율 수치가 통일된 한국어 픽셀 서체로 정상 표시되도록 개선.
-* 버튼 포커스 외곽선 라운딩 규격화 (0px): 일시정지 메뉴(조작법 창 닫은 후 CONTROLS 버튼, RESUME 버튼 등), 타이틀 화면 및 모달 대화 상자에서 버튼 포커스 링 테두리에 6px 모서리 굴곡이 적용되던 문제를 수정하여 모든 버튼 포커스 외곽선이 로우폴리 아케이드 디자인 시스템 규격(0px 직각 모서리)에 일치하도록 개선.
-* 타격감 역경직(Hit-Stop) 프레임 반응성 개선: 얼음 폭발(Ice Blast) 태양 동결 및 태양 플레어 방어막 파괴 시 적용되던 히트스톱 일시정지 시간을 기존 80ms에서 경쾌한 30ms(0.03초)로 단축하여, 고주사율 마우스 트래킹 환경에서 끊김이나 렉으로 오인되던 현상을 해결하고 경쾌한 손맛 유지.
+* 무기 휠 일시정지 슬로우 모션 고착 버그 수정: 일시정지 또는 라운드 종료 시 `Engine.time_scale`이 0.2배속으로 고착되던 문제 해결.
+* 재시도 및 메뉴 복귀 시 런 상태 누수 해결: 패배 후 재시도 또는 메인 메뉴 복귀 시 점수, 퍽, 능력치 배율이 유지되던 버그 수정.
+* 개발자 모드 엔들리스 1웨이브 고착 수정: 개발자 모드에서 웨이브 카운트 증가 로직이 누락되어 1웨이브에 갇히던 문제 수정.
+* 광선 깊이 0 나누기 방지: 극단적인 각도 조준 시 카메라 광선 Z축 0 나누기 오류 방지.
+* 카타스트롬 드래그 및 재개 가드: 라운드 패배 시 드래그 잔존 상태 정리 및 비게임플레이 상태 일시정지 해제 오작동 방지.
+* 타이틀 모달 취소 입력 일관화: `ui_pause`와 `ui_cancel`을 모두 지원하여 ESC 및 패드 취소 키로 모달 닫기 지원.
+* 타이틀 스플래시 화면 검은 화면 멈춤 수정: 트윈 지연으로 인한 스플래시 멈춤을 수정하고 클릭/키 입력 시 즉시 건너뛰기 지원.
+* 설정 메뉴 한국어 서체 및 번역 일괄 적용: BGM 볼륨 백분율 수치 및 옵션 라벨에 갈무리11 서체 정상 적용.
+* 버튼 포커스 외곽선 라운딩 규격화 (0px): 일시정지 및 모달 버튼 포커스 링의 6px 라운딩을 아케이드 규격인 0px 직각으로 일치화.
+* 타격감 역경직(Hit-Stop) 반응성 개선: 얼음 폭발 동결 및 방어막 파괴 히트스톱 시간을 80ms에서 30ms로 단축하여 마우스 트래킹 반응성 개선.
 
 ---
 

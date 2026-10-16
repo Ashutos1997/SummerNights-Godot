@@ -12,7 +12,7 @@ Architectural map and layout reference for `HUD.tscn`.
 
 ### Top-Center
 * **SunHeatBar:** Celsius gauge (`HEAT | X°C`). Reaching 100% triggers Supernova.
-* **BossEncounterHUD:** Retro arcade telemetry plate at `y = 86px` (4px radius, 1px gold border, 8px drop shadow). Features recessed 34x34px shield icon plate, two-tier typography (`[ ORBITAL SHIELD ]` kicker + `6/6 ACTIVE` title), tactile 24x24px recessed pip wells for drone tracking, 1.5px bottom accent hairline, and harmonic matrix tethers.
+* **BossEncounterHUD:** Telemetry plate at `y = 86px` (4px radius, 1px gold border). Shows 34x34px icon, two-tier status kicker, 24x24px drone pip wells, and harmonic matrix tethers.
 * **Phase2Label:** Warning banner for boss phase transitions.
 * **Achievement & Buff Toasts:** 500px centered plates (4px radius, 40x40 icon, 1.5px depletion bar). Slides from top (`y = 24.0` / `y = 106.0`).
 
@@ -20,17 +20,15 @@ Architectural map and layout reference for `HUD.tscn`.
 * **TopRightInfo (VBoxContainer):** 24px right-aligned container at `y = 22px` (`offset_bottom = 76px`, 2px separation). Unified 22px typography across both English and Korean.
   * **TimerLabel:** Wave countdown (22px). Intro animation starts centered (`scale 1.6x`, 2.5s hold) and glides (0.85s) into position. Red pulse under 10s. Shows `[ OVERTIME ]` badge during boss overtime.
   * **ScoreLabel:** Live score display (22px). Flashes red during Overtime score burn.
-* **Unified Aero-Weather Capsule (`WeatherIconContainer`):** Streamlined 172x44px retro telemetry pill at `y = 96px` (4px radius, 1px gold/cyan border), providing a clean 20px vertical gap below the score display and 18px gap above toasts, completely unified across languages:
-  * *Unified Centered Layout:* Flat HBoxContainer (`separation = 6`, `alignment = ALIGNMENT_CENTER`) packing vector arrow, knots speed, pips, divider, and weather icon into an evenly spaced cluster centered within the capsule with zero dead gaps.
-  * *Vector Direction Arrow:* High-visibility vector arrow (`◀`, `▶`, or `●` when calm) rendered in `Inter-Medium` (14px) for pixel-perfect vertical centering aligned with typography.
-  * *Wind Speed & Intensity Gauge:* High-legibility 16px knots readout (`19 KTS` in EN/KR; `CALM` / `바람 없음` at 14px) paired with a 3-pip intensity gauge (5x16px pips: Tier 1 `<24kts`, Tier 2 `24–35kts`, Tier 3 `≥36kts`). Illuminates cyan (`#33CCFF`) with a 1.12x container scale pop and 1.25x arrow bounce during active gust surges.
-  * *Hairline Divider:* 1px vertical separator (`1x20px`).
-  * *Weather Icon:* Direct 22x22px weather condition icon with subtle pulse tweens on weather transitions.
+* **Unified Aero-Weather Capsule (`WeatherIconContainer`):** 172x44px telemetry plate at `y = 96px` (4px radius, 1px border). Centered HBox (6px gap):
+  * *Vector Arrow:* `◀`, `▶`, or `●` (14px). Bounces 1.25x during gusts.
+  * *Speed & Gauge:* 16px knots readout (`19 KTS` / `CALM`) and 3-pip intensity gauge (Tier 1 `<24kts`, Tier 2 `24–35kts`, Tier 3 `≥36kts`). Flashes cyan on surges.
+  * *Divider & Icon:* 1px hairline divider and 22x22px weather icon.
 * **WeatherTimerLabel:** Eclipse duration timer anchored beneath the weather icon.
 * **ToastContainer (VBoxContainer):** 380px notification column at `y = 158px` (8px gap) for combat and unlock alerts with 1.5px depletion bars and staggered reflow.
 
 ### Center
-* **Crosshair:** Dynamic weapon reticle tracking water tank with 1:1 responsive input (zero cursor drag). Atmospheric wind curves the 3D water stream trajectory across 42m, requiring tactical windage leading or aerodynamic weapon selection.
+* **Crosshair:** Dynamic weapon reticle with 1:1 input. Crosswinds curve water stream over 42m, requiring windage compensation.
   * *Blade Mode:* Katana crescent brackets with tsuba accents.
   * *Celestial Timer:* 360° cyan countdown ring (pulses orange at ≤3.0s).
   * *Thermal Falloff:* Reticle shifts Cyan → Warm Orange (>2s) → Overtime Crimson (>3s) with 12px `[ HEAT FALLOFF ]` steam badge (`icon_spray_falloff.svg`).
@@ -52,18 +50,18 @@ Architectural map and layout reference for `HUD.tscn`.
 ## 2. Screen Overlays (Menus)
 * **Z-Index Layering:** All modal menus render at `z_index = 50` above HUD gameplay elements (`z_index = 0`). Opening any menu immediately cancels active timer intros. Screen fades use `z_index = 100`.
 * **Styling:** 96px left margin, 24px vertical gap, gold borders, and localized "PRESS ESC TO CLOSE" prompts.
-* **PauseScreen (`ESC`):** 280px vertical button stack (Resume, Settings, Filters, Credits, Controls, Achievements, Buffs, Menu). Main Menu button triggers AbandonConfirmModal (440x180px, 8px radius, 2px gold border, 90% black overlay, localized "DO YOU WANT TO END THIS RUN?" / "이번 런을 종료하시겠습니까?", dual 140x48px buttons with YES / NO options, NO default focus).
+* **PauseScreen (`ESC`):** 280px button stack (Resume, Settings, Filters, Credits, Controls, Achievements, Buffs, Menu). "Main Menu" opens AbandonConfirmModal (440x180px, YES/NO with NO default focus).
 * **CreditsScreen:** Autoscrolling bilingual credits with complete asset attributions.
 * **AchievementsScreen:** 700x100 card list tracking 14 achievements with progress bars and badges.
 * **DraftingScreen (Perks):** 3-card post-boss modal with rarity badges, `[ MAX ROLL! ]` highlights, and stack warning badges.
 * **FiltersScreen:** Mutually exclusive post-processing options (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
 * **ControllerScreen:** Keyboard and Xbox layout diagrams with control legends.
-* **SettingsScreen:** Symmetrical 4x2 arcade plate (880px width, 36px separation, vertical hairline separator) with standardized 32px header title: Left column has `AUDIO` (Music & SFX sliders) + `GAMEPLAY & CONTROLS` (Sensitivity, Vibration); Right column has `DISPLAY` (Fullscreen, Reduce Motion) + `SYSTEM` (104x32px `LangPlate` ENG|KOR, Gold Gun Skin); uniform 410x38px row geometry and 14px row separation.
+* **SettingsScreen:** Symmetrical 4x2 arcade plate (880px, 32px title). Left column: Audio (Music/SFX) & Controls (Sensitivity/Vibration). Right column: Display (Fullscreen/Reduce Motion) & System (Language plate ENG|KOR, Gold Skin).
 * **WeaponWheel (`TAB`):** 0.2x slow-mo 6-slice wedge with 3D previews, stat bars, and crit multipliers.
-* **End State Screens:** Fullscreen modal overlays (`WinScreen`, `EndScreen`, `LoseScreen`) with content container rendered above `BorderPanel` to eliminate drop shadow dimming.
-  * *WinScreen:* Level complete breakdown with loading status.
-  * *LoseScreen:* Wave reached, survival time, score recap, and bankruptcy subtitle if defeated in Overtime.
-  * *EndScreen (Normal Victory):* Hero title (`SUMMER'S OVER`), lore subtitle, diamond divider, milestone unlock tag, 344px telemetry grid (`LEVELS CLEARED 6 / 6`, `CLEAR TIME`, `FINAL SCORE`), and dual 160x44px buttons (`PlayAgainBtn`, `MenuBtn`).
+* **End State Screens:** Fullscreen modal overlays (`WinScreen`, `EndScreen`, `LoseScreen`).
+  * *WinScreen:* Level complete stats.
+  * *LoseScreen:* Wave reached, survival time, score recap, and Overtime bankruptcy subtitle.
+  * *EndScreen (Normal Victory):* Hero title (`SUMMER'S OVER`), subtitle, 344px telemetry grid (Levels Cleared, Time, Score), unlock milestones, and Retry/Menu buttons.
 
 ---
 

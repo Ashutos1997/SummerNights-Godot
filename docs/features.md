@@ -45,13 +45,13 @@ Master record of implemented features, mechanics, and systems in *Summer Nights*
 * **Solar Disruptions (Wave 6+):** Random micro-events (40%–60% chance) in non-boss waves:
   * *Thermal Barrier:* Cyan shield deflecting water; dissolves or shatters via Ice Blast for +1,000 pts.
   * *Flare Barrage:* Rapid volley of 5–7 solar flares across wide angles.
-* **Dynamic Atmospheric Wind & Ballistics:** Continuous coastal crosswinds scaling from 14–50 kts across waves and levels with Aero-Weather Capsule HUD telemetry (vector arrow `◀`/`▶`, bold 16px knots readout `19 KTS` / `CALM`, and 3-pip intensity gauge). Keeps reticle control 1:1 crisp with zero cursor drag while deflecting 3D water stream trajectory across 42m based on weapon aerodynamics: Precision Stream (0.0, 100% immune), Heavy Cannon (0.25), Kitsune Buster IX (0.35 gun, 0.0 blade), Standard Blaster (1.0), and Tidal Gatling (1.75). Synergizes with Wind Breaker perk (-60% deflection) and dynamically steers Beach Cloud drift speeds.
-* **Solar Wind Hazard (Coronal Surge):** Periodic celestial Sun attack (Wave 4+ / Level 4+) telegraphed by 3D warning banners (`⚠ SOLAR WIND INCOMING!` → `SOLAR WIND SURGE!`). Radiates outward with cyan HUD gust flares, +50% wind deflection gusts, and a scorching coronal heat wave causing 30% thermal water spray evaporation (bypassed by Heavy Cannon and Precision Stream; shattered by Ice Blast `[R]`).
+* **Dynamic Atmospheric Wind & Ballistics:** Crosswinds (14–50 kts) curve water trajectories across 42m based on weapon aerodynamics (Precision: 0.0, Heavy: 0.25, Kitsune: 0.35, Standard: 1.0, Tidal: 1.75). Reticle stays 1:1 crisp with zero drag. Synergizes with Wind Breaker (-60% deflection).
+* **Solar Wind Hazard (Coronal Surge):** Telegraphed surge (Wave 4+ / Level 4+) adding +50% wind gusts and 30% water spray evaporation. Bypassed by Heavy/Precision weapons; shattered by Ice Blast (`[R]`).
 * **Heat Mirage (Boss):** Spawns 2 decoys and overshield. Real Sun takes 1.5x damage to overshield; heat regen cut by 60%.
 * **Overtime ("Paid in Full"):** Boss Waves (Levels 5–6, Endless every 5th) hitting `0:00` burn score as life support. Defeating boss clears Overtime; zero score triggers bankruptcy defeat.
 
 ## 5. Dynamic Weather & Encounters
-* **Celestial Beach Clouds (Soft Cover):** Multiple stylized low-poly cumulus clouds (up to 3 concurrently) drift horizontally with randomized altitudes (11.5–16.0m), drift speeds (3.8–6.2 m/s), and organic puff clusters across regular waves (Levels 2–5, non-boss Endless) at Sun depth (Z = -38). Absorbs 50% water spray damage when passing in front of the Sun, emitting steam puffs and rewarding +15 pts.
+* **Celestial Beach Clouds (Soft Cover):** Up to 3 clouds drift at Sun depth (Z = -38), absorbing 50% water damage and awarding +15 pts on hit.
 * **Rainstorms:** Grants infinite water and passive Sun cooling.
 * **Solar Eclipse (Cold Stasis):** Lunar eclipse halting heat regen with -2.0°/s passive cooling and obsidian flares.
 * **Coronal Eclipse (Wave 45+):** Deep twilight, cloaked sunspots revealed by water/parries/ice, and +50% cooling on illuminated weakpoints.
@@ -70,13 +70,13 @@ Master record of implemented features, mechanics, and systems in *Summer Nights*
 
 ## 7. UI & Game Feel
 * **Menus:** Gold borders, 96px margins, Gamepad navigation, fullscreen default, and `z_index = 50` elevation.
-* **Settings:** Symmetrical 4x2 arcade plate (880px width, 36px separation) with standardized 32px header title, balancing 4 audio/control settings on the left and 4 display/system settings on the right with uniform row geometry and seamless gamepad navigation.
+* **Settings:** Symmetrical 4x2 arcade modal (880px) splitting audio/controls and display/system across dual columns with full gamepad navigation.
 * **Toasts & Popups:** Cyberpunk Arcade Plates (4px radius, 1px border, 40x40 icon plates, 1.5px depletion bars).
 * **Timer Glide Intro:** Round-start timer displays in screen center (`scale 1.6x`, 2.5s hold), then glides (0.85s) into top-right HUD anchor.
-* **Boss & Drone Telemetry HUD:** Retro arcade plate below Sun heat gauge (`y = 86px`, 4px radius, 8px drop shadow) featuring recessed 34x34px icon well, two-tier kicker & header typography, individual 24x24px recessed drone pip wells with destruction flash/bounce animations, tactile tick audio (`UIJuice`), and neon cyan shield collapse breach transition in Wave 30+.
+* **Boss & Drone Telemetry HUD:** Arcade plate below Sun gauge (`y = 86px`) with boss icon, tier kickers, animated drone pip wells, and neon breach transitions.
 * **Title Screen:** Symmetrical horizontal split (title, stats cards, mode buttons, version footer).
-* **Abandon Run Modal:** Intercepts Pause Menu "MAIN MENU" button during Normal and Endless runs with a confirmation popup (440x180px, 8px radius, 2px gold border, "DO YOU WANT TO END THIS RUN?" / "이번 런을 종료하시겠습니까?", YES / NO options with NO safe default focus).
-* **Victory Recap ("SUMMER'S OVER"):** Normal Mode completion modal (hero title, lore subtitle, diamond divider, milestone unlock tag, 344px telemetry grid for Levels Cleared `5 / 5`, Clear Time, Final Score, and Play Again / Menu buttons).
+* **Abandon Run Modal:** Confirmation dialog (440x180px) intercepting "Main Menu" quits with safe NO default focus.
+* **Victory Recap ("SUMMER'S OVER"):** Normal Mode completion screen showing levels cleared, clear time, final score, unlock milestones, and retry/menu buttons.
 * **Accessibility:** Full controller support with aim assist, "Reduce Motion" toggle, and EN/KR localization.
 
 ## 8. Audio
