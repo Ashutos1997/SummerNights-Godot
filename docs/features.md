@@ -73,7 +73,7 @@ Master record of implemented features, mechanics, and systems in *Summer Nights*
 * **Settings:** Symmetrical 4x2 arcade modal (880px) splitting audio/controls and display/system across dual columns with full gamepad navigation.
 * **Toasts & Popups:** Cyberpunk Arcade Plates (4px radius, 1px border, 40x40 icon plates, 1.5px depletion bars).
 * **Timer Glide Intro:** Round-start timer displays in screen center (`scale 1.6x`, 2.5s hold), then glides (0.85s) into top-right HUD anchor.
-* **Boss & Drone Telemetry HUD:** Arcade plate below Sun gauge (`y = 86px`) with boss icon, tier kickers, animated drone pip wells, and neon breach transitions.
+* **Boss & Drone Telemetry HUD:** Horizontally centered plate below Sun gauge (`y = 88px`) with boss icon, `[ ACTIVE DRONES ]` kicker tag and `%d/%d` count, animated drone pip wells, and clean dividerless silhouette.
 * **Title Screen:** Symmetrical horizontal split (title, stats cards, mode buttons, version footer).
 * **Abandon Run Modal:** Confirmation dialog (440x180px) intercepting "Main Menu" quits with safe NO default focus.
 * **Victory Recap ("SUMMER'S OVER"):** Normal Mode completion screen showing levels cleared, clear time, final score, unlock milestones, and retry/menu buttons.

@@ -379,9 +379,9 @@ func _setup_wind_indicator() -> void:
 	weather_icon_container.anchor_right = 1.0
 	weather_icon_container.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	weather_icon_container.offset_left = -196.0
-	weather_icon_container.offset_top = 96.0
+	weather_icon_container.offset_top = 92.0
 	weather_icon_container.offset_right = -24.0
-	weather_icon_container.offset_bottom = 140.0
+	weather_icon_container.offset_bottom = 136.0
 	weather_icon_container.visible = true
 	weather_icon_container.pivot_offset = Vector2(86, 22)
 	
@@ -922,6 +922,7 @@ func _ready() -> void:
 	var heat_hbox = HBoxContainer.new()
 	heat_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	heat_hbox.add_theme_constant_override("separation", 6)
+	heat_hbox.custom_minimum_size = Vector2(0, 26)
 	parent.add_child(heat_hbox)
 	parent.move_child(heat_hbox, heat_label.get_index())
 	
@@ -1712,13 +1713,13 @@ func _apply_language(lang: String) -> void:
 	var font: Font = galmuri_font if is_kr else kenney_font
 	var body_font: Font = galmuri_font if is_kr else load("res://assets/fonts/Inter-Medium.ttf")
 
-	# ── Gameplay HUD (Galmuri11 is small, so we scale it up in KR to visually match EN) ──
+	# ── Gameplay HUD (Galmuri11 22px matches Kenney Future 22px at 26px line height) ──
 	if heat_label:
 		if font: heat_label.add_theme_font_override("font", font)
-		heat_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
+		heat_label.add_theme_font_size_override("font_size", 22)
 		if heat_val_label:
 			if font: heat_val_label.add_theme_font_override("font", font)
-			heat_val_label.add_theme_font_size_override("font_size", 26 if is_kr else 22)
+			heat_val_label.add_theme_font_size_override("font_size", 22)
 		_update_heat_display(heat_bar.value if heat_bar else target_heat, true)
 	if water_label:
 		water_label.text = "물" if is_kr else "WATER"
@@ -4821,7 +4822,7 @@ func _init_boss_telemetry_hud() -> void:
 	boss_telemetry_plate.anchor_right = 0.5
 	boss_telemetry_plate.anchor_top = 0.0
 	boss_telemetry_plate.anchor_bottom = 0.0
-	boss_telemetry_plate.offset_top = 86.0
+	boss_telemetry_plate.offset_top = 88.0
 	boss_telemetry_plate.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	boss_telemetry_plate.grow_vertical = Control.GROW_DIRECTION_END
 	boss_telemetry_plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -4845,24 +4846,23 @@ func _init_boss_telemetry_hud() -> void:
 	style.content_margin_left = 12.0
 	style.content_margin_right = 12.0
 	style.content_margin_top = 7.0
-	style.content_margin_bottom = 6.0
+	style.content_margin_bottom = 7.0
 	boss_telemetry_plate.add_theme_stylebox_override("panel", style)
-
-	var root_vbox = VBoxContainer.new()
-	root_vbox.name = "RootVBox"
-	root_vbox.add_theme_constant_override("separation", 5)
-	boss_telemetry_plate.add_child(root_vbox)
 
 	var main_hbox = HBoxContainer.new()
 	main_hbox.name = "MainHBox"
 	main_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	main_hbox.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	main_hbox.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	main_hbox.add_theme_constant_override("separation", 12)
-	root_vbox.add_child(main_hbox)
+	boss_telemetry_plate.add_child(main_hbox)
 
 	# 1. Recessed Shield Micro-Plate & Two-Tier Label
 	var shield_box = HBoxContainer.new()
 	shield_box.name = "ShieldBox"
 	shield_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	shield_box.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	shield_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	shield_box.add_theme_constant_override("separation", 8)
 	main_hbox.add_child(shield_box)
 
@@ -4898,6 +4898,8 @@ func _init_boss_telemetry_hud() -> void:
 	var shield_text_col = VBoxContainer.new()
 	shield_text_col.name = "ShieldTextCol"
 	shield_text_col.alignment = BoxContainer.ALIGNMENT_CENTER
+	shield_text_col.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	shield_text_col.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	shield_text_col.add_theme_constant_override("separation", 1)
 	shield_box.add_child(shield_text_col)
 
@@ -4907,16 +4909,17 @@ func _init_boss_telemetry_hud() -> void:
 
 	boss_shield_kicker = Label.new()
 	boss_shield_kicker.name = "ShieldKicker"
-	boss_shield_kicker.text = "[ 궤도 방어막 ]" if is_kr else "[ ORBITAL SHIELD ]"
+	boss_shield_kicker.text = "[ 활성 드론 ]" if is_kr else "[ ACTIVE DRONES ]"
 	if body_f: boss_shield_kicker.add_theme_font_override("font", body_f)
 	boss_shield_kicker.add_theme_font_size_override("font_size", 9)
 	boss_shield_kicker.add_theme_color_override("font_color", Color(1.0, 0.85, 0.20, 0.75))
 	boss_shield_kicker.add_theme_constant_override("letter_spacing", 1)
+	boss_shield_kicker.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	shield_text_col.add_child(boss_shield_kicker)
 
 	boss_shield_label = Label.new()
 	boss_shield_label.name = "ShieldLabel"
-	boss_shield_label.text = "6/6 ACTIVE"
+	boss_shield_label.text = "6/6"
 	if title_f: boss_shield_label.add_theme_font_override("font", title_f)
 	boss_shield_label.add_theme_font_size_override("font_size", 13)
 	boss_shield_label.add_theme_color_override("font_color", Color(1.0, 0.90, 0.35))
@@ -4925,6 +4928,7 @@ func _init_boss_telemetry_hud() -> void:
 	boss_shield_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.6))
 	boss_shield_label.add_theme_constant_override("shadow_outline_size", 2)
 	boss_shield_label.add_theme_constant_override("shadow_offset_y", 2)
+	boss_shield_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	shield_text_col.add_child(boss_shield_label)
 
 	# 2. Separator Divider
@@ -4939,6 +4943,8 @@ func _init_boss_telemetry_hud() -> void:
 	boss_pips_container = HBoxContainer.new()
 	boss_pips_container.name = "PipsContainer"
 	boss_pips_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	boss_pips_container.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	boss_pips_container.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	boss_pips_container.add_theme_constant_override("separation", 6)
 	main_hbox.add_child(boss_pips_container)
 
@@ -4946,6 +4952,8 @@ func _init_boss_telemetry_hud() -> void:
 	boss_harmonic_box = HBoxContainer.new()
 	boss_harmonic_box.name = "HarmonicBox"
 	boss_harmonic_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	boss_harmonic_box.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	boss_harmonic_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	boss_harmonic_box.add_theme_constant_override("separation", 8)
 	boss_harmonic_box.visible = false
 	main_hbox.add_child(boss_harmonic_box)
@@ -4989,6 +4997,8 @@ func _init_boss_telemetry_hud() -> void:
 	var h_text_col = VBoxContainer.new()
 	h_text_col.name = "HarmonicTextCol"
 	h_text_col.alignment = BoxContainer.ALIGNMENT_CENTER
+	h_text_col.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	h_text_col.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	h_text_col.add_theme_constant_override("separation", 1)
 	boss_harmonic_box.add_child(h_text_col)
 
@@ -4999,6 +5009,7 @@ func _init_boss_telemetry_hud() -> void:
 	boss_harmonic_kicker.add_theme_font_size_override("font_size", 9)
 	boss_harmonic_kicker.add_theme_color_override("font_color", Color(1.0, 0.35, 0.95, 0.75))
 	boss_harmonic_kicker.add_theme_constant_override("letter_spacing", 1)
+	boss_harmonic_kicker.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	h_text_col.add_child(boss_harmonic_kicker)
 
 	boss_harmonic_label = Label.new()
@@ -5009,16 +5020,8 @@ func _init_boss_telemetry_hud() -> void:
 	boss_harmonic_label.add_theme_color_override("font_color", Color(1.0, 0.45, 0.95))
 	boss_harmonic_label.add_theme_color_override("font_outline_color", Color.BLACK)
 	boss_harmonic_label.add_theme_constant_override("outline_size", 2)
+	boss_harmonic_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	h_text_col.add_child(boss_harmonic_label)
-
-	# 5. Bottom Hairline Accent Bar
-	boss_accent_bar = ColorRect.new()
-	boss_accent_bar.name = "AccentBar"
-	boss_accent_bar.custom_minimum_size = Vector2(0, 1.5)
-	boss_accent_bar.color = Color(1.0, 0.85, 0.20, 0.40)
-	boss_accent_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	boss_accent_bar.size_flags_vertical = Control.SIZE_SHRINK_END
-	root_vbox.add_child(boss_accent_bar)
 
 	$HUD.add_child(boss_telemetry_plate)
 
@@ -5042,8 +5045,9 @@ func show_boss_drone_telemetry(total_drones: int, has_harmonic: bool = false, te
 			sp_style = sp_style.duplicate()
 			sp_style.border_color = Color(1.0, 0.82, 0.18, 0.45)
 			boss_shield_plate.add_theme_stylebox_override("panel", sp_style)
-	if boss_accent_bar:
-		boss_accent_bar.color = Color(1.0, 0.85, 0.20, 0.40)
+	boss_telemetry_plate.offset_left = 0.0
+	boss_telemetry_plate.offset_right = 0.0
+	boss_telemetry_plate.reset_size()
 	boss_telemetry_plate.scale = Vector2.ONE
 
 	for w in boss_pip_wells:
@@ -5097,13 +5101,13 @@ func show_boss_drone_telemetry(total_drones: int, has_harmonic: bool = false, te
 	boss_telemetry_plate.visible = true
 	if GameState.reduce_motion:
 		boss_telemetry_plate.modulate.a = 1.0
-		boss_telemetry_plate.offset_top = 86.0
+		boss_telemetry_plate.offset_top = 88.0
 	else:
 		boss_telemetry_plate.modulate.a = 0.0
-		boss_telemetry_plate.offset_top = 74.0
+		boss_telemetry_plate.offset_top = 76.0
 		boss_telemetry_tween = create_tween().set_parallel(true)
 		boss_telemetry_tween.tween_property(boss_telemetry_plate, "modulate:a", 1.0, 0.35).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		boss_telemetry_tween.tween_property(boss_telemetry_plate, "offset_top", 86.0, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		boss_telemetry_tween.tween_property(boss_telemetry_plate, "offset_top", 88.0, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 func update_boss_drone_telemetry(active_count: int) -> void:
 	if not boss_telemetry_plate or not boss_telemetry_plate.visible:
@@ -5162,13 +5166,6 @@ func on_boss_shield_collapsed() -> void:
 		c_style = c_style.duplicate()
 		c_style.border_color = Color(0.2, 0.85, 1.0, 0.65)
 		boss_telemetry_plate.add_theme_stylebox_override("panel", c_style)
-
-	if boss_accent_bar:
-		if not GameState.reduce_motion:
-			var a_tw = create_tween()
-			a_tw.tween_property(boss_accent_bar, "color", Color(0.2, 0.85, 1.0, 0.85), 0.25)
-		else:
-			boss_accent_bar.color = Color(0.2, 0.85, 1.0, 0.85)
 
 	if boss_shield_plate:
 		var sp_style = boss_shield_plate.get_theme_stylebox("panel") as StyleBoxFlat
@@ -5241,21 +5238,23 @@ func _update_boss_shield_label(active: int, total: int, collapsed: bool) -> void
 
 	if boss_shield_kicker:
 		if body_f: boss_shield_kicker.add_theme_font_override("font", body_f)
+		boss_shield_kicker.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		if collapsed or active <= 0:
 			boss_shield_kicker.text = "[ 방어막 돌파 ]" if is_kr else "[ BREACH SUCCESS ]"
 			boss_shield_kicker.add_theme_color_override("font_color", Color(0.2, 0.85, 1.0, 0.85))
 		else:
-			boss_shield_kicker.text = "[ 궤도 방어막 ]" if is_kr else "[ ORBITAL SHIELD ]"
+			boss_shield_kicker.text = "[ 활성 드론 ]" if is_kr else "[ ACTIVE DRONES ]"
 			boss_shield_kicker.add_theme_color_override("font_color", Color(1.0, 0.85, 0.20, 0.75))
 
 	if title_f: boss_shield_label.add_theme_font_override("font", title_f)
+	boss_shield_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	if collapsed or active <= 0:
 		boss_shield_label.text = "방어막 붕괴!" if is_kr else "SHIELD COLLAPSED!"
 		boss_shield_label.add_theme_color_override("font_color", Color(0.3, 0.95, 1.0))
 		if boss_shield_icon:
 			boss_shield_icon.self_modulate = Color(0.3, 0.95, 1.0)
 	else:
-		boss_shield_label.text = ("드론 %d/%d기 활성" % [active, total]) if is_kr else ("%d/%d ACTIVE" % [active, total])
+		boss_shield_label.text = "%d/%d" % [active, total]
 		boss_shield_label.add_theme_color_override("font_color", Color(1.0, 0.90, 0.35))
 		if boss_shield_icon:
 			boss_shield_icon.self_modulate = Color(1.0, 0.82, 0.18)
@@ -5268,6 +5267,7 @@ func _update_harmonic_matrix_label(active_tethers: int) -> void:
 
 	if boss_harmonic_kicker:
 		if body_f: boss_harmonic_kicker.add_theme_font_override("font", body_f)
+		boss_harmonic_kicker.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		if active_tethers <= 0:
 			boss_harmonic_kicker.text = "[ 매트릭스 해제 ]" if is_kr else "[ MATRIX CLEARED ]"
 			boss_harmonic_kicker.add_theme_color_override("font_color", Color(0.2, 0.85, 1.0, 0.85))
@@ -5276,6 +5276,7 @@ func _update_harmonic_matrix_label(active_tethers: int) -> void:
 			boss_harmonic_kicker.add_theme_color_override("font_color", Color(1.0, 0.35, 0.95, 0.75))
 
 	if title_f: boss_harmonic_label.add_theme_font_override("font", title_f)
+	boss_harmonic_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	if active_tethers <= 0:
 		boss_harmonic_label.text = "연결 해제!" if is_kr else "TETHERS BROKEN!"
 		boss_harmonic_label.add_theme_color_override("font_color", Color(0.2, 0.85, 1.0))

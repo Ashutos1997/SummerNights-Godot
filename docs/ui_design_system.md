@@ -40,7 +40,8 @@ Design tokens, color palettes, typography, and component specifications for *Sum
   * *Power Up:* Shared gauge (Purple Catastrom or Cyan Celestial).
 
 ### Telemetry & Combat Badges
-* **Unified Aero-Weather Capsule:** 172x44px plate at `y = 96px` (4px radius, 1px border). Centered HBox (6px gap): vector arrow (`◀`/`▶`/`●`, 14px), 16px knots readout (`19 KTS` / `CALM`), 3-pip gauge (5x16px), 1x20px divider, and 22x22px weather icon. Flashes Cyan `Color(0.2, 0.85, 1.0, 0.95)` with 1.12x scale pop and 1.25x arrow bounce on gusts.
+* **Unified Aero-Weather Capsule:** 172x44px plate at `y = 92px` (`offset_bottom = 136px`, bottom-aligned with Drone HUD; 4px radius, 1px border). Centered HBox (6px gap): vector arrow (`◀`/`▶`/`●`, 14px), 16px knots readout (`19 KTS` / `CALM`), 3-pip gauge (5x16px), 1x20px divider, and 22x22px weather icon. Flashes Cyan `Color(0.2, 0.85, 1.0, 0.95)` with 1.12x scale pop and 1.25x arrow bounce on gusts.
+* **Boss & Drone Telemetry Plate:** Centered plate at `y = 88px` (4px radius, 1px gold border). Horizontally centered `[ ACTIVE DRONES ]` kicker tag and numeric count (`6/6`), 24x24px pip wells, 1px vertical divider, and clean bottom-dividerless silhouette.
 * **Weapon Plate:** Bottom-left 44px plate at 24px margin with recessed 38x38px icon frame (4px radius, 1px gold border) and 26x26px icon.
 
 ### Popup Notifications (Toasts)
