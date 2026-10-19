@@ -1134,8 +1134,8 @@ func _show_quit_popup() -> void:
 	var yes_btn = quit_popup.get_node("CenterContainer/Panel/MarginContainer/VBoxContainer/HBoxContainer/YesBtn")
 	var no_btn = quit_popup.get_node("CenterContainer/Panel/MarginContainer/VBoxContainer/HBoxContainer/NoBtn")
 	
-	yes_btn.text = "예 (YES)" if is_kr else "YES"
-	no_btn.text = "아니요 (NO)" if is_kr else "NO"
+	yes_btn.text = "예" if is_kr else "YES"
+	no_btn.text = "아니오" if is_kr else "NO"
 	
 	# Apply standard button styles (Primary - NO)
 	var style_menu_btn = StyleBoxFlat.new()
@@ -1477,7 +1477,7 @@ func _show_stats() -> void:
 		{
 			"label_en": "BEST ENDLESS WAVE",
 			"label_kr": "엔들리스 최고 웨이브",
-			"value": ("%d 웨이브" % GameState.best_wave) if is_kr else ("WAVE %d" % GameState.best_wave),
+			"value": ("%d웨이브" % GameState.best_wave) if is_kr else ("WAVE %d" % GameState.best_wave),
 			"icon": "res://assets/ui/achievements/sunset.png"
 		},
 		{

@@ -1801,5 +1801,5 @@ func trigger_driver_overload() -> void:
 		var gs = get_node_or_null("/root/GameState")
 		var is_kr = (gs.language == "KR") if gs else false
 		var title = "드론 군체 무력화 완료!" if is_kr else "DRONE SWARM NEUTRALIZED!"
-		var desc = "솔라 드라이버 과열 — 태양 직접 냉각 가능!" if is_kr else "Solar Driver Overheated — Sun Vulnerable!"
+		var desc = "솔라 드라이버 과열 — 태양 직접 냉각 가능!" if is_kr else "Solar Driver overheated — Sun is vulnerable!"
 		main.hud.show_toast(title, desc, "res://assets/ui/icons/delivery-drone.svg", Color(1.0, 0.80, 0.20))

@@ -8,7 +8,7 @@ const ACHIEVEMENTS: Dictionary = {
 	"dawn_breaks": {
 		"icon": "res://assets/ui/achievements/sunset.png",
 		"title_en": "Dawn Breaks",
-		"title_kr": "새벽이 밝다",
+		"title_kr": "동트는 새벽",
 		"desc_en": "Beat Level 6 in Normal Mode.",
 		"desc_kr": "일반 모드에서 레벨 6을 클리어하세요."
 	},
@@ -43,7 +43,7 @@ const ACHIEVEMENTS: Dictionary = {
 	"shadow_walker": {
 		"icon": "res://assets/ui/achievements/eclipse.png",
 		"title_en": "Shadow Walker",
-		"title_kr": "그림자 걷는 자",
+		"title_kr": "그림자를 걷는 자",
 		"desc_en": "Survive a Solar Eclipse.",
 		"desc_kr": "일식 이벤트에서 생존하세요."
 	},
@@ -66,21 +66,21 @@ const ACHIEVEMENTS: Dictionary = {
 		"title_en": "Endurance",
 		"title_kr": "인내심",
 		"desc_en": "Survive 25 waves in Endless Mode.",
-		"desc_kr": "엔들리스 모드에서 25웨이브를 생존하세요."
+		"desc_kr": "엔들리스 모드에서 25웨이브까지 생존하세요."
 	},
 	"wave_master": {
 		"icon": "res://assets/ui/achievements/trophy.png",
 		"title_en": "Marathon Runner",
 		"title_kr": "마라톤 주자",
 		"desc_en": "Survive 50 waves in Endless Mode.",
-		"desc_kr": "엔들리스 모드에서 50웨이브를 생존하세요."
+		"desc_kr": "엔들리스 모드에서 50웨이브까지 생존하세요."
 	},
 	"weapon_mastery": {
 		"icon": "res://assets/ui/achievements/water-recycling.png",
 		"title_en": "Arsenal Expert",
 		"title_kr": "무기 전문가",
-		"desc_en": "Use all 5 weapons in a single run.",
-		"desc_kr": "한 게임에서 5개의 무기를 모두 사용하세요."
+		"desc_en": "Use 5 different weapons in a single run.",
+		"desc_kr": "한 게임에서 5종류의 무기를 사용하세요."
 	},
 	"ice_breaker": {
 		"icon": "res://assets/ui/achievements/water-splash.png",
@@ -110,21 +110,21 @@ const BUFFS: Dictionary = {
 		"icon": "res://assets/ui/achievements/water-recycling.png",
 		"title_en": "Deep Reserves",
 		"title_kr": "깊은 저장고",
-		"desc_en": "Max Water Tank capacity is permanently increased.",
-		"desc_kr": "최대 물탱크 용량이 영구적으로 증가했습니다."
+		"desc_en": "Permanently increases Max Water Tank capacity.",
+		"desc_kr": "최대 물탱크 용량이 영구적으로 증가합니다."
 	},
 	"cooling_upgrade": {
 		"icon": "res://assets/ui/achievements/water-splash.png",
 		"title_en": "Liquid Nitrogen",
 		"title_kr": "액체 질소",
-		"desc_en": "Water gun cooling power is permanently increased.",
-		"desc_kr": "물총의 냉각력이 영구적으로 증가했습니다."
+		"desc_en": "Permanently increases cooling power.",
+		"desc_kr": "물총의 냉각력이 영구적으로 증가합니다."
 	},
 	"ice_upgrade": {
 		"icon": "res://assets/ui/icons/ice-spear.svg",
 		"title_en": "Extra Ice Charge",
 		"title_kr": "추가 얼음 충전",
-		"desc_en": "Spawn with an additional Ice Burst charge.",
+		"desc_en": "Spawn with an additional Ice Blast charge.",
 		"desc_kr": "얼음 폭발 스킬이 1회 추가 충전된 상태로 시작합니다."
 	},
 	"gold_weapon": {
@@ -138,7 +138,7 @@ const BUFFS: Dictionary = {
 		"icon": "res://assets/ui/achievements/water-splash.png",
 		"title_en": "Catastrom Flow",
 		"title_kr": "카타스트롬 흐름",
-		"desc_en": "Increases Catastrom charge rate by 10%.",
+		"desc_en": "Increases Catastrom Charge Rate by 10%.",
 		"desc_kr": "카타스트롬 충전 속도가 10% 증가합니다."
 	},
 	"combo_grace": {
@@ -153,20 +153,20 @@ const BUFFS: Dictionary = {
 		"title_en": "Flare Refill Boost",
 		"title_kr": "플레어 충전 부스트",
 		"desc_en": "Intercepting flares refills 40% water (up from 30%).",
-		"desc_kr": "플레어 요격 시 물이 30%가 아닌 40% 충전됩니다."
+		"desc_kr": "플레어 요격 시 물 충전량이 30%에서 40%로 증가합니다."
 	},
 	"heat_resist": {
 		"icon": "res://assets/ui/achievements/ball-glow.png",
 		"title_en": "Heat Resistance",
 		"title_kr": "열 저항",
-		"desc_en": "Permanent 5% Heat Resistance across all waves.",
+		"desc_en": "Permanently increases Heat Resistance by 5%.",
 		"desc_kr": "모든 웨이브에서 열 저항이 5% 증가합니다."
 	},
 	"featherweight": {
 		"icon": "res://assets/ui/achievements/seagull.png",
 		"title_en": "Featherweight",
 		"title_kr": "깃털 같은 가벼움",
-		"desc_en": "Weapon swaps are 50% faster, and sun sway is reduced.",
+		"desc_en": "Weapon swaps are 50% faster, and Sun sway is reduced.",
 		"desc_kr": "무기 교체가 50% 빨라지고 태양의 흔들림이 감소합니다."
 	},
 	"eclipse_timer": {
@@ -392,7 +392,7 @@ const WAVE_PERKS: Dictionary = {
 		"title_en": "High Capacity",
 		"title_kr": "대용량",
 		"desc_en": "+%d%% Water Tank Size.",
-		"desc_kr": "물탱크 용량이 %d%% 증가합니다.",
+		"desc_kr": "물탱크 용량 +%d%%.",
 		"min_val": 8,
 		"max_val": 15,
 		"step": 1,
@@ -403,7 +403,7 @@ const WAVE_PERKS: Dictionary = {
 		"title_en": "Precision Optics",
 		"title_kr": "정밀 광학",
 		"desc_en": "+%d%% Critical Hit Damage.",
-		"desc_kr": "치명타 피해량이 %d%% 증가합니다.",
+		"desc_kr": "치명타 피해 +%d%%.",
 		"min_val": 8,
 		"max_val": 15,
 		"step": 1,
@@ -413,8 +413,8 @@ const WAVE_PERKS: Dictionary = {
 		"icon": "res://assets/ui/achievements/water-splash.png",
 		"title_en": "Thermal Insulator",
 		"title_kr": "열 절연체",
-		"desc_en": "+%d%% Cooling Power, -%d%% Water Drain (Rare).",
-		"desc_kr": "냉각력 +%d%%, 물 소모량 -%d%% (희귀).",
+		"desc_en": "+%d%% Cooling Power, -%d%% Water Drain.",
+		"desc_kr": "냉각력 +%d%%, 물 소모량 -%d%%.",
 		"min_val": 3,
 		"max_val": 6,
 		"min_val_2": 5,
@@ -426,8 +426,8 @@ const WAVE_PERKS: Dictionary = {
 		"icon": "res://assets/ui/achievements/eclipse.png",
 		"title_en": "Catastrom Flow",
 		"title_kr": "카타스트롬 흐름",
-		"desc_en": "+%d%% Catastrom charge rate.",
-		"desc_kr": "카타스트롬 충전 속도가 %d%% 증가합니다.",
+		"desc_en": "+%d%% Catastrom Charge Rate.",
+		"desc_kr": "카타스트롬 충전 속도 +%d%%.",
 		"min_val": 8,
 		"max_val": 15,
 		"step": 1,
@@ -438,7 +438,7 @@ const WAVE_PERKS: Dictionary = {
 		"title_en": "Heat Shield",
 		"title_kr": "열 차폐막",
 		"desc_en": "+%d%% Heat Resistance.",
-		"desc_kr": "열 저항이 %d%% 증가합니다.",
+		"desc_kr": "열 저항 +%d%%.",
 		"min_val": 3,
 		"max_val": 5,
 		"step": 1,
@@ -448,8 +448,8 @@ const WAVE_PERKS: Dictionary = {
 		"icon": "res://assets/ui/achievements/sunset.png",
 		"title_en": "Gravity Anchor",
 		"title_kr": "중력 닻",
-		"desc_en": "-%d%% Sun Sway Speed (Rare).",
-		"desc_kr": "태양의 흔들림 속도가 %d%% 감소합니다 (희귀).",
+		"desc_en": "-%d%% Sun Sway Speed.",
+		"desc_kr": "태양 흔들림 속도 -%d%%.",
 		"min_val": 5,
 		"max_val": 10,
 		"step": 1,
@@ -472,8 +472,8 @@ const WAVE_PERKS: Dictionary = {
 		"icon": "res://assets/ui/achievements/water-splash.png",
 		"title_en": "Heavy Water",
 		"title_kr": "중수",
-		"desc_en": "+%d%% Cooling Power, -%d%% Ult Charge (Rare).",
-		"desc_kr": "냉각력 +%d%%, 궁극기 충전 -%d%% (희귀).",
+		"desc_en": "+%d%% Cooling Power, -%d%% Ult Charge.",
+		"desc_kr": "냉각력 +%d%%, 궁극기 충전 -%d%%.",
 		"min_val": 8,
 		"max_val": 15,
 		"min_val_2": 8,
@@ -499,7 +499,7 @@ const WAVE_PERKS: Dictionary = {
 		"title_en": "Wind Breaker",
 		"title_kr": "바람막이",
 		"desc_en": "-%d%% Solar Wind Crosshair Drift.",
-		"desc_kr": "태양풍으로 인한 조준선 흔들림 -%d%%.",
+		"desc_kr": "태양풍 조준선 표류 -%d%%.",
 		"min_val": 35,
 		"max_val": 60,
 		"step": 5,
@@ -533,8 +533,8 @@ const WAVE_PERKS: Dictionary = {
 		"icon": "res://assets/ui/icons/sun.svg",
 		"title_en": "Solar Overclock",
 		"title_kr": "태양 오버클럭",
-		"desc_en": "+%d%% Cooling Power, +%d%% Sun Flare Fire Rate (Rare).",
-		"desc_kr": "냉각력 +%d%%, 태양 플레어 발사 빈도 +%d%% (희귀).",
+		"desc_en": "+%d%% Cooling Power, +%d%% Sun Flare Fire Rate.",
+		"desc_kr": "냉각력 +%d%%, 태양 플레어 발사 빈도 +%d%%.",
 		"min_val": 30,
 		"max_val": 40,
 		"min_val_2": 25,
@@ -580,6 +580,63 @@ const WAVE_PERKS: Dictionary = {
 		"max_val_2": 25,
 		"step": 5,
 		"weight": 80
+	},
+	"tailwind_drive": {
+		"icon": "res://assets/ui/icons/sun.svg",
+		"title_en": "Tailwind Drive",
+		"title_kr": "순풍 추진",
+		"desc_en": "+%.2f%% Cooling Power per knot of active wind speed.",
+		"desc_kr": "현재 풍속 1노트당 냉각력 +%.2f%%.",
+		"min_val": 25,
+		"max_val": 40,
+		"step": 5,
+		"weight": 70,
+		"is_float_val": true
+	},
+	"solar_sail": {
+		"icon": "res://assets/ui/achievements/eclipse.png",
+		"title_en": "Solar Sail",
+		"title_kr": "태양 돛",
+		"desc_en": "Immune to Solar Wind evaporation & +%d%% Ultimate Charge during surges.",
+		"desc_kr": "태양풍 증발 페널티 면역 및 돌풍 중 궁극기 충전 +%d%%.",
+		"min_val": 20,
+		"max_val": 35,
+		"step": 5,
+		"weight": 60
+	},
+	"gyroscopic_core": {
+		"icon": "res://assets/ui/icons/driver_fury.png",
+		"title_en": "Gyroscopic Core",
+		"title_kr": "자이로 코어",
+		"desc_en": "-%d%% Wind Crosshair Drift while actively spraying water.",
+		"desc_kr": "물 발사 중 태양풍 조준선 표류 -%d%%.",
+		"min_val": 30,
+		"max_val": 50,
+		"step": 5,
+		"weight": 80
+	},
+	"zephyr_dynamo": {
+		"icon": "res://assets/ui/achievements/water-recycling.png",
+		"title_en": "Zephyr Dynamo",
+		"title_kr": "풍력 충전기",
+		"desc_en": "+%.2f%% Water Refill Rate per knot of active wind speed.",
+		"desc_kr": "현재 풍속 1노트당 물 충전 속도 +%.2f%%.",
+		"min_val": 30,
+		"max_val": 50,
+		"step": 5,
+		"weight": 80,
+		"is_float_val": true
+	},
+	"slipstream_needle": {
+		"icon": "res://assets/ui/achievements/ball-glow.png",
+		"title_en": "Slipstream Needle",
+		"title_kr": "돌풍 저격수",
+		"desc_en": "+%d%% Crit Damage when wind speed is ≥25 KTS.",
+		"desc_kr": "풍속 25노트 이상일 때 치명타 피해 +%d%%.",
+		"min_val": 15,
+		"max_val": 25,
+		"step": 5,
+		"weight": 60
 	}
 }
 
@@ -647,8 +704,15 @@ func get_perk_description(perk_inst: Dictionary, is_kr: bool, stack_count: int =
 	var v2: int = int(round(float(raw_v2) * eff))
 	
 	var base_desc: String = ""
-	if "%d" in template:
-		if cfg.has("max_val_2"):
+	if "%" in template:
+		if cfg.get("is_float_val", false):
+			var f1: float = float(raw_v1) * 0.01 * eff
+			if cfg.has("max_val_2"):
+				var f2: float = float(raw_v2) * 0.01 * eff
+				base_desc = template % [f1, f2]
+			else:
+				base_desc = template % f1
+		elif cfg.has("max_val_2"):
 			base_desc = template % [v1, v2]
 		else:
 			base_desc = template % v1
@@ -671,6 +735,14 @@ var sun_sway_mult: float = 1.0
 var flare_rate_mult: float = 1.0
 var water_refill_mult: float = 1.0
 var base_cooling_mult: float = 1.0
+
+# Dynamic Wind & KTS Perk Variables
+var wind_cooling_per_knot: float = 0.0
+var solar_sail_active: bool = false
+var solar_sail_ult_bonus: float = 0.0
+var gyroscopic_spray_drift_reduction: float = 0.0
+var wind_refill_per_knot: float = 0.0
+var slipstream_crit_bonus: float = 0.0
 
 func reset() -> void:
 	level = 1
@@ -698,6 +770,12 @@ func reset() -> void:
 	flare_rate_mult = 1.0
 	water_refill_mult = 1.0
 	base_cooling_mult = 1.0
+	wind_cooling_per_knot = 0.0
+	solar_sail_active = false
+	solar_sail_ult_bonus = 0.0
+	gyroscopic_spray_drift_reduction = 0.0
+	wind_refill_per_knot = 0.0
+	slipstream_crit_bonus = 0.0
 	active_wave_perks.clear()
 	active_wave_perk_instances.clear()
 	weapons_used_this_run.clear()
@@ -845,6 +923,12 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 	heat_resistance = 0.05 if "rock_solid" in unlocked_achievements else 0.0
 	crit_damage_mult = 1.0
 	catastrom_charge_mult = 1.0
+	wind_cooling_per_knot = 0.0
+	solar_sail_active = false
+	solar_sail_ult_bonus = 0.0
+	gyroscopic_spray_drift_reduction = 0.0
+	wind_refill_per_knot = 0.0
+	slipstream_crit_bonus = 0.0
 	
 	if high_score >= 5000:
 		max_water_mult = 1.1
@@ -906,6 +990,17 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 				"deep_reservoir":
 					max_water_mult += v1
 					water_refill_mult -= v2
+				"tailwind_drive":
+					wind_cooling_per_knot += v1 * 0.01
+				"solar_sail":
+					solar_sail_active = true
+					solar_sail_ult_bonus += v1
+				"gyroscopic_core":
+					gyroscopic_spray_drift_reduction += v1
+				"zephyr_dynamo":
+					wind_refill_per_knot += v1 * 0.01
+				"slipstream_needle":
+					slipstream_crit_bonus += v1
 	else:
 		# Fallback if perks were added without instances (backwards compatibility)
 		for perk_id in active_wave_perks:
@@ -946,6 +1041,17 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 				"deep_reservoir":
 					max_water_mult += 0.35
 					water_refill_mult -= 0.20
+				"tailwind_drive":
+					wind_cooling_per_knot += 0.0030
+				"solar_sail":
+					solar_sail_active = true
+					solar_sail_ult_bonus += 0.25
+				"gyroscopic_core":
+					gyroscopic_spray_drift_reduction += 0.40
+				"zephyr_dynamo":
+					wind_refill_per_knot += 0.0040
+				"slipstream_needle":
+					slipstream_crit_bonus += 0.20
 				
 	# Balanced caps and floors to prevent infinite power scaling or game-breaking penalties in late waves
 	cooling_power_mult = clamp(cooling_power_mult, 0.5, 2.0)

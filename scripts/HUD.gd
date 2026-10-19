@@ -386,7 +386,7 @@ func _setup_wind_indicator() -> void:
 	weather_icon_container.pivot_offset = Vector2(86, 22)
 	
 	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.04, 0.02, 0.08, 0.85)
+	style.bg_color = Color(0.03, 0.02, 0.06, 0.82)
 	style.border_color = Color(1.0, 0.85, 0.2, 0.4)
 	style.border_width_left = 1
 	style.border_width_right = 1
@@ -544,7 +544,7 @@ func update_wind_indicator(knots: float, direction: float, is_active: bool) -> v
 		_set_wind_pips(0, false)
 		if plate_style:
 			plate_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
-			plate_style.bg_color = Color(0.04, 0.02, 0.08, 0.85)
+			plate_style.bg_color = Color(0.03, 0.02, 0.06, 0.82)
 		if div_style:
 			div_style.bg_color = Color(1.0, 0.85, 0.2, 0.2)
 		return
@@ -566,7 +566,7 @@ func update_wind_indicator(knots: float, direction: float, is_active: bool) -> v
 	if is_active:
 		if plate_style:
 			plate_style.border_color = Color(0.2, 0.85, 1.0, 0.95)
-			plate_style.bg_color = Color(0.02, 0.10, 0.18, 0.90)
+			plate_style.bg_color = Color(0.015, 0.08, 0.14, 0.82)
 		if div_style:
 			div_style.bg_color = Color(0.2, 0.85, 1.0, 0.4)
 		if wind_direction_label:
@@ -588,7 +588,7 @@ func update_wind_indicator(knots: float, direction: float, is_active: bool) -> v
 		_last_wind_active = false
 		if plate_style:
 			plate_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
-			plate_style.bg_color = Color(0.04, 0.02, 0.08, 0.85)
+			plate_style.bg_color = Color(0.03, 0.02, 0.06, 0.82)
 		if div_style:
 			div_style.bg_color = Color(1.0, 0.85, 0.2, 0.25)
 		if wind_direction_label:
@@ -1754,7 +1754,7 @@ func _apply_language(lang: String) -> void:
 		if GameState.is_survival_mode:
 			level_label.text = "웨이브 %02d" % GameState.current_wave if is_kr else "WAVE %02d" % GameState.current_wave
 		else:
-			level_label.text = "%02d 단계" % GameState.level if is_kr else "LVL  %02d" % GameState.level
+			level_label.text = "레벨 %02d" % GameState.level if is_kr else "LVL %02d" % GameState.level
 		if font: level_label.add_theme_font_override("font", font)
 		level_label.add_theme_font_size_override("font_size", 22)
 	if timer_label:
@@ -2135,7 +2135,7 @@ func _apply_language(lang: String) -> void:
 			var hdr_engine = credits_list.get_node_or_null("HdrEngine")
 			if hdr_engine: hdr_engine.text = "엔진" if is_kr else "ENGINE"
 			var hdr_ui = credits_list.get_node_or_null("HdrUI")
-			if hdr_ui: hdr_ui.text = "UI 및 폰트" if is_kr else "UI & FONT"
+			if hdr_ui: hdr_ui.text = "UI 및 폰트" if is_kr else "UI & FONTS"
 			var hdr_env = credits_list.get_node_or_null("HdrEnv")
 			if hdr_env: hdr_env.text = "환경" if is_kr else "ENVIRONMENT"
 			var hdr_special = credits_list.get_node_or_null("HdrSpecial")
@@ -2394,7 +2394,7 @@ func _apply_language(lang: String) -> void:
 		pause_title.text = "일시정지" if is_kr else "PAUSED"
 		if font: pause_title.add_theme_font_override("font", font)
 	if pause_resume_btn:
-		pause_resume_btn.text = "계속" if is_kr else "RESUME"
+		pause_resume_btn.text = "계속하기" if is_kr else "RESUME"
 		if font: pause_resume_btn.add_theme_font_override("font", font)
 	if settings_btn:
 		settings_btn.text = "설정" if is_kr else "SETTINGS"
@@ -2492,11 +2492,11 @@ func _apply_language(lang: String) -> void:
 		if font: abandon_message_lbl.add_theme_font_override("font", font)
 		abandon_message_lbl.add_theme_font_size_override("font_size", 22 if is_kr else 18)
 	if abandon_yes_btn:
-		abandon_yes_btn.text = "예 (YES)" if is_kr else "YES"
+		abandon_yes_btn.text = "예" if is_kr else "YES"
 		if font: abandon_yes_btn.add_theme_font_override("font", font)
 		abandon_yes_btn.add_theme_font_size_override("font_size", 18 if is_kr else 16)
 	if abandon_no_btn:
-		abandon_no_btn.text = "아니요 (NO)" if is_kr else "NO"
+		abandon_no_btn.text = "아니오" if is_kr else "NO"
 		if font: abandon_no_btn.add_theme_font_override("font", font)
 		abandon_no_btn.add_theme_font_size_override("font_size", 18 if is_kr else 16)
 	if esc_hint_label:
@@ -2584,7 +2584,7 @@ func _apply_end_screen_styles(is_kr: bool) -> void:
 
 	# 5. Telemetry Stats Rows (344px Frameless Grid)
 	if end_level_name_lbl:
-		end_level_name_lbl.text = "클리어 단계" if is_kr else "LEVELS CLEARED"
+		end_level_name_lbl.text = "클리어 레벨" if is_kr else "LEVELS CLEARED"
 		if b_font: end_level_name_lbl.add_theme_font_override("font", b_font)
 		end_level_name_lbl.add_theme_font_size_override("font_size", 14 if is_kr else 13)
 		end_level_name_lbl.add_theme_color_override("font_color", Color(0.85, 0.88, 0.92, 0.85))
@@ -3112,15 +3112,15 @@ func _on_sun_defeated(level: int) -> void:
 		weapon_wheel.close()
 		
 	if GameState.is_survival_mode:
-		level_label.text = "WAVE %02d" % GameState.current_wave
+		level_label.text = "웨이브 %02d" % GameState.current_wave if (GameState.language == "KR") else "WAVE %02d" % GameState.current_wave
 	else:
-		level_label.text = "LVL  %02d" % level
+		level_label.text = "레벨 %02d" % level if (GameState.language == "KR") else "LVL %02d" % level
 	if win_level_lbl:
-		var is_kr = TranslationServer.get_locale() == "ko"
+		var is_kr = GameState.language == "KR"
 		if is_kr:
-			win_level_lbl.text = "%02d  단계 완료" % level
+			win_level_lbl.text = "레벨 %02d 완료" % level
 		else:
-			win_level_lbl.text = "LEVEL %02d  COMPLETE" % level
+			win_level_lbl.text = "LEVEL %02d COMPLETE" % level
 	
 	win_screen.modulate = Color(1.0, 1.0, 1.0, 1.0)
 	win_screen.visible = true
@@ -3497,7 +3497,7 @@ func _show_toast(kicker_kr: String, kicker_en: String, title_kr: String, title_e
 	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	
 	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.04, 0.04, 0.08, 0.94)
+	style.bg_color = Color(0.03, 0.02, 0.06, 0.82)
 	style.border_width_left = 1
 	style.border_width_top = 1
 	style.border_width_right = 1
@@ -3536,7 +3536,7 @@ func _show_toast(kicker_kr: String, kicker_en: String, title_kr: String, title_e
 	icon_plate.pivot_offset = Vector2(20, 20)
 	
 	var plate_style = StyleBoxFlat.new()
-	plate_style.bg_color = Color(0.02, 0.02, 0.04, 0.95)
+	plate_style.bg_color = Color(0.015, 0.01, 0.03, 0.88)
 	plate_style.border_width_left = 1
 	plate_style.border_width_top = 1
 	plate_style.border_width_right = 1
@@ -4154,7 +4154,7 @@ func show_lose_screen() -> void:
 			var is_new_best_time = GameState.survival_time > GameState.best_survival_time
 			var is_new_best_score = GameState.current_score >= GameState.high_score and GameState.current_score > 0
 			
-			var wave_val = ("%d 웨이브" % GameState.current_wave) if is_kr else ("WAVE %d" % GameState.current_wave)
+			var wave_val = ("%d웨이브" % GameState.current_wave) if is_kr else ("WAVE %d" % GameState.current_wave)
 			var wave_row = _build_recap_stat_row(
 				"res://assets/ui/achievements/sunset.png",
 				"도달 웨이브" if is_kr else "WAVE REACHED",
@@ -4195,10 +4195,10 @@ func show_lose_screen() -> void:
 				GameState.save_settings()
 		else:
 			var is_new_best_score = GameState.current_score >= GameState.high_score and GameState.current_score > 0
-			var level_val = ("%02d 단계" % GameState.level) if is_kr else ("LEVEL %02d" % GameState.level)
+			var level_val = ("레벨 %02d" % GameState.level) if is_kr else ("LEVEL %02d" % GameState.level)
 			var level_row = _build_recap_stat_row(
 				"res://assets/ui/achievements/sunset.png",
-				"도전한 단계" if is_kr else "LEVEL ATTEMPTED",
+				"도전한 레벨" if is_kr else "LEVEL ATTEMPTED",
 				level_val,
 				false,
 				"",
@@ -4356,8 +4356,8 @@ func _show_abandon_confirm_modal() -> void:
 		abandon_message_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 	
 	if abandon_yes_btn and abandon_no_btn:
-		abandon_yes_btn.text = "예 (YES)" if is_kr else "YES"
-		abandon_no_btn.text = "아니요 (NO)" if is_kr else "NO"
+		abandon_yes_btn.text = "예" if is_kr else "YES"
+		abandon_no_btn.text = "아니오" if is_kr else "NO"
 		
 		# Apply standard button styles (Primary - NO)
 		var style_menu_btn = StyleBoxFlat.new()
@@ -4587,7 +4587,7 @@ func show_toast(title: String, description: String, icon_input = "", color: Colo
 	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	
 	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.04, 0.04, 0.08, 0.94)
+	style.bg_color = Color(0.03, 0.02, 0.06, 0.82)
 	style.border_width_left = 1
 	style.border_width_top = 1
 	style.border_width_right = 1
@@ -4626,7 +4626,7 @@ func show_toast(title: String, description: String, icon_input = "", color: Colo
 	icon_plate.pivot_offset = Vector2(20, 20)
 	
 	var plate_style = StyleBoxFlat.new()
-	plate_style.bg_color = Color(0.02, 0.02, 0.04, 0.95)
+	plate_style.bg_color = Color(0.015, 0.01, 0.03, 0.88)
 	plate_style.border_width_left = 1
 	plate_style.border_width_top = 1
 	plate_style.border_width_right = 1
@@ -4776,21 +4776,21 @@ func show_toast(title: String, description: String, icon_input = "", color: Colo
 func show_ice_unlock() -> void:
 	var is_kr = GameState.language == "KR"
 	var title = "아이스 버스트 해금" if is_kr else "ICE BURST UNLOCKED"
-	var desc = "태양을 얼려라 [RMB / R]" if is_kr else "FREEZE THE SUN [RMB / R]"
+	var desc = "태양을 얼려 급속 냉각 [우클릭 / R]" if is_kr else "Freeze the Sun [RMB / R]"
 	var kicker = "[ SKILL UNLOCK ]" if not is_kr else "[ 스킬 해금 ]"
 	show_toast(title, desc, "res://assets/ui/hud_elements/meter_ice.svg", Color(0.5, 0.85, 1.0, 1.0), null, kicker)
 
 func show_weapon_unlock() -> void:
 	var is_kr = GameState.language == "KR"
 	var title = "무기 해금됨" if is_kr else "WEAPON UNLOCKED"
-	var desc = "[TAB] 을 길게 눌러 장착" if is_kr else "HOLD [TAB] TO EQUIP"
+	var desc = "[TAB]을 길게 눌러 장착" if is_kr else "Hold [TAB] to equip"
 	var kicker = "[ WEAPON UNLOCK ]" if not is_kr else "[ 무기 해금 ]"
 	show_toast(title, desc, "res://assets/ui/icons/padlock-open.svg", Color(1.0, 0.85, 0.20, 1.0), null, kicker)
 
 func show_catastrom_unlock() -> void:
 	var is_kr = GameState.language == "KR"
 	var title = "카타스트롬 해금됨" if is_kr else "CATASTROM UNLOCKED"
-	var desc = "태양을 바다로 덩크하라 [F]" if is_kr else "DUNK THE SUN INTO THE OCEAN [F]"
+	var desc = "태양을 바다로 덩크하라 [F]" if is_kr else "Dunk the Sun into the ocean [F]"
 	var icon_path = "res://assets/ui/achievements/ball-glow.png" if OS.has_feature("safe_audio") else "res://assets/ui/Catastrom.png"
 	var kicker = "[ DUNK READY ]" if not is_kr else "[ 덩크 준비 ]"
 	show_toast(title, desc, icon_path, Color(0.8, 0.4, 1.0, 1.0), null, kicker)
@@ -4798,7 +4798,7 @@ func show_catastrom_unlock() -> void:
 func show_shield_shatter_hint() -> void:
 	var is_kr = GameState.language == "KR"
 	var title = "실드 파괴 필요!" if is_kr else "SHATTER THE SHIELD!"
-	var desc = "아이스 버스트로 실드를 파괴하세요 [RMB / R]" if is_kr else "SHATTER SHIELD WITH ICE BURST [RMB / R]"
+	var desc = "얼음 폭발로 방어막을 파괴하세요 [우클릭 / R]" if is_kr else "Shatter shield with Ice Blast [RMB / R]"
 	var kicker = "[ TACTICAL ALERT ]" if not is_kr else "[ 전술 경고 ]"
 	show_toast(title, desc, "res://assets/ui/hud_elements/meter_ice.svg", Color(0.4, 0.9, 1.0, 1.0), null, kicker)
 	flash_ice_hint()
@@ -4806,7 +4806,7 @@ func show_shield_shatter_hint() -> void:
 func show_drones_shield_hint() -> void:
 	var is_kr = GameState.language == "KR"
 	var title = "드론 방어막 활성!" if is_kr else "DRONE SHIELD ACTIVE!"
-	var desc = "먼저 궤도 드론을 파괴하세요!" if is_kr else "SHOOT THE DRONES FIRST!"
+	var desc = "먼저 궤도 드론을 파괴하세요!" if is_kr else "Shoot the orbiting drones first!"
 	var kicker = "[ TACTICAL ALERT ]" if not is_kr else "[ 전술 경고 ]"
 	show_toast(title, desc, "res://assets/ui/icons/icon_shield_drone.svg", Color(1.0, 0.85, 0.20, 1.0), null, kicker)
 	if boss_telemetry_plate and boss_telemetry_plate.visible and not GameState.reduce_motion:
@@ -4833,7 +4833,7 @@ func _init_boss_telemetry_hud() -> void:
 	)
 
 	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.04, 0.02, 0.08, 0.94)
+	style.bg_color = Color(0.03, 0.02, 0.06, 0.82)
 	style.border_width_left = 1
 	style.border_width_top = 1
 	style.border_width_right = 1
@@ -4873,7 +4873,7 @@ func _init_boss_telemetry_hud() -> void:
 	boss_shield_plate.pivot_offset = Vector2(17, 17)
 
 	var plate_style = StyleBoxFlat.new()
-	plate_style.bg_color = Color(0.02, 0.01, 0.04, 0.95)
+	plate_style.bg_color = Color(0.015, 0.01, 0.03, 0.88)
 	plate_style.border_width_left = 1
 	plate_style.border_width_top = 1
 	plate_style.border_width_right = 1
@@ -4972,7 +4972,7 @@ func _init_boss_telemetry_hud() -> void:
 	boss_harmonic_plate.pivot_offset = Vector2(16, 16)
 
 	var h_style = StyleBoxFlat.new()
-	h_style.bg_color = Color(0.02, 0.01, 0.04, 0.95)
+	h_style.bg_color = Color(0.015, 0.01, 0.03, 0.88)
 	h_style.border_width_left = 1
 	h_style.border_width_top = 1
 	h_style.border_width_right = 1
@@ -5064,7 +5064,7 @@ func show_boss_drone_telemetry(total_drones: int, has_harmonic: bool = false, te
 		well.pivot_offset = Vector2(12, 12)
 
 		var w_style = StyleBoxFlat.new()
-		w_style.bg_color = Color(0.02, 0.01, 0.04, 0.90)
+		w_style.bg_color = Color(0.015, 0.01, 0.03, 0.85)
 		w_style.border_width_left = 1
 		w_style.border_width_top = 1
 		w_style.border_width_right = 1
@@ -5291,7 +5291,7 @@ func _update_harmonic_matrix_label(active_tethers: int) -> void:
 func show_thermal_surge_warning() -> void:
 	var is_kr = GameState.language == "KR"
 	var title = "태양 열기 폭주 경보!" if is_kr else "SOLAR SURGE WARNING!"
-	var desc = "얼음 폭발이나 검으로 저지하세요! [R / 우클릭]" if is_kr else "DISRUPT WITH ICE BLAST OR BLADE! [R / RMB]"
+	var desc = "얼음 폭발이나 검으로 저지하세요! [우클릭 / R]" if is_kr else "Disrupt with Ice Blast or Blade! [RMB / R]"
 	var kicker = "[ CRITICAL HAZARD ]" if not is_kr else "[ 치명적 위협 ]"
 	show_toast(title, desc, "res://assets/ui/hud_elements/meter_catastrom.svg", Color(1.0, 0.4, 0.1, 1.0), null, kicker)
 	flash_ice_hint()
@@ -5306,7 +5306,7 @@ func show_thermal_surge_disrupted() -> void:
 func show_thermal_barrier_alert() -> void:
 	var is_kr = GameState.language == "KR"
 	var title = "열기 방벽 전개!" if is_kr else "THERMAL BARRIER"
-	var desc = "아이스 버스트로 파괴하라! [R / 우클릭]" if is_kr else "Shatter with Ice Burst! [R / RMB]"
+	var desc = "얼음 폭발로 파괴하세요! [우클릭 / R]" if is_kr else "Shatter with Ice Blast! [RMB / R]"
 	var kicker = "[ 태양 교란 ]" if is_kr else "[ SOLAR DISRUPTION ]"
 	show_toast(title, desc, "res://assets/ui/hud_elements/meter_ice.svg", Color(0.2, 0.8, 1.0, 1.0), null, kicker)
 	flash_ice_hint()

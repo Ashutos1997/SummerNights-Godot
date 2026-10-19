@@ -3143,10 +3143,21 @@ func _process(delta: float) -> void:
 				virtual_mouse_pos.x = clamp(virtual_mouse_pos.x, 0, viewport_size.x)
 				virtual_mouse_pos.y = clamp(virtual_mouse_pos.y, 0, viewport_size.y)
 
-	# Aim gun (reticle tracks player input 1:1 with zero cursor drag)
+	# Aim gun: apply lateral wind drift to crosshair (reticle and water stream drift together based on wind knots)
+	if current_wind_knots > 0.0 and not is_dragging_sun and not is_title_screen and not game_over and not is_sun_frozen:
+		if wind_state == 2 and wind_strength > 0.0:
+			wind_elapsed += delta
+		var weapon_sens = _get_weapon_wind_sensitivity()
+		var gust_mult = (1.5 + sin(wind_elapsed * 6.0) * 0.25) if (wind_state == 2 and solar_wind_enabled) else 1.0
+		var turbulence = (1.0 + sin(Time.get_ticks_msec() * 0.003) * 0.12) if (wind_state == 2 and solar_wind_enabled) else (1.0 + sin(Time.get_ticks_msec() * 0.0015) * 0.05)
+		var drift_speed = current_wind_knots * 3.5 * gust_mult * turbulence * weapon_sens * GameState.wind_drift_mult
+		if is_shooting and GameState.gyroscopic_spray_drift_reduction > 0.0:
+			drift_speed *= max(0.20, 1.0 - GameState.gyroscopic_spray_drift_reduction)
+		virtual_mouse_pos.x += wind_direction * drift_speed * delta
+		var viewport_size = get_viewport().get_visible_rect().size
+		virtual_mouse_pos.x = clamp(virtual_mouse_pos.x, 0, viewport_size.x)
+
 	var mouse_pos = virtual_mouse_pos
-	if wind_state == 2 and wind_strength > 0.0:
-		wind_elapsed += delta
 	var ray_origin = camera.project_ray_origin(mouse_pos)
 	var ray_normal = camera.project_ray_normal(mouse_pos)
 	# Mouse / aim angular velocity for fluid inertia simulation
@@ -3179,11 +3190,8 @@ func _process(delta: float) -> void:
 	# Constrain target_pos so we can't aim too low (prevents clipping into ground)
 	target_pos.y = max(target_pos.y, -2.0)
 	
-	# Physical ballistic water stream deflection across crosswind
-	var weapon_wind_sens = _get_weapon_wind_sensitivity()
-	var gust_mult = (1.5 + sin(wind_elapsed * 6.0) * 0.25) if (wind_state == 2 and solar_wind_enabled) else 1.0
-	var wind_deflection_x = wind_direction * (current_wind_knots / 12.0) * weapon_wind_sens * GameState.wind_drift_mult * gust_mult
-	var water_target_pos = target_pos + Vector3(wind_deflection_x, 0.0, 0.0)
+	# Water stream follows crosshair aim target (crosshair and water remain unified)
+	var water_target_pos = target_pos
 	
 	# Gun follows mouse but returns to base when not shooting
 	if is_shooting:
@@ -3491,8 +3499,13 @@ func _process(delta: float) -> void:
 					damage_mult *= 2.0
 				if GameState.is_survival_mode and GameState.current_wave >= 5:
 					damage_mult = 1.0 + (GameState.current_wave - 4) * 0.15
+				if current_wind_knots > 0.0 and GameState.wind_cooling_per_knot > 0.0:
+					damage_mult *= (1.0 + GameState.wind_cooling_per_knot * current_wind_knots)
 				
-				var dmg = current_weapon_power * (current_weapon_crit * GameState.crit_damage_mult) * damage_mult * delta
+				var mirage_crit = current_weapon_crit * GameState.crit_damage_mult
+				if current_wind_knots >= 25.0 and GameState.slipstream_crit_bonus > 0.0:
+					mirage_crit += GameState.slipstream_crit_bonus
+				var dmg = current_weapon_power * mirage_crit * damage_mult * delta
 				if mirage_hp > 0.0:
 					mirage_hp -= dmg
 					if hud and hud.has_method("update_mirage_hp"):
@@ -3571,7 +3584,8 @@ func _process(delta: float) -> void:
 			var c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
 			if c_mult >= 2.0:
 				combo_regen_bonus = 6.0
-		water_tank = min(MAX_WATER, water_tank + (current_weapon_recharge + combo_regen_bonus) * GameState.water_refill_mult * delta)
+		var wind_refill_boost = (1.0 + GameState.wind_refill_per_knot * current_wind_knots) if current_wind_knots > 0.0 else 1.0
+		water_tank = min(MAX_WATER, water_tank + (current_weapon_recharge + combo_regen_bonus) * GameState.water_refill_mult * wind_refill_boost * delta)
 			
 	# Update Audio Pitch based on Combo
 	if is_instance_valid(shoot_loop_sfx):
@@ -3611,7 +3625,7 @@ func _process(delta: float) -> void:
 				has_shown_celestial_ready_toast = true
 				if hud and hud.has_method("show_toast"):
 					var title = "신성의 각성 준비됨" if is_kr else "CELESTIAL AWAKENING READY"
-					var desc = "구미호의 권능을 해방하세요 [F]" if is_kr else "UNLEASH THE FOX NINE [F]"
+					var desc = "구미호의 권능을 해방하라 [F]" if is_kr else "Unleash celestial power [F]"
 					var icon_path = "res://assets/ui/hud_elements/meter_celestial.svg"
 					hud.show_toast(title, desc, icon_path, Color(0.35, 0.95, 1.0, 1.0))
 		else:
@@ -3620,7 +3634,7 @@ func _process(delta: float) -> void:
 				var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
 				if can_catastrom and hud and hud.has_method("show_toast"):
 					var title = "카타스트롬 준비됨" if is_kr else "CATASTROM READY"
-					var desc = "태양을 바다로 끌어내리세요 [F]" if is_kr else "DRAG THE SUN DOWN [F]"
+					var desc = "태양을 바다로 덩크하라 [F]" if is_kr else "Dunk the Sun into the ocean [F]"
 					var icon_path = "res://assets/ui/achievements/ball-glow.png" if OS.has_feature("safe_audio") else "res://assets/ui/Catastrom.png"
 					hud.show_toast(title, desc, icon_path, Color(0.8, 0.4, 1.0, 1.0))
 	elif GameState.catastrom_charge < 1.0:
@@ -4466,13 +4480,21 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 					steam_particles.restart()
 				GameState.add_score(int(15 * delta * 10))
 				
-		# Solar Wind Surge Thermal Evaporation: Light water spray partially vaporizes in the scorching coronal blast
+		# Solar Wind Surge Thermal Evaporation: Light water spray partially vaporizes in the scorching coronal blast (negated by Solar Sail)
 		if wind_state == 2 and solar_wind_enabled:
-			if GameState.current_weapon_id != "heavy" and GameState.current_weapon_id != "precision":
-				damage_mult *= 0.70 # -30% cooling efficiency on fine droplet sprays
+			if not GameState.solar_sail_active:
+				if GameState.current_weapon_id != "heavy" and GameState.current_weapon_id != "precision":
+					damage_mult *= 0.70 # -30% cooling efficiency on fine droplet sprays
+					
+		# Tailwind Drive: Boosts cooling power based on active wind knots
+		if current_wind_knots > 0.0 and GameState.wind_cooling_per_knot > 0.0:
+			damage_mult *= (1.0 + GameState.wind_cooling_per_knot * current_wind_knots)
 				
 		if is_critical:
-			var dmg = current_weapon_power * (current_weapon_crit * GameState.crit_damage_mult) * damage_mult * current_spray_efficiency * delta
+			var crit_mult = current_weapon_crit * GameState.crit_damage_mult
+			if current_wind_knots >= 25.0 and GameState.slipstream_crit_bonus > 0.0:
+				crit_mult += GameState.slipstream_crit_bonus
+			var dmg = current_weapon_power * crit_mult * damage_mult * current_spray_efficiency * delta
 			if active_weather == "coronal_eclipse":
 				dmg *= 1.5 # Coronal Weakpoint Exposure: +50% cooling damage on illuminated sunspot!
 			if is_sun_shielded:
@@ -4509,13 +4531,15 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				var c_mult = 1.0
 				if combo_active:
 					c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
+				var surge_ult_boost = (1.0 + GameState.solar_sail_ult_bonus) if (wind_state == 2 and solar_wind_enabled and GameState.solar_sail_active) else 1.0
+				var ult_gain = (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult * surge_ult_boost / 1200.0)
 				if GameState.current_weapon_id == "kitsune":
 					if not is_celestial_awakened:
-						GameState.celestial_charge = min(1.0, GameState.celestial_charge + (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult / 1200.0))
+						GameState.celestial_charge = min(1.0, GameState.celestial_charge + ult_gain)
 				else:
 					var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
 					if can_catastrom:
-						GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult / 1200.0))
+						GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + ult_gain)
 				GameState.add_score(int(dmg * 10.0 * c_mult))
 				if sizzle_sfx and not sizzle_sfx.playing:
 					sizzle_sfx.play()
@@ -4559,13 +4583,15 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 				var c_mult = 1.0
 				if combo_active:
 					c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
+				var surge_ult_boost_body = (1.0 + GameState.solar_sail_ult_bonus) if (wind_state == 2 and solar_wind_enabled and GameState.solar_sail_active) else 1.0
+				var ult_gain_body = (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult * surge_ult_boost_body / 1200.0)
 				if GameState.current_weapon_id == "kitsune":
 					if not is_celestial_awakened:
-						GameState.celestial_charge = min(1.0, GameState.celestial_charge + (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult / 1200.0))
+						GameState.celestial_charge = min(1.0, GameState.celestial_charge + ult_gain_body)
 				else:
 					var can_catastrom = (GameState.level >= 4 or (GameState.is_survival_mode and GameState.current_wave >= 4))
 					if can_catastrom:
-						GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + (dmg * c_mult * catastrom_buff * GameState.catastrom_charge_mult / 1200.0))
+						GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + ult_gain_body)
 				GameState.add_score(int(dmg * 5.0 * c_mult))
 				projectile_hit.emit()
 			
@@ -5239,7 +5265,7 @@ func _win() -> void:
 			if GameState.is_survival_mode:
 				hud.level_label.text = ("웨이브 %02d" if GameState.language == "KR" else "WAVE %02d") % GameState.current_wave
 			else:
-				hud.level_label.text = ("%02d 단계" if GameState.language == "KR" else "LVL  %02d") % GameState.level
+				hud.level_label.text = ("레벨 %02d" if GameState.language == "KR" else "LVL %02d") % GameState.level
 
 		if level == 4:
 			GameState.catastrom_charge = 1.0
@@ -5597,11 +5623,11 @@ func _trigger_phase2() -> void:
 			var is_kr = GameState.language == "KR"
 			if GameState.current_wave >= 40:
 				var title = "무한 과부하!" if is_kr else "INFINITY OVERDRIVE!"
-				var desc = "고속 교차 드론 호위대 및 방어막 재기동!" if is_kr else "Fast escort swarm & Golden Shield re-engaged!"
+				var desc = "고속 교차 드론 호위대 및 방어막 재기동!" if is_kr else "Fast escort swarm & golden shield re-engaged!"
 				hud.show_toast(title, desc, "res://assets/ui/icons/driver_fury.png", Color(1.0, 0.35, 0.65))
 			else:
 				var title = "2페이즈 각성!" if is_kr else "PHASE 2 OVERDRIVE!"
-				var desc = "폭주 드론 군체 및 황금 방어막 재기동!" if is_kr else "Overdrive Drone Swarm & Golden Shield Re-engaged!"
+				var desc = "폭주 드론 군체 및 황금 방어막 재기동!" if is_kr else "Overdrive drone swarm & golden shield re-engaged!"
 				hud.show_toast(title, desc, "res://assets/ui/icons/driver_fury.png", Color(1.0, 0.45, 0.15))
 	
 	mirage_cooldown = 1.5 # Fast mirage readiness in Phase 2
@@ -5617,7 +5643,7 @@ func toggle_solar_drones() -> void:
 		if hud and hud.has_method("show_toast"):
 			var is_kr = GameState.language == "KR"
 			var title = "솔라 드라이버 해제" if is_kr else "SOLAR DRIVER RETRACTED"
-			var desc = "적도 벨트 및 드론 군체 회수" if is_kr else "Planetary Belt & Drone Swarm Retracted"
+			var desc = "적도 벨트 및 드론 군체 회수" if is_kr else "Planetary belt & drone swarm retracted"
 			hud.show_toast(title, desc, "", Color(1.0, 0.5, 0.2))
 	else:
 		var test_wave = GameState.current_wave if GameState.is_survival_mode else 40
@@ -5645,7 +5671,7 @@ func _on_solar_driver_equipped(_pos: Vector3) -> void:
 			hud.show_toast(title, desc, "res://assets/ui/icons/driver_fury.png", Color(0.95, 0.40, 1.0))
 		else:
 			var title = "드라이버 장착!" if is_kr else "SOLAR DRIVER EQUIPPED!"
-			var desc = "적도 행성 벨트 및 드론 군체 전개" if is_kr else "Planetary Belt & Drone Swarm Deployed"
+			var desc = "적도 행성 벨트 및 드론 군체 전개" if is_kr else "Planetary belt & drone swarm deployed"
 			hud.show_toast(title, desc, "res://assets/ui/icons/driver_smirk.png", Color(1.0, 0.80, 0.20))
 
 func _on_harmonic_tether_severed(pair_idx: int, _pos: Vector3) -> void:
@@ -5702,7 +5728,7 @@ func _on_harmonic_matrix_collapsed() -> void:
 	if hud and hud.has_method("show_toast"):
 		var is_kr = GameState.language == "KR"
 		var title = "조화 방어막 파괴!" if is_kr else "HARMONIC SHIELD SHATTERED!"
-		var desc = "공명 붕괴! 태양 핵 노출 (+1500점)" if is_kr else "Resonance broken! Sun core exposed (+1500 PTS)"
+		var desc = "공명 붕괴! 태양 핵 노출 (+1,500점)" if is_kr else "Resonance broken! Sun core exposed (+1,500 PTS)"
 		hud.show_toast(title, desc, "res://assets/ui/icons/driver_fury.png", Color(0.35, 0.95, 1.0), null, "[ BARRIER COLLAPSE ]" if not is_kr else "[ 방어막 붕괴 ]")
 
 func _on_interceptor_destroyed(_pos: Vector3) -> void:
@@ -5722,7 +5748,7 @@ func _on_interceptor_destroyed(_pos: Vector3) -> void:
 	if hud and hud.has_method("show_toast"):
 		var is_kr = GameState.language == "KR"
 		var title = "요격 드론 격추!" if is_kr else "INTERCEPTOR DOWN!"
-		var desc = "물줄기 차단 호위 드론 격파 (+1,000점, +25% 물)" if is_kr else "Bodyguard Interceptor Destroyed! (+1,000 PTS, +25% Water)"
+		var desc = "물줄기 차단 호위 드론 격파 (+1,000점, +25% 물)" if is_kr else "Bodyguard interceptor destroyed! (+1,000 PTS, +25% Water)"
 		hud.show_toast(title, desc, "res://assets/ui/icons/driver_fury.png", Color(0.2, 0.90, 1.0), null, "[ INTERCEPTOR SHATTERED ]" if not is_kr else "[ 요격기 격파 ]")
 
 func toggle_solar_driver() -> void:
@@ -5798,7 +5824,7 @@ func _on_solar_drone_ice_shattered(pos: Vector3) -> void:
 	if hud and hud.has_method("show_toast"):
 		var is_kr = GameState.language == "KR"
 		var title = "냉기 분쇄!" if is_kr else "ICE SHATTER!"
-		var desc = "+500점 · +20% 물 · +8% 필살기" if is_kr else "+500 PTS · +20% WATER · +8% ULT"
+		var desc = "+500점 · +20% 물 · +8% 궁극기" if is_kr else "+500 PTS · +20% Water · +8% Ult"
 		hud.show_toast(title, desc, "res://assets/ui/icons/shatter.svg", Color(0.35, 0.95, 1.0))
 
 func start_celestial_awakening(duration: float = 15.0) -> void:
@@ -5807,7 +5833,7 @@ func start_celestial_awakening(duration: float = 15.0) -> void:
 		if hud and hud.has_method("show_toast"):
 			var is_kr = GameState.language == "KR"
 			var title = "구미호 버스터 IX 필요" if is_kr else "KITSUNE BUSTER IX REQUIRED"
-			var desc = "신성의 각성은 구미호 버스터 전용입니다" if is_kr else "CELESTIAL AWAKENING REQUIRES KITSUNE BUSTER IX"
+			var desc = "신성의 각성은 구미호 버스터 전용입니다" if is_kr else "Celestial Awakening is exclusive to Kitsune Buster IX."
 			hud.show_toast(title, desc, "res://assets/ui/hud_elements/meter_celestial.svg", Color(0.35, 0.95, 1.0))
 		return
 

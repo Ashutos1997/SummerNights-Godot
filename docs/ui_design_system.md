@@ -10,7 +10,7 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 * **Hazard & Alert:** Amber Stack Warning `Color(1.0, 0.75, 0.2, 0.95)`, Overtime Crimson `Color(1.0, 0.22, 0.22)`.
 * **Shields:** Boss Cyan `Color(0.2, 0.8, 1.0, 0.9)`, Golden Drone `Color(1.0, 0.82, 0.18, 0.95)`.
 * **Atmospheric:** Rainstorm Cyan `Color(0.4, 0.85, 1.0)`, Lunar Silver `Color(0.85, 0.95, 1.0)`, Coronal Ultraviolet `Color(0.95, 0.35, 1.0)`, Prominence Magenta `Color(1.0, 0.20, 0.90)`.
-* **Backgrounds:** Global Modal `Color(0.02, 0.01, 0.05, 0.96)`, Dark Panel `Color(0.05, 0.02, 0.1, 0.85)`.
+* **Backgrounds:** Global Modal `Color(0.02, 0.01, 0.05, 0.96)`, Dark Panel `Color(0.05, 0.02, 0.1, 0.85)`, Dimmed HUD Plate `Color(0.03, 0.02, 0.06, 0.82)` (inner recessed plates `0.88`).
 * **Controller:** Gold (Pause), Lime (Weapons), Cyan (Ice), Orange (Power Up), Magenta (Mode).
 
 ## 2. Corner Radii
@@ -40,12 +40,12 @@ Design tokens, color palettes, typography, and component specifications for *Sum
   * *Power Up:* Shared gauge (Purple Catastrom or Cyan Celestial).
 
 ### Telemetry & Combat Badges
-* **Unified Aero-Weather Capsule:** 172x44px plate at `y = 92px` (`offset_bottom = 136px`, bottom-aligned with Drone HUD; 4px radius, 1px border). Centered HBox (6px gap): vector arrow (`◀`/`▶`/`●`, 14px), 16px knots readout (`19 KTS` / `CALM`), 3-pip gauge (5x16px), 1x20px divider, and 22x22px weather icon. Flashes Cyan `Color(0.2, 0.85, 1.0, 0.95)` with 1.12x scale pop and 1.25x arrow bounce on gusts.
-* **Boss & Drone Telemetry Plate:** Centered plate at `y = 88px` (4px radius, 1px gold border). Horizontally centered `[ ACTIVE DRONES ]` kicker tag and numeric count (`6/6`), 24x24px pip wells, 1px vertical divider, and clean bottom-dividerless silhouette.
+* **Unified Aero-Weather Capsule:** 172x44px plate at `y = 92px` (`offset_bottom = 136px`, bottom-aligned with Drone HUD; 4px radius, 1px border, dimmed `0.82` bg `Color(0.03, 0.02, 0.06, 0.82)` matching Drone HUD). Centered HBox (6px gap): vector arrow (`◀`/`▶`/`●`, 14px), 16px knots readout (`19 KTS` / `CALM`), 3-pip gauge (5x16px), 1x20px divider, and 22x22px weather icon. Flashes Cyan `Color(0.2, 0.85, 1.0, 0.95)` with 1.12x scale pop and 1.25x arrow bounce on gusts.
+* **Boss & Drone Telemetry Plate:** Centered plate at `y = 88px` (4px radius, 1px gold border, dimmed `0.82` obsidian-violet bg with `0.88` recessed plates). Horizontally centered `[ ACTIVE DRONES ]` kicker tag and numeric count (`6/6`), 24x24px pip wells (`0.85` bg), 1px vertical divider, and clean bottom-dividerless silhouette.
 * **Weapon Plate:** Bottom-left 44px plate at 24px margin with recessed 38x38px icon frame (4px radius, 1px gold border) and 26x26px icon.
 
 ### Popup Notifications (Toasts)
-* **Form Factor:** Cyberpunk Arcade Plates (4px radius, 1px accent border, softened shadow).
+* **Form Factor:** Cyberpunk Arcade Plates (4px radius, 1px accent border, softened shadow, dimmed `0.82` bg `Color(0.03, 0.02, 0.06, 0.82)` with recessed `0.88` icon plate).
 * **Alerts (380x72px):** Right-docked with 3.5s depletion bar, 0.45s slide-fade, and staggered exit.
 * **Popups (500x72–88px):** Centered popups for Achievements and Buffs sliding from `y = -100` to `y = 24.0` / `106.0`.
 * **Icon Plate:** Recessed 40x40px plate with 26x26 vector icon.

@@ -12,23 +12,23 @@ Architectural map and layout reference for `HUD.tscn`.
 
 ### Top-Center
 * **SunHeatBar:** Celsius gauge (`HEAT | X°C`). Reaching 100% triggers Supernova.
-* **BossEncounterHUD:** Centered telemetry plate at `y = 88px` (4px radius, 1px gold border). Shows 34x34px icon, centered two-tier readout (`[ ACTIVE DRONES ]` kicker above `%d/%d` count), 24x24px drone pip wells, and harmonic matrix tethers (clean bottom-dividerless plate).
+* **BossEncounterHUD:** Centered telemetry plate at `y = 88px` (4px radius, 1px gold border, dimmed `0.82` obsidian-violet bg with `0.88` recessed plates). Shows 34x34px icon, centered two-tier readout (`[ ACTIVE DRONES ]` kicker above `%d/%d` count), 24x24px drone pip wells, and harmonic matrix tethers (clean bottom-dividerless plate).
 * **Phase2Label:** Warning banner for boss phase transitions.
-* **Achievement & Buff Toasts:** 500px centered plates (4px radius, 40x40 icon, 1.5px depletion bar). Slides from top (`y = 24.0` / `y = 106.0`).
+* **Achievement & Buff Toasts:** 500px centered plates (4px radius, dimmed `0.82` bg, 40x40 icon, 1.5px depletion bar). Slides from top (`y = 24.0` / `y = 106.0`).
 
 ### Top-Right
 * **TopRightInfo (VBoxContainer):** 24px right-aligned container at `y = 22px` (`offset_bottom = 76px`, 2px separation). Unified 22px typography across both English and Korean.
   * **TimerLabel:** Wave countdown (22px). Intro animation starts centered (`scale 1.6x`, 2.5s hold) and glides (0.85s) into position. Red pulse under 10s. Shows `[ OVERTIME ]` badge during boss overtime.
   * **ScoreLabel:** Live score display (22px). Flashes red during Overtime score burn.
-* **Unified Aero-Weather Capsule (`WeatherIconContainer`):** 172x44px telemetry plate at `y = 92px` (`offset_bottom = 136px`, bottom-aligned with Drone HUD; 4px radius, 1px border). Centered HBox (6px gap):
+* **Unified Aero-Weather Capsule (`WeatherIconContainer`):** 172x44px telemetry plate at `y = 92px` (`offset_bottom = 136px`, bottom-aligned with Drone HUD; 4px radius, 1px border, dimmed `0.82` obsidian-violet bg matching Drone HUD). Centered HBox (6px gap):
   * *Vector Arrow:* `◀`, `▶`, or `●` (14px). Bounces 1.25x during gusts.
   * *Speed & Gauge:* 16px knots readout (`19 KTS` / `CALM`) and 3-pip intensity gauge (Tier 1 `<24kts`, Tier 2 `24–35kts`, Tier 3 `≥36kts`). Flashes cyan on surges.
   * *Divider & Icon:* 1px hairline divider and 22x22px weather icon.
 * **WeatherTimerLabel:** Eclipse duration timer anchored beneath the weather icon.
-* **ToastContainer (VBoxContainer):** 380px notification column at `y = 154px` (8px gap) for combat and unlock alerts with 1.5px depletion bars and staggered reflow.
+* **ToastContainer (VBoxContainer):** 380px notification column at `y = 154px` (8px gap, dimmed `0.82` bg) for combat and unlock alerts with 1.5px depletion bars and staggered reflow.
 
 ### Center
-* **Crosshair:** Dynamic weapon reticle with 1:1 input. Crosswinds curve water stream over 42m, requiring windage compensation.
+* **Crosshair:** Dynamic weapon reticle. Crosswinds dynamically drift the reticle alongside the water stream based on knots and weapon aerodynamics, requiring physical counter-aim steering while keeping water impact unified with the crosshair.
   * *Blade Mode:* Katana crescent brackets with tsuba accents.
   * *Celestial Timer:* 360° cyan countdown ring (pulses orange at ≤3.0s).
   * *Thermal Falloff:* Reticle shifts Cyan → Warm Orange (>2s) → Overtime Crimson (>3s) with 12px `[ HEAT FALLOFF ]` steam badge (`icon_spray_falloff.svg`).

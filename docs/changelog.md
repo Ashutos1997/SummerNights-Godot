@@ -9,16 +9,19 @@ All notable changes to the Summer Nights project will be documented in this file
 * Boss & Drone Telemetry HUD (Wave 30+): Retro arcade plate below Sun gauge (`y = 86px`) tracking boss shields and orbital drones with animated 24x24px pip wells.
 * Dedicated BGM vs. SFX Separation: Dedicated `BGM` audio bus (`bus/3`) and independent Music/SFX volume sliders in Settings menus.
 * Pause Menu Abandon Run Modal: Confirmation dialog (`AbandonConfirmModal`, 440x180px) intercepting "Main Menu" quits with safe NO default focus.
-* Dynamic Coastal Wind & Solar Wind Surges: Crosswinds (14–50 kts) curve water trajectories across 42m based on weapon aerodynamics, with reticle remaining 1:1 crisp. Periodic Coronal Surges (Wave 4+ / Level 4+) add +50% wind gusts and 30% thermal spray evaporation.
+* Dynamic Coastal Wind & Solar Wind Surges: Crosswinds (14–50 kts) dynamically drift the crosshair alongside the water stream based on knots and weapon aerodynamics, unifying reticle and water impact while demanding active counter-aim control. Periodic Coronal Surges (Wave 4+ / Level 4+) add +50% wind gusts and 30% thermal spray evaporation.
+* Wind & KTS Rogue-lite Perk Expansion: Added 5 balanced wind-scaling perks to Endless Mode drafts: Tailwind Drive (+0.25%–0.40% cooling per knot), Solar Sail (surge evaporation immunity & +20%–35% ult charge in surge), Gyroscopic Core (-30%–50% drift while actively firing), Zephyr Dynamo (+0.30%–0.50% tank refill per knot), and Slipstream Needle (+15%–25% crit damage at ≥25 KTS).
 * Celestial Beach Clouds (Soft Cover): Up to 3 clouds drift at Sun depth (Z = -38), absorbing 50% water damage and awarding +15 pts.
 
 ### Improved
+* Notification, Drone HUD & Weather Capsule Background Dimness: Softened the background opacity of boss drone telemetry plates, popup toast notifications, and the aero-weather capsule from heavy 85%–94% down to 82% (`Color(0.03, 0.02, 0.06, 0.82)` with `0.88` recessed plates), unifying plate dimness across all upper telemetry HUD elements to blend naturally with the sunset backdrop while preserving sharp text contrast.
 * Aero-Weather Capsule & Drone Telemetry HUD Spacing & Alignment: Unified the gap between the Sun Heat Bar and Drone Telemetry HUD to an exact 8px across both English and Korean (standardizing Korean heat text to 22px to eliminate line-height overflow); adjusted Drone HUD top to `y = 88px` and Weather Capsule to `y = 92px` (`offset_bottom = 136px`) for a flush bottom match.
 * Boss & Drone Telemetry HUD Layout Polish: Replaced top header with `[ ACTIVE DRONES ]` kicker tag and positioned numeric count (`%d/%d`, e.g. `6/6`) directly on the 2nd line; removed bottom accent divider for a cleaner plate silhouette and centered all labels horizontally.
 * Unified Aero-Vector Weather Capsule HUD: Streamlined 172x44px telemetry plate at `y = 96px` with centered vector arrow (14px), 16px knots readout (`19 KTS` / `CALM`), 3-pip gauge, hairline divider, and 22x22px weather icon.
 * Settings Menu Symmetrical 4x2 Grid: Balanced 880px arcade plate with standardized 32px title header, dual 4-row columns, and full gamepad navigation.
 * Export & Release Streamlining: Retired GitHub binary releases to establish itch.io as the single official distribution platform; export presets updated to v1.8.
 * Settings Menu Title Font Standardization: Standardized "SETTINGS" / "설정" modal header font to 32px across TitleScreen and HUD.
+* Comprehensive Text, Localization & Capitalization Polish: Standardized writing across both English and Korean. Converted shouting all-caps toast descriptions into clean, readable sentence case; unified weapon wheel unlock conditions (sentence case requirements and particle spacing); standardized level references to "레벨 %02d" / "LVL %02d"; cleaned modal buttons to natural "예" / "아니오"; eliminated redundant rarity tags in perk descriptions; and unified terminology ("궁극기", "방어막", "Ice Blast").
 * Documentation & README Streamlining: Consolidated gameplay overviews in English and Korean READMEs into a concise Key Features section.
 
 ### Fixed
@@ -357,16 +360,19 @@ All notable changes to the Summer Nights project will be documented in this file
 * 보스 및 드론 텔레메트리 HUD (30웨이브 이상): 태양 게이지 하단(`y = 86px`)에 보스 방어막 및 궤도 드론 상태를 표시하는 아케이드 텔레메트리 플레이트 및 24x24px 핍 웰 추가.
 * 배경음악(BGM) 및 효과음(SFX) 독립 볼륨 분리: 전용 `BGM` 버스(`bus/3`) 신설 및 설정 메뉴에 독립된 배경음악/효과음 볼륨 슬라이더 추가.
 * 일시정지 메뉴 진행 포기 확인 모달: 일반 및 엔들리스 모드에서 "메인 메뉴" 클릭 시 안전 NO 기본 포커스를 갖춘 확인 팝업(`AbandonConfirmModal`, 440x180px) 추가.
-* 동적 해변 풍향 탄도학 및 태양풍 돌풍 시스템: 1:1 조준선 반응성을 유지하며 무기 공기역학에 따라 물줄기 궤적을 굴절시키는 해변 측풍(14~50노트) 및 +50% 풍압 서지와 30% 물 증발 페널티를 주는 태양풍 돌풍(4웨이브/4레벨 이상) 추가.
+* 동적 해변 풍향 탄도학 및 태양풍 돌풍 시스템: 해변 측풍(14~50노트)이 풍속 및 무기 공기역학에 따라 조준선을 물줄기와 함께 물리적으로 표류시켜 조준점과 피격점을 일치시키면서 능동적인 반동 제어 조준을 요구하도록 개편하고, +50% 풍압 서지와 30% 물 증발 페널티를 주는 태양풍 돌풍(4웨이브/4레벨 이상) 적용.
+* 풍속(KTS) 연계 로그라이트 퍽 5종 확장: 엔들리스 모드 드래프트에 풍속과 연계되는 밸런스형 퍽 5종 추가: 순풍 추진(1노트당 냉각력 +0.25%~0.40%), 태양 돛(태양풍 증발 면역 및 돌풍 중 궁극기 충전 +20%~35%), 자이로 코어(물 발사 중 표류 -30%~50%), 풍력 충전기(1노트당 물 충전 속도 +0.30%~0.50%), 돌풍 저격수(25노트 이상에서 치명타 피해 +15%~25%).
 * 천체 해변 구름 (소프트 엄폐): 태양 깊이(Z = -38)에 최대 3개의 구름이 부유하여 물줄기 대미지를 50% 흡수하고 +15점을 부여하는 소프트 엄폐물 추가.
 
 ### 개선됨 (Improved)
+* 알림 팝업, 드론 HUD 및 기상 캡슐 배경 딤 처리(투명도 일치화): 보스 드론 텔레메트리 플레이트, 토스트 알림 팝업 및 에어로 기상 캡슐의 배경 불투명도를 기존 85%~94%에서 82%(`Color(0.03, 0.02, 0.06, 0.82)`, 내부 플레이트 0.88)로 일치화하여 상단 텔레메트리 UI 전반의 시각적 무게감을 통일하고 노을 진 하늘 배경과 자연스럽게 어우러지도록 개선.
 * 에어로 기상 캡슐 및 드론 텔레메트리 HUD 간격 및 정렬 통일: 영문과 한국어 간 태양 열기 게이지와 드론 HUD 사이 간격을 8px로 완전 일치화(한국어 열기 텍스트 서체 크기를 22px로 표준화하여 줄 높이 확장 및 바 밀림 현상 방지); 드론 HUD 상단을 `y = 88px`, 기상 캡슐을 `y = 92px`(`offset_bottom = 136px`)로 조정하여 하단 라인 수평 일치화.
 * 보스 및 드론 텔레메트리 HUD 레이아웃 정돈: 상단 제목을 `[ 활성 드론 ]` 키커 태그로 교체하고 수치 카운트(`%d/%d`, 예: `6/6`)를 2번째 줄로 배치하였으며, 하단 구분선(액센트 바)을 제거하여 깔끔한 플레이트 실루엣 완성 및 텍스트 수평 중앙 정렬 일치화.
 * 통합 에어로 벡터 기상 캡슐 HUD: 우측 상단 172x44px 텔레메트리 플레이트(`y = 96px`)에 중앙 정렬 벡터 화살표(14px), 16px 풍속 수치(`19 KTS` / `바람 없음`), 3단계 핍 게이지, 구분선 및 22x22px 날씨 아이콘 적용.
 * 설정 메뉴 4x2 대칭 격자 개편: 32px 통일 헤더 타이틀, 좌우 4행 2열 레이아웃, 양방향 패드 네비게이션을 갖춘 880px 규격 아케이드 플레이트 정비.
 * 배포 정책 및 프리셋 단일화: itch.io를 단독 공식 배포처로 확립하고 고도 내보내기 프리셋을 v1.8로 갱신.
 * 설정 메뉴 제목 서체 크기 표준화: 타이틀 화면 및 인게임 HUD의 설정 모달 제목 폰트 크기를 32px로 통일.
+* 전역 텍스트, 로컬라이제이션 및 대소문자 표기 정비: 영문과 한국어 전반의 문구와 서식을 표준화. 과도한 대문자(ALL CAPS) 토스트 설명을 자연스러운 문장형(Sentence case)으로 정돈하고, 무기 휠 해금 조건 문구 및 조사 띄어쓰기(`%d에서`) 수정, 레벨 표기를 "레벨 %02d" / "LVL %02d"로 일원화, 모달 버튼 문구를 표준적인 "예" / "아니오"로 정비, 퍽 설명 내 중복 희귀도 태그 제거 및 용어 통일("궁극기", "방어막", "얼음 폭발").
 * 문서 및 README 개편: 영문 및 한국어 README의 설명을 핵심 특징(Key Features) 항목으로 압축 정돈.
 
 ### 수정됨 (Fixed)

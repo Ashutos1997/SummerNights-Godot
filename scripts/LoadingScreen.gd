@@ -52,7 +52,7 @@ func start_sequence() -> void:
 func finish_sequence(level: int = 1) -> void:
 	var is_kr = GameState.language == "KR"
 	if tip_lbl:
-		tip_lbl.text = "%02d 단계 준비 완료!" % level if is_kr else "LEVEL %02d READY!" % level
+		tip_lbl.text = "레벨 %02d 준비 완료!" % level if is_kr else "LEVEL %02d READY!" % level
 	if progress_bar:
 		var prog_tw = create_tween()
 		prog_tw.set_ease(Tween.EASE_OUT)

@@ -24,7 +24,7 @@ Master record of implemented features, mechanics, and systems in *Summer Nights*
     * *Cannon Mode:* Precision stream with revolving 9-vial cylinder.
     * *Blade Mode:* Katana slash (60° arc, 8.5m range). Cleaves flares for +15% water, damages drones and Sun.
   * *Gold Weapon Skin:* Unlocked at 50k High Score. Toggle under Settings > Display.
-* **Ice Burst (`[R]`):** Freezes heat gain and Sun movement for 3s. Unlocked Level 3 / Wave 2.
+* **Ice Blast (`[R]`):** Freezes heat gain and Sun movement for 3s. Unlocked Level 3 / Wave 2.
 * **Catastrom (`[F]`):** Dunks Sun into ocean to clear wave. Shared meter at 100% charge. Unlocked Wave 4.
 * **Celestial Awakening (`[F]`):** 15s super mode for Kitsune Buster IX (9 hydro tails, infinite water, 2.0x cooling).
 
@@ -34,7 +34,7 @@ Master record of implemented features, mechanics, and systems in *Summer Nights*
 * **Diminishing Returns:** Stacking 3+ copies scales efficiency (1st/2nd = 100%, 3rd = 75%, 4th+ = 55%) with amber stack badge.
 * **Tracker:** Top-left active buff icons with stack badges.
 * **Stat Caps:** Cooling (2.0x), Drain (40%–150%), Crit (3.0x), Heat Resist (60%), Sway (floor 40%), Tank (50%–250%), Ult (floor 40%), Refill (40%–150%), Base Cooling (floor 50%).
-* **Perk Pool:** High Capacity, Precision Optics, Thermal Insulator, Catastrom Flow, Heat Shield, Gravity Anchor, Glass Cannon, Heavy Water, Reckless Haste, Wind Breaker, Sub-Zero Reserve, Blade Cadence, Solar Overclock, High-Pressure Bore, Hyper-Focus, Deep Reservoir.
+* **Perk Pool:** High Capacity, Precision Optics, Thermal Insulator, Catastrom Flow, Heat Shield, Gravity Anchor, Glass Cannon, Heavy Water, Reckless Haste, Wind Breaker, Sub-Zero Reserve, Blade Cadence, Solar Overclock, High-Pressure Bore, Hyper-Focus, Deep Reservoir, Tailwind Drive, Solar Sail, Gyroscopic Core, Zephyr Dynamo, Slipstream Needle.
 
 ## 4. Sun Mechanics & Threats
 * **Movement:** Horizontal sway and Figure-8 paths (speed capped at 1.3–1.5).
@@ -45,7 +45,7 @@ Master record of implemented features, mechanics, and systems in *Summer Nights*
 * **Solar Disruptions (Wave 6+):** Random micro-events (40%–60% chance) in non-boss waves:
   * *Thermal Barrier:* Cyan shield deflecting water; dissolves or shatters via Ice Blast for +1,000 pts.
   * *Flare Barrage:* Rapid volley of 5–7 solar flares across wide angles.
-* **Dynamic Atmospheric Wind & Ballistics:** Crosswinds (14–50 kts) curve water trajectories across 42m based on weapon aerodynamics (Precision: 0.0, Heavy: 0.25, Kitsune: 0.35, Standard: 1.0, Tidal: 1.75). Reticle stays 1:1 crisp with zero drag. Synergizes with Wind Breaker (-60% deflection).
+* **Dynamic Atmospheric Wind & Ballistics:** Crosswinds (14–50 kts) physically drift the crosshair and water stream together across the screen based on weapon aerodynamics and knots. Synergizes with wind perks (Wind Breaker, Tailwind Drive, Solar Sail, Gyroscopic Core, Zephyr Dynamo, Slipstream Needle) and Ice Blast stasis.
 * **Solar Wind Hazard (Coronal Surge):** Telegraphed surge (Wave 4+ / Level 4+) adding +50% wind gusts and 30% water spray evaporation. Bypassed by Heavy/Precision weapons; shattered by Ice Blast (`[R]`).
 * **Heat Mirage (Boss):** Spawns 2 decoys and overshield. Real Sun takes 1.5x damage to overshield; heat regen cut by 60%.
 * **Overtime ("Paid in Full"):** Boss Waves (Levels 5–6, Endless every 5th) hitting `0:00` burn score as life support. Defeating boss clears Overtime; zero score triggers bankruptcy defeat.
@@ -71,9 +71,9 @@ Master record of implemented features, mechanics, and systems in *Summer Nights*
 ## 7. UI & Game Feel
 * **Menus:** Gold borders, 96px margins, Gamepad navigation, fullscreen default, and `z_index = 50` elevation.
 * **Settings:** Symmetrical 4x2 arcade modal (880px) splitting audio/controls and display/system across dual columns with full gamepad navigation.
-* **Toasts & Popups:** Cyberpunk Arcade Plates (4px radius, 1px border, 40x40 icon plates, 1.5px depletion bars).
+* **Toasts & Popups:** Cyberpunk Arcade Plates (4px radius, 1px border, dimmed 0.82 bg, 40x40 icon plates, 1.5px depletion bars).
 * **Timer Glide Intro:** Round-start timer displays in screen center (`scale 1.6x`, 2.5s hold), then glides (0.85s) into top-right HUD anchor.
-* **Boss & Drone Telemetry HUD:** Horizontally centered plate below Sun gauge (`y = 88px`) with boss icon, `[ ACTIVE DRONES ]` kicker tag and `%d/%d` count, animated drone pip wells, and clean dividerless silhouette.
+* **Telemetry HUDs (Weather & Drone):** Horizontally centered Drone HUD (`y = 88px`) and top-right Aero-Weather Capsule (`y = 92px`) styled with matching dimmed 0.82 bg plates, aligned flush along their bottom margins.
 * **Title Screen:** Symmetrical horizontal split (title, stats cards, mode buttons, version footer).
 * **Abandon Run Modal:** Confirmation dialog (440x180px) intercepting "Main Menu" quits with safe NO default focus.
 * **Victory Recap ("SUMMER'S OVER"):** Normal Mode completion screen showing levels cleared, clear time, final score, unlock milestones, and retry/menu buttons.

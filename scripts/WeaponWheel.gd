@@ -722,29 +722,29 @@ func _update_info_panel(idx: int) -> void:
 			if is_kr:
 				lock_req_label.text = "조건: %s" % ach_desc
 			else:
-				lock_req_label.text = "UNLOCK: %s" % ach_desc.to_upper()
+				lock_req_label.text = "Unlock: %s" % ach_desc
 		elif w_cfg.has("unlock_wave"):
 			if GameState.is_survival_mode:
 				if is_kr:
-					lock_req_label.text = "웨이브 %d 에서 잠금 해제됨" % w_cfg.unlock_wave
+					lock_req_label.text = "웨이브 %d에서 잠금 해제" % w_cfg.unlock_wave
 				else:
-					lock_req_label.text = "UNLOCKS AT WAVE %d" % w_cfg.unlock_wave
+					lock_req_label.text = "Unlocks at Wave %d" % w_cfg.unlock_wave
 			else:
 				if is_kr:
 					lock_req_label.text = "조건: 엔들리스 %d웨이브 달성" % w_cfg.unlock_wave
 				else:
-					lock_req_label.text = "UNLOCK: ENDLESS WAVE %d" % w_cfg.unlock_wave
+					lock_req_label.text = "Unlock: Endless Wave %d" % w_cfg.unlock_wave
 		else:
 			if GameState.is_survival_mode:
 				if is_kr:
-					lock_req_label.text = "웨이브 %d 에서 잠금 해제됨" % w_cfg.unlock_level
+					lock_req_label.text = "웨이브 %d에서 잠금 해제" % w_cfg.unlock_level
 				else:
-					lock_req_label.text = "UNLOCKS AT WAVE %d" % w_cfg.unlock_level
+					lock_req_label.text = "Unlocks at Wave %d" % w_cfg.unlock_level
 			else:
 				if is_kr:
-					lock_req_label.text = "레벨 %d 에서 잠금 해제됨" % w_cfg.unlock_level
+					lock_req_label.text = "레벨 %d에서 잠금 해제" % w_cfg.unlock_level
 				else:
-					lock_req_label.text = "UNLOCKS AT LEVEL %d" % w_cfg.unlock_level
+					lock_req_label.text = "Unlocks at Level %d" % w_cfg.unlock_level
 	else:
 		panel_style.border_color = Color(1.0, 0.86, 0.24, 0.95)
 		divider_style.color = Color(1.0, 0.85, 0.2, 0.28)
