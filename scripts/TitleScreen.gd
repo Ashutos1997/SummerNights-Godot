@@ -941,7 +941,7 @@ func _show_achievements() -> void:
 			
 			var pbar_fill = StyleBoxFlat.new()
 			pbar_fill.bg_color = Color(1.0, 0.85, 0.2, 0.9)
-			pbar_fill.set_corner_radius_all(3)
+			pbar_fill.set_corner_radius_all(4)
 			
 			pbar.add_theme_stylebox_override("background", pbar_bg)
 			pbar.add_theme_stylebox_override("fill", pbar_fill)

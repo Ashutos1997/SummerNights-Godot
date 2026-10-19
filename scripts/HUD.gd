@@ -466,10 +466,10 @@ func _setup_wind_indicator() -> void:
 		pip_style.border_width_right = 1
 		pip_style.border_width_top = 1
 		pip_style.border_width_bottom = 1
-		pip_style.corner_radius_top_left = 1
-		pip_style.corner_radius_top_right = 1
-		pip_style.corner_radius_bottom_left = 1
-		pip_style.corner_radius_bottom_right = 1
+		pip_style.corner_radius_top_left = 2
+		pip_style.corner_radius_top_right = 2
+		pip_style.corner_radius_bottom_left = 2
+		pip_style.corner_radius_bottom_right = 2
 		pip.add_theme_stylebox_override("panel", pip_style)
 		wind_pips_container.add_child(pip)
 		wind_pips.append(pip)
@@ -1625,7 +1625,7 @@ func _build_lang_row(in_body_font: Font = null) -> void:
 	lang_focus.bg_color = Color(0, 0, 0, 0)
 	lang_focus.border_color = Color(1.0, 0.85, 0.2, 1.0)
 	lang_focus.set_border_width_all(2)
-	lang_focus.set_corner_radius_all(4)
+	lang_focus.set_corner_radius_all(0)
 	
 	btn_en.add_theme_stylebox_override("focus", lang_focus)
 	btn_en.add_theme_stylebox_override("hover", StyleBoxEmpty.new())
@@ -4074,7 +4074,7 @@ func _build_recap_stat_row(icon_path: String, label_text: String, value_text: St
 		b_style.bg_color = Color(1.0, 0.85, 0.2, 0.15)
 		b_style.border_color = Color(1.0, 0.85, 0.2, 0.8)
 		b_style.set_border_width_all(1)
-		b_style.set_corner_radius_all(3)
+		b_style.set_corner_radius_all(4)
 		b_style.content_margin_left = 6
 		b_style.content_margin_right = 6
 		b_style.content_margin_top = 2
@@ -5803,7 +5803,7 @@ func show_achievements_screen() -> void:
 			
 			var pbar_fill = StyleBoxFlat.new()
 			pbar_fill.bg_color = Color(1.0, 0.85, 0.2, 0.9)
-			pbar_fill.set_corner_radius_all(3)
+			pbar_fill.set_corner_radius_all(4)
 			
 			pbar.add_theme_stylebox_override("background", pbar_bg)
 			pbar.add_theme_stylebox_override("fill", pbar_fill)

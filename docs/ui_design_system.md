@@ -13,11 +13,11 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 * **Backgrounds:** Global Modal `Color(0.02, 0.01, 0.05, 0.96)`, Dark Panel `Color(0.05, 0.02, 0.1, 0.85)`, Dimmed HUD Plate `Color(0.03, 0.02, 0.06, 0.82)` (inner recessed plates `0.88`).
 * **Controller:** Gold (Pause), Lime (Weapons), Cyan (Ice), Orange (Power Up), Magenta (Mode).
 
-## 2. Corner Radii
-* **0px:** Standard buttons (Main Menu, Pause Menu, dialogs, Back buttons) and keyboard/controller focus rings.
-* **3px:** Progress Bar fill (`4px` track - `1px` padding).
-* **4px:** Retro Flat Plates and Badges (Meters, Perks, Stats, Toasts, Cards).
-* **8px:** Global menu modal frames (2px gold border).
+## 2. Corner Radii (Even Scale: 0 / 2 / 4 / 8 / 16px)
+* **0px:** Standard buttons (Main Menu, Pause, Dialogs, Back, Retry) and keyboard/controller focus rings.
+* **2px:** Micro telemetry pips (Aero-Weather Capsule 5x16 pips) and keycap legend chips.
+* **4px:** Retro Flat Plates, Badges, Cards (Meters, Perks, Stats, Toasts, Codex, Achievements, Progress Bar tracks & fills).
+* **8px:** Global menu modal frames (2px gold border) and BrokenBorder dynamic canvas items.
 * **16px:** Radial panels (Weapon Wheel).
 
 ## 3. Typography

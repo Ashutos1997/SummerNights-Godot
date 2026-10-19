@@ -190,7 +190,7 @@ void fragment() {
 	arch_style.border_width_top = 1
 	arch_style.border_width_right = 1
 	arch_style.border_width_bottom = 1
-	arch_style.set_corner_radius_all(6)
+	arch_style.set_corner_radius_all(4)
 	arch_style.content_margin_left = 12.0
 	arch_style.content_margin_right = 12.0
 	arch_style.content_margin_top = 4.0
@@ -262,11 +262,11 @@ void fragment() {
 	pbar_bg.border_width_top = 1
 	pbar_bg.border_width_right = 1
 	pbar_bg.border_width_bottom = 1
-	pbar_bg.set_corner_radius_all(3)
+	pbar_bg.set_corner_radius_all(4)
 	pwr_bar.add_theme_stylebox_override("background", pbar_bg)
 	var pwr_fill = StyleBoxFlat.new()
 	pwr_fill.bg_color = Color(1.0, 0.8, 0.15, 1.0)
-	pwr_fill.set_corner_radius_all(3)
+	pwr_fill.set_corner_radius_all(4)
 	pwr_bar.add_theme_stylebox_override("fill", pwr_fill)
 	pwr_box.add_child(pwr_bar)
 	
@@ -315,11 +315,11 @@ void fragment() {
 	cbar_bg.border_width_top = 1
 	cbar_bg.border_width_right = 1
 	cbar_bg.border_width_bottom = 1
-	cbar_bg.set_corner_radius_all(3)
+	cbar_bg.set_corner_radius_all(4)
 	cap_bar.add_theme_stylebox_override("background", cbar_bg)
 	var cap_fill = StyleBoxFlat.new()
 	cap_fill.bg_color = Color(0.2, 0.75, 1.0, 1.0)
-	cap_fill.set_corner_radius_all(3)
+	cap_fill.set_corner_radius_all(4)
 	cap_bar.add_theme_stylebox_override("fill", cap_fill)
 	cap_box.add_child(cap_bar)
 	
@@ -373,7 +373,7 @@ void fragment() {
 	lock_style.border_width_top = 1
 	lock_style.border_width_right = 1
 	lock_style.border_width_bottom = 1
-	lock_style.set_corner_radius_all(6)
+	lock_style.set_corner_radius_all(4)
 	lock_style.content_margin_left = 10.0
 	lock_style.content_margin_right = 10.0
 	lock_style.content_margin_top = 4.0

@@ -211,10 +211,10 @@ func _create_perk_row(perk_data: Variant) -> Control:
 	style_normal.shadow_size = 10 if is_max_roll else 6
 	style_normal.shadow_offset = Vector2(0, 4)
 	style_normal.shadow_color = Color(1.0, 0.85, 0.2, 0.25) if is_max_roll else Color(0.0, 0.0, 0.0, 0.45)
-	style_normal.corner_radius_top_left = 6
-	style_normal.corner_radius_top_right = 6
-	style_normal.corner_radius_bottom_left = 6
-	style_normal.corner_radius_bottom_right = 6
+	style_normal.corner_radius_top_left = 4
+	style_normal.corner_radius_top_right = 4
+	style_normal.corner_radius_bottom_left = 4
+	style_normal.corner_radius_bottom_right = 4
 	
 	var style_hover = style_normal.duplicate()
 	style_hover.bg_color = Color(0.18, 0.16, 0.22, 0.92) if is_max_roll else Color(0.15, 0.15, 0.2, 0.9)
