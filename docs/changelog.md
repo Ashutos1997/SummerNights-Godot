@@ -22,6 +22,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * Export & Release Streamlining: Retired GitHub binary releases to establish itch.io as the single official distribution platform; export presets updated to v1.8.
 * Settings Menu Title Font Standardization: Standardized "SETTINGS" / "설정" modal header font to 32px across TitleScreen and HUD.
 * Comprehensive Text, Localization & Capitalization Polish: Standardized writing across both English and Korean. Converted shouting all-caps toast descriptions into clean, readable sentence case; unified weapon wheel unlock conditions (sentence case requirements and particle spacing); standardized level references to "레벨 %02d" / "LVL %02d"; cleaned modal buttons to natural "예" / "아니오"; eliminated redundant rarity tags in perk descriptions; and unified terminology ("궁극기", "방어막", "Ice Blast").
+* Explicit Perk Rarity Tiers & Weight Balancing: Added explicit "rarity" definitions across all wave perks, standardizing drafting card tags and border tints (`[ RARE ]` Cyan, `[ UNCOMMON ]` Gold, `[ COMMON ]` Silver) with balanced weights for wind perks (Solar Sail: Rare, Tailwind Drive/Zephyr Dynamo/Slipstream Needle: Uncommon, Gyroscopic Core: Common).
 * Documentation & README Streamlining: Consolidated gameplay overviews in English and Korean READMEs into a concise Key Features section.
 
 ### Fixed
@@ -373,6 +374,7 @@ All notable changes to the Summer Nights project will be documented in this file
 * 배포 정책 및 프리셋 단일화: itch.io를 단독 공식 배포처로 확립하고 고도 내보내기 프리셋을 v1.8로 갱신.
 * 설정 메뉴 제목 서체 크기 표준화: 타이틀 화면 및 인게임 HUD의 설정 모달 제목 폰트 크기를 32px로 통일.
 * 전역 텍스트, 로컬라이제이션 및 대소문자 표기 정비: 영문과 한국어 전반의 문구와 서식을 표준화. 과도한 대문자(ALL CAPS) 토스트 설명을 자연스러운 문장형(Sentence case)으로 정돈하고, 무기 휠 해금 조건 문구 및 조사 띄어쓰기(`%d에서`) 수정, 레벨 표기를 "레벨 %02d" / "LVL %02d"로 일원화, 모달 버튼 문구를 표준적인 "예" / "아니오"로 정비, 퍽 설명 내 중복 희귀도 태그 제거 및 용어 통일("궁극기", "방어막", "얼음 폭발").
+* 퍽 희귀도 명시화 및 가중치 밸런스 조정: 모든 웨이브 퍽에 명시적 "rarity" 속성을 부여하고 드래프트 카드 태그와 테두리 틴트(`[ 희귀 ]` 시안, `[ 고급 ]` 골드, `[ 일반 ]` 실버)를 통일하였으며, 신규 바람 퍽의 가중치 및 희귀도를 밸런스 조정(태양 돛: 희귀, 순풍 추진/풍력 충전기/돌풍 저격수: 고급, 자이로 코어: 일반).
 * 문서 및 README 개편: 영문 및 한국어 README의 설명을 핵심 특징(Key Features) 항목으로 압축 정돈.
 
 ### 수정됨 (Fixed)

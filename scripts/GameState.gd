@@ -396,6 +396,7 @@ const WAVE_PERKS: Dictionary = {
 		"min_val": 8,
 		"max_val": 15,
 		"step": 1,
+		"rarity": "common",
 		"weight": 100
 	},
 	"crit_boost": {
@@ -407,6 +408,7 @@ const WAVE_PERKS: Dictionary = {
 		"min_val": 8,
 		"max_val": 15,
 		"step": 1,
+		"rarity": "common",
 		"weight": 100
 	},
 	"cooling_boost": {
@@ -420,6 +422,7 @@ const WAVE_PERKS: Dictionary = {
 		"min_val_2": 5,
 		"max_val_2": 10,
 		"step": 1,
+		"rarity": "rare",
 		"weight": 20
 	},
 	"catastrom_boost": {
@@ -431,6 +434,7 @@ const WAVE_PERKS: Dictionary = {
 		"min_val": 8,
 		"max_val": 15,
 		"step": 1,
+		"rarity": "common",
 		"weight": 100
 	},
 	"heat_shield": {
@@ -442,6 +446,7 @@ const WAVE_PERKS: Dictionary = {
 		"min_val": 3,
 		"max_val": 5,
 		"step": 1,
+		"rarity": "common",
 		"weight": 100
 	},
 	"slow_sway": {
@@ -453,6 +458,7 @@ const WAVE_PERKS: Dictionary = {
 		"min_val": 5,
 		"max_val": 10,
 		"step": 1,
+		"rarity": "rare",
 		"weight": 20
 	},
 	"glass_cannon": {
@@ -466,6 +472,7 @@ const WAVE_PERKS: Dictionary = {
 		"min_val_2": 10,
 		"max_val_2": 15,
 		"step": 1,
+		"rarity": "uncommon",
 		"weight": 60
 	},
 	"heavy_water": {
@@ -479,6 +486,7 @@ const WAVE_PERKS: Dictionary = {
 		"min_val_2": 8,
 		"max_val_2": 15,
 		"step": 1,
+		"rarity": "rare",
 		"weight": 20
 	},
 	"reckless_haste": {
@@ -492,6 +500,7 @@ const WAVE_PERKS: Dictionary = {
 		"min_val_2": 6,
 		"max_val_2": 10,
 		"step": 1,
+		"rarity": "uncommon",
 		"weight": 60
 	},
 	"wind_breaker": {
@@ -503,6 +512,7 @@ const WAVE_PERKS: Dictionary = {
 		"min_val": 35,
 		"max_val": 60,
 		"step": 5,
+		"rarity": "common",
 		"weight": 80
 	},
 	"subzero_reserve": {
@@ -514,6 +524,7 @@ const WAVE_PERKS: Dictionary = {
 		"min_val": 1,
 		"max_val": 1,
 		"step": 1,
+		"rarity": "common",
 		"weight": 70
 	},
 	"blade_cadence": {
@@ -527,6 +538,7 @@ const WAVE_PERKS: Dictionary = {
 		"min_val_2": 15,
 		"max_val_2": 25,
 		"step": 1,
+		"rarity": "common",
 		"weight": 70
 	},
 	"solar_overclock": {
@@ -540,6 +552,7 @@ const WAVE_PERKS: Dictionary = {
 		"min_val_2": 25,
 		"max_val_2": 35,
 		"step": 1,
+		"rarity": "rare",
 		"weight": 20
 	},
 	"high_pressure_bore": {
@@ -553,6 +566,7 @@ const WAVE_PERKS: Dictionary = {
 		"min_val_2": 12,
 		"max_val_2": 20,
 		"step": 1,
+		"rarity": "uncommon",
 		"weight": 60
 	},
 	"hyper_focus": {
@@ -566,6 +580,7 @@ const WAVE_PERKS: Dictionary = {
 		"min_val_2": 12,
 		"max_val_2": 20,
 		"step": 1,
+		"rarity": "uncommon",
 		"weight": 60
 	},
 	"deep_reservoir": {
@@ -579,6 +594,7 @@ const WAVE_PERKS: Dictionary = {
 		"min_val_2": 15,
 		"max_val_2": 25,
 		"step": 5,
+		"rarity": "common",
 		"weight": 80
 	},
 	"tailwind_drive": {
@@ -590,7 +606,8 @@ const WAVE_PERKS: Dictionary = {
 		"min_val": 25,
 		"max_val": 40,
 		"step": 5,
-		"weight": 70,
+		"rarity": "uncommon",
+		"weight": 60,
 		"is_float_val": true
 	},
 	"solar_sail": {
@@ -602,7 +619,8 @@ const WAVE_PERKS: Dictionary = {
 		"min_val": 20,
 		"max_val": 35,
 		"step": 5,
-		"weight": 60
+		"rarity": "rare",
+		"weight": 20
 	},
 	"gyroscopic_core": {
 		"icon": "res://assets/ui/icons/driver_fury.png",
@@ -613,6 +631,7 @@ const WAVE_PERKS: Dictionary = {
 		"min_val": 30,
 		"max_val": 50,
 		"step": 5,
+		"rarity": "common",
 		"weight": 80
 	},
 	"zephyr_dynamo": {
@@ -624,7 +643,8 @@ const WAVE_PERKS: Dictionary = {
 		"min_val": 30,
 		"max_val": 50,
 		"step": 5,
-		"weight": 80,
+		"rarity": "uncommon",
+		"weight": 60,
 		"is_float_val": true
 	},
 	"slipstream_needle": {
@@ -636,6 +656,7 @@ const WAVE_PERKS: Dictionary = {
 		"min_val": 15,
 		"max_val": 25,
 		"step": 5,
+		"rarity": "uncommon",
 		"weight": 60
 	}
 }

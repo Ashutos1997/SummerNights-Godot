@@ -29,7 +29,7 @@ Master record of implemented features, mechanics, and systems in *Summer Nights*
 * **Celestial Awakening (`[F]`):** 15s super mode for Kitsune Buster IX (9 hydro tails, infinite water, 2.0x cooling).
 
 ## 3. Rogue-lite Perks (Endless Mode)
-* **Drafting:** Choose 1 of 3 perk cards after boss waves. Rarity tiers: Common, Uncommon, Rare.
+* **Drafting:** Choose 1 of 3 perk cards after boss waves. Explicit rarity tiers: Common (weight 70–100), Uncommon (weight 60), Rare (weight 20).
 * **Roll Ranges:** Randomized stat rolls within `[min ~ max]`. Max rolls show `[ MAX ROLL! ]` gold badge.
 * **Diminishing Returns:** Stacking 3+ copies scales efficiency (1st/2nd = 100%, 3rd = 75%, 4th+ = 55%) with amber stack badge.
 * **Tracker:** Top-left active buff icons with stack badges.

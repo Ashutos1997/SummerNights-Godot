@@ -179,14 +179,15 @@ func _create_perk_row(perk_data: Variant) -> Control:
 	var weight = perk.get("weight", 100)
 	var is_max_roll = perk_instance.get("is_max_roll", false) and perk.get("max_val", 0) > perk.get("min_val", 0)
 	
+	var r_tier = perk.get("rarity", "").to_lower()
 	var rarity_name = "COMMON"
 	var rarity_color = Color(0.8, 0.85, 0.95, 0.6)
 	var border_tint = Color(1.0, 0.85, 0.2, 0.5)
-	if weight <= 20:
+	if r_tier == "rare" or (r_tier == "" and weight <= 20):
 		rarity_name = "희귀" if is_kr else "RARE"
 		rarity_color = Color(0.2, 0.85, 1.0, 0.9)
 		border_tint = Color(0.2, 0.85, 1.0, 0.75)
-	elif weight <= 60:
+	elif r_tier == "uncommon" or (r_tier == "" and weight <= 60):
 		rarity_name = "고급" if is_kr else "UNCOMMON"
 		rarity_color = Color(1.0, 0.85, 0.2, 0.9)
 		border_tint = Color(1.0, 0.85, 0.2, 0.75)
