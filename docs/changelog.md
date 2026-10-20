@@ -4,6 +4,9 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ## [v1.9] - WIP
 
+### Fixed
+* Title Screen Vertical Centering on Initial Boot: Fixed bug where the title screen appeared slightly shifted upward on initial startup. Decoupled `_update_language` from startup animation flow and transitioned the reveal animation from caching stale frame-1 absolute coordinates to tweening anchor offsets, guaranteeing perfect vertical centering across all screen aspect ratios and display modes.
+
 ---
 
 ## [v1.8] - 2026-10-20
@@ -360,6 +363,9 @@ All notable changes to the Summer Nights project will be documented in this file
 ---
 
 ## [v1.9] - WIP
+
+### 수정됨 (Fixed)
+* 초기 실행 시 타이틀 화면 수직 중앙 정렬 오차 수정: 게임 최초 실행 시 타이틀 화면 메뉴가 위쪽으로 치우쳐 표시되던 버그 해결. `_update_language`와 시작 애니메이션 로직의 잘못된 스코프 분리 및 1프레임 시점의 구 해상도 절대 좌표 캐싱을 제거하고 앵커 오프셋 트위닝으로 개편하여 모든 화면 비율과 디스플레이 모드에서 완벽한 수직 중앙 정렬 보장.
 
 ---
 

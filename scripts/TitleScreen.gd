@@ -37,9 +37,6 @@ var is_splash_active: bool = false
 var splash_tween: Tween = null
 var splash_logo_tween: Tween = null
 var startup_audio: AudioStreamPlayer = null
-var orig_vbox_y: float = 0.0
-var orig_lang_y: float = 0.0
-var orig_credit_y: float = 0.0
 var best_time_lbl: Label = null
 var ach_btn: Button
 var stats_btn: Button
@@ -227,6 +224,101 @@ func _ready() -> void:
 	_build_quit_popup()
 	_update_language()
 
+	if normal_btn and not normal_btn.pressed.is_connected(_on_normal_pressed):
+		normal_btn.pressed.connect(_on_normal_pressed)
+	if survival_btn and not survival_btn.pressed.is_connected(_on_survival_pressed):
+		survival_btn.pressed.connect(_on_survival_pressed)
+	if dev_btn and not dev_btn.pressed.is_connected(_on_dev_pressed):
+		dev_btn.pressed.connect(_on_dev_pressed)
+
+	color_rect.modulate.a = 0.0
+	var tw = create_tween()
+	tw.set_ease(Tween.EASE_OUT)
+	tw.tween_property(color_rect, "modulate:a", 1.0, 0.5)
+
+	# --- STARTUP ANIMATION / MADE WITH GODOT SPLASH ---
+	var vbox = $ColorRect/HBoxContainer
+	
+	if not GameState.has_shown_splash:
+		GameState.has_shown_splash = true
+		is_splash_active = true
+		
+		# Hide menu content immediately to prevent flashing while anchors resolve
+		vbox.modulate.a = 0.0
+		if lang_btn: lang_btn.modulate.a = 0.0
+		if credit_lbl: credit_lbl.modulate.a = 0.0
+		$BorderPanel.visible = false
+		
+		# Style splash elements with clean design system rules
+		if made_with_lbl:
+			var is_kr = GameState.language == "KR"
+			var font_path = "res://assets/fonts/Galmuri11.ttf" if is_kr else "res://assets/ui/fonts/Fonts/Kenney Future.ttf"
+			var font = load(font_path)
+			var title_font_size = 32 if is_kr else 36
+			_style_label(made_with_lbl, title_font_size, Color(1.0, 0.85, 0.2, 0.95), font)
+			made_with_lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
+			made_with_lbl.add_theme_constant_override("shadow_offset_x", 2)
+			made_with_lbl.add_theme_constant_override("shadow_offset_y", 2)
+			made_with_lbl.add_theme_constant_override("outline_size", 4)
+			made_with_lbl.text = "제 작   엔 진" if is_kr else "M A D E   W I T H"
+		
+		if splash_container:
+			splash_container.visible = true
+			splash_container.modulate.a = 1.0
+			
+		if radial_glow:
+			radial_glow.modulate.a = 0.0
+			radial_glow.scale = Vector2(0.92, 0.92)
+			
+		if splash_center:
+			splash_center.modulate.a = 0.0
+			splash_center.scale = Vector2(0.96, 0.96)
+			splash_center.pivot_offset = Vector2(250, 120)
+
+		if godot_logo:
+			godot_logo.self_modulate = Color(3.5, 3.5, 3.5, 1.0)
+		
+		# Play the custom PS1 startup audio
+		startup_audio = AudioStreamPlayer.new()
+		startup_audio.stream = load("res://assets/audio/sfx/ps1_startup.wav")
+		startup_audio.bus = "SFX"
+		add_child(startup_audio)
+		startup_audio.play(1.5)
+		
+		# Start drawing the golden border around the screen with smooth quad deceleration
+		border_progress = 0.0
+		splash_tween = create_tween()
+		splash_tween.tween_property(self, "border_progress", 1.0, 3.0).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		splash_tween.tween_callback(func():
+			_finish_splash_and_reveal_menu(vbox)
+		)
+		
+		# Smoothly fade in and scale up the Godot logo and subtle ambient glow
+		splash_logo_tween = create_tween().set_parallel(true)
+		if radial_glow:
+			splash_logo_tween.tween_property(radial_glow, "modulate:a", 1.0, 0.9).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+			splash_logo_tween.tween_property(radial_glow, "scale", Vector2(1.05, 1.05), 2.8).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		if splash_center:
+			splash_logo_tween.tween_property(splash_center, "modulate:a", 1.0, 0.7).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+			splash_logo_tween.tween_property(splash_center, "scale", Vector2(1.015, 1.015), 2.8).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		
+		# Hold Godot logo until 2.1s, then smoothly fade out logo & glow with soft sine ease into dark void
+		var logo_fade_tw = create_tween().set_parallel(true)
+		if splash_center:
+			logo_fade_tw.tween_property(splash_center, "modulate:a", 0.0, 0.7).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).set_delay(2.1)
+		if radial_glow:
+			logo_fade_tw.tween_property(radial_glow, "modulate:a", 0.0, 0.7).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).set_delay(2.1)
+	else:
+		# Return-to-title flow: immediately reveal without splash
+		if splash_container:
+			splash_container.visible = false
+		border_progress = -1.0
+		$BorderPanel.visible = true
+		vbox.modulate.a = 1.0
+		if lang_btn: lang_btn.modulate.a = 1.0
+		if credit_lbl: credit_lbl.modulate.a = 1.0
+	# --- END STARTUP ANIMATION / MADE WITH GODOT SPLASH ---
+
 func _update_language() -> void:
 	_apply_settings_language()
 
@@ -370,106 +462,6 @@ func _update_language() -> void:
 				quit_prompt_btn.add_theme_stylebox_override("hover", empty_style)
 				quit_prompt_btn.add_theme_stylebox_override("pressed", empty_style)
 				quit_prompt_btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
-
-	color_rect.modulate.a = 0.0
-	var tw = create_tween()
-	tw.set_ease(Tween.EASE_OUT)
-	tw.tween_property(color_rect, "modulate:a", 1.0, 0.5)
-
-	# --- STARTUP ANIMATION / MADE WITH GODOT SPLASH ---
-	var vbox = $ColorRect/HBoxContainer
-	
-	if not GameState.has_shown_splash:
-		GameState.has_shown_splash = true
-		is_splash_active = true
-		
-		# Hide menu content immediately to prevent flashing while anchors resolve
-		vbox.modulate.a = 0.0
-		if lang_btn: lang_btn.modulate.a = 0.0
-		if credit_lbl: credit_lbl.modulate.a = 0.0
-		$BorderPanel.visible = false
-		
-		# Style splash elements with clean design system rules
-		if made_with_lbl:
-			var title_font_size = 32 if is_kr else 36
-			_style_label(made_with_lbl, title_font_size, Color(1.0, 0.85, 0.2, 0.95), font)
-			made_with_lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
-			made_with_lbl.add_theme_constant_override("shadow_offset_x", 2)
-			made_with_lbl.add_theme_constant_override("shadow_offset_y", 2)
-			made_with_lbl.add_theme_constant_override("outline_size", 4)
-			made_with_lbl.text = "제 작   엔 진" if is_kr else "M A D E   W I T H"
-		
-		if splash_container:
-			splash_container.visible = true
-			splash_container.modulate.a = 1.0
-			
-		if radial_glow:
-			radial_glow.modulate.a = 0.0
-			radial_glow.scale = Vector2(0.92, 0.92)
-			
-		if splash_center:
-			splash_center.modulate.a = 0.0
-			splash_center.scale = Vector2(0.96, 0.96)
-			splash_center.pivot_offset = Vector2(250, 120)
-
-		if godot_logo:
-			godot_logo.self_modulate = Color(3.5, 3.5, 3.5, 1.0)
-		
-		# Play the custom PS1 startup audio
-		startup_audio = AudioStreamPlayer.new()
-		startup_audio.stream = load("res://assets/audio/sfx/ps1_startup.wav")
-		startup_audio.bus = "SFX"
-		add_child(startup_audio)
-		startup_audio.play(1.5)
-		
-		# Start drawing the golden border around the screen with smooth quad deceleration
-		border_progress = 0.0
-		splash_tween = create_tween()
-		splash_tween.tween_property(self, "border_progress", 1.0, 3.0).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-		splash_tween.tween_callback(func():
-			_finish_splash_and_reveal_menu(vbox)
-		)
-		
-		# Smoothly fade in and scale up the Godot logo and subtle ambient glow
-		splash_logo_tween = create_tween().set_parallel(true)
-		if radial_glow:
-			splash_logo_tween.tween_property(radial_glow, "modulate:a", 1.0, 0.9).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-			splash_logo_tween.tween_property(radial_glow, "scale", Vector2(1.05, 1.05), 2.8).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		if splash_center:
-			splash_logo_tween.tween_property(splash_center, "modulate:a", 1.0, 0.7).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-			splash_logo_tween.tween_property(splash_center, "scale", Vector2(1.015, 1.015), 2.8).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		
-		# Allow the layout engine one frame to compute true anchored positions for menu elements
-		await get_tree().process_frame
-		if not is_splash_active:
-			return
-		orig_vbox_y = vbox.position.y
-		orig_lang_y = lang_btn.position.y if lang_btn else 0.0
-		orig_credit_y = credit_lbl.position.y if credit_lbl else 0.0
-		
-		# Hold Godot logo until 2.1s, then smoothly fade out logo & glow with soft sine ease into dark void
-		var logo_fade_tw = create_tween().set_parallel(true)
-		if splash_center:
-			logo_fade_tw.tween_property(splash_center, "modulate:a", 0.0, 0.7).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).set_delay(2.1)
-		if radial_glow:
-			logo_fade_tw.tween_property(radial_glow, "modulate:a", 0.0, 0.7).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).set_delay(2.1)
-	else:
-		# Return-to-title flow: immediately reveal without splash
-		if splash_container:
-			splash_container.visible = false
-		border_progress = -1.0
-		$BorderPanel.visible = true
-		vbox.modulate.a = 1.0
-		if lang_btn: lang_btn.modulate.a = 1.0
-		if credit_lbl: credit_lbl.modulate.a = 1.0
-	# --- END STARTUP ANIMATION / MADE WITH GODOT SPLASH ---
-
-	if normal_btn:
-		normal_btn.pressed.connect(_on_normal_pressed)
-	if survival_btn:
-		survival_btn.pressed.connect(_on_survival_pressed)
-	if dev_btn:
-		dev_btn.pressed.connect(_on_dev_pressed)
 
 func _style_label(lbl: Label, size: int, color: Color, font: Font) -> void:
 	if not lbl: return
@@ -1002,19 +994,28 @@ func _finish_splash_and_reveal_menu(vbox: Control) -> void:
 	# Smoothly glide in menu elements with subtle stagger as the beach emerges
 	var slide_tw = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	if is_instance_valid(vbox):
-		var target_y = orig_vbox_y if orig_vbox_y != 0.0 else vbox.position.y
-		vbox.position.y = target_y + 35
-		slide_tw.tween_property(vbox, "position:y", target_y, 0.6).set_delay(0.08)
+		var base_top = -200.0
+		var base_bottom = 200.0
+		vbox.offset_top = base_top + 35.0
+		vbox.offset_bottom = base_bottom + 35.0
+		slide_tw.tween_property(vbox, "offset_top", base_top, 0.6).set_delay(0.08)
+		slide_tw.tween_property(vbox, "offset_bottom", base_bottom, 0.6).set_delay(0.08)
 		slide_tw.tween_property(vbox, "modulate:a", 1.0, 0.5).set_delay(0.08)
 	if lang_btn:
-		var target_y = orig_lang_y if orig_lang_y != 0.0 else lang_btn.position.y
-		lang_btn.position.y = target_y + 35
-		slide_tw.tween_property(lang_btn, "position:y", target_y, 0.6).set_delay(0.10)
+		var base_top = 32.0
+		var base_bottom = 64.0
+		lang_btn.offset_top = base_top + 35.0
+		lang_btn.offset_bottom = base_bottom + 35.0
+		slide_tw.tween_property(lang_btn, "offset_top", base_top, 0.6).set_delay(0.10)
+		slide_tw.tween_property(lang_btn, "offset_bottom", base_bottom, 0.6).set_delay(0.10)
 		slide_tw.tween_property(lang_btn, "modulate:a", 1.0, 0.5).set_delay(0.10)
 	if credit_lbl:
-		var target_y = orig_credit_y if orig_credit_y != 0.0 else credit_lbl.position.y
-		credit_lbl.position.y = target_y + 25
-		slide_tw.tween_property(credit_lbl, "position:y", target_y, 0.6).set_delay(0.12)
+		var base_top = -48.0
+		var base_bottom = -32.0
+		credit_lbl.offset_top = base_top + 25.0
+		credit_lbl.offset_bottom = base_bottom + 25.0
+		slide_tw.tween_property(credit_lbl, "offset_top", base_top, 0.6).set_delay(0.12)
+		slide_tw.tween_property(credit_lbl, "offset_bottom", base_bottom, 0.6).set_delay(0.12)
 		slide_tw.tween_property(credit_lbl, "modulate:a", 1.0, 0.5).set_delay(0.12)
 
 func _input(event: InputEvent) -> void:
