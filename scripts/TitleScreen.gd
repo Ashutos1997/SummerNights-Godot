@@ -276,7 +276,7 @@ func _update_language() -> void:
 			subtitle_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
 			subtitle_lbl.add_theme_constant_override("outline_size", 4)
 		if credit_lbl:
-			credit_lbl.text = "SUMMER NIGHTS v1.8 · GODOT 4 · GDSCRIPT · FORWARD+"
+			credit_lbl.text = "SUMMER NIGHTS v1.9 · GODOT 4 · GDSCRIPT · FORWARD+"
 			_style_label(credit_lbl, 14 if is_kr else 12, Color(1.0, 1.0, 1.0, 0.7), font)
 		
 
@@ -1638,7 +1638,7 @@ func _apply_settings_language() -> void:
 		if subtitle_lbl:
 			_style_label(subtitle_lbl, 18 if is_kr else 14, Color(1.0, 0.75, 0.15, 1.0), font)
 		if credit_lbl:
-			credit_lbl.text = "SUMMER NIGHTS v1.8 · GODOT 4 · GDSCRIPT · FORWARD+"
+			credit_lbl.text = "SUMMER NIGHTS v1.9 · GODOT 4 · GDSCRIPT · FORWARD+"
 			_style_label(credit_lbl, 14 if is_kr else 12, Color(1.0, 1.0, 1.0, 0.7), font)
 
 		_update_stats_cards(is_kr, font)

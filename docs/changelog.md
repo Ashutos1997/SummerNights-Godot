@@ -2,6 +2,10 @@
 
 All notable changes to the Summer Nights project will be documented in this file.
 
+## [v1.9] - WIP
+
+---
+
 ## [v1.8] - 2026-10-20
 *(Note: Releases are exclusively maintained on itch.io starting from v1.8)*
 
@@ -352,6 +356,10 @@ All notable changes to the Summer Nights project will be documented in this file
 * Weather: Rainstorms, Solar Eclipses.
 * Visuals: 3D stylized ocean, day/night cycle, procedural sun expressions.
 * Accessibility: English/Korean localization, Reduce Motion setting.
+
+---
+
+## [v1.9] - WIP
 
 ---
 
