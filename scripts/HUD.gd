@@ -874,6 +874,8 @@ func _ready() -> void:
 		$HUD.move_child(buff_toast_container, pause_screen.get_index())
 	GameState.achievement_unlocked.connect(show_achievement_toast)
 	GameState.buff_unlocked.connect(show_buff_toast)
+	if GameState.has_signal("new_high_score_achieved"):
+		GameState.new_high_score_achieved.connect(show_high_score_toast)
 	
 	# ───────────────────────────────────────────────
 
@@ -3467,7 +3469,7 @@ func _close_credits() -> void:
 
 
 
-func _show_toast(kicker_kr: String, kicker_en: String, title_kr: String, title_en: String, desc_kr: String, desc_en: String, icon_path: String, color: Color, default_target_y: float, container: Control) -> void:
+func _show_toast(kicker_kr: String, kicker_en: String, title_kr: String, title_en: String, desc_kr: String, desc_en: String, icon_path: String, color: Color, default_target_y: float, container: Control, sfx_path: String = "res://assets/audio/sfx/perk_hover.wav") -> void:
 	if not container: return
 	
 	var is_kr = GameState.language == "KR"
@@ -3611,12 +3613,16 @@ func _show_toast(kicker_kr: String, kicker_en: String, title_kr: String, title_e
 	depletion_bar.pivot_offset = Vector2.ZERO
 	toast.add_child(depletion_bar)
 	
-	# Dynamic target Y positioning
+	# Dynamic target Y positioning: Stacks cleanly below any existing active toasts
 	var target_y = default_target_y
-	if container == buff_toast_container and achievement_toast_container and achievement_toast_container.get_child_count() > 0:
-		var ach_child = achievement_toast_container.get_child(0) as Control
+	if container.get_child_count() > 0:
+		var last_child = container.get_child(container.get_child_count() - 1) as Control
+		if is_instance_valid(last_child):
+			target_y = max(target_y, last_child.position.y + last_child.size.y + 12.0)
+	elif container == buff_toast_container and achievement_toast_container and achievement_toast_container.get_child_count() > 0:
+		var ach_child = achievement_toast_container.get_child(achievement_toast_container.get_child_count() - 1) as Control
 		if is_instance_valid(ach_child):
-			target_y = ach_child.position.y + ach_child.size.y + 12.0
+			target_y = max(target_y, ach_child.position.y + ach_child.size.y + 12.0)
 	elif container == buff_toast_container and achievement_toast_container and achievement_toast_container.get_child_count() == 0:
 		target_y = 24.0
 		
@@ -3628,7 +3634,10 @@ func _show_toast(kicker_kr: String, kicker_en: String, title_kr: String, title_e
 	
 	# SFX
 	var sfx = AudioStreamPlayer.new()
-	sfx.stream = load("res://assets/audio/sfx/perk_hover.wav")
+	if sfx_path != "" and ResourceLoader.exists(sfx_path):
+		sfx.stream = load(sfx_path)
+	else:
+		sfx.stream = load("res://assets/audio/sfx/perk_hover.wav")
 	sfx.volume_db = linear_to_db(GameState.sfx_volume) - 2.0
 	sfx.bus = "SFX"
 	toast.add_child(sfx)
@@ -3656,6 +3665,41 @@ func _show_toast(kicker_kr: String, kicker_en: String, title_kr: String, title_e
 	await tw_out.finished
 	if is_instance_valid(toast):
 		toast.queue_free()
+
+func show_high_score_toast(new_score: int) -> void:
+	var s = str(new_score)
+	var formatted = ""
+	var count = 0
+	for i in range(s.length() - 1, -1, -1):
+		formatted = s[i] + formatted
+		count += 1
+		if count % 3 == 0 and i != 0:
+			formatted = "," + formatted
+			
+	var title_en = "%s PTS" % formatted
+	var title_kr = "%s 점" % formatted
+	var desc_en = "All-time record surpassed! Keep pushing the limits!"
+	var desc_kr = "역대 최고 기록을 돌파했습니다! 한계를 뛰어넘으세요!"
+	
+	_show_toast(
+		"[ 최고 기록 경신! ]", "[ NEW HIGH SCORE! ]",
+		title_kr, title_en,
+		desc_kr, desc_en,
+		"res://assets/ui/achievements/trophy.png",
+		Color(1.0, 0.85, 0.2, 1.0),
+		24.0,
+		achievement_toast_container,
+		"res://assets/audio/sfx/perk_select.mp3"
+	)
+	
+	# Celebratory gold bounce and pulse on score label
+	if score_label and not reduce_motion:
+		var tw = create_tween().set_parallel(true)
+		score_label.pivot_offset = Vector2(score_label.size.x, score_label.size.y / 2.0)
+		score_label.scale = Vector2(1.35, 1.35)
+		tw.tween_property(score_label, "scale", Vector2.ONE, 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(score_label, "modulate", Color(2.2, 1.9, 0.6, 1.0), 0.15)
+		tw.chain().tween_property(score_label, "modulate", Color.WHITE, 0.35)
 
 func show_achievement_toast(id: String) -> void:
 	if not GameState.ACHIEVEMENTS.has(id): return

@@ -3,6 +3,7 @@ extends Node
 signal score_updated(new_score: int)
 signal achievement_unlocked(id)
 signal buff_unlocked(id)
+signal new_high_score_achieved(new_high_score: int)
 
 const ACHIEVEMENTS: Dictionary = {
 	"dawn_breaks": {
@@ -361,6 +362,8 @@ var best_wave: int = 0
 var current_score: int = 0
 var is_overtime_active: bool = false
 var high_score: int = 0
+var run_starting_high_score: int = 0
+var has_broken_high_score_this_run: bool = false
 var seagulls_shooed: int = 0
 var flares_intercepted: int = 0
 var total_ice_blasts: int = 0
@@ -772,6 +775,8 @@ func reset() -> void:
 	survival_time = 0.0
 	total_run_time = 0.0
 	current_score = 0
+	run_starting_high_score = high_score
+	has_broken_high_score_this_run = false
 	is_overtime_active = false
 	
 	max_water_mult = 1.0
@@ -805,6 +810,7 @@ func reset() -> void:
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	load_settings()
+	run_starting_high_score = high_score
 	_evaluate_milestones()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -927,6 +933,9 @@ func add_score(amount: int) -> void:
 		var old_high = high_score
 		high_score = current_score
 		_evaluate_milestones(old_high)
+		if not has_broken_high_score_this_run and ((run_starting_high_score > 0 and current_score > run_starting_high_score) or (run_starting_high_score == 0 and current_score >= 5000)):
+			has_broken_high_score_this_run = true
+			emit_signal("new_high_score_achieved", current_score)
 	emit_signal("score_updated", current_score)
 	
 	if current_score >= 10000:

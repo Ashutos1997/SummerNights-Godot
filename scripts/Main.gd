@@ -616,6 +616,9 @@ var sky_mat:     ProceduralSkyMaterial
 var _sky_shader_mat: ShaderMaterial
 var haze_mat:    ShaderMaterial
 var steam_particles: GPUParticles3D
+var sun_sizzle_steam: GPUParticles3D
+var sun_sizzle_process_mat: ParticleProcessMaterial
+var sun_sizzle_mesh_mat: StandardMaterial3D
 var splash_particles_pool: Array[GPUParticles3D] = []
 var splash_idx: int = 0
 var dir_light:   DirectionalLight3D
@@ -1845,6 +1848,38 @@ func _build_scene() -> void:
 	high_heat_steam.amount = 40
 	high_heat_steam.lifetime = 1.5
 	sun.add_child(high_heat_steam)
+	
+	# Dynamic Sun Sizzle Steam Plume (Water stream contact point on Sun's surface)
+	sun_sizzle_steam = GPUParticles3D.new()
+	sun_sizzle_steam.name = "SunSizzleSteam"
+	sun_sizzle_steam.top_level = true
+	sun_sizzle_process_mat = ParticleProcessMaterial.new()
+	sun_sizzle_process_mat.direction = Vector3(0, 1, 0)
+	sun_sizzle_process_mat.spread = 55.0
+	sun_sizzle_process_mat.initial_velocity_min = 2.5
+	sun_sizzle_process_mat.initial_velocity_max = 5.0
+	sun_sizzle_process_mat.gravity = Vector3(0, 6.0, 0)
+	sun_sizzle_process_mat.scale_min = 0.5
+	sun_sizzle_process_mat.scale_max = 1.3
+	sun_sizzle_process_mat.damping_min = 1.0
+	sun_sizzle_process_mat.damping_max = 2.5
+	
+	var sizzle_mesh = SphereMesh.new()
+	sizzle_mesh.radius = 0.35
+	sizzle_mesh.height = 0.7
+	sun_sizzle_mesh_mat = StandardMaterial3D.new()
+	sun_sizzle_mesh_mat.albedo_color = Color(0.95, 0.98, 1.0, 0.38)
+	sun_sizzle_mesh_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	sun_sizzle_mesh_mat.shading_mode = StandardMaterial3D.SHADING_MODE_UNSHADED
+	sizzle_mesh.material = sun_sizzle_mesh_mat
+	
+	sun_sizzle_steam.process_material = sun_sizzle_process_mat
+	sun_sizzle_steam.draw_pass_1 = sizzle_mesh
+	sun_sizzle_steam.emitting = false
+	sun_sizzle_steam.one_shot = false
+	sun_sizzle_steam.amount = 32
+	sun_sizzle_steam.lifetime = 0.7
+	add_child(sun_sizzle_steam)
 	
 	# Water splash particles pool
 	for i in range(10):
@@ -3474,6 +3509,7 @@ func _process(delta: float) -> void:
 			# Check real sun hit
 			var aim_dist = water_target_pos.distance_to(sun.position)
 			if hit_solar_drone:
+				_stop_sun_sizzle_steam()
 				# Water intercepted and absorbed by orbiting drone shield (blocks damage to Sun)
 				combo_timer += delta
 				if combo_timer >= 1.5:
@@ -3487,6 +3523,7 @@ func _process(delta: float) -> void:
 						hud.update_combo_text(current_mult)
 				combo_grace_timer = 0.5 if "untouchable" in GameState.unlocked_achievements else 0.0
 			elif hit_mirage and closest_mirage_dist < aim_dist:
+				_stop_sun_sizzle_steam()
 				# Hit a mirage! Deal damage to the mirage shield
 				if steam_particles and randf() < 0.2:
 					steam_particles.global_position = water_target_pos
@@ -3530,6 +3567,7 @@ func _process(delta: float) -> void:
 			elif aim_dist < 5.0: # Close enough to hit the real sun
 				if solar_convergence_mgr and solar_convergence_mgr.get_active_drone_count() > 0:
 					# Coronal Drone Shield is active: Drones protect the Sun!
+					_stop_sun_sizzle_steam()
 					_on_shield_deflect(water_target_pos)
 					drone_shield_spray_duration += delta
 					if drone_shield_spray_duration >= 0.5:
@@ -3563,11 +3601,13 @@ func _process(delta: float) -> void:
 							hud.update_combo_text(current_mult)
 					combo_grace_timer = 0.5 if "untouchable" in GameState.unlocked_achievements else 0.0
 			else:
+				_stop_sun_sizzle_steam()
 				combo_timer = 0.0
 				if combo_active:
 					combo_active = false
 					if hud and hud.has_method("show_combo"): hud.show_combo(false)
 	else:
+		_stop_sun_sizzle_steam()
 		if combo_grace_timer > 0.0:
 			combo_grace_timer -= delta
 		else:
@@ -3763,6 +3803,7 @@ func _trigger_supernova_loss() -> void:
 	GameState.log_playtest_round("Loss", Time.get_unix_time_from_system() - round_start_time, GameState.current_weapon_id)
 	is_shooting = false
 	_stop_vibrate()
+	_stop_sun_sizzle_steam()
 	if gun_spray: gun_spray.emitting = false
 	
 	# Supernova Game Over Cinematic
@@ -4421,6 +4462,11 @@ func _build_god_rays_mesh() -> Mesh:
 # On hit
 # ─────────────────────────────────────────────────────────────────────────────
 func _on_hit(delta: float, target_pos: Vector3) -> void:
+	if not is_sun_shielded:
+		_update_sun_sizzle_steam(target_pos, delta)
+	else:
+		_stop_sun_sizzle_steam()
+		
 	if is_instance_valid(sun_hit_tween):
 		sun_hit_tween.kill()
 	sun_hit_tween = create_tween()
@@ -4594,6 +4640,9 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 						GameState.catastrom_charge = min(1.0, GameState.catastrom_charge + ult_gain_body)
 				GameState.add_score(int(dmg * 5.0 * c_mult))
 				projectile_hit.emit()
+				if sizzle_sfx and not sizzle_sfx.playing and randf() < 0.25:
+					sizzle_sfx.pitch_scale = randf_range(0.95, 1.25)
+					sizzle_sfx.play()
 			
 	if not is_sun_shielded and hit_cooldown <= 0.0:
 		hit_sfx.play()
@@ -4640,6 +4689,36 @@ func _on_hit(delta: float, target_pos: Vector3) -> void:
 	
 	if temperature <= 0.0:
 		_check_sun_defeat()
+
+func _update_sun_sizzle_steam(target_pos: Vector3, _delta: float) -> void:
+	if not is_instance_valid(sun_sizzle_steam): return
+	
+	sun_sizzle_steam.global_position = target_pos
+	if not sun_sizzle_steam.emitting:
+		sun_sizzle_steam.emitting = true
+		
+	var c_mult: float = 1.0
+	if combo_active:
+		c_mult = min(3.0, 1.0 + ((combo_timer - 1.5) * 0.2))
+	
+	# Localized thermal falloff boost: superheated areas emit thicker, higher-velocity vapor plumes
+	var thermal_boost: float = 1.0 + clamp(continuous_spray_timer / 3.0, 0.0, 1.2)
+	var billow_scale: float = (1.0 + (c_mult - 1.0) * 0.35) * thermal_boost
+	
+	if sun_sizzle_process_mat:
+		sun_sizzle_process_mat.scale_min = 0.45 * billow_scale
+		sun_sizzle_process_mat.scale_max = 1.25 * billow_scale
+		sun_sizzle_process_mat.initial_velocity_min = 2.5 * (1.0 + (c_mult - 1.0) * 0.25)
+		sun_sizzle_process_mat.initial_velocity_max = 5.0 * (1.0 + (c_mult - 1.0) * 0.25)
+		sun_sizzle_process_mat.gravity = Vector3(0.0, 5.0 + (thermal_boost - 1.0) * 4.0, 0.0)
+	
+	if sun_sizzle_mesh_mat:
+		var target_alpha = clamp(0.32 + (c_mult - 1.0) * 0.08 + (thermal_boost - 1.0) * 0.12, 0.28, 0.58)
+		sun_sizzle_mesh_mat.albedo_color.a = target_alpha
+
+func _stop_sun_sizzle_steam() -> void:
+	if is_instance_valid(sun_sizzle_steam) and sun_sizzle_steam.emitting:
+		sun_sizzle_steam.emitting = false
 # ─────────────────────────────────────────────────────────────────────────────
 # Temp system / Middle States
 # ─────────────────────────────────────────────────────────────────────────────
@@ -4886,6 +4965,7 @@ func _trigger_catastrom_dunk() -> void:
 func _cinematic_boss_draft() -> void:
 	game_over = true
 	is_shooting = false
+	_stop_sun_sizzle_steam()
 	gun_spray.emitting = false
 	_stop_vibrate()
 	timer_running = false

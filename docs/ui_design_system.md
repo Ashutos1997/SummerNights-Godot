@@ -47,7 +47,7 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 ### Popup Notifications (Toasts)
 * **Form Factor:** Cyberpunk Arcade Plates (4px radius, 1px accent border, softened shadow, dimmed `0.82` bg `Color(0.03, 0.02, 0.06, 0.82)` with recessed `0.88` icon plate).
 * **Alerts (380x72px):** Right-docked with 3.5s depletion bar, 0.45s slide-fade, and staggered exit.
-* **Popups (500x72–88px):** Centered popups for Achievements and Buffs sliding from `y = -100` to `y = 24.0` / `106.0`.
+* **Popups (500x72–88px):** Centered popups for Achievements, Buffs, and New High Score records sliding from `y = -100` to `y = 24.0` / `106.0` (with dynamic vertical stacking).
 * **Icon Plate:** Recessed 40x40px plate with 26x26 vector icon.
 * **Typography:** 10px kicker tag, 14px header title, 12px description.
 

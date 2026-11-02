@@ -6,6 +6,8 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### Added
 * Title Screen Controls Modal: Added a dedicated "CONTROLS" button and interactive modal dialog to the Title Screen. Features bilingual EN/KR tabbed layout toggle (Keyboard vs. Xbox Controller), crisp white legend typography with grouped categories, interactive SVG diagrams with real-time key isolation highlight shaders on hover/focus, and smooth ESC dismissal.
+* New High Score Celebration Banner: Added top-center celebratory toast notification (`[ NEW HIGH SCORE! ]` / `[ 최고 기록 경신! ]`) triggered upon surpassing previous all-time best score mid-run, accompanied by gold trophy icon, formatted score readout, celebratory chime, and score counter gold pulse.
+* Sun Sizzle Steam Particle System: Added dynamic procedural steam billows at water-Sun contact point, scaling in volume, velocity, and opacity with active combo multiplier and localized continuous spray thermal falloff.
 
 ### Fixed
 * Title Screen Vertical Centering on Initial Boot: Fixed bug where the title screen appeared slightly shifted upward on initial startup. Decoupled `_update_language` from startup animation flow and transitioned the reveal animation from caching stale frame-1 absolute coordinates to tweening anchor offsets, guaranteeing perfect vertical centering across all screen aspect ratios and display modes.
@@ -369,6 +371,8 @@ All notable changes to the Summer Nights project will be documented in this file
 
 ### 추가됨 (Added)
 * 타이틀 화면 조작법 모달 추가: 타이틀 화면에 전용 "조작법(CONTROLS)" 버튼 및 반응형 모달 창 추가. 키보드와 엑스박스 컨트롤러 탭 전환 지원, 가독성 높은 흰색 범례 텍스트 및 범주별 분류, 항목 호버 및 포커스 시 실시간 키 강조 셰이더와 연동되는 SVG 조작 가이드 다이어그램, ESC 키 닫기 지원.
+* 최고 기록 경신 축하 배너: 런 도중 역대 최고 기록을 돌파할 때 상단 중앙에 축하 토스트 알림(`[ NEW HIGH SCORE! ]` / `[ 최고 기록 경신! ]`) 표시, 황금 트로피 아이콘, 신기록 점수 표시, 점수판 펄스/플래시 및 경쾌한 축하 효과음 연동.
+* 태양 접촉 수증기 증발 파티클: 물줄기가 태양 표면에 닿는 지점에 동적 절차적 수증기/증기 연무 파티클 추가, 콤보 배율 및 국소 열 축적(열 감쇠) 상태에 따라 크기·속도·밀도가 실시간으로 확장되도록 구현.
 
 ### 수정됨 (Fixed)
 * 초기 실행 시 타이틀 화면 수직 중앙 정렬 오차 수정: 게임 최초 실행 시 타이틀 화면 메뉴가 위쪽으로 치우쳐 표시되던 버그 해결. `_update_language`와 시작 애니메이션 로직의 잘못된 스코프 분리 및 1프레임 시점의 구 해상도 절대 좌표 캐싱을 제거하고 앵커 오프셋 트위닝으로 개편하여 모든 화면 비율과 디스플레이 모드에서 완벽한 수직 중앙 정렬 보장.

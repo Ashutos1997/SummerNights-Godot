@@ -9,7 +9,7 @@ Master record of implemented features, mechanics, and systems in *Summer Nights*
 * **Heat:** Passively generates heat; reaching 100% triggers Supernova (Game Over).
 * **Water:** Firing drains water tank; recharges automatically when idle.
 * **Combo:** Consecutive hits scale multiplier (up to 3.0x), boosting ultimate charge and audio pitch.
-* **Scoring:** Points for hits, flare intercepts, and magma evaporation, scaled by combo. High scores save locally.
+* **Scoring:** Points for hits, flare intercepts, and magma evaporation, scaled by combo. High scores save locally. Mid-run record breaks trigger a celebratory top-down notification banner (`[ NEW HIGH SCORE! ]` / `[ 최고 기록 경신! ]`), gold score counter bounce, and chime.
 * **Progression:** 6 Normal Mode levels; Endless Mode unlocks on completion. Bosses occur every 5 waves.
 * **Transitions:** "Dying Ember" fade out, score recap, and seamless wave resets.
 
@@ -39,7 +39,7 @@ Master record of implemented features, mechanics, and systems in *Summer Nights*
 ## 4. Sun Mechanics & Threats
 * **Movement:** Horizontal sway and Figure-8 paths (speed capped at 1.3–1.5).
 * **Durability Scaling:** Post-Wave 20 Endless scales heat capacity by +2.2%/wave (`MAX_TEMP * (1.0 + (wave - 20) * 0.022)`).
-* **Thermal Falloff:** Spraying a single spot for >3.0s degrades cooling efficiency to 70%. Moving aim (distance >= 1.0) or releasing trigger resets to 100%.
+* **Thermal Falloff & Sizzle Steam:** Spraying a single spot for >3.0s degrades cooling efficiency to 70%. Moving aim (distance >= 1.0) or releasing trigger resets to 100%. Water contact triggers procedural steam billows that dynamically expand in volume, updraft velocity, and opacity as combo multiplier and localized thermal falloff escalate.
 * **Sunspots:** Glowing critical weakpoints awarding bonus cooling and points.
 * **Solar Flare Shield:** Cyan energy barrier (Endless Waves 15–25) shattered by Ice Blast (`[R]`).
 * **Solar Disruptions (Wave 6+):** Random micro-events (40%–60% chance) in non-boss waves:
