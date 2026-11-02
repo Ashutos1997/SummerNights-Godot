@@ -74,7 +74,8 @@ Master record of implemented features, mechanics, and systems in *Summer Nights*
 * **Toasts & Popups:** Cyberpunk Arcade Plates (4px radius, 1px border, dimmed 0.82 bg, 40x40 icon plates, 1.5px depletion bars).
 * **Timer Glide Intro:** Round-start timer displays in screen center (`scale 1.6x`, 2.5s hold), then glides (0.85s) into top-right HUD anchor.
 * **Telemetry HUDs (Weather & Drone):** Horizontally centered Drone HUD (`y = 88px`) and top-right Aero-Weather Capsule (`y = 92px`) styled with matching dimmed 0.82 bg plates, aligned flush along their bottom margins.
-* **Title Screen:** Symmetrical horizontal split (title, stats cards, mode buttons, version footer).
+* **Title Screen:** Symmetrical horizontal split (title, stats cards, mode buttons, dedicated Controls and Settings modals, version footer).
+* **Controls Modal:** 880px bilingual modal (Keyboard vs. Xbox Controller toggle, real-time key isolation shaders, grouped control legends).
 * **Abandon Run Modal:** Confirmation dialog (440x180px) intercepting "Main Menu" quits with safe NO default focus.
 * **Victory Recap ("SUMMER'S OVER"):** Normal Mode completion screen showing levels cleared, clear time, final score, unlock milestones, and retry/menu buttons.
 * **Accessibility:** Full controller support with aim assist, "Reduce Motion" toggle, and EN/KR localization.

@@ -61,6 +61,7 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 * **Drafting Screen:** 3-card deal entrance with rarity badges, `[ MAX ROLL! ]` highlights, and stack warning badges.
 * **Achievement Cards:** 700x100 cards (4px radius, 64x64 icon plate, concentric progress bars).
 * **Settings Screen:** Symmetrical 4x2 arcade modal (880px width, 32px title, hairline divider, 410x38px rows). Left column: Audio (Music/SFX) & Controls (Sensitivity/Vibration). Right column: Display (Fullscreen/Reduce Motion) & System (LangPlate ENG|KOR, Gold Skin). Full gamepad navigation.
+* **Controls Screen:** 880px arcade modal (`z_index = 50`, 8px radius frame, 24px margins). Interactive 880x46px toggle pill (Keyboard vs Xbox) with animated sliding gold highlight, dual SVG layouts, real-time key isolation shaders (`isolate_color_pulse.gdshader`), grouped category legends, and 280x44px Back button.
 * **Pause Menu:** 280px vertical column (16px gap, 44px buttons). Quitting triggers Abandon Run confirmation card (440x180px, 8px radius, 2px gold border, YES/NO with NO default focus).
 * **Title Screen:** Symmetrical horizontal split (840x400) with 340px vertical divider, twin 144x52 stats cards, and mode buttons.
 * **Timer Glide Intro:** Center countdown (`scale 1.6x`, 2.5s hold) glides (0.85s) into top-right anchor.

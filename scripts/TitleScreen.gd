@@ -40,15 +40,30 @@ var startup_audio: AudioStreamPlayer = null
 var best_time_lbl: Label = null
 var ach_btn: Button
 var stats_btn: Button
+var controls_btn: Button
 var settings_btn: Button
 var mode_divider: CenterContainer = null
 var quit_prompt_btn: Button = null
 
 var achievements_screen: Control
 var stats_screen: Control
+var controls_screen: Control
 var settings_screen: Control
 var quit_popup: Control
 var achievement_list: VBoxContainer
+
+var controls_title_lbl: Label
+var controls_prompt_lbl: Label
+var controls_back_btn: Button
+var controls_kb_row: HBoxContainer
+var controls_xb_row: HBoxContainer
+var controls_input_toggle_state: int = 0
+var controls_input_highlight: ColorRect
+var controls_input_lbl_kb: Label
+var controls_input_lbl_xb: Label
+var controls_input_toggle_tween: Tween
+var controls_legend_entries: Array = []
+var controls_group_labels: Array = []
 
 var setting_bgm_slider: HSlider
 var setting_bgm_val_lbl: Label
@@ -201,6 +216,14 @@ func _ready() -> void:
 	dev_btn.get_parent().add_child(stats_btn)
 	stats_btn.pressed.connect(_show_stats)
 	
+	# Dynamically add Controls button
+	controls_btn = dev_btn.duplicate()
+	controls_btn.name = "ControlsBtn"
+	controls_btn.custom_minimum_size = Vector2(240, 44)
+	controls_btn.visible = true
+	dev_btn.get_parent().add_child(controls_btn)
+	controls_btn.pressed.connect(_show_controls)
+	
 	# Dynamically add Settings button
 	settings_btn = dev_btn.duplicate()
 	settings_btn.name = "SettingsBtn"
@@ -220,6 +243,7 @@ func _ready() -> void:
 	
 	_build_achievements_screen()
 	_build_stats_screen()
+	_build_controls_screen()
 	_build_settings_screen()
 	_build_quit_popup()
 	_update_language()
@@ -238,6 +262,10 @@ func _ready() -> void:
 
 	# --- STARTUP ANIMATION / MADE WITH GODOT SPLASH ---
 	var vbox = $ColorRect/HBoxContainer
+	var init_half_h = vbox.get_combined_minimum_size().y / 2.0
+	if init_half_h > 0.0:
+		vbox.offset_top = -init_half_h
+		vbox.offset_bottom = init_half_h
 	
 	if not GameState.has_shown_splash:
 		GameState.has_shown_splash = true
@@ -340,8 +368,11 @@ func _update_language() -> void:
 	if dev_btn: dev_btn.text = "DEV"
 	if ach_btn: ach_btn.text = "업적" if is_kr else "ACHIEVEMENTS"
 	if stats_btn: stats_btn.text = "기록" if is_kr else "STATS"
+	if controls_btn: controls_btn.text = "조작법" if is_kr else "CONTROLS"
 	if settings_btn: settings_btn.text = "설정" if is_kr else "SETTINGS"
 	if quit_prompt_btn: quit_prompt_btn.text = "[ESC] 게임 종료" if is_kr else "[ESC] QUIT GAME"
+	
+	_update_controls_language()
 	
 	if font:
 		var title_color = Color(1.0, 0.75, 0.15, 1.0)
@@ -401,7 +432,7 @@ func _update_language() -> void:
 			
 		# Style buttons
 		if normal_btn and survival_btn and dev_btn:
-			for btn in [normal_btn, survival_btn, dev_btn, lang_btn, ach_btn, stats_btn, settings_btn]:
+			for btn in [normal_btn, survival_btn, dev_btn, lang_btn, ach_btn, stats_btn, controls_btn, settings_btn]:
 				if not btn: continue
 				if btn != lang_btn and btn != dev_btn:
 					btn.custom_minimum_size = Vector2(240, 44)
@@ -994,8 +1025,13 @@ func _finish_splash_and_reveal_menu(vbox: Control) -> void:
 	# Smoothly glide in menu elements with subtle stagger as the beach emerges
 	var slide_tw = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	if is_instance_valid(vbox):
-		var base_top = -200.0
-		var base_bottom = 200.0
+		var half_h = vbox.size.y / 2.0
+		if half_h <= 0.0:
+			half_h = vbox.get_combined_minimum_size().y / 2.0
+		if half_h <= 0.0:
+			half_h = 200.0
+		var base_top = -half_h
+		var base_bottom = half_h
 		vbox.offset_top = base_top + 35.0
 		vbox.offset_bottom = base_bottom + 35.0
 		slide_tw.tween_property(vbox, "offset_top", base_top, 0.6).set_delay(0.08)
@@ -1033,6 +1069,11 @@ func _input(event: InputEvent) -> void:
 			
 		if stats_screen and stats_screen.visible:
 			_hide_stats()
+			get_viewport().set_input_as_handled()
+			return
+		
+		if controls_screen and controls_screen.visible:
+			_hide_controls()
 			get_viewport().set_input_as_handled()
 			return
 		
@@ -1622,11 +1663,14 @@ func _apply_settings_language() -> void:
 	if dev_btn: dev_btn.text = "DEV"
 	if ach_btn: ach_btn.text = "업적" if is_kr else "ACHIEVEMENTS"
 	if stats_btn: stats_btn.text = "기록" if is_kr else "STATS"
+	if controls_btn: controls_btn.text = "조작법" if is_kr else "CONTROLS"
 	if settings_btn: settings_btn.text = "설정" if is_kr else "SETTINGS"
 	if quit_prompt_btn: quit_prompt_btn.text = "[ESC] 게임 종료" if is_kr else "[ESC] QUIT GAME"
+	
+	_update_controls_language()
 
 	if font:
-		for btn in [normal_btn, survival_btn, dev_btn, ach_btn, stats_btn, settings_btn]:
+		for btn in [normal_btn, survival_btn, dev_btn, ach_btn, stats_btn, controls_btn, settings_btn]:
 			if btn:
 				btn.add_theme_font_override("font", font)
 				btn.add_theme_font_size_override("font_size", 20 if is_kr else 18)
@@ -1732,6 +1776,491 @@ func _apply_settings_language() -> void:
 		if stats_prompt_lbl:
 			stats_prompt_lbl.text = "닫으려면 ESC를 누르세요" if is_kr else "PRESS ESC TO CLOSE"
 			if font: stats_prompt_lbl.add_theme_font_override("font", font)
+
+func _build_controls_screen() -> void:
+	controls_screen = Control.new()
+	controls_screen.name = "ControlsScreen"
+	controls_screen.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	controls_screen.visible = false
+	controls_screen.z_index = 50
+	add_child(controls_screen)
+	
+	var bg = ColorRect.new()
+	bg.color = Color(0.02, 0.01, 0.05, 0.96)
+	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	controls_screen.add_child(bg)
+	
+	var border = Panel.new()
+	border.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	border.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	border.offset_left = 24
+	border.offset_top = 24
+	border.offset_right = -24
+	border.offset_bottom = -24
+	
+	var border_style = StyleBoxFlat.new()
+	border_style.bg_color = Color(0, 0, 0, 0)
+	border_style.set_border_width_all(2)
+	border_style.border_color = Color(1.0, 0.85, 0.2, 0.4)
+	border_style.set_corner_radius_all(8)
+	border.add_theme_stylebox_override("panel", border_style)
+	controls_screen.add_child(border)
+	
+	var center = CenterContainer.new()
+	center.name = "CenterContainer"
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	controls_screen.add_child(center)
+	
+	var vbox = VBoxContainer.new()
+	vbox.name = "VBoxContainer"
+	vbox.custom_minimum_size = Vector2(880, 0)
+	vbox.add_theme_constant_override("separation", 14)
+	center.add_child(vbox)
+	
+	# Title Row
+	var title_row = HBoxContainer.new()
+	title_row.name = "TitleRow"
+	title_row.add_theme_constant_override("separation", 12)
+	title_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_child(title_row)
+	
+	var title_icon = TextureRect.new()
+	title_icon.name = "TitleIcon"
+	title_icon.custom_minimum_size = Vector2(40, 40)
+	title_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title_icon.texture = load("res://assets/ui/menu_icons/console-controller.svg")
+	title_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	title_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	title_icon.modulate = Color(1.0, 0.85, 0.2, 1.0)
+	title_row.add_child(title_icon)
+	
+	controls_title_lbl = Label.new()
+	controls_title_lbl.name = "Title"
+	controls_title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	controls_title_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	controls_title_lbl.text = "CONTROLS"
+	title_row.add_child(controls_title_lbl)
+	
+	var divider = HSeparator.new()
+	divider.name = "Divider"
+	var div_style = StyleBoxLine.new()
+	div_style.color = Color(1.0, 0.88, 0.3, 0.35)
+	div_style.thickness = 2
+	divider.add_theme_stylebox_override("separator", div_style)
+	vbox.add_child(divider)
+	
+	# Input Toggle Pill
+	var toggle_container = Control.new()
+	toggle_container.custom_minimum_size = Vector2(880, 46)
+	vbox.add_child(toggle_container)
+	
+	var toggle_bg = ColorRect.new()
+	toggle_bg.color = Color(0, 0, 0, 0.4)
+	toggle_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	toggle_container.add_child(toggle_bg)
+	
+	var toggle_border = ReferenceRect.new()
+	toggle_border.border_color = Color(1.0, 0.85, 0.2, 0.6)
+	toggle_border.border_width = 2.0
+	toggle_border.editor_only = false
+	toggle_border.set_anchors_preset(Control.PRESET_FULL_RECT)
+	toggle_container.add_child(toggle_border)
+	
+	controls_input_highlight = ColorRect.new()
+	controls_input_highlight.color = Color(1.0, 0.85, 0.2, 1.0)
+	controls_input_highlight.size = Vector2(440, 46)
+	controls_input_highlight.position = Vector2(0, 0)
+	toggle_container.add_child(controls_input_highlight)
+	
+	var toggle_hbox = HBoxContainer.new()
+	toggle_hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	toggle_hbox.add_theme_constant_override("separation", 0)
+	toggle_container.add_child(toggle_hbox)
+	
+	controls_input_lbl_kb = Label.new()
+	controls_input_lbl_kb.text = "KEYBOARD"
+	controls_input_lbl_kb.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	controls_input_lbl_kb.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	controls_input_lbl_kb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	toggle_hbox.add_child(controls_input_lbl_kb)
+	
+	controls_input_lbl_xb = Label.new()
+	controls_input_lbl_xb.text = "XBOX"
+	controls_input_lbl_xb.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	controls_input_lbl_xb.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	controls_input_lbl_xb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	toggle_hbox.add_child(controls_input_lbl_xb)
+	
+	var kb_tab_btn = Button.new()
+	kb_tab_btn.flat = true
+	kb_tab_btn.focus_mode = Control.FOCUS_NONE
+	kb_tab_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	kb_tab_btn.size = Vector2(440, 46)
+	kb_tab_btn.position = Vector2(0, 0)
+	kb_tab_btn.pressed.connect(func(): _set_controls_tab(0))
+	toggle_container.add_child(kb_tab_btn)
+	
+	var xb_tab_btn = Button.new()
+	xb_tab_btn.flat = true
+	xb_tab_btn.focus_mode = Control.FOCUS_NONE
+	xb_tab_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	xb_tab_btn.size = Vector2(440, 46)
+	xb_tab_btn.position = Vector2(440, 0)
+	xb_tab_btn.pressed.connect(func(): _set_controls_tab(1))
+	toggle_container.add_child(xb_tab_btn)
+	
+	# Layout Rows
+	var shader = load("res://assets/shaders/isolate_color_pulse.gdshader")
+	var groups_data = [
+		{"name_en": "SYSTEM", "name_kr": "시스템", "ids": ["LegPause"]},
+		{"name_en": "COMBAT", "name_kr": "전투", "ids": ["LegMouse", "LegWeapons"]},
+		{"name_en": "ABILITIES", "name_kr": "능력", "ids": ["LegIceBlast", "LegCatastrom", "LegModeChange"]}
+	]
+	var legend_info = {
+		"LegPause": {
+			"kb_prefix": "ESC", "xb_prefix": "MENU",
+			"kb_action_en": "PAUSE", "kb_action_kr": "일시정지",
+			"xb_action_en": "PAUSE", "xb_action_kr": "일시정지",
+			"bg": Color(1, 0.843, 0, 0.25), "border": Color(1, 0.843, 0, 0.9), "target": Color(1, 0.843, 0, 1.0)
+		},
+		"LegMouse": {
+			"kb_prefix": "MOUSE", "xb_prefix": "LS/RS",
+			"kb_action_en": "AIM/SHOOT", "kb_action_kr": "조준/발사",
+			"xb_action_en": "AIM / RT - FIRE", "xb_action_kr": "조준 / RT - 발사",
+			"bg": Color(0.6, 0.6, 0.6, 0.25), "border": Color(0.8, 0.8, 0.8, 0.9), "target": Color(0.6, 0.6, 0.6, 1.0)
+		},
+		"LegWeapons": {
+			"kb_prefix": "TAB", "xb_prefix": "LB",
+			"kb_action_en": "WEAPONS", "kb_action_kr": "무기 변경",
+			"xb_action_en": "WEAPONS", "xb_action_kr": "무기 변경",
+			"bg": Color(0.5, 0.9, 0.1, 0.25), "border": Color(0.5, 0.9, 0.1, 0.9), "target": Color(0.5, 0.9, 0.1, 1.0)
+		},
+		"LegIceBlast": {
+			"kb_prefix": "R", "xb_prefix": "LT",
+			"kb_action_en": "ICE BLAST", "kb_action_kr": "얼음 폭발",
+			"xb_action_en": "ICE BLAST", "xb_action_kr": "얼음 폭발",
+			"bg": Color(0.31, 0.765, 0.969, 0.25), "border": Color(0.31, 0.765, 0.969, 0.9), "target": Color(0.31, 0.765, 0.969, 1.0)
+		},
+		"LegCatastrom": {
+			"kb_prefix": "F", "xb_prefix": "RB",
+			"kb_action_en": "POWER UP", "kb_action_kr": "파워 업",
+			"xb_action_en": "POWER UP", "xb_action_kr": "파워 업",
+			"bg": Color(1, 0.427, 0, 0.25), "border": Color(1, 0.427, 0, 0.9), "target": Color(1, 0.427, 0, 1.0)
+		},
+		"LegModeChange": {
+			"kb_prefix": "X", "xb_prefix": "Y",
+			"kb_action_en": "MODE CHANGE", "kb_action_kr": "모드 변경",
+			"xb_action_en": "MODE CHANGE", "xb_action_kr": "모드 변경",
+			"bg": Color(0.9, 0.3, 0.8, 0.25), "border": Color(0.9, 0.3, 0.8, 0.9), "target": Color(0.9, 0.3, 0.8, 1.0)
+		}
+	}
+	
+	controls_legend_entries.clear()
+	controls_group_labels.clear()
+	
+	for is_xbox in [false, true]:
+		var row = HBoxContainer.new()
+		row.name = "XboxRow" if is_xbox else "KeyboardRow"
+		row.add_theme_constant_override("separation", 0)
+		row.alignment = BoxContainer.ALIGNMENT_CENTER
+		row.visible = not is_xbox
+		vbox.add_child(row)
+		
+		if is_xbox:
+			controls_xb_row = row
+		else:
+			controls_kb_row = row
+			
+		var legend = VBoxContainer.new()
+		legend.name = "LegendColumn"
+		legend.add_theme_constant_override("separation", 8)
+		legend.alignment = BoxContainer.ALIGNMENT_CENTER
+		row.add_child(legend)
+		
+		var spacer = Control.new()
+		spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(spacer)
+		
+		var layout_container = Control.new()
+		layout_container.custom_minimum_size = Vector2(330, 231) if is_xbox else Vector2(559, 231)
+		row.add_child(layout_container)
+		
+		var tex_rect = TextureRect.new()
+		tex_rect.name = "TextureRect"
+		tex_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+		tex_rect.texture = load("res://assets/ui/gamepad/xbox_front.svg") if is_xbox else load("res://assets/ui/controller/Keyboard_controls.svg")
+		tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		if shader:
+			var mat = ShaderMaterial.new()
+			mat.shader = shader
+			tex_rect.material = mat
+		layout_container.add_child(tex_rect)
+		
+		for group in groups_data:
+			var m = MarginContainer.new()
+			if group != groups_data[0]:
+				m.add_theme_constant_override("margin_top", 12)
+			var hdr = Label.new()
+			hdr.text = group["name_en"]
+			hdr.add_theme_font_size_override("font_size", 14)
+			hdr.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 0.6))
+			hdr.add_theme_constant_override("outline_size", 2)
+			hdr.add_theme_color_override("font_outline_color", Color.BLACK)
+			m.add_child(hdr)
+			legend.add_child(m)
+			controls_group_labels.append({"label": hdr, "data": group})
+			
+			for id in group["ids"]:
+				var info = legend_info[id]
+				var item_row = HBoxContainer.new()
+				item_row.name = id
+				item_row.add_theme_constant_override("separation", 8)
+				item_row.focus_mode = Control.FOCUS_ALL
+				item_row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+				legend.add_child(item_row)
+				
+				var swatch = Panel.new()
+				swatch.name = "Swatch"
+				swatch.custom_minimum_size = Vector2(16, 16)
+				swatch.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+				var sw_style = StyleBoxFlat.new()
+				sw_style.bg_color = info["bg"]
+				sw_style.border_color = info["border"]
+				sw_style.set_border_width_all(2)
+				sw_style.set_corner_radius_all(2)
+				swatch.add_theme_stylebox_override("panel", sw_style)
+				item_row.add_child(swatch)
+				
+				var lbl = Label.new()
+				lbl.name = "Label"
+				lbl.add_theme_font_size_override("font_size", 16)
+				lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+				lbl.add_theme_constant_override("outline_size", 2)
+				lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+				item_row.add_child(lbl)
+				
+				controls_legend_entries.append({
+					"label": lbl,
+					"is_xbox": is_xbox,
+					"id": id,
+					"info": info
+				})
+				
+				var target_color = info["target"]
+				var hover_cb = func():
+					if item_row.has_meta("pulse_tween"):
+						var tw = item_row.get_meta("pulse_tween")
+						if is_instance_valid(tw): tw.kill()
+					if item_row.has_meta("dim_tween"):
+						var tw = item_row.get_meta("dim_tween")
+						if is_instance_valid(tw): tw.kill()
+					lbl.add_theme_color_override("font_color", Color.WHITE)
+					if tex_rect and tex_rect.material:
+						tex_rect.material.set_shader_parameter("target_color", target_color)
+						var tw = create_tween().set_loops()
+						tw.tween_method(func(v): tex_rect.material.set_shader_parameter("pulse_multiplier", v), 1.5, 4.0, 0.6).set_trans(Tween.TRANS_SINE)
+						tw.tween_method(func(v): tex_rect.material.set_shader_parameter("pulse_multiplier", v), 4.0, 1.5, 0.6).set_trans(Tween.TRANS_SINE)
+						item_row.set_meta("pulse_tween", tw)
+						
+						var dim_tw = create_tween()
+						var curr_dim = tex_rect.material.get_shader_parameter("dim_multiplier")
+						if curr_dim == null: curr_dim = 1.0
+						dim_tw.tween_method(func(v): tex_rect.material.set_shader_parameter("dim_multiplier", v), curr_dim, 0.3, 0.2)
+						item_row.set_meta("dim_tween", dim_tw)
+				
+				var exit_cb = func():
+					if item_row.has_meta("pulse_tween"):
+						var tw = item_row.get_meta("pulse_tween")
+						if is_instance_valid(tw): tw.kill()
+						item_row.remove_meta("pulse_tween")
+					if item_row.has_meta("dim_tween"):
+						var tw = item_row.get_meta("dim_tween")
+						if is_instance_valid(tw): tw.kill()
+						item_row.remove_meta("dim_tween")
+					lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+					if tex_rect and tex_rect.material:
+						var dim_tw = create_tween()
+						var curr_dim = tex_rect.material.get_shader_parameter("dim_multiplier")
+						if curr_dim == null: curr_dim = 1.0
+						dim_tw.tween_method(func(v): tex_rect.material.set_shader_parameter("dim_multiplier", v), curr_dim, 1.0, 0.2)
+						dim_tw.tween_callback(func(): tex_rect.material.set_shader_parameter("pulse_multiplier", 1.0))
+						item_row.set_meta("dim_tween", dim_tw)
+				
+				item_row.mouse_entered.connect(hover_cb)
+				item_row.focus_entered.connect(hover_cb)
+				item_row.mouse_exited.connect(exit_cb)
+				item_row.focus_exited.connect(exit_cb)
+	
+	# Bottom Divider
+	var divider2 = HSeparator.new()
+	divider2.name = "Divider2"
+	var div2_style = StyleBoxLine.new()
+	div2_style.color = Color(1.0, 0.88, 0.3, 0.35)
+	div2_style.thickness = 2
+	divider2.add_theme_stylebox_override("separator", div2_style)
+	vbox.add_child(divider2)
+	
+	# Back Button
+	controls_back_btn = Button.new()
+	controls_back_btn.name = "BackBtn"
+	controls_back_btn.text = "BACK"
+	controls_back_btn.custom_minimum_size = Vector2(280, 44)
+	controls_back_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	var back_style = StyleBoxFlat.new()
+	back_style.bg_color = Color(0, 0, 0, 0.4)
+	back_style.border_color = Color(1.0, 0.85, 0.2, 0.6)
+	back_style.set_border_width_all(2)
+	back_style.set_corner_radius_all(0)
+	back_style.content_margin_left = 16
+	back_style.content_margin_right = 16
+	back_style.content_margin_top = 8
+	back_style.content_margin_bottom = 8
+	controls_back_btn.add_theme_stylebox_override("normal", back_style)
+	var back_hover = back_style.duplicate()
+	back_hover.bg_color = Color(1.0, 0.75, 0.15, 0.2)
+	back_hover.border_color = Color(1.0, 0.9, 0.3, 1.0)
+	controls_back_btn.add_theme_stylebox_override("hover", back_hover)
+	var back_pressed = back_style.duplicate()
+	back_pressed.bg_color = Color(1.0, 0.85, 0.2, 0.4)
+	back_pressed.border_color = Color(1.0, 0.9, 0.3, 1.0)
+	controls_back_btn.add_theme_stylebox_override("pressed", back_pressed)
+	controls_back_btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	controls_back_btn.pressed.connect(_hide_controls)
+	vbox.add_child(controls_back_btn)
+	
+	# Close Prompt
+	controls_prompt_lbl = Label.new()
+	controls_prompt_lbl.name = "ClosePrompt"
+	controls_prompt_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	controls_prompt_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	controls_prompt_lbl.text = "PRESS ESC TO CLOSE"
+	_style_label(controls_prompt_lbl, 14, Color(1.0, 0.88, 0.3, 0.85), null)
+	controls_prompt_lbl.add_theme_constant_override("outline_size", 1)
+	controls_prompt_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+	if not GameState.reduce_motion:
+		var sp_tw = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		sp_tw.tween_property(controls_prompt_lbl, "modulate:a", 0.7, 1.2)
+		sp_tw.tween_property(controls_prompt_lbl, "modulate:a", 1.0, 1.2)
+	vbox.add_child(controls_prompt_lbl)
+	
+	_update_controls_visuals(true)
+
+func _set_controls_tab(index: int) -> void:
+	if controls_input_toggle_state == index: return
+	controls_input_toggle_state = index
+	UIJuice.play_tick()
+	_update_controls_visuals(false)
+
+func _update_controls_visuals(instant: bool = false) -> void:
+	var target_x = 0.0 if controls_input_toggle_state == 0 else 440.0
+	
+	if controls_kb_row:
+		controls_kb_row.visible = (controls_input_toggle_state == 0)
+	if controls_xb_row:
+		controls_xb_row.visible = (controls_input_toggle_state == 1)
+		
+	if not controls_input_highlight or not controls_input_lbl_kb or not controls_input_lbl_xb:
+		return
+		
+	if instant:
+		controls_input_highlight.position.x = target_x
+		controls_input_lbl_kb.add_theme_color_override("font_color", Color(0, 0, 0, 1) if controls_input_toggle_state == 0 else Color(1.0, 0.85, 0.2, 1.0))
+		controls_input_lbl_xb.add_theme_color_override("font_color", Color(0, 0, 0, 1) if controls_input_toggle_state == 1 else Color(1.0, 0.85, 0.2, 1.0))
+	else:
+		if controls_input_toggle_tween and controls_input_toggle_tween.is_valid():
+			controls_input_toggle_tween.kill()
+		controls_input_toggle_tween = create_tween().set_parallel(true)
+		controls_input_toggle_tween.tween_property(controls_input_highlight, "position:x", target_x, 0.25).set_trans(Tween.TRANS_SINE)
+		if controls_input_toggle_state == 0:
+			controls_input_toggle_tween.tween_method(func(c): controls_input_lbl_kb.add_theme_color_override("font_color", c), controls_input_lbl_kb.get_theme_color("font_color"), Color(0, 0, 0, 1), 0.15)
+			controls_input_toggle_tween.tween_method(func(c): controls_input_lbl_xb.add_theme_color_override("font_color", c), controls_input_lbl_xb.get_theme_color("font_color"), Color(1.0, 0.85, 0.2, 1.0), 0.15)
+		else:
+			controls_input_toggle_tween.tween_method(func(c): controls_input_lbl_kb.add_theme_color_override("font_color", c), controls_input_lbl_kb.get_theme_color("font_color"), Color(1.0, 0.85, 0.2, 1.0), 0.15)
+			controls_input_toggle_tween.tween_method(func(c): controls_input_lbl_xb.add_theme_color_override("font_color", c), controls_input_lbl_xb.get_theme_color("font_color"), Color(0, 0, 0, 1), 0.15)
+
+func _update_controls_language() -> void:
+	if not controls_screen: return
+	var is_kr = GameState.language == "KR"
+	var font = load("res://assets/fonts/Galmuri11.ttf") if is_kr else load("res://assets/ui/fonts/Fonts/Kenney Future.ttf")
+	
+	if controls_title_lbl:
+		controls_title_lbl.text = "조작법" if is_kr else "CONTROLS"
+		_style_label(controls_title_lbl, 32, Color(1.0, 0.88, 0.3, 1.0), font)
+		controls_title_lbl.add_theme_constant_override("outline_size", 4)
+		controls_title_lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		
+	if controls_input_lbl_kb:
+		controls_input_lbl_kb.text = "키보드" if is_kr else "KEYBOARD"
+		if font: controls_input_lbl_kb.add_theme_font_override("font", font)
+		controls_input_lbl_kb.add_theme_font_size_override("font_size", 20)
+		
+	if controls_input_lbl_xb:
+		controls_input_lbl_xb.text = "XBOX"
+		if font: controls_input_lbl_xb.add_theme_font_override("font", font)
+		controls_input_lbl_xb.add_theme_font_size_override("font_size", 20)
+		
+	for g in controls_group_labels:
+		var hdr: Label = g["label"]
+		var data = g["data"]
+		hdr.text = data["name_kr"] if is_kr else data["name_en"]
+		if font: hdr.add_theme_font_override("font", font)
+		hdr.add_theme_font_size_override("font_size", 14)
+		
+	for e in controls_legend_entries:
+		var lbl: Label = e["label"]
+		var is_xbox = e["is_xbox"]
+		var info = e["info"]
+		var prefix = info["xb_prefix"] if is_xbox else info["kb_prefix"]
+		var action = ""
+		if is_xbox:
+			action = info["xb_action_kr"] if is_kr else info["xb_action_en"]
+		else:
+			action = info["kb_action_kr"] if is_kr else info["kb_action_en"]
+		lbl.text = "%s - %s" % [prefix, action]
+		if font: lbl.add_theme_font_override("font", font)
+		lbl.add_theme_font_size_override("font_size", 16)
+		
+	if controls_back_btn:
+		controls_back_btn.text = "돌아가기" if is_kr else "BACK"
+		if font: controls_back_btn.add_theme_font_override("font", font)
+		controls_back_btn.add_theme_font_size_override("font_size", 20 if is_kr else 18)
+		controls_back_btn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+		controls_back_btn.add_theme_constant_override("outline_size", 2)
+		controls_back_btn.add_theme_color_override("font_outline_color", Color.BLACK)
+		
+	if controls_prompt_lbl:
+		controls_prompt_lbl.text = "닫으려면 ESC를 누르세요" if is_kr else "PRESS ESC TO CLOSE"
+		if font: controls_prompt_lbl.add_theme_font_override("font", font)
+
+func _show_controls() -> void:
+	if is_starting or not controls_screen: return
+	
+	_update_controls_language()
+	UIJuice.play_tick()
+	
+	controls_screen.modulate.a = 0.0
+	controls_screen.visible = true
+	var tw = create_tween()
+	tw.tween_property(controls_screen, "modulate:a", 1.0, 0.2)
+	await tw.finished
+	if controls_back_btn:
+		controls_back_btn.grab_focus()
+
+func _hide_controls() -> void:
+	if not controls_screen or not controls_screen.visible: return
+	if controls_screen.get_meta("is_hiding", false): return
+	controls_screen.set_meta("is_hiding", true)
+	
+	UIJuice.play_tick()
+	
+	var tw = create_tween()
+	tw.tween_property(controls_screen, "modulate:a", 0.0, 0.2)
+	tw.tween_callback(func():
+		controls_screen.visible = false
+		controls_screen.set_meta("is_hiding", false)
+		if controls_btn: controls_btn.grab_focus()
+	)
 
 func _build_settings_screen() -> void:
 	settings_screen = Control.new()

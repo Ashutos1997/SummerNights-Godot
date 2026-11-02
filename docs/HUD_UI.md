@@ -55,7 +55,7 @@ Architectural map and layout reference for `HUD.tscn`.
 * **AchievementsScreen:** 700x100 card list tracking 14 achievements with progress bars and badges.
 * **DraftingScreen (Perks):** 3-card post-boss modal with rarity badges, `[ MAX ROLL! ]` highlights, and stack warning badges.
 * **FiltersScreen:** Mutually exclusive post-processing options (Retro Colors, Dithering, PS1 Shading, Heatwave 1984).
-* **ControllerScreen:** Keyboard and Xbox layout diagrams with control legends.
+* **ControllerScreen (HUD & Title):** Keyboard and Xbox layout diagrams with interactive toggle pill, grouped category legends, and real-time key isolation hover/focus shaders.
 * **SettingsScreen:** Symmetrical 4x2 arcade plate (880px, 32px title). Left column: Audio (Music/SFX) & Controls (Sensitivity/Vibration). Right column: Display (Fullscreen/Reduce Motion) & System (Language plate ENG|KOR, Gold Skin).
 * **WeaponWheel (`TAB`):** 0.2x slow-mo 6-slice wedge with 3D previews, stat bars, and crit multipliers.
 * **End State Screens:** Fullscreen modal overlays (`WinScreen`, `EndScreen`, `LoseScreen`).

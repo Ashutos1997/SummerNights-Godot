@@ -174,7 +174,7 @@ custom_minimum_size = Vector2(56, 0)
 layout_mode = 2
 
 [node name="VertDivider" type="ColorRect" parent="ColorRect/HBoxContainer/VertDividerMargin"]
-custom_minimum_size = Vector2(1, 280)
+custom_minimum_size = Vector2(1, 330)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -182,9 +182,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -0.5
-offset_top = -140.0
+offset_top = -165.0
 offset_right = 0.5
-offset_bottom = 140.0
+offset_bottom = 165.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(1, 0.75, 0.15, 0.35)
