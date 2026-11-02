@@ -1786,7 +1786,7 @@ func _build_controls_screen() -> void:
 	add_child(controls_screen)
 	
 	var bg = ColorRect.new()
-	bg.color = Color(0.02, 0.01, 0.05, 0.96)
+	bg.color = Color(0.02, 0.01, 0.05, 1.0)
 	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	controls_screen.add_child(bg)
 	
@@ -2004,7 +2004,7 @@ func _build_controls_screen() -> void:
 			var hdr = Label.new()
 			hdr.text = group["name_en"]
 			hdr.add_theme_font_size_override("font_size", 14)
-			hdr.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 0.6))
+			hdr.add_theme_color_override("font_color", Color(0.88, 0.88, 0.88, 0.85))
 			hdr.add_theme_constant_override("outline_size", 2)
 			hdr.add_theme_color_override("font_outline_color", Color.BLACK)
 			m.add_child(hdr)
@@ -2035,7 +2035,7 @@ func _build_controls_screen() -> void:
 				var lbl = Label.new()
 				lbl.name = "Label"
 				lbl.add_theme_font_size_override("font_size", 16)
-				lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+				lbl.add_theme_color_override("font_color", Color.WHITE)
 				lbl.add_theme_constant_override("outline_size", 2)
 				lbl.add_theme_color_override("font_outline_color", Color.BLACK)
 				item_row.add_child(lbl)
@@ -2078,7 +2078,7 @@ func _build_controls_screen() -> void:
 						var tw = item_row.get_meta("dim_tween")
 						if is_instance_valid(tw): tw.kill()
 						item_row.remove_meta("dim_tween")
-					lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+					lbl.add_theme_color_override("font_color", Color.WHITE)
 					if tex_rect and tex_rect.material:
 						var dim_tw = create_tween()
 						var curr_dim = tex_rect.material.get_shader_parameter("dim_multiplier")
@@ -2165,8 +2165,8 @@ func _update_controls_visuals(instant: bool = false) -> void:
 		
 	if instant:
 		controls_input_highlight.position.x = target_x
-		controls_input_lbl_kb.add_theme_color_override("font_color", Color(0, 0, 0, 1) if controls_input_toggle_state == 0 else Color(1.0, 0.85, 0.2, 1.0))
-		controls_input_lbl_xb.add_theme_color_override("font_color", Color(0, 0, 0, 1) if controls_input_toggle_state == 1 else Color(1.0, 0.85, 0.2, 1.0))
+		controls_input_lbl_kb.add_theme_color_override("font_color", Color(0, 0, 0, 1) if controls_input_toggle_state == 0 else Color.WHITE)
+		controls_input_lbl_xb.add_theme_color_override("font_color", Color(0, 0, 0, 1) if controls_input_toggle_state == 1 else Color.WHITE)
 	else:
 		if controls_input_toggle_tween and controls_input_toggle_tween.is_valid():
 			controls_input_toggle_tween.kill()
@@ -2174,9 +2174,9 @@ func _update_controls_visuals(instant: bool = false) -> void:
 		controls_input_toggle_tween.tween_property(controls_input_highlight, "position:x", target_x, 0.25).set_trans(Tween.TRANS_SINE)
 		if controls_input_toggle_state == 0:
 			controls_input_toggle_tween.tween_method(func(c): controls_input_lbl_kb.add_theme_color_override("font_color", c), controls_input_lbl_kb.get_theme_color("font_color"), Color(0, 0, 0, 1), 0.15)
-			controls_input_toggle_tween.tween_method(func(c): controls_input_lbl_xb.add_theme_color_override("font_color", c), controls_input_lbl_xb.get_theme_color("font_color"), Color(1.0, 0.85, 0.2, 1.0), 0.15)
+			controls_input_toggle_tween.tween_method(func(c): controls_input_lbl_xb.add_theme_color_override("font_color", c), controls_input_lbl_xb.get_theme_color("font_color"), Color.WHITE, 0.15)
 		else:
-			controls_input_toggle_tween.tween_method(func(c): controls_input_lbl_kb.add_theme_color_override("font_color", c), controls_input_lbl_kb.get_theme_color("font_color"), Color(1.0, 0.85, 0.2, 1.0), 0.15)
+			controls_input_toggle_tween.tween_method(func(c): controls_input_lbl_kb.add_theme_color_override("font_color", c), controls_input_lbl_kb.get_theme_color("font_color"), Color.WHITE, 0.15)
 			controls_input_toggle_tween.tween_method(func(c): controls_input_lbl_xb.add_theme_color_override("font_color", c), controls_input_lbl_xb.get_theme_color("font_color"), Color(0, 0, 0, 1), 0.15)
 
 func _update_controls_language() -> void:
@@ -2206,6 +2206,7 @@ func _update_controls_language() -> void:
 		hdr.text = data["name_kr"] if is_kr else data["name_en"]
 		if font: hdr.add_theme_font_override("font", font)
 		hdr.add_theme_font_size_override("font_size", 14)
+		hdr.add_theme_color_override("font_color", Color(0.88, 0.88, 0.88, 0.85))
 		
 	for e in controls_legend_entries:
 		var lbl: Label = e["label"]
@@ -2220,6 +2221,7 @@ func _update_controls_language() -> void:
 		lbl.text = "%s - %s" % [prefix, action]
 		if font: lbl.add_theme_font_override("font", font)
 		lbl.add_theme_font_size_override("font_size", 16)
+		lbl.add_theme_color_override("font_color", Color.WHITE)
 		
 	if controls_back_btn:
 		controls_back_btn.text = "돌아가기" if is_kr else "BACK"
