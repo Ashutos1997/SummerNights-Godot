@@ -933,7 +933,7 @@ func add_score(amount: int) -> void:
 		var old_high = high_score
 		high_score = current_score
 		_evaluate_milestones(old_high)
-		if not has_broken_high_score_this_run and ((run_starting_high_score > 0 and current_score > run_starting_high_score) or (run_starting_high_score == 0 and current_score >= 5000)):
+		if not has_broken_high_score_this_run and current_score > run_starting_high_score:
 			has_broken_high_score_this_run = true
 			emit_signal("new_high_score_achieved", current_score)
 	emit_signal("score_updated", current_score)
