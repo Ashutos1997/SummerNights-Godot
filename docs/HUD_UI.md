@@ -79,5 +79,6 @@ Architectural map and layout reference for `HUD.tscn`.
 
 ## 5. UI Architecture
 * **UIJuice.gd (Autoload):** 1.03x hover bounce and -18dB audio ticks on all buttons and sliders.
+* **Audio Routing & Redraw Guards:** All UI alerts, modals, and chimes route strictly to `SFX_UI`. Ultimate meter texture assignments are equality-guarded to eliminate redundant redraw calls.
 * **Global Z-Depth:** Injects 4px black drop shadows into panels and stylized labels.
 * **Celestial Vignette:** Radial cyan screen vignette during Celestial Awakening.

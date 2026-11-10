@@ -37,7 +37,7 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 * **Gauges:** 200x24 with 10px rounded corners.
   * *Water:* Blue fill; red pulse below 20%.
   * *Ice Burst:* Cyan-frost fill with notch dividers and counter.
-  * *Power Up:* Shared gauge (Purple Catastrom or Cyan Celestial).
+  * *Power Up:* Shared gauge (Purple Catastrom or Cyan Celestial) with texture assignment guards preventing redundant redraws.
 
 ### Telemetry & Combat Badges
 * **Unified Aero-Weather Capsule:** 172x44px plate at `y = 92px` (`offset_bottom = 136px`, bottom-aligned with Drone HUD; 4px radius, 1px border, dimmed `0.82` bg `Color(0.03, 0.02, 0.06, 0.82)` matching Drone HUD). Centered HBox (6px gap): vector arrow (`◀`/`▶`/`●`, 14px), 16px knots readout (`19 KTS` / `CALM`), 3-pip gauge (5x16px), 1x20px divider, and 22x22px weather icon. Flashes Cyan `Color(0.2, 0.85, 1.0, 0.95)` with 1.12x scale pop and 1.25x arrow bounce on gusts.
@@ -46,6 +46,7 @@ Design tokens, color palettes, typography, and component specifications for *Sum
 
 ### Popup Notifications (Toasts)
 * **Form Factor:** Cyberpunk Arcade Plates (4px radius, 1px accent border, softened shadow, dimmed `0.82` bg `Color(0.03, 0.02, 0.06, 0.82)` with recessed `0.88` icon plate).
+* **Audio Routing:** All toasts, popups, and modal chimes strictly route to the dedicated `SFX_UI` audio bus.
 * **Alerts (380x72px):** Right-docked with 3.5s depletion bar, 0.45s slide-fade, and staggered exit.
 * **Popups (500x72–88px):** Centered popups for Achievements, Buffs, and New High Score records sliding from `y = -100` to `y = 24.0` / `106.0` (with dynamic vertical stacking).
 * **Icon Plate:** Recessed 40x40px plate with 26x26 vector icon.

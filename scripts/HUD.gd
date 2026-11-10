@@ -40,6 +40,8 @@ var ice_label: Label = null
 @onready var ready_label = $HUD/resource_container/catastrom_row/CatastromBar/ReadyLabel
 var catastrom_label: Label = null
 var _prev_weapon_id_for_meter: String = ""
+const METER_CELESTIAL_TEX = preload("res://assets/ui/hud_elements/meter_celestial.svg")
+const METER_CATASTROM_TEX = preload("res://assets/ui/hud_elements/meter_catastrom.svg")
 @onready var grab_icon = $HUD/GrabIcon
 
 @onready var toast_container = $HUD/ToastContainer
@@ -662,7 +664,8 @@ func _process(delta: float) -> void:
 		
 		if is_kitsune:
 			if catastrom_icon and is_instance_valid(catastrom_icon):
-				catastrom_icon.texture = preload("res://assets/ui/hud_elements/meter_celestial.svg")
+				if catastrom_icon.texture != METER_CELESTIAL_TEX:
+					catastrom_icon.texture = METER_CELESTIAL_TEX
 				catastrom_icon.modulate = Color(0.35, 0.95, 1.0, 1.0)
 			
 			if is_celestial_active:
@@ -699,7 +702,8 @@ func _process(delta: float) -> void:
 				catastrom_bar.tint_progress = Color(0.15, 0.70, 0.95, 1.0)
 		else:
 			if catastrom_icon and is_instance_valid(catastrom_icon):
-				catastrom_icon.texture = preload("res://assets/ui/hud_elements/meter_catastrom.svg")
+				if catastrom_icon.texture != METER_CATASTROM_TEX:
+					catastrom_icon.texture = METER_CATASTROM_TEX
 				catastrom_icon.modulate = Color(0.8, 0.4, 1.0, 1.0)
 			
 			if catastrom_bar.value >= 0.99:
@@ -3639,7 +3643,7 @@ func _show_toast(kicker_kr: String, kicker_en: String, title_kr: String, title_e
 	else:
 		sfx.stream = load("res://assets/audio/sfx/perk_hover.wav")
 	sfx.volume_db = linear_to_db(GameState.sfx_volume) - 2.0
-	sfx.bus = "SFX"
+	sfx.bus = "SFX_UI"
 	toast.add_child(sfx)
 	sfx.play()
 	
@@ -4468,7 +4472,7 @@ func _show_abandon_confirm_modal() -> void:
 	var audio = AudioStreamPlayer.new()
 	if ResourceLoader.exists("res://assets/audio/sfx/perk_hover.wav"):
 		audio.stream = load("res://assets/audio/sfx/perk_hover.wav")
-	audio.bus = "SFX"
+	audio.bus = "SFX_UI"
 	add_child(audio)
 	if audio.stream:
 		audio.play()
@@ -4494,7 +4498,7 @@ func _hide_abandon_confirm_modal() -> void:
 	var audio = AudioStreamPlayer.new()
 	if ResourceLoader.exists("res://assets/audio/sfx/perk_hover.wav"):
 		audio.stream = load("res://assets/audio/sfx/perk_hover.wav")
-	audio.bus = "SFX"
+	audio.bus = "SFX_UI"
 	add_child(audio)
 	if audio.stream:
 		audio.play()
@@ -4765,7 +4769,7 @@ func show_toast(title: String, description: String, icon_input = "", color: Colo
 	var audio = AudioStreamPlayer.new()
 	audio.stream = load("res://assets/audio/sfx/perk_hover.wav")
 	audio.volume_db = -8.0
-	audio.bus = "SFX"
+	audio.bus = "SFX_UI"
 	add_child(audio)
 	audio.play()
 	

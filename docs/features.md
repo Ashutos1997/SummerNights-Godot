@@ -81,7 +81,8 @@ Master record of implemented features, mechanics, and systems in *Summer Nights*
 * **Accessibility:** Full controller support with aim assist, "Reduce Motion" toggle, and EN/KR localization.
 
 ## 8. Audio
-* **BGM & SFX Separation:** Dedicated `BGM` bus routing ocean ambient music, with independent Music Volume and Sound Effects volume sliders persisted across sessions.
+* **BGM & SFX Separation:** Segregated 4-bus hierarchy (`Master`, `SFX_WEAPON`, `SFX_UI`, `BGM`). UI chimes route to `SFX_UI`, combat/boss SFX route to `SFX_WEAPON`, and music routes to `BGM`, strictly honoring Settings volume sliders.
+* **Performance & Pooling:** Pre-allocated 8-node flare explosion and golden spark particle pools eliminate mid-barrage heap allocation spikes. Master bus index cached to eliminate per-frame string hashing.
 * **Ducking:** 12dB master drop on massive impacts (Flares, Dunks).
 * **UI Audio:** Consistent -18dB 1800Hz sine ticks on all interactions.
 * **Custom SFX:** CC0 audio for drones, shields, kitsune weapon, overdrive alarms, and perk drafting.

@@ -309,7 +309,7 @@ func _ready() -> void:
 		# Play the custom PS1 startup audio
 		startup_audio = AudioStreamPlayer.new()
 		startup_audio.stream = load("res://assets/audio/sfx/ps1_startup.wav")
-		startup_audio.bus = "SFX"
+		startup_audio.bus = "SFX_UI"
 		add_child(startup_audio)
 		startup_audio.play(1.5)
 		
@@ -1253,7 +1253,7 @@ func _show_quit_popup() -> void:
 	var audio = AudioStreamPlayer.new()
 	if ResourceLoader.exists("res://assets/audio/sfx/perk_hover.wav"):
 		audio.stream = load("res://assets/audio/sfx/perk_hover.wav")
-	audio.bus = "SFX"
+	audio.bus = "SFX_UI"
 	add_child(audio)
 	if audio.stream:
 		audio.play()
@@ -1269,7 +1269,7 @@ func _hide_quit_popup() -> void:
 	var audio = AudioStreamPlayer.new()
 	if ResourceLoader.exists("res://assets/audio/sfx/perk_hover.wav"):
 		audio.stream = load("res://assets/audio/sfx/perk_hover.wav")
-	audio.bus = "SFX"
+	audio.bus = "SFX_UI"
 	add_child(audio)
 	if audio.stream:
 		audio.play()

@@ -9,8 +9,15 @@ All notable changes to the Summer Nights project will be documented in this file
 * New High Score Celebration Banner: Added top-center celebratory toast notification (`[ NEW HIGH SCORE! ]` / `[ 최고 기록 경신! ]`) triggered upon surpassing previous all-time best score mid-run, accompanied by gold trophy icon, formatted score readout, celebratory chime, and score counter gold pulse.
 * Sun Sizzle Steam Particle System: Added dynamic procedural steam billows at water-Sun contact point, scaling in volume, velocity, and opacity with active combo multiplier and localized continuous spray thermal falloff.
 
+### Improved
+* Flare Explosion & Ember Particle Pooling: Pre-allocated an 8-node explosion and golden spark particle pool in `Main.gd`, eliminating dynamic per-flare heap allocations and garbage collection overhead during intense solar flare volleys.
+* Combat Loop Disk I/O Stutter Elimination: Removed blocking synchronous `save_settings()` disk flushes from mid-combat water tracking loops (flare intercepts and seagull scares). Stats accumulate in memory and save at natural wave and defeat transitions.
+* Engine Audio Ducking & Meter Redraw Optimization: Cached the Master audio bus index to eliminate ~180 redundant string lookups per second in `_process`, and added equality guards to HUD ultimate meter icon texture assignments to avoid unnecessary canvas item redraws.
+* Static Preloading for Surface Decals: Converted wet mark decal textures in `Main.gd` to file-level `preload` constants, eliminating runtime disk lookups during sustained water spray.
+
 ### Fixed
 * Title Screen Vertical Centering on Initial Boot: Fixed bug where the title screen appeared slightly shifted upward on initial startup. Decoupled `_update_language` from startup animation flow and transitioned the reveal animation from caching stale frame-1 absolute coordinates to tweening anchor offsets, guaranteeing perfect vertical centering across all screen aspect ratios and display modes.
+* Audio Bus Routing & Volume Attenuation Fix: Re-routed 7 UI notification and modal players in `HUD.gd` and `TitleScreen.gd` from invalid `"SFX"` bus to `"SFX_UI"`, and re-routed 9 Solar Driver and drone boss combat players in `SolarConvergenceManager.gd` from `"Master"` to `"SFX_WEAPON"`, ensuring all gameplay sound effects strictly obey settings volume sliders.
 
 ---
 
@@ -374,8 +381,15 @@ All notable changes to the Summer Nights project will be documented in this file
 * 최고 기록 경신 축하 배너: 런 도중 역대 최고 기록을 돌파할 때 상단 중앙에 축하 토스트 알림(`[ NEW HIGH SCORE! ]` / `[ 최고 기록 경신! ]`) 표시, 황금 트로피 아이콘, 신기록 점수 표시, 점수판 펄스/플래시 및 경쾌한 축하 효과음 연동.
 * 태양 접촉 수증기 증발 파티클: 물줄기가 태양 표면에 닿는 지점에 동적 절차적 수증기/증기 연무 파티클 추가, 콤보 배율 및 국소 열 축적(열 감쇠) 상태에 따라 크기·속도·밀도가 실시간으로 확장되도록 구현.
 
+### 개선됨 (Improved)
+* 플레어 폭발 및 스파크 파티클 풀링 적용: `Main.gd`에 8개 노드 규모의 플레어 폭발 및 황금 불꽃 파티클 풀을 사전 할당하여, 격렬한 플레어 요격 시 발생하던 동적 힙 할당 및 가비지 컬렉션 부하를 원천 제거.
+* 전투 루프 내 동기식 디스크 I/O 프레임 드랍 제거: 물줄기 실시간 레이캐스트 루프(플레어 요격 및 갈매기 쫓기)에서 메인 스레드를 블로킹하던 `save_settings()` 디스크 저장을 제거하여 프레임 스터터링 방지. 스탯은 메모리에서 누적되며 웨이브 클리어 및 패배 시 안전하게 저장.
+* 오디오 버스 룩업 및 HUD 미터 갱신 최적화: `_process`에서 프레임당 3회(초당 ~180회) 발생하던 마스터 오디오 버스 인덱스 조회를 `_ready` 시점 캐싱으로 최적화하고, HUD 궁극기 미터 아이콘 텍스처 재할당 방지 가드를 추가하여 불필요한 캔버스 리드로우 방지.
+* 표면 데칼 텍스처 정적 프리로드 적용: 물줄기 접촉 시 스폰되는 젖은 자국 데칼 텍스처를 파일 레벨 `preload` 상수로 전환하여 런타임 디스크 탐색 비용 제거.
+
 ### 수정됨 (Fixed)
 * 초기 실행 시 타이틀 화면 수직 중앙 정렬 오차 수정: 게임 최초 실행 시 타이틀 화면 메뉴가 위쪽으로 치우쳐 표시되던 버그 해결. `_update_language`와 시작 애니메이션 로직의 잘못된 스코프 분리 및 1프레임 시점의 구 해상도 절대 좌표 캐싱을 제거하고 앵커 오프셋 트위닝으로 개편하여 모든 화면 비율과 디스플레이 모드에서 완벽한 수직 중앙 정렬 보장.
+* 오디오 버스 라우팅 및 볼륨 슬라이더 미적용 버그 수정: `HUD.gd` 및 `TitleScreen.gd` 내 7개 UI 알림/모달 사운드의 미등록 버스(`"SFX"`)를 `"SFX_UI"`로 정상화하고, `SolarConvergenceManager.gd` 내 9개 태양 드라이버 및 드론 전투 사운드의 `"Master"` 직결을 `"SFX_WEAPON"`으로 재라우팅하여 설정 메뉴의 효과음 볼륨 조절이 100% 정상 작동하도록 수정.
 
 ---
 

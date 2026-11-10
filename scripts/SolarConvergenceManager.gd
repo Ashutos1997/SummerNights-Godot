@@ -97,7 +97,7 @@ func _init_audio() -> void:
 	]
 	for i in range(4):
 		var hp = AudioStreamPlayer.new()
-		hp.bus = "Master"
+		hp.bus = "SFX_WEAPON"
 		hp.volume_db = -8.0
 		add_child(hp)
 		hit_players.append(hp)
@@ -105,53 +105,53 @@ func _init_audio() -> void:
 	# Water Destruction (Mechanical Rupture + Glass Fracture + Core Blast)
 	sfx_shatter_metal = AudioStreamPlayer.new()
 	sfx_shatter_metal.stream = load("res://assets/audio/sfx/drone_shatter_metal.ogg")
-	sfx_shatter_metal.bus = "Master"
+	sfx_shatter_metal.bus = "SFX_WEAPON"
 	sfx_shatter_metal.volume_db = -2.0
 	add_child(sfx_shatter_metal)
 
 	sfx_shatter_glass = AudioStreamPlayer.new()
 	sfx_shatter_glass.stream = load("res://assets/audio/sfx/drone_shatter_glass.ogg")
-	sfx_shatter_glass.bus = "Master"
+	sfx_shatter_glass.bus = "SFX_WEAPON"
 	sfx_shatter_glass.volume_db = -3.0
 	add_child(sfx_shatter_glass)
 
 	sfx_shatter_core = AudioStreamPlayer.new()
 	sfx_shatter_core.stream = load("res://assets/audio/sfx/shield_break.ogg")
-	sfx_shatter_core.bus = "Master"
+	sfx_shatter_core.bus = "SFX_WEAPON"
 	sfx_shatter_core.volume_db = -2.0
 	add_child(sfx_shatter_core)
 
 	# Ice Blast Shatter (Cryo-Frost Glacial Shatter + Glass Cascade)
 	sfx_ice_shatter_glass = AudioStreamPlayer.new()
 	sfx_ice_shatter_glass.stream = load("res://assets/audio/sfx/drone_ice_shatter_glass.ogg")
-	sfx_ice_shatter_glass.bus = "Master"
+	sfx_ice_shatter_glass.bus = "SFX_WEAPON"
 	sfx_ice_shatter_glass.volume_db = 1.0
 	add_child(sfx_ice_shatter_glass)
 
 	sfx_ice_blast = AudioStreamPlayer.new()
 	sfx_ice_blast.stream = load("res://assets/audio/sfx/ice_hit.ogg")
-	sfx_ice_blast.bus = "Master"
+	sfx_ice_blast.bus = "SFX_WEAPON"
 	sfx_ice_blast.volume_db = 0.0
 	add_child(sfx_ice_blast)
 
 	# Driver Belt Clamping & Lock SFX
 	sfx_driver_lock = AudioStreamPlayer.new()
 	sfx_driver_lock.stream = load("res://assets/audio/sfx/driver_lock.ogg")
-	sfx_driver_lock.bus = "Master"
+	sfx_driver_lock.bus = "SFX_WEAPON"
 	sfx_driver_lock.volume_db = 0.5
 	add_child(sfx_driver_lock)
 
 	# Phase 2 Overdrive Surge SFX
 	sfx_driver_overdrive = AudioStreamPlayer.new()
 	sfx_driver_overdrive.stream = load("res://assets/audio/sfx/driver_overdrive.ogg")
-	sfx_driver_overdrive.bus = "Master"
+	sfx_driver_overdrive.bus = "SFX_WEAPON"
 	sfx_driver_overdrive.volume_db = 1.5
 	add_child(sfx_driver_overdrive)
 
 	# Golden Drone Shield Ambient Hum (Looping with dynamic entrance & volume ducking)
 	sfx_drone_shield_hum = AudioStreamPlayer.new()
 	sfx_drone_shield_hum.stream = load("res://assets/audio/sfx/drone_shield_hum.ogg")
-	sfx_drone_shield_hum.bus = "Master"
+	sfx_drone_shield_hum.bus = "SFX_WEAPON"
 	sfx_drone_shield_hum.volume_db = -18.0
 	add_child(sfx_drone_shield_hum)
 

@@ -1,6 +1,8 @@
 extends Node3D
 ## Summer Nights 3D - Water Gun vs The Sun
 
+const WET_MARK_TEX = preload("res://assets/ui_circle.png")
+
 # ─── Game State ──────────────────────────────────────────────────────────────
 var temperature: float    = 100.0
 const MAX_TEMP: float     = 100.0
@@ -72,6 +74,7 @@ var shield_ripple_time: float = 999.0
 var shield_spray_duration: float = 0.0
 var is_drone_shield_active: bool = false
 var drone_shield_spray_duration: float = 0.0
+var master_bus_idx: int = -1
 var master_lp_idx: int = -1
 
 # Solar Disruption State (Normal Wave Micro-Events)
@@ -621,6 +624,9 @@ var sun_sizzle_process_mat: ParticleProcessMaterial
 var sun_sizzle_mesh_mat: StandardMaterial3D
 var splash_particles_pool: Array[GPUParticles3D] = []
 var splash_idx: int = 0
+var flare_explosion_pool: Array[GPUParticles3D] = []
+var flare_ember_pool: Array[GPUParticles3D] = []
+var flare_explosion_idx: int = 0
 var dir_light:   DirectionalLight3D
 var camera:      Camera3D
 var celestial_tails: CelestialTails
@@ -1147,7 +1153,8 @@ func _ready() -> void:
 	heartbeat_sfx.bus = "Master"
 	add_child(heartbeat_sfx)
 	
-	var master_bus = AudioServer.get_bus_index("Master")
+	master_bus_idx = AudioServer.get_bus_index("Master")
+	var master_bus = master_bus_idx
 	var has_lp = false
 	for i in range(AudioServer.get_bus_effect_count(master_bus)):
 		if AudioServer.get_bus_effect(master_bus, i) is AudioEffectLowPassFilter:
@@ -1911,6 +1918,70 @@ func _build_scene() -> void:
 		splash.lifetime = 0.6
 		add_child(splash)
 		splash_particles_pool.append(splash)
+
+	# Flare explosion & ember particles pool (replaces per-explosion heap allocations)
+	for i in range(8):
+		var poof = GPUParticles3D.new()
+		var pmat = ParticleProcessMaterial.new()
+		pmat.direction = Vector3(0, 1, 0)
+		pmat.spread = 180.0
+		pmat.initial_velocity_min = 5.0
+		pmat.initial_velocity_max = 10.0
+		pmat.gravity = Vector3(0, 2.0, 0)
+		pmat.scale_min = 0.5
+		pmat.scale_max = 1.5
+		
+		var mesh = BoxMesh.new()
+		mesh.size = Vector3(0.5, 0.5, 0.5)
+		var mat = StandardMaterial3D.new()
+		mat.albedo_color = Color(1.0, 1.0, 1.0, 0.6)
+		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		mat.emission_enabled = true
+		mat.emission = Color(1.0, 0.6, 0.1) # Fiery orange sparks
+		mat.emission_energy_multiplier = 3.0
+		mesh.material = mat
+		
+		poof.process_material = pmat
+		poof.draw_pass_1 = mesh
+		poof.emitting = false
+		poof.one_shot = true
+		poof.explosiveness = 1.0
+		poof.amount = 15
+		poof.lifetime = 0.5
+		add_child(poof)
+		flare_explosion_pool.append(poof)
+
+		var embers = GPUParticles3D.new()
+		var e_mat = ParticleProcessMaterial.new()
+		e_mat.direction = Vector3(0, 1, 0)
+		e_mat.spread = 180.0
+		e_mat.initial_velocity_min = 7.0
+		e_mat.initial_velocity_max = 13.0
+		e_mat.damping_min = 4.0
+		e_mat.damping_max = 7.0
+		e_mat.gravity = Vector3(0, -2.5, 0)
+		e_mat.scale_min = 0.4
+		e_mat.scale_max = 0.9
+		
+		var ember_mesh = QuadMesh.new()
+		ember_mesh.size = Vector2(0.12, 0.12)
+		var ember_mat = StandardMaterial3D.new()
+		ember_mat.albedo_color = Color(1.0, 0.9, 0.4, 0.95) # Radiant gold
+		ember_mat.emission_enabled = true
+		ember_mat.emission = Color(1.0, 0.75, 0.2) # Warm gold-amber bloom
+		ember_mat.emission_energy_multiplier = 5.0
+		ember_mat.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+		ember_mesh.material = ember_mat
+		
+		embers.process_material = e_mat
+		embers.draw_pass_1 = ember_mesh
+		embers.emitting = false
+		embers.one_shot = true
+		embers.explosiveness = 0.95
+		embers.amount = 28
+		embers.lifetime = 0.65
+		add_child(embers)
+		flare_ember_pool.append(embers)
  
 	# ── Gun ──────────────────────────────────────────────────────────────────
 	gun = Node3D.new()
@@ -2565,8 +2636,7 @@ func _process_heat_warning(_delta: float) -> void:
 			heat_warning_tween = create_tween().set_parallel(true)
 			heat_warning_tween.tween_property(self, "heat_vignette_color", Color(0, 0, 0, 0), 1.0)
 			if master_lp_idx >= 0:
-				var master_bus = AudioServer.get_bus_index("Master")
-				var lp = AudioServer.get_bus_effect(master_bus, master_lp_idx)
+				var lp = AudioServer.get_bus_effect(master_bus_idx, master_lp_idx)
 				heat_warning_tween.tween_property(lp, "cutoff_hz", 20500.0, 1.0)
 		return
 
@@ -2576,8 +2646,7 @@ func _process_heat_warning(_delta: float) -> void:
 		heat_warning_tween = create_tween().set_parallel(true)
 		
 		if master_lp_idx >= 0:
-			var master_bus = AudioServer.get_bus_index("Master")
-			var lp = AudioServer.get_bus_effect(master_bus, master_lp_idx)
+			var lp = AudioServer.get_bus_effect(master_bus_idx, master_lp_idx)
 			heat_warning_tween.tween_property(lp, "cutoff_hz", 1500.0, 1.0)
 			
 		if reduce_motion:
@@ -2589,8 +2658,7 @@ func _process_heat_warning(_delta: float) -> void:
 			heat_warning_tween.tween_property(self, "heat_vignette_color", Color(0.8, 0.0, 0.0, 0.2), 0.6).set_trans(Tween.TRANS_SINE)
 			heat_warning_tween.set_loops()
 			
-			var master_bus = AudioServer.get_bus_index("Master")
-			var lp = AudioServer.get_bus_effect(master_bus, master_lp_idx)
+			var lp = AudioServer.get_bus_effect(master_bus_idx, master_lp_idx)
 			var par_tween = create_tween()
 			par_tween.tween_property(lp, "cutoff_hz", 1500.0, 1.0)
 		
@@ -2610,11 +2678,11 @@ func _process(delta: float) -> void:
 
 	if audio_duck_timer > 0.0:
 		audio_duck_timer -= delta
-		AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), -12.0)
+		AudioServer.set_bus_volume_db(master_bus_idx, -12.0)
 	else:
-		var current_db = AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master"))
+		var current_db = AudioServer.get_bus_volume_db(master_bus_idx)
 		if current_db < 0.0:
-			AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), lerp(current_db, 0.0, delta * 3.0))
+			AudioServer.set_bus_volume_db(master_bus_idx, lerp(current_db, 0.0, delta * 3.0))
 
 	_process_heat_warning(delta)
 	
@@ -3372,8 +3440,6 @@ func _process(delta: float) -> void:
 									GameState.seagulls_shooed += 1
 									if GameState.seagulls_shooed >= 50 and not "bird_watcher" in GameState.unlocked_achievements:
 										GameState.unlock_achievement("bird_watcher")
-									else:
-										GameState.save_settings()
 		
 			# Check Solar Flare Interception (Requires ~0.33s of tracking water spray)
 			var water_stream_dir = (water_target_pos - aim_origin).normalized() if water_target_pos != aim_origin else aim_dir
@@ -3436,8 +3502,6 @@ func _process(delta: float) -> void:
 						sunspot_illumination_timer = 2.5
 					if GameState.flares_intercepted >= 10 and not "flare_catcher" in GameState.unlocked_achievements:
 						GameState.unlock_achievement("flare_catcher")
-					else:
-						GameState.save_settings()
 
 				
 					if hud and hud.has_method("_on_projectile_hit"):
@@ -5395,7 +5459,7 @@ func _add_collision_to_prop(node: Node) -> void:
 func _spawn_wet_mark(pos: Vector3, normal: Vector3) -> void:
 	var decal = Decal.new()
 	decal.size = Vector3(1.2, 1.2, 1.2)
-	decal.texture_albedo = load("res://assets/ui_circle.png")
+	decal.texture_albedo = WET_MARK_TEX
 	
 	# Draw dark damp wet color (soft dark brown/grey)
 	decal.modulate = Color(0.12, 0.08, 0.05, 0.75)
@@ -6497,72 +6561,17 @@ func _spawn_splash(pos: Vector3) -> void:
 	splash_idx = (splash_idx + 1) % splash_particles_pool.size()
 
 func _spawn_flare_explosion(pos: Vector3) -> void:
-	var poof = GPUParticles3D.new()
-	var pmat = ParticleProcessMaterial.new()
-	pmat.direction = Vector3(0, 1, 0)
-	pmat.spread = 180.0
-	pmat.initial_velocity_min = 5.0
-	pmat.initial_velocity_max = 10.0
-	pmat.gravity = Vector3(0, 2.0, 0)
-	pmat.scale_min = 0.5
-	pmat.scale_max = 1.5
+	if not flare_explosion_pool.is_empty():
+		var poof = flare_explosion_pool[flare_explosion_idx]
+		poof.global_position = pos
+		poof.restart()
 	
-	var mesh = BoxMesh.new()
-	mesh.size = Vector3(0.5, 0.5, 0.5)
-	var mat = StandardMaterial3D.new()
-	mat.albedo_color = Color(1.0, 1.0, 1.0, 0.6)
-	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	mat.emission_enabled = true
-	mat.emission = Color(1.0, 0.6, 0.1) # Fiery orange sparks
-	mat.emission_energy_multiplier = 3.0
-	mesh.material = mat
-	
-	poof.process_material = pmat
-	poof.draw_pass_1 = mesh
-	poof.emitting = true
-	poof.one_shot = true
-	poof.explosiveness = 1.0
-	poof.amount = 15
-	poof.lifetime = 0.5
-	poof.global_position = pos
-	
-	add_child(poof)
-	get_tree().create_timer(1.0).timeout.connect(poof.queue_free)
-	
-	# Golden Ember Pop Burst (rewarding radiant sparks on flare interception)
-	var embers = GPUParticles3D.new()
-	var e_mat = ParticleProcessMaterial.new()
-	e_mat.direction = Vector3(0, 1, 0)
-	e_mat.spread = 180.0
-	e_mat.initial_velocity_min = 7.0
-	e_mat.initial_velocity_max = 13.0
-	e_mat.damping_min = 4.0
-	e_mat.damping_max = 7.0
-	e_mat.gravity = Vector3(0, -2.5, 0)
-	e_mat.scale_min = 0.4
-	e_mat.scale_max = 0.9
-	
-	var ember_mesh = QuadMesh.new()
-	ember_mesh.size = Vector2(0.12, 0.12)
-	var ember_mat = StandardMaterial3D.new()
-	ember_mat.albedo_color = Color(1.0, 0.9, 0.4, 0.95) # Radiant gold
-	ember_mat.emission_enabled = true
-	ember_mat.emission = Color(1.0, 0.75, 0.2) # Warm gold-amber bloom
-	ember_mat.emission_energy_multiplier = 5.0
-	ember_mat.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
-	ember_mesh.material = ember_mat
-	
-	embers.process_material = e_mat
-	embers.draw_pass_1 = ember_mesh
-	embers.emitting = true
-	embers.one_shot = true
-	embers.explosiveness = 0.95
-	embers.amount = 28
-	embers.lifetime = 0.65
-	embers.global_position = pos
-	
-	add_child(embers)
-	get_tree().create_timer(1.0).timeout.connect(embers.queue_free)
+	if not flare_ember_pool.is_empty():
+		var embers = flare_ember_pool[flare_explosion_idx]
+		embers.global_position = pos
+		embers.restart()
+		
+	flare_explosion_idx = (flare_explosion_idx + 1) % 8
 	
 	# Spawn 3-5 magma rock debris
 	var num_rocks = randi_range(3, 5)
