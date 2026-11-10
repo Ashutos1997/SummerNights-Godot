@@ -18,6 +18,7 @@ All notable changes to the Summer Nights project will be documented in this file
 ### Fixed
 * Title Screen Vertical Centering on Initial Boot: Fixed bug where the title screen appeared slightly shifted upward on initial startup. Decoupled `_update_language` from startup animation flow and transitioned the reveal animation from caching stale frame-1 absolute coordinates to tweening anchor offsets, guaranteeing perfect vertical centering across all screen aspect ratios and display modes.
 * Audio Bus Routing & Volume Attenuation Fix: Re-routed 7 UI notification and modal players in `HUD.gd` and `TitleScreen.gd` from invalid `"SFX"` bus to `"SFX_UI"`, and re-routed 9 Solar Driver and drone boss combat players in `SolarConvergenceManager.gd` from `"Master"` to `"SFX_WEAPON"`, ensuring all gameplay sound effects strictly obey settings volume sliders.
+* Gold Weapon Skin Activation & Rendering Fix: Fixed bug where guns rendered with their default normal appearance even when Gold Gun Skin was enabled in Settings. Replaced strict high score checks with unified unlock validation (`GameState.is_gold_skin_active()`), synced setting visibility between Normal Mode completion ("Dawn Breaks") and 50k points, and stripped diffuse textures on gold models to produce a true polished metallic gold finish across all weapons.
 
 ---
 
@@ -390,6 +391,7 @@ All notable changes to the Summer Nights project will be documented in this file
 ### 수정됨 (Fixed)
 * 초기 실행 시 타이틀 화면 수직 중앙 정렬 오차 수정: 게임 최초 실행 시 타이틀 화면 메뉴가 위쪽으로 치우쳐 표시되던 버그 해결. `_update_language`와 시작 애니메이션 로직의 잘못된 스코프 분리 및 1프레임 시점의 구 해상도 절대 좌표 캐싱을 제거하고 앵커 오프셋 트위닝으로 개편하여 모든 화면 비율과 디스플레이 모드에서 완벽한 수직 중앙 정렬 보장.
 * 오디오 버스 라우팅 및 볼륨 슬라이더 미적용 버그 수정: `HUD.gd` 및 `TitleScreen.gd` 내 7개 UI 알림/모달 사운드의 미등록 버스(`"SFX"`)를 `"SFX_UI"`로 정상화하고, `SolarConvergenceManager.gd` 내 9개 태양 드라이버 및 드론 전투 사운드의 `"Master"` 직결을 `"SFX_WEAPON"`으로 재라우팅하여 설정 메뉴의 효과음 볼륨 조절이 100% 정상 작동하도록 수정.
+* 황금 무기 스킨 미적용 및 렌더링 버그 수정: 설정 메뉴에서 황금 무기 스킨 옵션을 켰음에도 총기가 기본 외형으로 렌더링되던 문제 해결. 점수 초기화 시 미적용되던 하드코딩된 점수 검사를 통합 해금 검증(`GameState.is_gold_skin_active()`)으로 개편하고, 일반 모드 클리어("동트는 새벽") 및 50,000점 기준 해금 상태를 설정 UI와 동기화했으며, 황금 모델의 디퓨즈 텍스처를 제거하여 모든 무기에서 순금 메탈릭 도금이 정상 표현되도록 수정.
 
 ---
 

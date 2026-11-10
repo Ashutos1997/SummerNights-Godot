@@ -129,7 +129,7 @@ void fragment() {
 		model.position = Vector3(0, -0.3, -0.1) # Center vertically like in Main.gd
 		if w_id == "kitsune":
 			_apply_kitsune_cannon_visuals(model)
-		_adjust_gun_materials(model)
+		_adjust_gun_materials(model, w_id)
 		vp.add_child(model)
 		models.append(model)
 	
@@ -462,7 +462,7 @@ func _apply_kitsune_cannon_visuals(p_model: Node) -> void:
 		blade.scale = Vector3(1.0, 1.0, 0.001)
 		blade.visible = false
 
-func _adjust_gun_materials(node: Node) -> void:
+func _adjust_gun_materials(node: Node, weapon_id: String = "") -> void:
 	if node is MeshInstance3D:
 		var count = node.get_surface_override_material_count()
 		if count == 0 and node.mesh:
@@ -471,20 +471,29 @@ func _adjust_gun_materials(node: Node) -> void:
 			var mat = node.mesh.surface_get_material(i) if node.mesh else node.get_surface_override_material(i)
 			if mat is StandardMaterial3D:
 				var new_mat = mat.duplicate() as StandardMaterial3D
-				if GameState.high_score >= 50000 and GameState.gold_skin_enabled:
-					new_mat.albedo_color = Color(1.0, 0.85, 0.1) # Solid Gold!
-					new_mat.metallic = 0.8
-					new_mat.roughness = 0.2
+				if GameState.is_gold_skin_active():
+					var is_energy_mat = false
+					if weapon_id == "kitsune":
+						var rname = mat.resource_name
+						if "Cyan" in rname or "Hamon" in rname or "Translucent" in rname:
+							is_energy_mat = true
+					if not is_energy_mat:
+						new_mat.albedo_color = Color(1.0, 0.85, 0.1) # Solid Gold!
+						new_mat.albedo_texture = null
+						new_mat.metallic = 0.85
+						new_mat.roughness = 0.18
 				elif new_mat.metallic > 0.1:
 					new_mat.metallic = 0.0
 				node.set_surface_override_material(i, new_mat)
 	for child in node.get_children():
-		_adjust_gun_materials(child)
+		_adjust_gun_materials(child, weapon_id)
 
 func refresh_weapon_skins() -> void:
-	for m in models:
+	for i in range(models.size()):
+		var m = models[i]
 		if is_instance_valid(m):
-			_adjust_gun_materials(m)
+			var w_id = weapons[i] if i < weapons.size() else ""
+			_adjust_gun_materials(m, w_id)
 
 func open() -> void:
 	if active: return

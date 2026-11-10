@@ -4359,10 +4359,18 @@ func _adjust_gun_materials(node: Node) -> void:
 				mat = node.mesh.surface_get_material(i)
 			if mat is StandardMaterial3D:
 				var new_mat = mat.duplicate() as StandardMaterial3D
-				if GameState.high_score >= 50000 and GameState.gold_skin_enabled:
-					new_mat.albedo_color = Color(1.0, 0.85, 0.1) # Solid Gold!
-					new_mat.metallic = 0.8
-					new_mat.roughness = 0.2
+				if GameState.is_gold_skin_active():
+					var is_energy_mat = false
+					if GameState.current_weapon_id == "kitsune":
+						var rname = mat.resource_name
+						if "Cyan" in rname or "Hamon" in rname or "Translucent" in rname:
+							is_energy_mat = true
+					
+					if not is_energy_mat:
+						new_mat.albedo_color = Color(1.0, 0.85, 0.1) # Solid Gold!
+						new_mat.albedo_texture = null
+						new_mat.metallic = 0.85
+						new_mat.roughness = 0.18
 				elif GameState.current_weapon_id != "kitsune":
 					# Stylized semi-gloss toon finish with warm horizon rim lighting
 					new_mat.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON

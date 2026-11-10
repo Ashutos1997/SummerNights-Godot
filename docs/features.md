@@ -23,7 +23,7 @@ Master record of implemented features, mechanics, and systems in *Summer Nights*
   * *Kitsune Buster IX:* Endless Wave 30 unlock (160 cap, 28 cool, 2.2x crit). Mode toggle (`[X]` / `[Y]` / MMB):
     * *Cannon Mode:* Precision stream with revolving 9-vial cylinder.
     * *Blade Mode:* Katana slash (60° arc, 8.5m range). Cleaves flares for +15% water, damages drones and Sun.
-  * *Gold Weapon Skin:* Unlocked at 50k High Score. Toggle under Settings > Display.
+  * *Gold Weapon Skin:* Unlocked at 50k High Score or by beating Normal Mode ("Dawn Breaks"). Solid metallic gold plating toggleable under Settings > Display.
 * **Ice Blast (`[R]`):** Freezes heat gain and Sun movement for 3s. Unlocked Level 3 / Wave 2.
 * **Catastrom (`[F]`):** Dunks Sun into ocean to clear wave. Shared meter at 100% charge. Unlocked Wave 4.
 * **Celestial Awakening (`[F]`):** 15s super mode for Kitsune Buster IX (9 hydro tails, infinite water, 2.0x cooling).

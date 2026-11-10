@@ -2880,7 +2880,7 @@ func _on_gold_skin_toggled(toggled: bool) -> void:
 
 func _update_gold_skin_visibility() -> void:
 	if row_gold_skin:
-		row_gold_skin.visible = "dawn_breaks" in GameState.unlocked_achievements
+		row_gold_skin.visible = GameState.is_gold_skin_unlocked()
 
 func _make_ui_tick_player() -> AudioStreamPlayer:
 	# Synthesise a short 10ms 1kHz sine tick — no audio file needed
@@ -6094,7 +6094,7 @@ func show_buffs_screen() -> void:
 			"tank_upgrade": unlocked = GameState.high_score >= 5000
 			"cooling_upgrade": unlocked = GameState.high_score >= 15000
 			"ice_upgrade": unlocked = GameState.high_score >= 20000
-			"gold_weapon": unlocked = GameState.high_score >= 50000
+			"gold_weapon": unlocked = GameState.is_gold_skin_unlocked()
 			"catastrom_buff": unlocked = "slam_dunk" in GameState.unlocked_achievements
 			"combo_grace": unlocked = "untouchable" in GameState.unlocked_achievements
 			"flare_boost": unlocked = "flare_catcher" in GameState.unlocked_achievements

@@ -346,6 +346,7 @@ var reduce_motion: bool = false
 var vibration_enabled: bool = true
 var fullscreen: bool = true
 var gold_skin_enabled: bool = true
+var gold_skin_unlocked: bool = false
 var filter_color_depth: bool = false
 var filter_dithering: bool = false
 var filter_ps1: bool = false
@@ -847,6 +848,7 @@ func save_settings() -> void:
 	config.set_value("Stats", "total_deaths", total_deaths)
 	config.set_value("Stats", "has_completed_tutorial", has_completed_tutorial)
 	config.set_value("Stats", "kitsune_first_unlock_awarded", kitsune_first_unlock_awarded)
+	config.set_value("Stats", "gold_skin_unlocked", is_gold_skin_unlocked())
 	config.save(SETTINGS_FILE_PATH)
 
 func apply_audio_settings() -> void:
@@ -898,8 +900,11 @@ func load_settings() -> void:
 		total_deaths = config.get_value("Stats", "total_deaths", 0)
 		has_completed_tutorial = config.get_value("Stats", "has_completed_tutorial", false)
 		kitsune_first_unlock_awarded = config.get_value("Stats", "kitsune_first_unlock_awarded", false)
+		gold_skin_unlocked = config.get_value("Stats", "gold_skin_unlocked", false)
 		var loaded_achievements = config.get_value("Stats", "unlocked_achievements", [])
 		unlocked_achievements.assign(loaded_achievements)
+		if is_gold_skin_unlocked():
+			gold_skin_unlocked = true
 		
 	apply_audio_settings()
 
@@ -969,8 +974,11 @@ func _evaluate_milestones(old_high: int = -1) -> void:
 	if high_score >= 20000:
 		bonus_ice_charges = 1
 		if old_high >= 0 and old_high < 20000: emit_signal("buff_unlocked", "ice_upgrade")
-	if high_score >= 50000:
-		if old_high >= 0 and old_high < 50000: emit_signal("buff_unlocked", "gold_weapon")
+	if is_gold_skin_unlocked():
+		if not gold_skin_unlocked:
+			gold_skin_unlocked = true
+		if old_high >= 0 and old_high < 50000:
+			emit_signal("buff_unlocked", "gold_weapon")
 
 	# Apply drafted perks with stack-based diminishing returns
 	if active_wave_perk_instances.size() > 0:
@@ -1214,3 +1222,9 @@ func log_playtest_round(outcome: String, time_played: float, current_weapon: Str
 	var save_file = FileAccess.open(file_path, FileAccess.WRITE)
 	save_file.store_string(JSON.stringify(existing_logs, "\t"))
 	save_file.close()
+
+func is_gold_skin_unlocked() -> bool:
+	return gold_skin_unlocked or high_score >= 50000 or ("dawn_breaks" in unlocked_achievements)
+
+func is_gold_skin_active() -> bool:
+	return gold_skin_enabled and is_gold_skin_unlocked()

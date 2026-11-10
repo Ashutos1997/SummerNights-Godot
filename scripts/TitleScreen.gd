@@ -2873,7 +2873,7 @@ func _show_settings() -> void:
 	_update_toggle_btn(setting_fullscreen_check, GameState.fullscreen)
 	_update_toggle_btn(setting_gold_skin_check, GameState.gold_skin_enabled)
 	if setting_gold_skin_row:
-		setting_gold_skin_row.visible = "dawn_breaks" in GameState.unlocked_achievements
+		setting_gold_skin_row.visible = GameState.is_gold_skin_unlocked()
 	if setting_bgm_slider:
 		setting_bgm_slider.value = GameState.bgm_volume
 	if setting_bgm_val_lbl:
